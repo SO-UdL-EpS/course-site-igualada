@@ -1,0 +1,48 @@
+// ============================================================
+// _figures.scss
+// ============================================================
+
+figure {
+  margin: var(--udl-space-lg) 0;
+  text-align: center;
+}
+figure img, figure svg {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--udl-radius-sm);
+}
+figure figcaption {
+  font-size: var(--udl-text-sm);
+  color: var(--udl-text-muted);
+  margin-top: var(--udl-space-xs);
+}
+
+// Cross-referenced figures (@fig-xxx) get a subtle numbered badge from Quarto;
+// just make sure it inherits the brand color instead of Bootstrap's default blue.
+.quarto-figure figcaption .figure-number,
+a[href^="#fig-"] { color: var(--udl-primary); }
+
+// Lightweight lightbox: CSS-only, no JS dependency.
+// Usage: wrap an image in <a class="udl-lightbox" href="#lb-id"> ... <div id="lb-id" class="udl-lightbox-overlay">
+.udl-lightbox-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+
+  &:target { display: flex; }
+
+  img { max-width: 92vw; max-height: 92vh; border-radius: var(--udl-radius-sm); }
+
+  .udl-lightbox-close {
+    position: absolute;
+    top: var(--udl-space-lg);
+    right: var(--udl-space-lg);
+    color: #fff;
+    font-size: 1.5rem;
+    text-decoration: none;
+  }
+}

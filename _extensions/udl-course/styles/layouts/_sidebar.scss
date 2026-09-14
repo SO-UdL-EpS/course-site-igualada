@@ -1,0 +1,33 @@
+// ============================================================
+// _sidebar.scss
+// ============================================================
+
+.sidebar-navigation {
+  font-family: var(--udl-font-body);
+  font-size: var(--udl-text-sm);
+
+  .sidebar-item-text { color: var(--udl-text); }
+
+  .sidebar-item.active > .sidebar-item-container .sidebar-item-text {
+    color: var(--udl-primary);
+    font-weight: 600;
+  }
+
+  .sidebar-section .sidebar-item-text {
+    font-weight: 600;
+    color: var(--udl-primary-dark);
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+  }
+}
+
+#quarto-sidebar {
+  background: var(--udl-surface);
+  border-right: 1px solid var(--udl-border);
+}
+
+// Collapses correctly on small screens instead of overlapping content
+@media (max-width: 991.98px) {
+  #quarto-sidebar { border-right: none; }
+}

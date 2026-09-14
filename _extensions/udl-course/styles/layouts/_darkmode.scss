@@ -1,0 +1,27 @@
+// ============================================================
+// _darkmode.scss
+//
+// The light/dark TOGGLE itself is native to Quarto (declare
+// `theme: {light: [...], dark: [...]}` in _quarto.yml — Quarto
+// compiles two stylesheets and swaps them, adding the button
+// automatically). Everything in _colors.scss already reacts to
+// that via `body.quarto-dark { --udl-*: ... }`.
+//
+// This file only handles the handful of things CSS variables
+// alone don't fix: raster images/diagrams that were drawn for a
+// light background, and code-highlighting edge cases.
+// ============================================================
+
+body.quarto-dark {
+  // SVG diagrams drawn on a white background (most of this course's
+  // figures) get a soft dim + slight desaturation instead of glaring
+  // white boxes on a dark page. Diagrams using CSS variables already
+  // adapt for free and don't need this.
+  figure img:not([data-udl-no-dim]) {
+    filter: brightness(0.92) contrast(0.95);
+  }
+
+  .udl-card, .udl-widget {
+    box-shadow: none; // heavy box-shadows read as "muddy" on dark surfaces
+  }
+}

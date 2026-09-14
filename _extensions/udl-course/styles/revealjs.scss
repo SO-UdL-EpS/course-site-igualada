@@ -1,0 +1,94 @@
+/*-- scss:defaults --*/
+
+// Revealjs compiles as its own independent Sass bundle (it can't read
+// the HTML format's CSS custom properties at compile time), so the
+// brand values are restated here as plain Sass variables. If you
+// change the brand colors in tokens/_colors.scss, mirror the change
+// here too — see documentation/design-system.md for why these two
+// systems can't just share one file.
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono&display=swap');
+
+$udl-maroon:      #9C1C4E;
+$udl-maroon-dark: #6e1438;
+$udl-gray-dark:   #383838;
+$udl-off-white:   #F5F5F5;
+
+$body-bg: #ffffff;
+$body-color: $udl-gray-dark;
+$link-color: $udl-maroon;
+
+$presentation-heading-color: $udl-maroon-dark;
+$presentation-heading-font: "Fraunces", Georgia, serif;
+$font-family-sans-serif: "Inter", Helvetica, Arial, sans-serif;
+$presentation-font-size-root: 32px;
+$code-block-font-size: 0.7em;
+
+/*-- scss:rules --*/
+
+.reveal .slide-number { color: $udl-maroon; }
+
+.reveal h1, .reveal h2, .reveal h3 {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.reveal h1 { color: $udl-maroon-dark; }
+.reveal h2 {
+  color: $udl-maroon;
+  border-bottom: 2px solid $udl-off-white;
+  padding-bottom: 0.15em;
+}
+
+.reveal strong { color: $udl-maroon-dark; }
+
+.reveal .callout, .reveal .udl-component {
+  border-radius: 6px;
+}
+
+.reveal code {
+  font-family: "JetBrains Mono", Menlo, Consolas, monospace;
+  color: $udl-maroon-dark;
+}
+
+.reveal footer, .reveal .footer {
+  color: $udl-gray-dark;
+  opacity: 0.7;
+}
+
+.reveal a {
+  text-decoration: none;
+  border-bottom: 1px solid rgba(156, 28, 78, 0.35);
+}
+
+.reveal .footer .home-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 1.25em;
+  height: 1.25em;
+  margin-left: 0.4em;
+
+  color: #6E1337;
+  text-decoration: none !important;
+  border: 0 !important;
+
+  opacity: 0.72;
+  transform: translateY(0.05em);
+
+  transition:
+    opacity 150ms ease,
+    transform 150ms ease;
+}
+
+.reveal .footer .home-link:hover {
+  color: #9C1B4E;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal .footer .home-icon {
+  display: block;
+  width: 100%;
+  height: 100%;
+}

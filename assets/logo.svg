@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1254" height="1254" viewBox="0 0 1254 1254">
+  <defs>
+    <linearGradient id="grad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#b00055"/>
+      <stop offset="52%" stop-color="#5b174e"/>
+      <stop offset="100%" stop-color="#005ca8"/>
+    </linearGradient>
+    <linearGradient id="grad2" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#c00058"/>
+      <stop offset="100%" stop-color="#0067b5"/>
+    </linearGradient>
+    <style>
+      .dark { fill:#071a35; }
+      .magenta { fill:#ad0752; }
+      .sans { font-family: Arial, Helvetica, sans-serif; }
+    </style>
+  </defs>
+
+  <!-- white background -->
+  <rect width="100%" height="100%" fill="white"/>
+
+  <!-- orbital ring -->
+  <path d="M 305 555 A 325 325 0 1 1 950 555" fill="none" stroke="url(#grad)" stroke-width="12" stroke-linecap="round"/>
+  <circle cx="627" cy="82" r="28" fill="url(#grad)"/>
+  <circle cx="305" cy="344" r="27" fill="#b00055"/>
+  <circle cx="949" cy="344" r="27" fill="#0067b5"/>
+  <circle cx="948" cy="531" r="24" fill="#0067b5"/>
+  <circle cx="948" cy="531" r="9" fill="white"/>
+
+  <!-- monitor stand -->
+  <path d="M 570 690 H 684 C 678 745 670 775 646 797 H 608 C 584 775 576 745 570 690 Z" fill="url(#grad)"/>
+  <rect x="493" y="797" width="268" height="26" rx="13" fill="url(#grad)"/>
+
+  <!-- monitor frame -->
+  <path d="M 347 438 Q 347 420 365 420 H 879 Q 897 420 897 438 V 705 Q 897 723 879 723 H 365 Q 347 723 347 705 Z" fill="url(#grad)"/>
+  <rect x="375" y="448" width="494" height="230" rx="7" fill="white"/>
+
+  <!-- gear -->
+  <path d="M 785.0,470.0 L 830.4,495.7 L 819.9,539.4 L 767.8,541.7 L 754.8,562.9 L 776.4,610.3 L 742.2,639.6 L 698.7,610.8 L 675.8,620.3 L 665.4,671.4 L 620.6,674.9 L 602.3,626.1 L 578.2,620.3 L 539.7,655.5 L 501.4,632.0 L 515.3,581.7 L 499.2,562.9 L 447.4,568.8 L 430.1,527.2 L 470.9,494.7 L 469.0,470.0 L 423.6,444.3 L 434.1,400.6 L 486.2,398.3 L 499.2,377.1 L 477.6,329.7 L 511.8,300.4 L 555.3,329.2 L 578.2,319.7 L 588.6,268.6 L 633.4,265.1 L 651.7,313.9 L 675.8,319.7 L 714.3,284.5 L 752.6,308.0 L 738.7,358.3 L 754.8,377.1 L 806.6,371.2 L 823.9,412.8 L 783.1,445.3 Z" fill="url(#grad)"/>
+  <circle cx="627" cy="470" r="112" fill="white"/>
+  <circle cx="627" cy="470" r="82" fill="url(#grad)"/>
+  <circle cx="627" cy="470" r="58" fill="white"/>
+
+  <!-- gear split / highlight -->
+  <rect x="617" y="235" width="20" height="122" fill="white"/>
+  <rect x="617" y="585" width="20" height="106" fill="white"/>
+
+  <!-- circuit traces -->
+  <g fill="none" stroke="url(#grad2)" stroke-width="15" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 760 600 H 875 L 925 550 H 1010"/><path d="M 755 640 H 900 L 950 590 H 1060"/><path d="M 750 680 H 860 L 910 630 H 1010 L 1040 660 H 1100"/>
+  </g>
+  <g fill="url(#grad2)">
+    <circle cx="1010" cy="550" r="22"/><circle cx="1060" cy="590" r="22"/><circle cx="1010" cy="630" r="22"/><circle cx="1100" cy="660" r="22"/>
+  </g>
+
+  <!-- left pixel dissolution -->
+  <g fill="#b00055">
+    <rect x="180" y="549" width="20" height="20"/>
+    <rect x="219" y="574" width="27" height="27"/>
+    <rect x="262" y="548" width="30" height="30"/>
+    <rect x="185" y="609" width="22" height="22"/>
+    <rect x="235" y="622" width="38" height="38"/>
+    <rect x="285" y="588" width="21" height="21"/>
+    <rect x="330" y="608" width="28" height="28"/>
+    <rect x="209" y="665" width="21" height="21"/>
+    <rect x="281" y="655" width="26" height="26"/>
+    <rect x="350" y="647" width="30" height="30"/>
+    <rect x="392" y="620" width="20" height="20"/>
+  </g>
+
+  <!-- title -->
+  <text x="627" y="935" text-anchor="middle" class="sans dark"
+        font-size="142" font-weight="700" letter-spacing="9">OPERATING</text>
+  <text x="627" y="1045" text-anchor="middle" class="sans magenta"
+        font-size="92" font-weight="500" letter-spacing="28">SYSTEMS</text>
+
+  <!-- decorative rules -->
+  <rect x="137" y="1015" width="132" height="6" rx="3" fill="#ad0752"/>
+  <rect x="985" y="1015" width="132" height="6" rx="3" fill="#ad0752"/>
+</svg>

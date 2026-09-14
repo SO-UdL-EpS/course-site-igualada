@@ -1,0 +1,69 @@
+// ============================================================
+// _colors.scss — Design tokens: color
+// Exposed as CSS custom properties so dark mode can override
+// them at runtime without a second Sass compile.
+//
+// This is the EXAMPLE COURSE's own brand ("Operating Systems" —
+// gear/circuit logo, see assets/logo.svg), sampled from the
+// instructor-provided logo mockup. It is deliberately NOT the UdL
+// institutional brand — that's documented separately in
+// documentation/branding.md for real UdL adopters to swap in via
+// documentation/customization.md. Point being: rebranding this
+// framework should only ever require editing this one file.
+// ============================================================
+
+$os-maroon:     #7a2648; // sampled from assets/logo.svg gradient
+$os-navy:       #254367; // sampled from assets/logo.svg gradient
+$os-ink:        #141e2f; // sampled from the dark card mockup
+$os-off-white:  #f5f6f8;
+
+// Semantic pedagogical colors — one per component family, not decorative
+$color-theory:      $os-navy;
+$color-lab:          $os-maroon;
+$color-assignment:  #6b46c1;
+$color-exam:        #c9a227;
+$color-warning:     #c0392b;
+$color-success:     #2e7d32;
+$color-outcome:     #0f766e;
+
+:root {
+  --udl-primary:        #{$os-maroon};
+  --udl-primary-dark:   #{$os-ink};
+  --udl-secondary:      #{$os-navy};
+
+  --udl-surface:        #ffffff;
+  --udl-surface-sunken: #{$os-off-white};
+  --udl-background:     #{$os-off-white};
+  --udl-border:         #e2e5ea;
+  --udl-text:            #{$os-ink};
+  --udl-text-muted:      #5a6472;
+
+  --udl-theory:      #{$color-theory};
+  --udl-lab:         #{$color-lab};
+  --udl-assignment:  #{$color-assignment};
+  --udl-exam:        #{$color-exam};
+  --udl-warning:     #{$color-warning};
+  --udl-success:     #{$color-success};
+  --udl-outcome:     #{$color-outcome};
+}
+
+body.quarto-dark {
+  --udl-primary:        #d98bb0;
+  --udl-primary-dark:   #f0d5e4;
+  --udl-secondary:      #7ea3c9;
+
+  --udl-surface:        #182233;
+  --udl-surface-sunken: #202c40;
+  --udl-background:     #10182a;
+  --udl-border:         #2c3a52;
+  --udl-text:            #e6e9ef;
+  --udl-text-muted:      #9aa5b5;
+
+  --udl-theory:      #7ea3c9;
+  --udl-lab:         #d98bb0;
+  --udl-assignment:  #b09ae0;
+  --udl-exam:        #e0c375;
+  --udl-warning:     #e0796d;
+  --udl-success:     #7fbf82;
+  --udl-outcome:     #5fc4b8;
+}

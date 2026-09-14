@@ -1,0 +1,34 @@
+// ============================================================
+// _layout.scss — page structure, content width, override Bootstrap defaults
+// ============================================================
+
+body { background: var(--udl-background); }
+
+.quarto-title-block { margin-bottom: var(--udl-space-xl); }
+
+// Bootstrap ships wide, boxy containers by default — override for an
+// editorial reading measure instead of a "web-app" full-bleed feel.
+main.content {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 var(--udl-space-lg);
+}
+
+// Remove Bootstrap's heavy card/border defaults where they leak into
+// plain content (e.g. tables-in-divs, blockquotes)
+blockquote {
+  border-left: 3px solid var(--udl-secondary);
+  background: color-mix(in srgb, var(--udl-secondary) 8%, transparent);
+  padding: var(--udl-space-sm) var(--udl-space-md);
+  border-radius: 0 var(--udl-radius-sm) var(--udl-radius-sm) 0;
+  margin: var(--udl-space-lg) 0;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--udl-border);
+  margin: var(--udl-space-xl) 0;
+}
+
+// Generous white space between sections instead of Bootstrap's tight defaults
+.level2, .level3 { margin-top: var(--udl-space-xl); }

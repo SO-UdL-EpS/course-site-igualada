@@ -1,0 +1,41 @@
+// ============================================================
+// _buttons.scss — buttons and badges
+// ============================================================
+
+.udl-badge {
+  display: inline-block;
+  padding: 0.15em 0.65em;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.udl-badge-theory     { background: color-mix(in srgb, var(--udl-theory) 15%, transparent);     color: var(--udl-theory); }
+.udl-badge-lab        { background: color-mix(in srgb, var(--udl-lab) 12%, transparent);        color: var(--udl-lab); }
+.udl-badge-assignment { background: color-mix(in srgb, var(--udl-assignment) 15%, transparent); color: var(--udl-assignment); }
+.udl-badge-exam       { background: color-mix(in srgb, var(--udl-exam) 18%, transparent);        color: #7a5c00; }
+.udl-badge-neutral    { background: var(--udl-surface-sunken); color: var(--udl-text-muted); }
+
+.udl-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  padding: 0.55em 1.2em;
+  border-radius: var(--udl-radius);
+  background: var(--udl-primary);
+  color: #ffffff !important;
+  font-weight: 600;
+  text-decoration: none !important;
+  transition: background var(--udl-transition-fast);
+  border: none;
+  cursor: pointer;
+}
+.udl-button:hover, .udl-button:focus-visible { background: var(--udl-primary-dark); }
+.udl-button:focus-visible { outline: 2px solid var(--udl-secondary); outline-offset: 2px; }
+
+.udl-button-outline {
+  background: transparent;
+  color: var(--udl-primary) !important;
+  border: 1.5px solid var(--udl-primary);
+}
+.udl-button-outline:hover { background: color-mix(in srgb, var(--udl-primary) 8%, transparent); }

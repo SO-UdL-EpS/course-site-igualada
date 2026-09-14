@@ -1,0 +1,98 @@
+// ============================================================
+// _cards.scss — reusable card system
+// ============================================================
+
+.udl-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--udl-space-lg);
+  margin: var(--udl-space-xl) 0;
+}
+
+.udl-card {
+  display: block;
+  border: 1px solid var(--udl-border);
+  border-radius: var(--udl-radius-lg);
+  padding: var(--udl-space-lg);
+  background: var(--udl-surface);
+  box-shadow: var(--udl-shadow-card);
+  transition: box-shadow var(--udl-transition), transform var(--udl-transition);
+  color: var(--udl-text);
+  position: relative;
+
+  &:hover, &:focus-within {
+    box-shadow: var(--udl-shadow-hover);
+    transform: translateY(-2px);
+  }
+
+  h3, h4 { margin: var(--udl-space-2xs) 0; font-size: var(--udl-text-lg); }
+  p { font-size: var(--udl-text-sm); color: var(--udl-text-muted); margin-bottom: 0; }
+}
+
+// Makes the whole card clickable through a single real, visible link,
+// rather than wrapping arbitrary block content (headings, paragraphs) in
+// an <a> — which Pandoc/CommonMark cannot parse correctly once blank
+// lines separate the inner content into multiple blocks (see
+// patterns/cards/module-card.qmd for the full explanation). The ::after
+// pseudo-element is stretched to cover the whole card, so clicking
+// anywhere on the card activates this link, while screen readers still
+// get real, meaningful link text instead of an unlabelled full-card link.
+.udl-card .stretched-link {
+  position: relative;
+  display: inline-block;
+  margin-top: var(--udl-space-sm);
+  color: var(--udl-primary);
+  font-weight: 600;
+  font-size: var(--udl-text-sm);
+  text-decoration: none;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+  &:hover { text-decoration: underline; }
+  &:focus-visible {
+    outline: 2px solid var(--udl-primary);
+    outline-offset: 2px;
+  }
+}
+
+.udl-card-eyebrow {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+}
+
+// Card type accents — a colored left bar keyed to the pedagogical color tokens
+.udl-card-lecture    { border-left: 4px solid var(--udl-theory); }
+.udl-card-lab        { border-left: 4px solid var(--udl-lab); }
+.udl-card-assignment { border-left: 4px solid var(--udl-assignment); }
+.udl-card-resource   { border-left: 4px solid var(--udl-outcome); }
+.udl-card-news       { border-left: 4px solid var(--udl-exam); }
+
+.udl-card-meta {
+  display: flex;
+  gap: var(--udl-space-xs);
+  align-items: center;
+  margin-top: var(--udl-space-sm);
+  font-size: 0.75rem;
+  color: var(--udl-text-muted);
+
+  .bi { font-size: 0.85em; }
+}
+
+// Status indicator dot (done / in progress / not started)
+.udl-status {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  margin-right: 0.4em;
+}
+.udl-status-done       { background: var(--udl-success); }
+.udl-status-progress   { background: var(--udl-exam); }
+.udl-status-todo       { background: var(--udl-border); }
+
+

@@ -1,0 +1,103 @@
+// ============================================================
+// _dashboard.scss — homepage widgets
+// ============================================================
+
+.udl-dashboard {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--udl-space-lg);
+  margin: var(--udl-space-xl) 0;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.udl-widget {
+  border: 1px solid var(--udl-border);
+  border-radius: var(--udl-radius-lg);
+  padding: var(--udl-space-lg);
+  background: var(--udl-surface);
+  margin-bottom: var(--udl-space-md);
+  box-shadow: var(--udl-shadow-card);
+}
+.udl-widget h4 {
+  font-size: var(--udl-text-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--udl-text-muted);
+  margin-top: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+
+  .bi { color: var(--udl-primary); font-size: 1.05em; }
+}
+
+// Hero: current module call-to-action
+.udl-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--udl-space-lg);
+  // The pattern is embedded as a base64 data URI rather than referenced by
+  // path. Sass/CSS is compiled once into a single stylesheet, so any
+  // relative path here would be resolved against wherever Quarto places
+  // that compiled file — not against each page that uses it — and a
+  // domain-absolute "/assets/..." path breaks whenever the site is served
+  // from a subpath instead of the domain root. A data URI has no path to
+  // resolve at all, so it works regardless of deployment location.
+  background:
+    url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgNDAwIDQwMCI+CiAgPGRlZnM+CiAgICA8cGF0dGVybiBpZD0idWRsLWhlcm8tZG90cyIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPGNpcmNsZSBjeD0iNCIgY3k9IjQiIHI9IjEuNiIgZmlsbD0iI2ZmZmZmZiIgZmlsbC1vcGFjaXR5PSIwLjE2Ii8+CiAgICA8L3BhdHRlcm4+CiAgICA8cGF0dGVybiBpZD0idWRsLWhlcm8tbGluZXMiIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgcGF0dGVyblRyYW5zZm9ybT0icm90YXRlKDQ1KSI+CiAgICAgIDxsaW5lIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSI4MCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utb3BhY2l0eT0iMC4wNiIgc3Ryb2tlLXdpZHRoPSI0MCIvPgogICAgPC9wYXR0ZXJuPgogIDwvZGVmcz4KICA8cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0idXJsKCN1ZGwtaGVyby1saW5lcykiLz4KICA8cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0idXJsKCN1ZGwtaGVyby1kb3RzKSIvPgo8L3N2Zz4K"),
+    linear-gradient(135deg, var(--udl-primary), var(--udl-primary-dark));
+  background-size: cover;
+  background-blend-mode: overlay;
+  color: #fff;
+  border-radius: var(--udl-radius-lg);
+  padding: var(--udl-space-xl) var(--udl-space-xl);
+  margin-bottom: var(--udl-space-xl);
+  box-shadow: var(--udl-shadow-hover);
+
+  @media (max-width: 768px) { flex-direction: column; align-items: flex-start; }
+
+  .udl-hero-eyebrow {
+    opacity: 0.85;
+    font-size: var(--udl-text-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+  }
+  h2 { color: #fff; border: none; margin: 0.25em 0 0.4em; }
+  p { opacity: 0.92; max-width: 32em; }
+  .udl-button {
+    background: #fff;
+    color: var(--udl-primary-dark) !important;
+    white-space: nowrap;
+  }
+}
+
+// Progress bar
+.udl-progress {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--udl-surface-sunken);
+  overflow: hidden;
+  margin: var(--udl-space-xs) 0 var(--udl-space-sm);
+}
+.udl-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--udl-primary), var(--udl-secondary));
+}
+
+// Deadline / announcement list rows
+.udl-list-row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--udl-space-sm);
+  padding: var(--udl-space-sm) 0;
+  border-bottom: 1px solid var(--udl-border);
+  font-size: var(--udl-text-sm);
+
+  &:last-child { border-bottom: none; }
+  .udl-list-row-date { color: var(--udl-text-muted); white-space: nowrap; }
+}

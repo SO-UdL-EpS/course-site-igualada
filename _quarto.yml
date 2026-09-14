@@ -1,0 +1,43 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "Sistemes Operatius"
+  description: "Grau en Enginyeria Informàtica · Campus Igualada"
+  page-navigation: true
+  favicon: assets/logo.svg
+
+  page-footer:
+    left: |
+      Universitat de Lleida · Departament d'Enginyeria Informàtica i Disseny Digital
+    right: |
+      Construït amb Quarto
+
+
+  navbar:
+    background: "#141e2f"
+    title: "SO"
+    left:
+      - text: "Inici"
+        href: index.qmd
+      - text: "Guia docent"
+        href: https://guiadocent.udl.cat/html/2026-27_105012
+    right:
+      - icon: github
+        href: https://github.com/SO-UdL-EpS/course-site
+  sidebar:
+    logo: assets/logo.png
+    logo-alt: "AMSA Logo"
+
+    style: floating
+    collapse-level: 3
+    contents:
+    - href: course-info/presentation-slides.qmd
+      text: "Presentació del curs"
+    - href: course-info/contributions/contribute.qmd
+      text: "Contribueix al curs"
+
+format:
+  udl-course-html:
+    toc: true

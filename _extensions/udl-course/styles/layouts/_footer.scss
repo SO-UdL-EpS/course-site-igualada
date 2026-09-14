@@ -1,0 +1,28 @@
+// ============================================================
+// _footer.scss
+// ============================================================
+
+.udl-footer {
+  margin-top: var(--udl-space-2xl);
+  padding: var(--udl-space-xl) 0;
+  border-top: 1px solid var(--udl-border);
+  color: var(--udl-text-muted);
+  font-size: var(--udl-text-sm);
+
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--udl-space-md);
+
+  a { color: var(--udl-text-muted); }
+  a:hover { color: var(--udl-primary); }
+
+  .udl-footer-col { min-width: 180px; }
+  .udl-footer-col h5 {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--udl-text);
+    margin-bottom: var(--udl-space-xs);
+  }
+}
