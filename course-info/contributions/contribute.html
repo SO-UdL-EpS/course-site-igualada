@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Contribuir als materials – Sistemes Operatius</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../course-info/presentation-slides.html" rel="prev">
+<link href="../../assets/logo.svg" rel="icon" type="image/svg+xml">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-b9e697b59370f47497522b7983a7c1dc.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-81cc67d4ae614c4e3e0031abe30b645a.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-b9e697b59370f47497522b7983a7c1dc.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating nav-fixed fullcontent quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const queryPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    const darkModeDefault = queryPrefersDark.matches;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    queryPrefersDark.addEventListener("change", e => {
+      if(window.localStorage.getItem("quarto-color-scheme") !== null)
+        return;
+      const alternate = e.matches
+      toggleColorMode(alternate);
+      localAlternateSentinel = e.matches ? 'alternate' : 'default'; // this is used alongside local storage!
+      toggleGiscusIfUsed(alternate, darkModeDefault);
+    });
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">SO</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Inici</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://guiadocent.udl.cat/html/2026-27_105012"> 
+<span class="menu-text">Guia docent</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/SO-UdL-EpS/course-site"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../course-info/contributions/contribute.html">Contribueix al curs</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+      <a href="../../index.html" class="sidebar-logo-link">
+      <img src="../../assets/logo.png" alt="AMSA Logo" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../../assets/logo.png" alt="AMSA Logo" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course-info/presentation-slides.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Presentació del curs</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../course-info/contributions/contribute.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Contribueix al curs</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Contribuir als materials</h1>
+<p class="subtitle lead">Participa en la millora dels materials oberts de l’assignatura</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Els materials d’aquesta assignatura es desenvolupen seguint una filosofia de <strong>codi obert (<em>open source</em>)</strong>: els materials poden ser revisats, millorats, ampliats i corregits amb la participació de la comunitat.</p>
+<p>Com a estudiant, pots formar part d’aquest procés i contribuir directament a la millora dels materials que utilitzaran altres estudiants en el futur.</p>
+<p>Aquesta activitat també et permet obtenir <strong>fins a 0,5 punts addicionals</strong> sobre la qualificació final de l’assignatura.</p>
+<div class="repte udl-component udl-repte" title="Què significa contribuir?">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../assets/icons.svg#icon-repte"></use></svg><span>Repte — Què significa contribuir?</span></div>
+<p>Contribuir no significa simplement modificar un fitxer o enviar un <em>pull request</em>.</p>
+<p>Una contribució és una <strong>millora concreta, justificada i útil</strong> per al projecte. Pot consistir, per exemple, en:</p>
+<ul>
+<li>crear un exercici o exemple nou;</li>
+<li>ampliar o aclarir una explicació;</li>
+<li>corregir una errata o un error tècnic;</li>
+<li>actualitzar informació que hagi quedat obsoleta;</li>
+<li>corregir un enllaç trencat;</li>
+<li>millorar la documentació;</li>
+<li>detectar i solucionar un problema que pugui afectar altres estudiants.</li>
+</ul>
+<p>La contribució ha d’aportar <strong>valor real al material docent</strong>.</p>
+</div>
+<section id="una-filosofia-basada-en-lopen-source" class="level2">
+<h2 class="anchored" data-anchor-id="una-filosofia-basada-en-lopen-source">Una filosofia basada en l’Open Source</h2>
+<p>El desenvolupament <em>open source</em> es basa en una idea senzilla: <strong>els projectes poden millorar gràcies a la participació de diferents persones</strong>.</p>
+<p>En lloc que una única persona sigui responsable de detectar tots els errors, escriure tot el contingut i mantenir-lo actualitzat, altres persones poden proposar millores.</p>
+<p>En aquesta activitat aplicaràs el mateix model que s’utilitza en molts projectes de programari:</p>
+<ol type="1">
+<li>Parteixes d’una còpia del projecte (<em>fork</em>).</li>
+<li>Treballes en una branca independent.</li>
+<li>Fas i documentes els teus canvis.</li>
+<li>Puges els canvis al teu repositori.</li>
+<li>Proposes incorporar-los al projecte original mitjançant un <em>Pull Request</em>.</li>
+<li>El responsable del projecte revisa la proposta.</li>
+<li>Si la contribució és adequada, es pot incorporar al projecte principal.</li>
+</ol>
+<p>Això permet experimentar i proposar canvis <strong>sense modificar directament el repositori original</strong>.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figures/worflow.png" class="img-fluid figure-img" style="width:95.0%"></p>
+<figcaption>Flux general de contribució al projecte</figcaption>
+</figure>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Una contribució és una proposta, no una imposició
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Quan obres un <em>Pull Request</em>, no estàs modificant directament els materials de l’assignatura.</p>
+<p>Estàs fent una <strong>proposta de canvi</strong> perquè el responsable del projecte la pugui revisar.</p>
+<p>Aquesta és una de les idees fonamentals del desenvolupament <em>open source</em>: els canvis es poden proposar, discutir, revisar i, finalment, acceptar o rebutjar.</p>
+</div>
+</div>
+</section>
+<section id="el-procés-de-contribució" class="level1">
+<h1>El procés de contribució</h1>
+<section id="fes-un-fork-del-repositori" class="level2">
+<h2 class="anchored" data-anchor-id="fes-un-fork-del-repositori">1. Fes un <em>fork</em> del repositori</h2>
+<p>El primer pas és crear una còpia del repositori de l’assignatura al teu compte de GitHub.</p>
+<p>Aquesta còpia s’anomena <strong>fork</strong>.</p>
+<p>El <em>fork</em> et permet treballar sobre el projecte sense tenir permisos d’escriptura sobre el repositori original.</p>
+<p>A la pàgina principal del repositori trobaràs el botó <strong>Fork</strong>.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figures/fork.png" class="img-fluid figure-img" style="width:85.0%"></p>
+<figcaption>Botó Fork del repositori principal</figcaption>
+</figure>
+</div>
+<p>Selecciona el teu compte de GitHub com a propietari del nou repositori.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figures/create-fork.png" class="img-fluid figure-img" style="width:85.0%"></p>
+<figcaption>Creació del fork</figcaption>
+</figure>
+</div>
+<p>Un cop creat, disposaràs d’una còpia del projecte dins del teu compte.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Per què fem un <em>fork</em>?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>El <em>fork</em> separa el teu espai de treball del projecte original.</p>
+<p>Pots experimentar, modificar fitxers i provar idees sense afectar els materials que utilitzen la resta d’estudiants.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="clona-el-teu-fork" class="level2">
+<h2 class="anchored" data-anchor-id="clona-el-teu-fork">2. Clona el teu <em>fork</em></h2>
+<p>Ara has de descarregar el teu <em>fork</em> al teu ordinador.</p>
+<p>Des de GitHub, copia l’URL del teu repositori i executa:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone URL</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Per exemple:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/el-teu-usuari/amsa.git</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A continuació, entra al directori del projecte:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> amsa</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A partir d’aquest moment treballaràs sobre una còpia local del repositori.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>També és possible fer alguns canvis directament des de la interfície web de GitHub. Tanmateix, si vols treballar de manera habitual amb els materials Quarto, és recomanable tenir el repositori clonat localment.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>Mantén el teu <em>fork</em> actualitzat
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Els materials d’aquesta assignatura canvien sovint. Si treballes durant dies o setmanes sobre el mateix <em>fork</em>, sincronitza’l periòdicament amb el repositori original abans de començar una contribució nova:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> remote add upstream URL-del-repositori-original</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> fetch upstream</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> merge upstream/main</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Fer-ho evita conflictes innecessaris quan obris la <em>Pull Request</em> i redueix el risc que la teva contribució es basi en una versió ja desactualitzada dels materials.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="crea-una-branca-per-al-teu-canvi" class="level2">
+<h2 class="anchored" data-anchor-id="crea-una-branca-per-al-teu-canvi">3. Crea una branca per al teu canvi</h2>
+<p>Abans de modificar els fitxers, crea una branca (<em>branch</em>) específica per a la teva contribució.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> checkout <span class="at">-b</span> nom-de-la-branca</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Per exemple:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> checkout <span class="at">-b</span> millora-exercici-processos</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>La branca permet mantenir el teu canvi separat de la resta del projecte.</p>
+<div class="repte udl-component udl-repte" title="Una branca per a una contribució">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../assets/icons.svg#icon-repte"></use></svg><span>Repte — Una branca per a una contribució</span></div>
+<p>Sempre que sigui possible, procura que una branca representi una contribució concreta.</p>
+<p>Per exemple:</p>
+<p><code>correccio-enllac-unitat-2</code></p>
+<p>és preferible a:</p>
+<p><code>canvis</code></p>
+<p>Un nom descriptiu facilita la revisió i permet entendre ràpidament quin és l’objectiu de la branca.</p>
+</div>
+<hr>
+</section>
+<section id="fes-els-canvis" class="level2">
+<h2 class="anchored" data-anchor-id="fes-els-canvis">4. Fes els canvis</h2>
+<p>Ara pots modificar els materials.</p>
+<p>Pots:</p>
+<ul>
+<li>crear nous continguts;</li>
+<li>modificar explicacions;</li>
+<li>afegir exemples;</li>
+<li>crear exercicis;</li>
+<li>corregir errates;</li>
+<li>actualitzar informació;</li>
+<li>millorar la documentació.</li>
+</ul>
+<p>Si treballes amb els materials Quarto, pots previsualitzar el resultat localment amb:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> preview</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>La previsualització permet comprovar que els canvis es visualitzen correctament abans d’enviar-los.</p>
+<p>També pots editar els fitxers <code>.qmd</code> directament des de GitHub mitjançant l’editor web. Aquesta opció permet crear una branca amb els canvis i iniciar posteriorment el procés de <em>Pull Request</em>.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>Revisa els canvis abans de proposar-los
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Abans d’enviar la contribució, comprova que:</p>
+<ul>
+<li>el contingut és correcte;</li>
+<li>els exemples funcionen;</li>
+<li>no has introduït errates;</li>
+<li>els enllaços funcionen;</li>
+<li>el format es visualitza correctament (fes <code>quarto preview</code>, no només una lectura del <code>.qmd</code>);</li>
+<li>si has afegit un bloc de tipus <code>::: {.classe}</code>, la classe existeix realment a la llista de components admesos — una classe inventada es renderitza sense estil, sense avisar-te de l’error;</li>
+<li>no has pujat fitxers generats en renderitzar (<code>.aux</code>, <code>.log</code>, carpetes <code>_files/</code>, PDFs o HTML exportats) que no formen part del codi font;</li>
+<li>el canvi no modifica accidentalment altres parts dels materials.</li>
+</ul>
+</div>
+</div>
+<hr>
+</section>
+<section id="fes-commit-dels-canvis" class="level2">
+<h2 class="anchored" data-anchor-id="fes-commit-dels-canvis">5. Fes <em>commit</em> dels canvis</h2>
+<p>Quan els canvis estiguin preparats, registra’ls amb un <em>commit</em>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add .</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>I després:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">"Descripció clara dels canvis"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Per exemple:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">"Millora l'exemple de processos"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Un bon missatge de <em>commit</em> ha de permetre entendre què s’ha modificat.</p>
+<p>Evita missatges poc informatius com:</p>
+<p><code>canvis</code></p>
+<p>o:</p>
+<p><code>coses</code></p>
+<hr>
+</section>
+<section id="puja-la-branca-al-teu-github" class="level2">
+<h2 class="anchored" data-anchor-id="puja-la-branca-al-teu-github">6. Puja la branca al teu GitHub</h2>
+<p>Ara has de publicar la branca al teu <em>fork</em>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> push origin nom-de-la-branca</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Per exemple:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> push origin millora-exercici-processos</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>La branca i els seus <em>commits</em> quedaran disponibles al teu repositori de GitHub.</p>
+<hr>
+</section>
+<section id="obre-un-pull-request" class="level2">
+<h2 class="anchored" data-anchor-id="obre-un-pull-request">7. Obre un <em>Pull Request</em></h2>
+<p>Aquest és el pas més important del procés.</p>
+<p>Un <em>Pull Request</em> (PR) és una proposta perquè els canvis que has fet al teu <em>fork</em> siguin incorporats al repositori original.</p>
+<p>Des del teu repositori, selecciona la branca on has fet els canvis i inicia un nou <em>Pull Request</em>.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figures/PR.png" class="img-fluid figure-img" style="width:90.0%"></p>
+<figcaption>Selecciona la branca i obre un Pull Request</figcaption>
+</figure>
+</div>
+<p>També pots seleccionar directament la branca amb els teus canvis i iniciar el <em>Pull Request</em> des de la interfície de GitHub.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figures/pr1.png" class="img-fluid figure-img" style="width:90.0%"></p>
+<figcaption>Via alternativa: iniciar el Pull Request des del banner de la branca</figcaption>
+</figure>
+</div>
+<hr>
+</section>
+<section id="revisa-lorigen-i-el-destí-dels-canvis" class="level2">
+<h2 class="anchored" data-anchor-id="revisa-lorigen-i-el-destí-dels-canvis">8. Revisa l’origen i el destí dels canvis</h2>
+<p>GitHub mostrarà una comparació entre:</p>
+<ul>
+<li>el repositori principal, on vols incorporar els canvis;</li>
+<li>el teu <em>fork</em>, on has desenvolupat la modificació;</li>
+<li>la branca que conté els teus canvis.</li>
+</ul>
+<p>Comprova especialment que la direcció sigui correcta.</p>
+<p>En aquest cas:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Repositori</span> principal</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="ex">↓</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="ex">Branca</span> amb la teva contribució</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>GitHub també et mostrarà si els canvis es poden integrar automàticament.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figures/PR2.png" class="img-fluid figure-img" style="width:95.0%"></p>
+<figcaption>Pantalla de comparació de canvis</figcaption>
+</figure>
+</div>
+<p>Si tot és correcte, fes clic a <strong>Create pull request</strong>.</p>
+<hr>
+</section>
+<section id="explica-bé-la-teva-contribució" class="level2">
+<h2 class="anchored" data-anchor-id="explica-bé-la-teva-contribució">9. Explica bé la teva contribució</h2>
+<p>Un <em>Pull Request</em> no hauria de limitar-se a dir:</p>
+<blockquote class="blockquote">
+<p>“He fet alguns canvis.”</p>
+</blockquote>
+<p>La descripció ha d’ajudar el professorat a entendre què has fet, per què ho has fet i quin valor aporta.</p>
+<p>Una bona descripció pot seguir aquesta estructura:</p>
+<p><strong>Què he canviat?</strong> Explica breument quins fitxers o materials has modificat.</p>
+<p><strong>Per què ho he canviat?</strong> Explica quin problema has detectat o quina necessitat resol el canvi.</p>
+<p><strong>Quin valor aporta?</strong> Explica com millora el material per als estudiants.</p>
+<p><strong>Com ho he comprovat?</strong> Si és aplicable, explica quines proves has fet o com has verificat que el canvi funciona.</p>
+<div class="repte udl-component udl-repte" title="Exemple de bona descripció">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../assets/icons.svg#icon-repte"></use></svg><span>Repte — Exemple de bona descripció</span></div>
+<p><strong>Millora de l’exemple de processos de la Unitat 2</strong></p>
+<p>He actualitzat l’exemple perquè utilitzava una comanda que ja no correspon amb la versió actual de Debian.</p>
+<p>He substituït l’exemple per una alternativa compatible i he actualitzat l’explicació associada.</p>
+<p>He comprovat el procediment en una màquina virtual amb Debian i he verificat que les comandes funcionen correctament.</p>
+</div>
+<hr>
+</section>
+<section id="què-passa-després-del-pull-request" class="level2">
+<h2 class="anchored" data-anchor-id="què-passa-després-del-pull-request">Què passa després del Pull Request?</h2>
+<p>Quan envies una PR, el professorat revisarà la proposta.</p>
+<p>La revisió pot incloure:</p>
+<ul>
+<li>correcció tècnica;</li>
+<li>qualitat del contingut;</li>
+<li>claredat de l’explicació;</li>
+<li>utilitat pedagògica;</li>
+<li>coherència amb la resta dels materials;</li>
+<li>qualitat de la documentació;</li>
+<li>possibles efectes sobre altres parts del projecte.</li>
+</ul>
+<p>El professorat pot:</p>
+<ul>
+<li>acceptar la contribució;</li>
+<li>demanar modificacions abans d’acceptar-la;</li>
+<li>comentar o discutir alguns aspectes;</li>
+<li>rebutjar-la si no és adequada o no aporta prou valor.</li>
+</ul>
+<p>Això forma part del funcionament normal d’un projecte <em>open source</em>.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Una PR oberta no significa que el canvi s’hagi acceptat
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>El Pull Request és el mecanisme de revisió i proposta.</p>
+<p>La incorporació definitiva del canvi depèn de la revisió del projecte.</p>
+</div>
+</div>
+</section>
+<section id="com-savalua-la-contribució" class="level2">
+<h2 class="anchored" data-anchor-id="com-savalua-la-contribució">Com s’avalua la contribució?</h2>
+<p>Pots obtenir fins a 0,5 punts addicionals sobre la nota final.</p>
+<p>La puntuació no depèn simplement del nombre de Pull Requests que enviïs. Es valorarà principalment la qualitat i l’impacte de la contribució.</p>
+<p>Entre altres aspectes, es tindrà en compte:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Aspecte</th>
+<th>Què es valora</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Rellevància</td>
+<td>El canvi resol un problema o necessitat real?</td>
+</tr>
+<tr class="even">
+<td>Qualitat</td>
+<td>El contingut és correcte, clar i ben elaborat?</td>
+</tr>
+<tr class="odd">
+<td>Impacte</td>
+<td>La millora pot ser útil per a altres estudiants?</td>
+</tr>
+<tr class="even">
+<td>Rigor</td>
+<td>La informació i els exemples són tècnicament correctes?</td>
+</tr>
+<tr class="odd">
+<td>Documentació</td>
+<td>El canvi està prou explicat i justificat?</td>
+</tr>
+<tr class="even">
+<td>Integració</td>
+<td>És coherent amb l’estructura i l’estil dels materials?</td>
+</tr>
+</tbody>
+</table>
+<div class="errorcomu udl-component udl-errorcomu" title="No totes les contribucions puntuen">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../assets/icons.svg#icon-errorcomu"></use></svg><span>Error Comú — No totes les contribucions puntuen</span></div>
+<p>Enviar un Pull Request no garanteix l’obtenció del bonus.</p>
+<p>Només es valoraran les contribucions que siguin acceptades pel professorat i que aportin un valor suficient als materials.</p>
+<p>Una modificació purament cosmètica, arbitrària o innecessària pot no ser considerada una contribució avaluable.</p>
+</div>
+<hr>
+<section id="contribueix-com-si-el-projecte-fos-teu" class="level3">
+<h3 class="anchored" data-anchor-id="contribueix-com-si-el-projecte-fos-teu">Contribueix com si el projecte fos teu</h3>
+<p>Abans d’obrir una PR, pregunta’t:</p>
+<blockquote class="blockquote">
+<p>Si un altre estudiant hagués de fer servir aquest material demà, aquesta modificació realment li seria útil?</p>
+</blockquote>
+<p>Si la resposta és sí, probablement tens una bona contribució.</p>
+
+
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/SO-UdL-EpS\.github\.io\/course-site-igualada\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../course-info/presentation-slides.html" class="pagination-link" aria-label="Presentació del curs">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Presentació del curs</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Universitat de Lleida · Departament d’Enginyeria Informàtica i Disseny Digital</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>Construït amb Quarto</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

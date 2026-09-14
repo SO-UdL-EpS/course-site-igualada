@@ -1,0 +1,511 @@
+[
+  {
+    "objectID": "course-info/contributions/contribute.html",
+    "href": "course-info/contributions/contribute.html",
+    "title": "Contribuir als materials",
+    "section": "",
+    "text": "Els materials d’aquesta assignatura es desenvolupen seguint una filosofia de codi obert (open source): els materials poden ser revisats, millorats, ampliats i corregits amb la participació de la comunitat.\nCom a estudiant, pots formar part d’aquest procés i contribuir directament a la millora dels materials que utilitzaran altres estudiants en el futur.\nAquesta activitat també et permet obtenir fins a 0,5 punts addicionals sobre la qualificació final de l’assignatura.",
+    "crumbs": [
+      "Inici",
+      "Contribueix al curs"
+    ]
+  },
+  {
+    "objectID": "course-info/contributions/contribute.html#una-filosofia-basada-en-lopen-source",
+    "href": "course-info/contributions/contribute.html#una-filosofia-basada-en-lopen-source",
+    "title": "Contribuir als materials",
+    "section": "Una filosofia basada en l’Open Source",
+    "text": "Una filosofia basada en l’Open Source\nEl desenvolupament open source es basa en una idea senzilla: els projectes poden millorar gràcies a la participació de diferents persones.\nEn lloc que una única persona sigui responsable de detectar tots els errors, escriure tot el contingut i mantenir-lo actualitzat, altres persones poden proposar millores.\nEn aquesta activitat aplicaràs el mateix model que s’utilitza en molts projectes de programari:\n\nParteixes d’una còpia del projecte (fork).\nTreballes en una branca independent.\nFas i documentes els teus canvis.\nPuges els canvis al teu repositori.\nProposes incorporar-los al projecte original mitjançant un Pull Request.\nEl responsable del projecte revisa la proposta.\nSi la contribució és adequada, es pot incorporar al projecte principal.\n\nAixò permet experimentar i proposar canvis sense modificar directament el repositori original.\n\n\n\nFlux general de contribució al projecte\n\n\n\n\n\n\n\n\nNoteUna contribució és una proposta, no una imposició\n\n\n\nQuan obres un Pull Request, no estàs modificant directament els materials de l’assignatura.\nEstàs fent una proposta de canvi perquè el responsable del projecte la pugui revisar.\nAquesta és una de les idees fonamentals del desenvolupament open source: els canvis es poden proposar, discutir, revisar i, finalment, acceptar o rebutjar.",
+    "crumbs": [
+      "Inici",
+      "Contribueix al curs"
+    ]
+  },
+  {
+    "objectID": "course-info/contributions/contribute.html#fes-un-fork-del-repositori",
+    "href": "course-info/contributions/contribute.html#fes-un-fork-del-repositori",
+    "title": "Contribuir als materials",
+    "section": "1. Fes un fork del repositori",
+    "text": "1. Fes un fork del repositori\nEl primer pas és crear una còpia del repositori de l’assignatura al teu compte de GitHub.\nAquesta còpia s’anomena fork.\nEl fork et permet treballar sobre el projecte sense tenir permisos d’escriptura sobre el repositori original.\nA la pàgina principal del repositori trobaràs el botó Fork.\n\n\n\nBotó Fork del repositori principal\n\n\nSelecciona el teu compte de GitHub com a propietari del nou repositori.\n\n\n\nCreació del fork\n\n\nUn cop creat, disposaràs d’una còpia del projecte dins del teu compte.\n\n\n\n\n\n\nTipPer què fem un fork?\n\n\n\nEl fork separa el teu espai de treball del projecte original.\nPots experimentar, modificar fitxers i provar idees sense afectar els materials que utilitzen la resta d’estudiants.",
+    "crumbs": [
+      "Inici",
+      "Contribueix al curs"
+    ]
+  },
+  {
+    "objectID": "course-info/contributions/contribute.html#clona-el-teu-fork",
+    "href": "course-info/contributions/contribute.html#clona-el-teu-fork",
+    "title": "Contribuir als materials",
+    "section": "2. Clona el teu fork",
+    "text": "2. Clona el teu fork\nAra has de descarregar el teu fork al teu ordinador.\nDes de GitHub, copia l’URL del teu repositori i executa:\ngit clone URL\nPer exemple:\ngit clone https://github.com/el-teu-usuari/amsa.git\nA continuació, entra al directori del projecte:\ncd amsa\nA partir d’aquest moment treballaràs sobre una còpia local del repositori.\n\n\n\n\n\n\nNote\n\n\n\nTambé és possible fer alguns canvis directament des de la interfície web de GitHub. Tanmateix, si vols treballar de manera habitual amb els materials Quarto, és recomanable tenir el repositori clonat localment.\n\n\n\n\n\n\n\n\nWarningMantén el teu fork actualitzat\n\n\n\nEls materials d’aquesta assignatura canvien sovint. Si treballes durant dies o setmanes sobre el mateix fork, sincronitza’l periòdicament amb el repositori original abans de començar una contribució nova:\ngit remote add upstream URL-del-repositori-original\ngit fetch upstream\ngit merge upstream/main\nFer-ho evita conflictes innecessaris quan obris la Pull Request i redueix el risc que la teva contribució es basi en una versió ja desactualitzada dels materials.",
+    "crumbs": [
+      "Inici",
+      "Contribueix al curs"
+    ]
+  },
+  {
+    "objectID": "course-info/contributions/contribute.html#crea-una-branca-per-al-teu-canvi",
+    "href": "course-info/contributions/contribute.html#crea-una-branca-per-al-teu-canvi",
+    "title": "Contribuir als materials",
+    "section": "3. Crea una branca per al teu canvi",
+    "text": "3. Crea una branca per al teu canvi\nAbans de modificar els fitxers, crea una branca (branch) específica per a la teva contribució.\ngit checkout -b nom-de-la-branca\nPer exemple:\ngit checkout -b millora-exercici-processos\nLa branca permet mantenir el teu canvi separat de la resta del projecte.\n\nRepte — Una branca per a una contribució\nSempre que sigui possible, procura que una branca representi una contribució concreta.\nPer exemple:\ncorreccio-enllac-unitat-2\nés preferible a:\ncanvis\nUn nom descriptiu facilita la revisió i permet entendre ràpidament quin és l’objectiu de la branca.",
+    "crumbs": [
+      "Inici",
+      "Contribueix al curs"
+    ]
+  },
+  {
+    "objectID": "course-info/contributions/contribute.html#fes-els-canvis",
+    "href": "course-info/contributions/contribute.html#fes-els-canvis",
+    "title": "Contribuir als materials",
+    "section": "4. Fes els canvis",
+    "text": "4. Fes els canvis\nAra pots modificar els materials.\nPots:\n\ncrear nous continguts;\nmodificar explicacions;\nafegir exemples;\ncrear exercicis;\ncorregir errates;\nactualitzar informació;\nmillorar la documentació.\n\nSi treballes amb els materials Quarto, pots previsualitzar el resultat localment amb:\nquarto preview\nLa previsualització permet comprovar que els canvis es visualitzen correctament abans d’enviar-los.\nTambé pots editar els fitxers .qmd directament des de GitHub mitjançant l’editor web. Aquesta opció permet crear una branca amb els canvis i iniciar posteriorment el procés de Pull Request.\n\n\n\n\n\n\nWarningRevisa els canvis abans de proposar-los\n\n\n\nAbans d’enviar la contribució, comprova que:\n\nel contingut és correcte;\nels exemples funcionen;\nno has introduït errates;\nels enllaços funcionen;\nel format es visualitza correctament (fes quarto preview, no només una lectura del .qmd);\nsi has afegit un bloc de tipus ::: {.classe}, la classe existeix realment a la llista de components admesos — una classe inventada es renderitza sense estil, sense avisar-te de l’error;\nno has pujat fitxers generats en renderitzar (.aux, .log, carpetes _files/, PDFs o HTML exportats) que no formen part del codi font;\nel canvi no modifica accidentalment altres parts dels materials.",
+    "crumbs": [
+      "Inici",
+      "Contribueix al curs"
+    ]
+  },
+  {
+    "objectID": "course-info/contributions/contribute.html#fes-commit-dels-canvis",
+    "href": "course-info/contributions/contribute.html#fes-commit-dels-canvis",
+    "title": "Contribuir als materials",
+    "section": "5. Fes commit dels canvis",
+    "text": "5. Fes commit dels canvis\nQuan els canvis estiguin preparats, registra’ls amb un commit.\ngit add .\nI després:\ngit commit -m \"Descripció clara dels canvis\"\nPer exemple:\ngit commit -m \"Millora l'exemple de processos\"\nUn bon missatge de commit ha de permetre entendre què s’ha modificat.\nEvita missatges poc informatius com:\ncanvis\no:\ncoses",
+    "crumbs": [
+      "Inici",
+      "Contribueix al curs"
+    ]
+  },
+  {
+    "objectID": "course-info/contributions/contribute.html#puja-la-branca-al-teu-github",
+    "href": "course-info/contributions/contribute.html#puja-la-branca-al-teu-github",
+    "title": "Contribuir als materials",
+    "section": "6. Puja la branca al teu GitHub",
+    "text": "6. Puja la branca al teu GitHub\nAra has de publicar la branca al teu fork:\ngit push origin nom-de-la-branca\nPer exemple:\ngit push origin millora-exercici-processos\nLa branca i els seus commits quedaran disponibles al teu repositori de GitHub.",
+    "crumbs": [
+      "Inici",
+      "Contribueix al curs"
+    ]
+  },
+  {
+    "objectID": "course-info/contributions/contribute.html#obre-un-pull-request",
+    "href": "course-info/contributions/contribute.html#obre-un-pull-request",
+    "title": "Contribuir als materials",
+    "section": "7. Obre un Pull Request",
+    "text": "7. Obre un Pull Request\nAquest és el pas més important del procés.\nUn Pull Request (PR) és una proposta perquè els canvis que has fet al teu fork siguin incorporats al repositori original.\nDes del teu repositori, selecciona la branca on has fet els canvis i inicia un nou Pull Request.\n\n\n\nSelecciona la branca i obre un Pull Request\n\n\nTambé pots seleccionar directament la branca amb els teus canvis i iniciar el Pull Request des de la interfície de GitHub.\n\n\n\nVia alternativa: iniciar el Pull Request des del banner de la branca",
+    "crumbs": [
+      "Inici",
+      "Contribueix al curs"
+    ]
+  },
+  {
+    "objectID": "course-info/contributions/contribute.html#revisa-lorigen-i-el-destí-dels-canvis",
+    "href": "course-info/contributions/contribute.html#revisa-lorigen-i-el-destí-dels-canvis",
+    "title": "Contribuir als materials",
+    "section": "8. Revisa l’origen i el destí dels canvis",
+    "text": "8. Revisa l’origen i el destí dels canvis\nGitHub mostrarà una comparació entre:\n\nel repositori principal, on vols incorporar els canvis;\nel teu fork, on has desenvolupat la modificació;\nla branca que conté els teus canvis.\n\nComprova especialment que la direcció sigui correcta.\nEn aquest cas:\nRepositori principal\n    ↓\nBranca amb la teva contribució\nGitHub també et mostrarà si els canvis es poden integrar automàticament.\n\n\n\nPantalla de comparació de canvis\n\n\nSi tot és correcte, fes clic a Create pull request.",
+    "crumbs": [
+      "Inici",
+      "Contribueix al curs"
+    ]
+  },
+  {
+    "objectID": "course-info/contributions/contribute.html#explica-bé-la-teva-contribució",
+    "href": "course-info/contributions/contribute.html#explica-bé-la-teva-contribució",
+    "title": "Contribuir als materials",
+    "section": "9. Explica bé la teva contribució",
+    "text": "9. Explica bé la teva contribució\nUn Pull Request no hauria de limitar-se a dir:\n\n“He fet alguns canvis.”\n\nLa descripció ha d’ajudar el professorat a entendre què has fet, per què ho has fet i quin valor aporta.\nUna bona descripció pot seguir aquesta estructura:\nQuè he canviat? Explica breument quins fitxers o materials has modificat.\nPer què ho he canviat? Explica quin problema has detectat o quina necessitat resol el canvi.\nQuin valor aporta? Explica com millora el material per als estudiants.\nCom ho he comprovat? Si és aplicable, explica quines proves has fet o com has verificat que el canvi funciona.\n\nRepte — Exemple de bona descripció\nMillora de l’exemple de processos de la Unitat 2\nHe actualitzat l’exemple perquè utilitzava una comanda que ja no correspon amb la versió actual de Debian.\nHe substituït l’exemple per una alternativa compatible i he actualitzat l’explicació associada.\nHe comprovat el procediment en una màquina virtual amb Debian i he verificat que les comandes funcionen correctament.",
+    "crumbs": [
+      "Inici",
+      "Contribueix al curs"
+    ]
+  },
+  {
+    "objectID": "course-info/contributions/contribute.html#què-passa-després-del-pull-request",
+    "href": "course-info/contributions/contribute.html#què-passa-després-del-pull-request",
+    "title": "Contribuir als materials",
+    "section": "Què passa després del Pull Request?",
+    "text": "Què passa després del Pull Request?\nQuan envies una PR, el professorat revisarà la proposta.\nLa revisió pot incloure:\n\ncorrecció tècnica;\nqualitat del contingut;\nclaredat de l’explicació;\nutilitat pedagògica;\ncoherència amb la resta dels materials;\nqualitat de la documentació;\npossibles efectes sobre altres parts del projecte.\n\nEl professorat pot:\n\nacceptar la contribució;\ndemanar modificacions abans d’acceptar-la;\ncomentar o discutir alguns aspectes;\nrebutjar-la si no és adequada o no aporta prou valor.\n\nAixò forma part del funcionament normal d’un projecte open source.\n\n\n\n\n\n\nNoteUna PR oberta no significa que el canvi s’hagi acceptat\n\n\n\nEl Pull Request és el mecanisme de revisió i proposta.\nLa incorporació definitiva del canvi depèn de la revisió del projecte.",
+    "crumbs": [
+      "Inici",
+      "Contribueix al curs"
+    ]
+  },
+  {
+    "objectID": "course-info/contributions/contribute.html#com-savalua-la-contribució",
+    "href": "course-info/contributions/contribute.html#com-savalua-la-contribució",
+    "title": "Contribuir als materials",
+    "section": "Com s’avalua la contribució?",
+    "text": "Com s’avalua la contribució?\nPots obtenir fins a 0,5 punts addicionals sobre la nota final.\nLa puntuació no depèn simplement del nombre de Pull Requests que enviïs. Es valorarà principalment la qualitat i l’impacte de la contribució.\nEntre altres aspectes, es tindrà en compte:\n\n\n\nAspecte\nQuè es valora\n\n\n\n\nRellevància\nEl canvi resol un problema o necessitat real?\n\n\nQualitat\nEl contingut és correcte, clar i ben elaborat?\n\n\nImpacte\nLa millora pot ser útil per a altres estudiants?\n\n\nRigor\nLa informació i els exemples són tècnicament correctes?\n\n\nDocumentació\nEl canvi està prou explicat i justificat?\n\n\nIntegració\nÉs coherent amb l’estructura i l’estil dels materials?\n\n\n\n\nError Comú — No totes les contribucions puntuen\nEnviar un Pull Request no garanteix l’obtenció del bonus.\nNomés es valoraran les contribucions que siguin acceptades pel professorat i que aportin un valor suficient als materials.\nUna modificació purament cosmètica, arbitrària o innecessària pot no ser considerada una contribució avaluable.\n\n\n\nContribueix com si el projecte fos teu\nAbans d’obrir una PR, pregunta’t:\n\nSi un altre estudiant hagués de fer servir aquest material demà, aquesta modificació realment li seria útil?\n\nSi la resposta és sí, probablement tens una bona contribució.",
+    "crumbs": [
+      "Inici",
+      "Contribueix al curs"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Sistemes Operatius",
+    "section": "",
+    "text": "Aquesta assignatura proporciona els coneixements necessaris per comprendre el funcionament intern dels sistemes operatius, amb Linux com a plataforma de referència."
+  },
+  {
+    "objectID": "index.html#professorat",
+    "href": "index.html#professorat",
+    "title": "Sistemes Operatius",
+    "section": "Professorat",
+    "text": "Professorat\n\nJordi Mateo mailto:jordi.mateo@udl.cat"
+  },
+  {
+    "objectID": "course-info/presentation-slides.html#qui-soc",
+    "href": "course-info/presentation-slides.html#qui-soc",
+    "title": "Presentació del curs",
+    "section": "Qui soc?",
+    "text": "Qui soc?\n\nEnginyer i Doctor en Informàtica per la UdL.\n\nDocència\n\nProfessor agregat a la UdL des de 2019.\nSistemes Operatius (GTIDIC, GEI).\nAdministració de Sistemes (GTIDIC, GEI).\nDesenvolupament d’Aplicacions per a dispositius mòbils (GTIDIC).\nCloud Computing (Master in Health Data Science).\nHigh Performance Computing (Màster en Enginyeria Informàtica).",
+    "crumbs": [
+      "Inici",
+      "Presentació del curs"
+    ]
+  },
+  {
+    "objectID": "course-info/presentation-slides.html#qui-soc-1",
+    "href": "course-info/presentation-slides.html#qui-soc-1",
+    "title": "Presentació del curs",
+    "section": "Qui soc?",
+    "text": "Qui soc?\nRecerca\n\nMembre del grup de recerca Grup de computació distribuïda des de 2012 (Universitat de Lleida).\nMembre del grup de recerca Essence: Data Engineering & Distributed Computing Systems des de 2022 (Universitat de Glasgow).\nComputació distribuïda: Cloud, Edge i Fog Computing.\nCamps d’aplicació: Salut electrònica i Energia.",
+    "crumbs": [
+      "Inici",
+      "Presentació del curs"
+    ]
+  },
+  {
+    "objectID": "course-info/presentation-slides.html#qui-sou",
+    "href": "course-info/presentation-slides.html#qui-sou",
+    "title": "Presentació del curs",
+    "section": "Qui sou?",
+    "text": "Qui sou?\nPresenteu-vos breument amb\n\nNom i cognoms\nQuè espereu aprendre en aquest curs\nExperència prèvia amb Linux/Unix i programació en C",
+    "crumbs": [
+      "Inici",
+      "Presentació del curs"
+    ]
+  },
+  {
+    "objectID": "course-info/presentation-slides.html#presentació",
+    "href": "course-info/presentation-slides.html#presentació",
+    "title": "Presentació del curs",
+    "section": "Presentació",
+    "text": "Presentació\nBenvinguts a Sistemes Operatius\nchar text[] = \"Aquesta NO és una assignatura\\n\\\n      centrada en la programació\\n\\\n      PERÒ programarem MOLT!\\n\";\nssize_t bytes = write(1, text, sizeof(text) - 1);\n\nSessions han de ser interactives i participatives.\nPregunteu, interrompeu-me, plantegeu dubtes i comentaris en qualsevol moment.\n\n\ntext=\"Aquesta assignatura NO és un MONÒLEG.\" \necho $text",
+    "crumbs": [
+      "Inici",
+      "Presentació del curs"
+    ]
+  },
+  {
+    "objectID": "course-info/presentation-slides.html#requisits-previs",
+    "href": "course-info/presentation-slides.html#requisits-previs",
+    "title": "Presentació del curs",
+    "section": "Requisits previs",
+    "text": "Requisits previs\n\nEstructura de computadors I.\nProgramació I.\nProgramació II.",
+    "crumbs": [
+      "Inici",
+      "Presentació del curs"
+    ]
+  },
+  {
+    "objectID": "course-info/presentation-slides.html#per-què-estudiar-sistemes-operatius",
+    "href": "course-info/presentation-slides.html#per-què-estudiar-sistemes-operatius",
+    "title": "Presentació del curs",
+    "section": "Per què estudiar Sistemes Operatius?",
+    "text": "Per què estudiar Sistemes Operatius?\nQuè passa realment quan executeu…?\n./programa\n\n./programa és un executable\nEs carrega a memòria\nSe li assignen recursos\nEs converteix en un procés.\n\n\nQui gestiona tot això?\n\nEl sistema operatiu",
+    "crumbs": [
+      "Inici",
+      "Presentació del curs"
+    ]
+  },
+  {
+    "objectID": "course-info/presentation-slides.html#objectius-globals",
+    "href": "course-info/presentation-slides.html#objectius-globals",
+    "title": "Presentació del curs",
+    "section": "Objectius (Globals)",
+    "text": "Objectius (Globals)\n\nEntendre els Sistemes Operatius: Com estan dissenyats i quins components (o mòduls) els formen.\nConeixer els seus serveis: Quines funcions proporcionen a usuaris i aplicacions.\nAprendre a programar amb ells: Com utilitzar els serveis del sistema operatiu per crear aplicacions de manera eficient, tant en espai d’usuari com de nucli.\nAvaluar críticament les seves polítiques: Analitzar com el sistema operatiu gestiona els seus recursos (CPU, memòria) i comparar diferents mètodes per fer-ho.",
+    "crumbs": [
+      "Inici",
+      "Presentació del curs"
+    ]
+  },
+  {
+    "objectID": "course-info/presentation-slides.html#objectius-específics",
+    "href": "course-info/presentation-slides.html#objectius-específics",
+    "title": "Presentació del curs",
+    "section": "Objectius (Específics)",
+    "text": "Objectius (Específics)\n\nConèixer els sistemes operatius Unix/Linux (en concret Debian).\nInterioritzar les bases de programació C per millorar les vostres habilitats en altres llenguatges.\nDesenvolupar programari a nivell de sistema en C, tant en espai d’usuari com en espai de nucli, comprenent al mateix temps com funcionen els Sistemes Operatius basats en Unix.",
+    "crumbs": [
+      "Inici",
+      "Presentació del curs"
+    ]
+  },
+  {
+    "objectID": "course-info/presentation-slides.html#metodologia",
+    "href": "course-info/presentation-slides.html#metodologia",
+    "title": "Presentació del curs",
+    "section": "Metodologia",
+    "text": "Metodologia\n\n\nSessions de teoria\n\nConceptes fonamentals de cada unitat, exemples pràctics i casos reals.\nLes sessions tenen un caràcter participatiu i preparen per a les activitats pràctiques i les proves competencials.\n4h/setmana: dilluns 2h + dimarts 1h + dimecres 1h, tots els grups junts.\n\n\nPralabs\n\nActivitats Hands-On, CodeLabs i projectes guiats.\nTreball individual o en petits grups.\n2h/setmana per grup de laboratori, mateix contingut per als dos grups.\n\n\nTreball autònom\n\nActivitats i reptes proposats.\nPreparació de les proves competencials.\nLectura de documentació tècnica.\nVisualització dels materials proporcionats.",
+    "crumbs": [
+      "Inici",
+      "Presentació del curs"
+    ]
+  },
+  {
+    "objectID": "course-info/presentation-slides.html#bloc-1-desenvolupament-de-programari-en-espai-dusuari",
+    "href": "course-info/presentation-slides.html#bloc-1-desenvolupament-de-programari-en-espai-dusuari",
+    "title": "Presentació del curs",
+    "section": "Bloc 1 · Desenvolupament de Programari en Espai d’Usuari",
+    "text": "Bloc 1 · Desenvolupament de Programari en Espai d’Usuari\nAplicació de les tècniques de programació de sistemes en llenguatge C, construcció de programari, ús de la interfície POSIX, gestió de memòria i eines de depuració i anàlisi.\n\nArquitectura i funcionament dels sistemes operatius.\nEspai d’usuari i espai de nucli.\nProgramació de sistemes en llenguatge C.\nConstrucció de programari i entorn de desenvolupament.\nInterfície POSIX i crides a sistema.\nGestió de memòria en programes C.\nDepuració, anàlisi i estructura dels executables Linux.",
+    "crumbs": [
+      "Inici",
+      "Presentació del curs"
+    ]
+  },
+  {
+    "objectID": "course-info/presentation-slides.html#bloc-2-execució-i-comunicació-de-processos",
+    "href": "course-info/presentation-slides.html#bloc-2-execució-i-comunicació-de-processos",
+    "title": "Presentació del curs",
+    "section": "Bloc 2 · Execució i Comunicació de Processos",
+    "text": "Bloc 2 · Execució i Comunicació de Processos\nDesenvolupament d’aplicacions basades en processos, utilitzant els mecanismes de creació, execució, comunicació i control disponibles en sistemes Linux.\n\nModel d’execució de processos.\nCreació, gestió i control de processos.\nComunicació i sincronització bàsica entre processos.\nSenyals i mecanismes de control.\nGestió de processos en sistemes Linux.",
+    "crumbs": [
+      "Inici",
+      "Presentació del curs"
+    ]
+  },
+  {
+    "objectID": "course-info/presentation-slides.html#bloc-3-planificació-i-coordinació-de-recursos",
+    "href": "course-info/presentation-slides.html#bloc-3-planificació-i-coordinació-de-recursos",
+    "title": "Presentació del curs",
+    "section": "Bloc 3 · Planificació i Coordinació de Recursos",
+    "text": "Bloc 3 · Planificació i Coordinació de Recursos\nImplementació i anàlisi de mecanismes de planificació del processador, així com estudi experimental de situacions d’interbloqueig i de les seves estratègies de resolució.\n\nObjectius i criteris de planificació.\nAlgorismes de planificació del processador.\nPlanificació en sistemes Linux.\nInterbloqueig: prevenció, detecció i recuperació.",
+    "crumbs": [
+      "Inici",
+      "Presentació del curs"
+    ]
+  },
+  {
+    "objectID": "course-info/presentation-slides.html#bloc-4-gestió-de-memòria-i-memòria-virtual",
+    "href": "course-info/presentation-slides.html#bloc-4-gestió-de-memòria-i-memòria-virtual",
+    "title": "Presentació del curs",
+    "section": "Bloc 4 · Gestió de Memòria i Memòria Virtual",
+    "text": "Bloc 4 · Gestió de Memòria i Memòria Virtual\nDesenvolupament de components relacionats amb la gestió de memòria i experimentació amb els mecanismes de memòria virtual proporcionats pel sistema operatiu.\n\nOrganització i gestió de la memòria.\nTècniques d’assignació i protecció.\nMemòria virtual i paginació sota demanda.\nAlgorismes de reemplaçament i assignació de marcs.\nOptimització del rendiment de la memòria.",
+    "crumbs": [
+      "Inici",
+      "Presentació del curs"
+    ]
+  },
+  {
+    "objectID": "course-info/presentation-slides.html#bloc-5-desenvolupament-de-programari-del-nucli-linux",
+    "href": "course-info/presentation-slides.html#bloc-5-desenvolupament-de-programari-del-nucli-linux",
+    "title": "Presentació del curs",
+    "section": "Bloc 5 · Desenvolupament de Programari del Nucli Linux",
+    "text": "Bloc 5 · Desenvolupament de Programari del Nucli Linux\nDesenvolupament i modificació de components del nucli Linux, utilitzant mecanismes bàsics d’extensió, instrumentació i anàlisi del sistema.\n\nArquitectura del nucli Linux.\nDesenvolupament de programari en espai de nucli.\nMòduls i mecanismes d’extensió del nucli.\nInstrumentació i anàlisi del nucli Linux.\nTendències actuals en sistemes operatius.",
+    "crumbs": [
+      "Inici",
+      "Presentació del curs"
+    ]
+  },
+  {
+    "objectID": "course-info/presentation-slides.html#criteris-davaluació",
+    "href": "course-info/presentation-slides.html#criteris-davaluació",
+    "title": "Presentació del curs",
+    "section": "Criteris d’Avaluació",
+    "text": "Criteris d’Avaluació\n\n\n\n\n\n\n\n\n\n\nBloc\nActivitat d’avaluació\nAcrònim\nPonderació\nRecuperable\n\n\n\n\nTeòric 1\nExamen Escrit Teòric 1\nT1\n25%\nSí\n\n\nTeòric 2\nExamen Escrit Teòric 2\nT2\n25%\nSí\n\n\nPràctic 1\nExamen Competencial Pràctic 1\nP1\n15%\nNo\n\n\nPràctic 2\nExamen Competencial Pràctic 2\nP2\n15%\nNo\n\n\nPràctic 3\nExamen Competencial Pràctic 3\nP3\n10%\nNo\n\n\nPràctic 4\nExamen Competencial Pràctic 4\nP4\n10%\nNo\n\n\nBonus\nContribucions als materials oberts\nB\n+0,5 punts\nNo\n\n\n\n\nPer superar l’assignatura cal obtenir una nota final igual o superior a 5,0.\nNo s’estableix cap nota mínima en cap activitat d’avaluació.\nTotes les activitats d’avaluació són individuals.",
+    "crumbs": [
+      "Inici",
+      "Presentació del curs"
+    ]
+  },
+  {
+    "objectID": "course-info/presentation-slides.html#càlcul-de-la-nota-final",
+    "href": "course-info/presentation-slides.html#càlcul-de-la-nota-final",
+    "title": "Presentació del curs",
+    "section": "Càlcul de la nota final",
+    "text": "Càlcul de la nota final\n\\[\nNF =\n\\min(\n0.25T1 + 0.25T2 +\n0.15P1 + 0.15P2 + 0.1P3 +\n0.1P4 +\nB,\\ 10\n)\n\\]\non:\n\nB és el bonus per contribucions als materials docents.\n0 ≤ B ≤ 0,5.\nLa nota final no pot superar els 10 punts.\n\n\nAbans de cada activitat d’avaluació es publicaran els criteris de correcció i els aspectes objecte d’avaluació.",
+    "crumbs": [
+      "Inici",
+      "Presentació del curs"
+    ]
+  },
+  {
+    "objectID": "course-info/presentation-slides.html#exàmens-teòrics",
+    "href": "course-info/presentation-slides.html#exàmens-teòrics",
+    "title": "Presentació del curs",
+    "section": "Exàmens teòrics",
+    "text": "Exàmens teòrics\nEls exàmens teòrics T1 i T2 són proves escrites que avaluen els coneixements teòrics i pràctics adquirits durant el curs. Són individuals i presencials, en les dates establertes al calendari acadèmic.\n\nNo es permet\n\ntelèfons mòbils,\nordinadors portàtils,\ntauletes,\nrellotges,\ncalculadores.\n\n\n\nEs permet\n\nEs permet un únic full DIN A4, escrit exclusivament a mà pel mateix estudiant, per les dues cares.\nNo s’admeten documents impresos, fotocòpies, reproduccions mecàniques ni materials elaborats per terceres persones.\nEl full d’apunts s’ha d’entregar amb l’examen.",
+    "crumbs": [
+      "Inici",
+      "Presentació del curs"
+    ]
+  },
+  {
+    "objectID": "course-info/presentation-slides.html#recuperació-dels-exàmens-teòrics",
+    "href": "course-info/presentation-slides.html#recuperació-dels-exàmens-teòrics",
+    "title": "Presentació del curs",
+    "section": "Recuperació dels exàmens teòrics",
+    "text": "Recuperació dels exàmens teòrics\n\nT1 i T2 són recuperables.\nLa recuperació es realitza durant la setmana de recuperació.\nCada prova de recuperació inclou únicament els continguts de l’examen teòric corresponent.\nLa qualificació obtinguda substitueix íntegrament la nota original.\nEs pot recuperar un o tots dos exàmens teòrics.\nCada examen recuperat es realitza mitjançant una prova independent.",
+    "crumbs": [
+      "Inici",
+      "Presentació del curs"
+    ]
+  },
+  {
+    "objectID": "course-info/presentation-slides.html#exàmens-competencials-pràctics",
+    "href": "course-info/presentation-slides.html#exàmens-competencials-pràctics",
+    "title": "Presentació del curs",
+    "section": "Exàmens competencials pràctics",
+    "text": "Exàmens competencials pràctics\n\n\nEls exàmens competencials pràctics P1–P4:\n\nSón individuals i presencials.\nEs realitzen durant les sessions de pralab indicades al pla docent.\nEs duen a terme als laboratoris del centre.\nS’utilitzen els equips de l’aula.\n\n\n\nEs realitzen sense accés a Internet ni a recursos externs, excepte els que el professorat autoritzi expressament.\nConsisteixen en la resolució de tasques pràctiques en un entorn controlat.\nS’utilitzen les eines i la documentació disponibles als equips del laboratori.\nNo són recuperables.",
+    "crumbs": [
+      "Inici",
+      "Presentació del curs"
+    ]
+  },
+  {
+    "objectID": "course-info/presentation-slides.html#bonus-contribucions-als-materials",
+    "href": "course-info/presentation-slides.html#bonus-contribucions-als-materials",
+    "title": "Presentació del curs",
+    "section": "Bonus — Contribucions als materials",
+    "text": "Bonus — Contribucions als materials\n\nLliurament — Fins a 0,5 punts addicionals\n\n\nEs poden fer contribucions com:\n\nCreació de contingut nou.\nMillora de la documentació existent.\nRevisió i correcció de materials.\n\n\nCondicions:\n\nS’han de documentar i presentar mitjançant pull requests al repositori de l’assignatura.\nHan de ser rellevants, significatives i aportar valor afegit.\nHan de ser acceptades pel professorat.\nLa puntuació depèn de la qualitat i l’impacte de la contribució.",
+    "crumbs": [
+      "Inici",
+      "Presentació del curs"
+    ]
+  },
+  {
+    "objectID": "course-info/presentation-slides.html#assistència-i-activitats-davaluació",
+    "href": "course-info/presentation-slides.html#assistència-i-activitats-davaluació",
+    "title": "Presentació del curs",
+    "section": "Assistència i activitats d’avaluació",
+    "text": "Assistència i activitats d’avaluació\n\n\nAssistència\n\nL’assistència a les classes de teoria i a les sessions de laboratori no és obligatòria.\nEs recomana assistir-hi per facilitar el seguiment de l’assignatura i la preparació de les activitats d’avaluació.\n\n\nDates\n\n\n\nActivitat d’avaluació\nData G1\nData G2\n\n\n\n\nExamen Competencial Pràctic 1\n29/09/2026\n30/09/2026\n\n\nExamen Competencial Pràctic 2\n20/10/2026\n21/10/2026\n\n\nExamen Competencial Pràctic 3\n17/11/2026\n18/11/2026\n\n\nExamen Competencial Pràctic 4\n22/12/2026\n23/12/2026\n\n\n\n\n\nCanvi de data\n\nNomés es podrà autoritzar un canvi de data per les causes justificades previstes a la normativa d’avaluació de la UdL.\nLa sol·licitud haurà d’estar degudament documentada i tramitar-se d’acord amb el procediment establert per la Universitat de Lleida.\nLa no assistència a una activitat d’avaluació comportarà un 0, excepte si s’ha autoritzat prèviament un canvi de data.",
+    "crumbs": [
+      "Inici",
+      "Presentació del curs"
+    ]
+  },
+  {
+    "objectID": "course-info/presentation-slides.html#ús-de-la-intelligència-artificial-generativa",
+    "href": "course-info/presentation-slides.html#ús-de-la-intelligència-artificial-generativa",
+    "title": "Presentació del curs",
+    "section": "Ús de la Intel·ligència Artificial Generativa",
+    "text": "Ús de la Intel·ligència Artificial Generativa\nLes eines d’IAG poden utilitzar-se com a recurs de suport per:\n\nObtenir explicacions sobre conceptes teòrics.\nExplorar diferents estratègies de resolució.\nGenerar exemples o fragments de codi amb finalitats d’aprenentatge.\nIdentificar errors i obtenir suggeriments de millora.\nDonar suport a la documentació dels projectes.\n\n\n\nEn tots els casos, l’estudiant és responsable de comprendre, validar i adaptar les respostes proporcionades. Quan una activitat permeti l’ús d’IAG, cal declarar explícitament les parts afectades i els prompts utilitzats.",
+    "crumbs": [
+      "Inici",
+      "Presentació del curs"
+    ]
+  },
+  {
+    "objectID": "course-info/presentation-slides.html#ús-de-la-iag-no-està-permès",
+    "href": "course-info/presentation-slides.html#ús-de-la-iag-no-està-permès",
+    "title": "Presentació del curs",
+    "section": "Ús de la IAG — No està permès",
+    "text": "Ús de la IAG — No està permès\n\nPresentar com a propi codi generat íntegrament per una eina d’IAG.\nUtilitzar respostes generades automàticament sense comprendre’n el funcionament.\nUtilitzar IAG durant una activitat d’avaluació quan el seu ús no estigui expressament autoritzat.\n\n\n\nL’ús indegut de les eines d’IAG es considerarà una forma de frau acadèmic.",
+    "crumbs": [
+      "Inici",
+      "Presentació del curs"
+    ]
+  },
+  {
+    "objectID": "course-info/presentation-slides.html#revisió-de-les-activitats-davaluació",
+    "href": "course-info/presentation-slides.html#revisió-de-les-activitats-davaluació",
+    "title": "Presentació del curs",
+    "section": "Revisió de les activitats d’avaluació",
+    "text": "Revisió de les activitats d’avaluació\n\nL’estudiant té dret a sol·licitar la revisió de qualsevol activitat d’avaluació d’acord amb la normativa de la Universitat de Lleida.\nLa qualificació podrà modificar-se a l’alça o a la baixa si es detecten errades en la correcció o en l’aplicació dels criteris d’avaluació.\nSi es detecten indicis compatibles amb una possible situació de frau acadèmic, el professorat podrà convocar una revisió individual per verificar:\n\nLa comprensió dels continguts.\nLa correcta aplicació dels procediments.\nL’autoria de les respostes.",
+    "crumbs": [
+      "Inici",
+      "Presentació del curs"
+    ]
+  },
+  {
+    "objectID": "course-info/presentation-slides.html#frau-acadèmic",
+    "href": "course-info/presentation-slides.html#frau-acadèmic",
+    "title": "Presentació del curs",
+    "section": "Frau acadèmic",
+    "text": "Frau acadèmic\nEs considera frau acadèmic, entre d’altres:\n\ncòpia,\nplagi,\nsuplantació d’identitat,\nmanipulació o falsificació de resultats,\ncomunicació no autoritzada entre estudiants durant una prova,\nconsulta o utilització de material no autoritzat,\nús d’IAG o d’altres recursos tecnològics quan no estiguin expressament permesos.\n\n\n\nQualsevol incompliment serà tractat d’acord amb la normativa vigent de la Universitat de Lleida.",
+    "crumbs": [
+      "Inici",
+      "Presentació del curs"
+    ]
+  },
+  {
+    "objectID": "course-info/presentation-slides.html#eines-necessàries",
+    "href": "course-info/presentation-slides.html#eines-necessàries",
+    "title": "Presentació del curs",
+    "section": "Eines necessàries",
+    "text": "Eines necessàries\n\nSistema operatiu base: Debian (Linux).\nVirtualització: QEMU (recomanat és l’eina amb la que es faran els examens competencials).\n\nVMWare i VirtualBox també són vàlids per treballar-hi a casa.",
+    "crumbs": [
+      "Inici",
+      "Presentació del curs"
+    ]
+  },
+  {
+    "objectID": "course-info/presentation-slides.html#programari-necessari",
+    "href": "course-info/presentation-slides.html#programari-necessari",
+    "title": "Presentació del curs",
+    "section": "Programari necessari",
+    "text": "Programari necessari\nLlenguatges de programació i compiladors\n\nC\nGCC\n\nEines de control de versions\n\nGit\nGithub\n\nEditor / IDE\n\nNeoVim: Els examens competencials es fan en terminal amb editor de text.\nVisual Studio Code: alternativa vàlida per qui prefereixi un IDE més complet.",
+    "crumbs": [
+      "Inici",
+      "Presentació del curs"
+    ]
+  },
+  {
+    "objectID": "course-info/presentation-slides.html#bones-pràctiques",
+    "href": "course-info/presentation-slides.html#bones-pràctiques",
+    "title": "Presentació del curs",
+    "section": "Bones pràctiques",
+    "text": "Bones pràctiques\n\nDRY (Do not repeat yourself).\nCodi fàcil de reutilitzar.\nTesteja aviat, testeja sovint, testeja de forma automàtica.\nNo assumeixis res, prova-ho.\nUtilitza assertions per prevenir l’impossible.\nUtilitza excepcions per problemes excepcionals.\nEstima l’ordre de complexitat dels teus algorismes.\nUtilitza patrons de disseny.\nUtilitza eines de control de versions.",
+    "crumbs": [
+      "Inici",
+      "Presentació del curs"
+    ]
+  },
+  {
+    "objectID": "course-info/presentation-slides.html#materials-i-recursos",
+    "href": "course-info/presentation-slides.html#materials-i-recursos",
+    "title": "Presentació del curs",
+    "section": "Materials i recursos",
+    "text": "Materials i recursos\n\nApunts de l’assignatura i materials proporcionats pel professor.\nDocumentació oficial de les eines i tecnologies utilitzades.\nManuals de Linux.\nDocumentació tècnica oficial.\nExemples treballats a classe.\n\nBibliografia de referència\n\nAndrew S. Tanenbaum. Modern Operating Systems, 5a ed., Pearson, 2023.\nGreg Kroah-Hartman. Linux Kernel in a Nutshell, O’Reilly.\n\n\nBibliografia completa a la guia docent de l’assignatura.",
+    "crumbs": [
+      "Inici",
+      "Presentació del curs"
+    ]
+  },
+  {
+    "objectID": "course-info/presentation-slides.html#tutoria-i-contacte",
+    "href": "course-info/presentation-slides.html#tutoria-i-contacte",
+    "title": "Presentació del curs",
+    "section": "Tutoria i contacte",
+    "text": "Tutoria i contacte\nPer qualsevol dubte, consulta o incidència relacionada amb l’assignatura, podeu contactar amb el professorat a través del correu electrònic: jordi.mateo@udl.cat. Al correu, indiqueu a l’assumpte Sistemes Operatius (SO) - [Tema/Bloc] - [Breu descripció del dubte].\n\nError Comú — Atenció\nEl professorat es reserva el dret de no respondre correus electrònics que no compleixin amb aquest format o que no siguin clars i concisos.",
+    "crumbs": [
+      "Inici",
+      "Presentació del curs"
+    ]
+  },
+  {
+    "objectID": "course-info/presentation-slides.html#exemple-de-codi-en-c",
+    "href": "course-info/presentation-slides.html#exemple-de-codi-en-c",
+    "title": "Presentació del curs",
+    "section": "Exemple de codi en C",
+    "text": "Exemple de codi en C\n\n\n//hola.c\n#include &lt;stdio.h&gt;\n\nint main()\n{\n    printf(\"Hola, món!\\n\");\n    return 0;\n}\n\ncat hola.c\ngcc hola.c -o hola\n./hola\n\nstrace ./hola\n\n\nResultat d'Aprenentatge\nPrograma en C \\(\\Rightarrow\\) Compilació i enllaçat \\(\\Rightarrow\\) Executable \\(\\Rightarrow\\) Biblioteques (libc) \\(\\Rightarrow\\) Crides al sistema \\(\\Rightarrow\\) Kernel Linux \\(\\Rightarrow\\) Maquinari",
+    "crumbs": [
+      "Inici",
+      "Presentació del curs"
+    ]
+  },
+  {
+    "objectID": "course-info/presentation-slides.html#començem",
+    "href": "course-info/presentation-slides.html#començem",
+    "title": "Presentació del curs",
+    "section": "Començem",
+    "text": "Començem\nuname -a\nwhoami\ngcc --version\nlsb_release -a\ngit --version",
+    "crumbs": [
+      "Inici",
+      "Presentació del curs"
+    ]
+  }
+]
