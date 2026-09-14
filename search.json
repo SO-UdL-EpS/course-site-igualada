@@ -491,7 +491,7 @@
     "href": "course-info/presentation-slides.html#exemple-de-codi-en-c",
     "title": "Presentació del curs",
     "section": "Exemple de codi en C",
-    "text": "Exemple de codi en C\n\n\n//hola.c\n#include &lt;stdio.h&gt;\n\nint main()\n{\n    printf(\"Hola, món!\\n\");\n    return 0;\n}\n\ncat hola.c\ngcc hola.c -o hola\n./hola\n\nstrace ./hola\n\n\nResultat d'Aprenentatge\nPrograma en C \\(\\Rightarrow\\) Compilació i enllaçat \\(\\Rightarrow\\) Executable \\(\\Rightarrow\\) Biblioteques (libc) \\(\\Rightarrow\\) Crides al sistema \\(\\Rightarrow\\) Kernel Linux \\(\\Rightarrow\\) Maquinari",
+    "text": "Exemple de codi en C\n\n\n//hola.c\n#include &lt;stdio.h&gt;\n\nint main()\n{\n    printf(\"Hola, món!\\n\");\n    return 0;\n}\n\ncat hola.c\ngcc hola.c -o hola\n./hola\n\nstrace ./hola\n\nResultat d'Aprenentatge\nPrograma en C \\(\\Rightarrow\\) Compilació i enllaçat \\(\\Rightarrow\\) Executable \\(\\Rightarrow\\) Biblioteques (libc) \\(\\Rightarrow\\) Crides al sistema \\(\\Rightarrow\\) Kernel Linux \\(\\Rightarrow\\) Maquinari",
     "crumbs": [
       "Inici",
       "Presentació del curs"

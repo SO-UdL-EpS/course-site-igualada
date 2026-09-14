@@ -194,6 +194,8 @@
       margin-right: 0; 
     }
   </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/asciinema-player@3.9.0/dist/bundle/asciinema-player.css">
+  <script src="https://cdn.jsdelivr.net/npm/asciinema-player@3.9.0/dist/bundle/asciinema-player.min.js"></script>
 </head>
 <body class="quarto-light">
   <div class="reveal">
@@ -779,7 +781,7 @@ B,\ 10
 <section id="exemple-de-codi-en-c" class="slide level2">
 <h2>Exemple de codi en C</h2>
 <div class="columns">
-<div class="column" style="width:70%;">
+<div class="column" style="width:40%;">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb4-1"><a aria-hidden="true" tabindex="-1"></a><span class="co">//hola.c</span></span>
 <span id="cb4-2"><a aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
 <span id="cb4-3"><a aria-hidden="true" tabindex="-1"></a></span>
@@ -788,17 +790,34 @@ B,\ 10
 <span id="cb4-6"><a aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"Hola, món!</span><span class="sc">\n</span><span class="st">"</span><span class="op">);</span></span>
 <span id="cb4-7"><a aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
 <span id="cb4-8"><a aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div><div class="column" style="width:30%;">
+<hr>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a aria-label="1"></a><span class="fu">cat</span> hola.c</span>
 <span id="cb5-2"><a aria-label="2"></a><span class="fu">gcc</span> hola.c <span class="at">-o</span> hola</span>
 <span id="cb5-3"><a aria-label="3"></a><span class="ex">./hola</span></span>
 <span id="cb5-4"><a aria-label="4"></a></span>
 <span id="cb5-5"><a aria-label="5"></a><span class="ex">strace</span> ./hola</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div></div>
 <div class="resultat fragment udl-component udl-resultat">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../assets/icons.svg#icon-resultat"></use></svg><span>Resultat d'Aprenentatge</span></div>
 <p>Programa en C <span class="math inline">\(\Rightarrow\)</span> Compilació i enllaçat <span class="math inline">\(\Rightarrow\)</span> Executable <span class="math inline">\(\Rightarrow\)</span> Biblioteques (libc) <span class="math inline">\(\Rightarrow\)</span> Crides al sistema <span class="math inline">\(\Rightarrow\)</span> Kernel Linux <span class="math inline">\(\Rightarrow\)</span> Maquinari</p>
 </div>
+</div><div class="column" style="width:60%;">
+<div id="terminal-demo">
+
+</div>
+<script>
+AsciinemaPlayer.create(
+  'hola.cast',
+  document.getElementById('terminal-demo'),
+  {
+    autoPlay: true,
+    loop: false,
+    speed: 1.2,
+    cols: 60,
+    rows: 20
+  }
+);
+</script>
+</div></div>
 </section>
 <section id="començem" class="slide level2">
 <h2>Començem</h2>
