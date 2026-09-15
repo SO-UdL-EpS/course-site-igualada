@@ -1,0 +1,421 @@
+---
+title: "Exercicis amb C · Apuntadors i arrays"
+description: "Activitats per consolidar i ampliar els conceptes treballats als [Pralab 01](../pralabs/01_c_mem.qmd) i [Pralab 02](../pralabs/02_c_mem.qmd)."
+lang: ca
+---
+
+Conjunt d'exercicis per consolidar i ampliar els conceptes treballats als [Pralab 01](../pralabs/01_c_mem.qmd) i [Pralab 02](../pralabs/02_c_mem.qmd). Pots utilitzar el fòrum del campus virtual per compartir, debatre i resoldre els exercicis amb els teus companys. Explica el teu raonament, planteja els dubtes que et sorgeixin i comenta les propostes dels altres.
+
+# Consolida - Exercics bàsics
+
+## 1. Un punter sempre apunta a la variable
+
+Quin serà el resultat d'aquesta execució?
+
+```{.c}
+#include <stdio.h>
+
+int main(void)
+{
+    int x = 5;
+    int *p = &x;
+
+    x++;
+
+    printf("%d\n", *p);
+
+    return 0;
+}
+```
+
+### Abans d'executar
+
+Prediu:
+
+- quin valor tindrà `x` després de `x++`;
+- què imprimirà `*p`;
+- si `p` continua apuntant a `x`.
+
+::: {.pista}
+Recorda què significa `p = &x` i què significa `*p`.
+:::
+
+---
+
+## 2. Recórrer un string amb un punter
+
+Completa el programa perquè imprimeixi:
+
+```text
+Hola
+```
+
+sense utilitzar `s[i]`.
+
+```{.c}
+#include <stdio.h>
+
+int main(void)
+{
+    char str[] = "Hola";
+    const char *s = str;
+
+    while (*s != '\0') {
+        printf("%c", ???);
+        ???;
+    }
+
+    printf("\n");
+
+    return 0;
+}
+```
+
+### Preguntes
+
+1. Què representa `*s`?
+2. Què ha de fer `s++`?
+3. Quan acaba el `while`?
+
+::: {.pista}
+Pensa què ha de passar amb `s` després d'imprimir cada caràcter.
+:::
+
+::: {.repte}
+Modifica el programa perquè imprimeixi els caràcters un per línia.
+
+::: {.pista}
+Només cal canviar un caràcter dins del `printf` que ja tens.
+:::
+:::
+
+---
+
+## 3. Array i aritmètica de punters
+
+Donat:
+
+```{.c}
+int v[5] = {10, 20, 30, 40, 50};
+int *p = v;
+```
+
+Quin valor té cadascuna de les expressions següents?
+
+- `*p`
+- `*(p + 1)`
+- `*(p + 2)`
+- `*(p + 4)`
+
+Després, escriu una versió equivalent utilitzant `v[i]`.
+
+::: {.reflexio}
+Quina relació observes entre `v[i]` i `*(p + i)`?
+:::
+
+---
+
+## 4. Modificar un array mitjançant un punter
+
+Donat:
+
+```{.c}
+int v[5] = {10, 20, 30, 40, 50};
+int *p = v;
+```
+
+Completa el programa perquè multipliqui per 2 tots els elements de l'array utilitzant **només el punter `p`** per accedir als elements.
+
+```{.c}
+#include <stdio.h>
+
+int main(void)
+{
+    int v[5] = {10, 20, 30, 40, 50};
+    int *p = v;
+
+    for (int i = 0; i < 5; i++) {
+        ???;
+    }
+
+    for (int i = 0; i < 5; i++)
+        printf("%d ", v[i]);
+
+    printf("\n");
+
+    return 0;
+}
+```
+
+El resultat ha de ser:
+
+```bash
+20 40 60 80 100
+```
+
+::: {.pista}
+Si `p` apunta a `v[0]`, què representa `p + i`?
+
+I què representa `*(p + i)`?
+:::
+
+# Ves més enllà - Exercicis Avançats
+
+## 5. Un punter com a paràmetre
+
+Analitza el programa següent:
+
+```{.c}
+#include <stdio.h>
+
+void foo(int *p)
+{
+    int j = 22;
+
+    p = &j;
+
+    printf("%d ", *p);
+}
+
+int main(void)
+{
+    int i = 17;
+    int *p = &i;
+
+    foo(&i);
+
+    printf("%d ", *p);
+
+    return 0;
+}
+```
+
+### Preguntes
+
+1. Què imprimirà `foo`?
+2. Què imprimirà `main`?
+3. Per què modificar `p` dins de `foo` no modifica `p` de `main`?
+4. Què passaria si dins de `foo` féssim `*p = 22;` en lloc de `p = &j;`? (Si vols provar-ho compilant, elimina també la línia `int j = 22;`, ja que deixaria de fer-se servir i `-Wall` ho marcaria com a avís.)
+
+::: {.concepte}
+**Modificar el punter no és el mateix que modificar l'objecte al qual apunta.**
+:::
+
+---
+
+## 6. Punter a punter
+
+Analitza:
+
+```{.c}
+#include <stdio.h>
+
+int main(void)
+{
+    int k = 5;
+    int *p = &k;
+    int **m = &p;
+
+    **m = 6;
+
+    printf("%d\n", k);
+
+    return 0;
+}
+```
+
+### Abans d'executar
+
+Dibuixa les tres variables:
+
+```bash
+k
+p
+m
+```
+
+i indica què conté cadascuna.
+
+Després respon:
+
+- Què representa `p`?
+- Què representa `*p`?
+- Què representa `m`?
+- Què representa `*m`?
+- Què representa `**m`?
+
+::: {.repte}
+Intenta predir el resultat sense executar el programa.
+:::
+
+---
+
+## 7. `p++` i recorregut d'un array
+
+Tenim:
+
+```{.c}
+int v[5] = {10, 20, 30, 40, 50};
+int *p = v;
+```
+
+Analitza aquest codi:
+
+```{.c}
+printf("%d\n", *p);
+
+p++;
+printf("%d\n", *p);
+
+p++;
+printf("%d\n", *p);
+```
+
+### Preguntes
+
+1. Quins valors s'imprimiran?
+2. A quin element apunta `p` després del primer `p++`?
+3. A quin element apunta després del segon?
+4. Quants **bytes** ha avançat `p` després de dos `p++`?
+
+::: {.reflexio}
+Recorda l'experiment dels Pralabs amb:
+
+```c
+(char *)&v[1] - (char *)&v[0]
+```
+
+Com pots relacionar aquell resultat amb `p++`?
+:::
+
+# Reptes addicionals
+
+## 8. Sumar un array amb un punter
+
+Implementa una funció que calculi la suma dels elements d'un array utilitzant un punter per recórrer-lo.
+
+```{.c}
+int suma(const int *v, int n)
+{
+    // ...
+}
+```
+
+Per exemple:
+
+```{.c}
+int v[] = {10, 20, 30, 40, 50};
+
+printf("%d\n", suma(v, 5));
+```
+
+ha d'imprimir:
+
+```bash
+150
+```
+
+### Condició
+
+Dins de `suma` **no utilitzis**:
+
+```c
+v[i]
+```
+
+Recorre l'array mitjançant punters.
+
+::: {.pista}
+Pots començar amb:
+
+```c
+const int *p = v;
+```
+
+i avançar amb `p++`.
+:::
+
+---
+
+## 9. Trobar un caràcter
+
+Implementa una funció que retorni un punter al primer caràcter d'una cadena que sigui igual al caràcter indicat.
+
+```{.c}
+const char *troba(const char *s, char c)
+{
+    // ...
+}
+```
+
+Per exemple:
+
+```{.c}
+const char *p = troba("Universitat", 's');
+
+if (p != NULL)
+    printf("%c\n", *p);
+```
+
+ha d'imprimir:
+
+```bash
+s
+```
+
+### Preguntes
+
+1. Què ha de retornar la funció si no troba el caràcter?
+2. Per què retornem un punter (`char *`) i no simplement el caràcter (`char`)?
+3. Per què aquest punter és `const char *` i no `char *`?
+4. Què representa `p` quan la funció acaba?
+
+::: {.repte}
+Modifica la funció perquè retorni un punter al **darrer** caràcter que coincideixi amb `c`.
+
+::: {.pista}
+Ja no pots fer `return s;` en el moment que trobes una coincidència, perquè n'hi pot haver una altra més endavant. Guarda la darrera posició trobada en una variable a part i recorre tota la cadena fins al final abans de retornar.
+:::
+:::
+
+---
+
+# Una última pregunta
+
+Has vist que podem accedir als elements d'un array de dues maneres:
+
+```c
+v[i]
+```
+
+i
+
+```c
+*(v + i)
+```
+
+Intenta explicar amb les teves paraules:
+
+> **Com pot ser que una expressió que sembla una posició d'un array acabi tenint relació amb una adreça de memòria, una suma de punters i una desreferenciació?**
+
+Pensa en el camí que has fet als dos Pralabs:
+
+```bash
+v[i]
+  ↓
+array
+  ↓
+v decau a punter
+  ↓
+v + i
+  ↓
+adreça de l'element i
+  ↓
+*(v + i)
+  ↓
+valor de l'element i
+```
+
+::: {.concepte}
+La indexació d'un array no és una operació màgica independent dels punters. En C, la notació d'indexació està estretament relacionada amb l'aritmètica de punters i la desreferenciació.
+:::

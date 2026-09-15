@@ -47,6 +47,8 @@ website:
               - href: blocs/01-espai-usuari/pralabs/01_c_mem.qmd
               - href: blocs/01-espai-usuari/pralabs/02_c_mem.qmd
             - section: "Activitats"
+              contents:
+              - href: blocs/01-espai-usuari/activitats/01_c_punters_arrays.qmd
 
 
 format:
