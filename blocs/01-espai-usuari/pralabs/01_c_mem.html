@@ -414,8 +414,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       </ul>
   </li>
           <li class="sidebar-item sidebar-item-section">
-      <span class="sidebar-item-text sidebar-link text-start">
- <span class="menu-text">Activitats</span></span>
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false">
+ <span class="menu-text">Activitats</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/activitats/01_c_punters_arrays.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exercicis amb C · Apuntadors i arrays</span></a>
+  </div>
+</li>
+      </ul>
   </li>
       </ul>
   </li>
@@ -555,7 +568,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div>
 <pre class="mermaid mermaid-js">flowchart LR
     x["x = 42"]
-    a["&amp;x = 0x7ffee3b8c4a0"] --&gt;|"apunta a"| x
+    a["&amp;x = 0x7ffee3b8c4a0"] --&gt;|"és l'adreça de"| x
 </pre>
 </div>
 <p></p></figure><p></p>
@@ -788,7 +801,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exerciciprog"></use></svg><span>Exercici de Programació</span></div>
 <p>Un programa llegeix les dades d’un sensor i les guarda en un array. El programador afirma que el sensor ha registrat: 10, 20, 30, 40. Però quan executa el programa obté:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gcc</span> <span class="at">-Wall</span> <span class="at">-Wextra</span> sensor.c <span class="at">-o</span> sensor</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co"># En compilar-lo amb -Wall -Wextra apareixen avisos i el comportament del programa no és el desitjat. </span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co"># En compilar-lo amb -Wall -Wextra apareixen alguns avisos, però no tots els errors del programa en generen.</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Aquest és el codi del programa <code>sensor.c</code>:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -818,9 +831,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="solucio udl-component udl-solucio">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
 <ol type="1">
-<li><code>sensor</code> és un punter i conté una adreça. Per tant, no podem utilitzar <code>%d</code> per imprimir-lo. Per obtenir el valor al qual apunta hem d’utilitza <code>*sensor</code>.</li>
-<li><code>*sensor</code> és el valor de la mesura (<code>10</code>), no la seva adreça. Per imprimir l’adreça cal utilitzar <code>sensor</code> amb <code>%p</code>.</li>
-<li><code>sensor = 99</code> assigna un enter literal a un punter (el compilador ja avisa d’això amb <code>-Wextra</code>: <em>“makes pointer from integer without a cast”</em>). <code>sensor</code> passa a contenir l’adreça 99, que gairebé segur no és una adreça vàlida dins l’espai de memòria del procés. Desreferenciar-la després amb <code>*sensor</code> és <strong>comportament indefinit</strong>: normalment provocarà un <code>segmentation fault</code>. Per això et demanem que trobis els errors <em>sense</em> executar el programa.</li>
+<li><strong>(avís del compilador)</strong> <code>sensor</code> és un punter i conté una adreça. Passar-lo directament a <code>%d</code> és un error de tipus que <code>-Wall</code> detecta (<em>“format ‘%d’ expects argument of type ‘int’, but argument has type ’int </em>’“*). Per obtenir el valor al qual apunta hem d’utilitzar <code>*sensor</code>.</li>
+<li><strong>(error de lectura, el compilador no l’avisa)</strong> <code>*sensor</code> és el valor de la mesura (<code>10</code>), no la seva adreça — és un <code>int</code>, i <code>%d</code> és tècnicament correcte per imprimir-lo. El problema és només que l’etiqueta del text (“Adreça de la mesura”) no es correspon amb el que realment s’imprimeix. Cap avís del compilador et pot dir això: cal llegir el codi amb cura. Per imprimir l’adreça de debò cal <code>sensor</code> amb <code>%p</code>.</li>
+<li><strong>(avís del compilador)</strong> <code>sensor = 99</code> assigna un enter literal a un punter, i el compilador ja avisa d’això amb <code>-Wextra</code> (<em>“makes pointer from integer without a cast”</em>). <code>sensor</code> passa a contenir l’adreça 99, que gairebé segur no és una adreça vàlida dins l’espai de memòria del procés. Desreferenciar-la després amb <code>*sensor</code> és <strong>comportament indefinit</strong>: normalment provocarà un <code>segmentation fault</code>. Per això et demanem que trobis els errors <em>sense</em> executar el programa.</li>
 </ol>
 </div>
 </details>
