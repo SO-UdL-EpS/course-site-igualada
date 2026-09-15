@@ -418,8 +418,8 @@ Es considera frau acadèmic, entre d'altres:
 
 ## Eines necessàries
 
--   Sistema operatiu base: **Debian** (Linux).
--   Virtualització: **QEMU** (*recomanat* és l'eina amb la que es faran els **examens competencials**).
+-   Sistema operatiu base: **Debian 13** i **Ubuntu 24.04**.
+-   Virtualització: **QEMU** (és l'eina amb la que es faran els **examens competencials**).
     -   VMWare i VirtualBox també són vàlids per treballar-hi a casa.
 
 ## Programari necessari
