@@ -118,7 +118,8 @@ Compara el que imprimeix `sizeof(x)` amb el que imprimeix `&x`. Són el mateix t
 ```{mermaid}
 flowchart LR
     x["x = 42"]
-    a["&x = 0x7ffee3b8c4a0"] -->|"apunta a"| x
+    a["&x = 0x7ffee3b8c4a0"] -->|"és l'adreça de"| x
+```
 ```
 :::
 
@@ -367,7 +368,7 @@ Un programa llegeix les dades d'un sensor i les guarda en un array. El programad
 
 ```{.bash}
 gcc -Wall -Wextra sensor.c -o sensor
-# En compilar-lo amb -Wall -Wextra apareixen avisos i el comportament del programa no és el desitjat. 
+# En compilar-lo amb -Wall -Wextra apareixen alguns avisos, però no tots els errors del programa en generen.
 ```
 
 Aquest és el codi del programa `sensor.c`:
@@ -399,9 +400,9 @@ a. El programa té diversos errors. Troba'ls sense executar-lo.
 <summary><b>Pots veure el raonament</b></summary>
 
 ::: {.solucio}
-1. `sensor` és un punter i conté una adreça. Per tant, no podem utilitzar `%d` per imprimir-lo. Per obtenir el valor al qual apunta hem d'utilitza `*sensor`.
-2. `*sensor` és el valor de la mesura (`10`), no la seva adreça. Per imprimir l'adreça cal utilitzar `sensor` amb `%p`.
-3. `sensor = 99` assigna un enter literal a un punter (el compilador ja avisa d'això amb `-Wextra`: *"makes pointer from integer without a cast"*). `sensor` passa a contenir l'adreça 99, que gairebé segur no és una adreça vàlida dins l'espai de memòria del procés. Desreferenciar-la després amb `*sensor` és **comportament indefinit**: normalment provocarà un `segmentation fault`. Per això et demanem que trobis els errors *sense* executar el programa.
+1. **(avís del compilador)** `sensor` és un punter i conté una adreça. Passar-lo directament a `%d` és un error de tipus que `-Wall` detecta (*"format '%d' expects argument of type 'int', but argument has type 'int *'"*). Per obtenir el valor al qual apunta hem d'utilitzar `*sensor`.
+2. **(error de lectura, el compilador no l'avisa)** `*sensor` és el valor de la mesura (`10`), no la seva adreça — és un `int`, i `%d` és tècnicament correcte per imprimir-lo. El problema és només que l'etiqueta del text ("Adreça de la mesura") no es correspon amb el que realment s'imprimeix. Cap avís del compilador et pot dir això: cal llegir el codi amb cura. Per imprimir l'adreça de debò cal `sensor` amb `%p`.
+3. **(avís del compilador)** `sensor = 99` assigna un enter literal a un punter, i el compilador ja avisa d'això amb `-Wextra` (*"makes pointer from integer without a cast"*). `sensor` passa a contenir l'adreça 99, que gairebé segur no és una adreça vàlida dins l'espai de memòria del procés. Desreferenciar-la després amb `*sensor` és **comportament indefinit**: normalment provocarà un `segmentation fault`. Per això et demanem que trobis els errors *sense* executar el programa.
 :::
 
 </details>
