@@ -1,1 +1,1 @@
-Sitemap: https://SO-UdL-EpS.github.io/course-site-igualada/sitemap.xml
+Sitemap: https://igualada.os.udl.cat/sitemap.xml
