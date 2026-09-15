@@ -1,0 +1,461 @@
+---
+title: "Pralab 01: Del C a la memòria (I)"
+author: "Jordi Mateo Fornés"
+format:
+  udl-course-html:
+    toc: false
+    number-sections: false
+---
+
+## Introducció
+
+Durant el primer curs has treballat amb variables, arrays i cadenes de caràcters en C. 
+
+:::{.exerciciprog}
+El primer exercici d'aquest pralab consisteix a sumar dos vectors **vector1 amb (1.5, 2.0, -3.5)** i **vector2 (2.5, -1.0, 4.0)** de tres elements cadascun, i imprimir el vector resultant. 
+
+<details>
+<summary><b>Pots veure la solució</b></summary>
+
+
+```{.c}
+#include <stdio.h>
+
+#define DIMENSIO 3
+
+int main() {
+    float vector1[DIMENSIO] = {1.5, 2.0, -3.5};
+    float vector2[DIMENSIO] = {2.5, -1.0, 4.0};
+    float vector_suma[DIMENSIO];
+
+    for (int i = 0; i < DIMENSIO; i++) {
+        vector_suma[i] = vector1[i] + vector2[i];
+    }
+
+    printf("El vector resultant de la suma es:\n");
+    printf("(");
+    for (int i = 0; i < DIMENSIO; i++) {
+        printf("%.2f", vector_suma[i]);
+        if (i < DIMENSIO - 1) {
+            printf(", "); 
+        }
+    }
+    printf(")\n");
+
+    return 0;
+}
+```
+
+</details>
+:::
+
+Però hi ha una pregunta que l'any passat no vau resoldre. Imagineu que el programa té un array `v` i que volem accedir a l'element `v[i]`. Com sap el programa on està `v[i]`?
+
+En aquest pralab comencem a mirar la programació amb C des d'un altre punt de vista: **el de la memòria**. Aquest laboratori és la base sobre la qual construirem, més endavant, com un sistema operatiu organitza la memòria d'un procés. Aquesta sessió és més experimental que teòrica: anirem fent proves amb petits programes i mirant què passa a la memòria.
+
+---
+
+### Part A — On estan les dades? 
+
+Comencem amb aquest programa:
+
+```{.c}
+#include <stdio.h>
+
+int main(void)
+{
+    int x = 42;
+
+    printf("x = %d\n", x);
+    printf("&x = %p\n", (void *) &x);
+
+    return 0;
+}
+```
+
+```{.bash}
+x   = ?
+&x  = ?
+```
+
+::: {.exercici}
+Abans d'executar-ho, anota en el teu quadern les respostes a aquestes preguntes:
+
+- Què imprimirà `x`?
+- Quina mena de valor representa `&x`?
+- Esperes que `&x` tingui el mateix valor que `x`?
+:::
+
+::: {.exercici}
+Compila i executa el programa **dues vegades seguides** i compara els valors de `&x` que obtens.
+
+- Són iguals o diferents?
+- Si són diferents, què creus que ha passat?
+:::
+
+::: {.exercici}
+
+Afegeix ara aquesta línia i torna a executar:
+
+```{.c}
+printf("%zu\n", sizeof(x));
+```
+
+Compara el que imprimeix `sizeof(x)` amb el que imprimeix `&x`. Són el mateix tipus d'informació?
+
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+- `x` és una variable de tipus enter i conté el valor `42`.
+- `&x` és l'adreça de memòria on està emmagatzemat `x`. És un valor que indica la posició a la memòria del procés on es troba `x`.
+- No, `&x` no té el mateix valor que `x`.
+- Dues execucions poden donar adreces diferents per `&x` perquè el sistema operatiu assigna, a cada execució, una disposició diferent de la memòria del procés. Aquest mecanisme es diu **ASLR** (*Address Space Layout Randomization*, aleatorització de l'espai d'adreces) i el veurem amb detall quan parlem de com el sistema operatiu gestiona la memòria d'un procés. De moment, queda't amb la idea: l'adreça de `x` no és **fixa** ni depèn només del teu codi, sinó també de decisions que pren el sistema operatiu en temps d'execució.
+- `sizeof(x)` retorna la mida en bytes de la variable `x`, que és diferent de l'adreça de memòria que retorna `&x`. Per exemple, en un sistema de 64 bits, `sizeof(x)` podria retornar `4` (si `int` ocupa 4 bytes), mentre que `&x` podria ser una adreça com `0x7ffee3b8c4a0`.
+
+```{mermaid}
+flowchart LR
+    x["x = 42"]
+    a["&x = 0x7ffee3b8c4a0"] -->|"apunta a"| x
+```
+:::
+
+---
+
+### Part B — Què és un punter? 
+
+Introduïm ara:
+
+```{.c}
+int x = 42;
+int *p = &x;
+```
+
+```{mermaid}
+flowchart LR
+    P["p"] --> X["x = 42"]
+```
+
+```c
+printf("%d\n", *p);
+```
+
+::: {.exercici}
+Què imprimirà aquest `printf`?
+
+- [ ] L'adreça de `x`
+- [ ] `42`
+- [ ] L'adreça de `p`
+- [ ] Error de compilació
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+::: {.solucio}
+El `printf("%d\n", *p);` imprimirà `42`, ja que `*p` accedeix al valor de la variable a la qual apunta `p`, que és `x`.
+:::
+</details>
+
+Ara prova això:
+
+```{.c}
+*p = 99;
+printf("%d\n", x);
+```
+
+::: {.exercici}
+Has modificat `p` o has modificat `x`?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+::: {.solucio}
+Quan fas `*p = 99;`, estàs modificant el valor de `x` a través del punter `p`. Així que després d'aquesta línia, `x` tindrà el valor `99`.
+:::
+</details>
+
+Amb això ja podem fixar dues definicions formals:
+
+:::{.definicio}
+Un **punter** és una variable que emmagatzema una adreça de memòria.
+:::
+
+:::{.definicio}
+L'operador `*` permet accedir a l'objecte que es troba a l'adreça emmagatzemada en el punter.
+:::
+
+:::{.reflexio}
+**Nota de compilador.** Prova de compilar `printf("%d\n", p);` (sense `*`) amb `gcc -Wall -Wextra`. Fixa't en l'avís del compilador: el valor que passes a `%d` té tipus `int *`, però `%d` espera un `int` — hi ha una incompatibilitat de tipus entre l'argument i el format. Per imprimir un punter amb `printf`, fem servir `%p` i convertim el valor a `void *`, exactament com hem fet a la Part A amb `(void *)&x`.
+:::
+
+---
+
+### Part C — Arrays
+
+Partim de:
+
+```{.c}
+int v[5] = {10, 20, 30, 40, 50};
+```
+
+Comencem amb una cosa que probablement ja has fet servir:
+
+```c
+printf("%zu\n", sizeof(v));
+printf("%zu\n", sizeof(v[0]));
+printf("%zu\n", sizeof(v) / sizeof(v[0]));
+```
+
+:::{.exercici}
+Què imprimeix cada línia? 
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+::: {.solucio}
+- `sizeof(v)` retorna la mida total de l'array `v` en bytes. Com que `v` és un array de 5 enters i cada enter ocupa, per exemple, 4 bytes, `sizeof(v)` seria `20`.
+- `sizeof(v[0])` retorna la mida d'un sol element de l'array, que és un enter, així que seria `4`.
+- `sizeof(v) / sizeof(v[0])` calcula el nombre d'elements de l'array dividint la mida total de l'array per la mida d'un element, així que seria `20 / 4 = 5`.
+:::
+</details>
+
+
+Ja saps utilitzar `v[0]`, `v[1]`, `v[2]`. Ara mirem-ho des del punt de vista de la memòria:
+
+```c
+printf("%p\n", (void *)&v[0]);
+printf("%p\n", (void *)&v[1]);
+```
+
+:::{.exercici}
+Què observes en les dues adreces que s'imprimeixen?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+::: {.solucio}
+Les adreces segueixen el mateix patró: cada element ocupa `sizeof(int) bytes` i els elements d'un array estan emmagatzemats de manera contigua.
+:::
+</details>
+
+    
+Ara mesura-ho:
+
+```{.c}
+printf("%zu\n", sizeof(v[0]));
+printf("%td\n", (char *)&v[1] - (char *)&v[0]);
+```
+
+Convertim temporalment les adreces a `char *`. Això ens permet expressar la diferència entre les dues adreces en unitats de bytes.
+
+Ara compara els dos resultats.
+
+::: {.exercici}
+Quina relació observes entre el resultat de la resta amb `char *` i el valor de `sizeof(v[0])`?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+::: {.solucio}
+Quan restem dos punters a elements del mateix array, el resultat depèn del tipus del punter. Sense el `cast`, `&v[1] - &v[0]` també és una resta vàlida, però el resultat s'expressa en nombre d'elements `int`, no en bytes. Com que apunten a elements consecutius, dona `1`. La diferència en bytes és la que has obtingut amb `(char *)&v[1] - (char *)&v[0]`, i coincideix amb `sizeof(int)` en aquest sistema (C no garanteix que `sizeof(int)` valgui el mateix a tot arreu, només que sigui com a mínim de 2 bytes).
+:::
+</details>
+
+Amplia-ho amb `&v[2]`:
+
+```{.c}
+printf("%p\n", (void *)&v[2]);
+printf("%td\n", (char *)&v[2] - (char *)&v[1]);
+```
+
+::: {.exercici}
+Es manté el mateix patró? Diries que els elements de `v` estan repartits de qualsevol manera per la memòria, o segueixen una estructura?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+::: {.solucio}
+Els elements de l'array `v` estan emmagatzemats de manera contigua a la memòria. Podem visualitzar el que acabes de mesurar:
+
+```{mermaid}
+graph LR
+    subgraph v["array v"]
+        A["v[0]<br/><b>10</b><br/>0x1000"]
+        B["v[1]<br/><b>20</b><br/>0x1004"]
+        C["v[2]<br/><b>30</b><br/>0x1008"]
+        D["v[3]<br/><b>40</b><br/>0x100C"]
+        E["v[4]<br/><b>50</b><br/>0x1010"]
+
+        A -->|"+sizeof(int) bytes"| B
+        B -->|"+sizeof(int) bytes"| C
+        C -->|"+sizeof(int) bytes"| D
+        D -->|"+sizeof(int) bytes"| E
+    end
+```
+:::
+</details>
+
+Ara fes una mesura global:
+
+```{.c}
+printf("%zu\n", sizeof(v));
+```
+
+::: {.exercici}
+Aquest resultat, coincideix amb el que esperaries a partir del que has mesurat element a element?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+::: {.solucio}
+Sí, `sizeof(v)` hauria de ser igual a `sizeof(v[0]) * 5`, ja que `v` és un array de 5 elements de tipus `int`. Si `sizeof(v[0])` és 4 bytes, aleshores `sizeof(v)` serà 20 bytes.
+:::
+
+</details>
+
+Ara revisem el que hem anat aprenent sobre `v` i `&v`:
+
+```{.c}
+int *pv = &v[0];
+
+printf("%zu\n", sizeof(v));
+printf("%zu\n", sizeof(pv));
+```
+
+::: {.exercici}
+
+- Raona si `v` i `pv` et permeten accedir a les mateixes dades (`v[2]` i `pv[2]` valen el mateix). `sizeof` donarà el mateix resultat per tots dos?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+::: {.solucio}
+`sizeof(v)` continua valent `20`: és la mida de **tot l'array**, els seus 5 elements sencers. En canvi, `sizeof(pv)` val `8` (en un sistema de 64 bits): és només la mida d'una adreça de memòria, independentment de quantes dades hi hagi al darrere. Encara que `v` i `pv` es comportin de manera semblant quan hi accedeixes amb `[i]`, **no són el mateix tipus de cosa**: `v` és un array i per tant el compilador en coneix la mida sencera, mentre que `pv` és només un punter, el compilador només sap que apunta a un `int`, no quants n'hi ha darrere.
+:::
+
+</details>
+
+Fins ara hem utilitzat punters per guardar adreces, accedir als valors i mesurar distàncies entre adreces. Ara veurem què passa quan sumem un nombre a un punter.
+
+```{.c}
+printf("%p\n", (void *)&v[2]);
+printf("%p\n", (void *)(pv + 2));
+```
+
+::: {.exercici}
+Abans d'executar-ho: quan sumes `2` a `pv`, creus que avança 2 bytes o 2 elements de tipus `int`? Compara  els resultats.
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+Sí, `&v[2]` i `pv + 2` donen exactament la mateixa adreça. Igual que passava amb la resta de punters, la suma també té en compte automàticament la mida del tipus: `pv + 2` no avança 2 bytes, sinó 2 elements `int` (és a dir, `2 * sizeof(int)` bytes). Si el compilador avancés sempre en bytes, independentment del tipus al qual apunta `pv`, `pv + 2` acabaria apuntant enmig d'un element en lloc de l'inici del tercer, i tota l'aritmètica d'arrays deixaria de funcionar.
+:::
+
+</details>
+
+
+
+:::{.exerciciprog}
+Un programa llegeix les dades d'un sensor i les guarda en un array. El programador afirma que el sensor ha registrat: 10, 20, 30, 40. Però quan executa el programa obté:
+
+```{.bash}
+gcc -Wall -Wextra sensor.c -o sensor
+# En compilar-lo amb -Wall -Wextra apareixen avisos i el comportament del programa no és el desitjat. 
+```
+
+Aquest és el codi del programa `sensor.c`:
+
+```{.c}
+#include <stdio.h>
+
+int main(void)
+{
+    int mesures[4] = {10, 20, 30, 40};
+
+    int *sensor = &mesures[0];
+
+    printf("Mesura actual: %d\n", sensor);
+    printf("Adreça de la mesura: %d\n", *sensor);
+
+    sensor = 99;
+
+    printf("Nova mesura: %d\n", *sensor);
+    printf("Mesura original: %d\n", mesures[0]);
+
+    return 0;
+}
+```
+
+a. El programa té diversos errors. Troba'ls sense executar-lo.
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+::: {.solucio}
+1. `sensor` és un punter i conté una adreça. Per tant, no podem utilitzar `%d` per imprimir-lo. Per obtenir el valor al qual apunta hem d'utilitza `*sensor`.
+2. `*sensor` és el valor de la mesura (`10`), no la seva adreça. Per imprimir l'adreça cal utilitzar `sensor` amb `%p`.
+3. `sensor = 99` assigna un enter literal a un punter (el compilador ja avisa d'això amb `-Wextra`: *"makes pointer from integer without a cast"*). `sensor` passa a contenir l'adreça 99, que gairebé segur no és una adreça vàlida dins l'espai de memòria del procés. Desreferenciar-la després amb `*sensor` és **comportament indefinit**: normalment provocarà un `segmentation fault`. Per això et demanem que trobis els errors *sense* executar el programa.
+:::
+
+</details>
+
+b. Volem modificar la mesura a través del punter `sensor` perquè passi de 10 a 99. Quina instrucció has d'escriure? Explica què passa amb mesures[0] i per què?
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+::: {.solucio}
+Quan assignem `*sensor = 99`, estem modificant el valor de la variable a la qual apunta `sensor`, que és `mesures[0]`. Per tant, després d'aquesta assignació, `mesures[0]` tindrà el valor `99`. Això és perquè `sensor` és un punter que apunta a l'adreça de `mesures[0]`, i desreferenciar-lo amb `*sensor` ens permet accedir i modificar el valor emmagatzemat en aquesta adreça.
+:::
+
+</details>
+
+c. Corregeix el programa, intentant mantenir el mateix nombre de línies, per obtenir la sortida següent:
+
+```{.bash}
+Mesura actual: 10
+Adreça de la mesura: 0x...
+Nova mesura: 99
+Mesura original: 99
+```
+
+<details>
+<summary><b>Pots veure la solució</b></summary>
+
+::: {.solucio}
+
+```{.c}
+#include <stdio.h>
+int main(void)
+{
+    int mesures[4] = {10, 20, 30, 40};
+    int *sensor = &mesures[0];
+
+    printf("Mesura actual: %d\n", *sensor);
+    printf("Adreça de la mesura: %p\n", (void *)sensor);
+
+    *sensor = 99;
+
+    printf("Nova mesura: %d\n", *sensor);
+    printf("Mesura original: %d\n", mesures[0]);
+    return 0;
+}
+```
+:::
+
+</details>
+
+:::
+
+Ja podem començar a respondre la pregunta inicial: **com pot C localitzar v[i]?** 
+
+:::{.resultat}
+Els elements d'un array estan emmagatzemats de manera contigua. Per accedir a `v[i]`, C parteix de l'adreça del primer element i avança `i` elements. Com que cada element ocupa `sizeof(int) bytes`, això equival a avançar `i * sizeof(int) bytes`. En C, aquesta idea es representa mitjançant l'aritmètica de punters: `&v[i] == &v[0] + i`. Quan sumem `i` a un punter a int, C no avança `i` bytes, sinó `i` elements de tipus int. El compilador té en compte automàticament la mida de cada element.
+:::

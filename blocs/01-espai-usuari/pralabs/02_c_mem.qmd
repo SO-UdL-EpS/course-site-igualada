@@ -1,0 +1,314 @@
+---
+title: "Pralab 02: Del `v[i]` al punter"
+author: "Jordi Mateo Fornés"
+format:
+  udl-course-html:
+    toc: false
+    number-sections: false
+---
+
+## Introducció
+
+A la sessió anterior vam començar a mirar els arrays des del punt de vista de la memòria: vam veure que els seus elements estan emmagatzemats de manera contigua i vam mesurar-ho amb `sizeof` i amb restes de punters. En aquesta sessió farem el pas següent: entendre què hi ha realment darrere de `v[i]`.
+
+Recuperem l'array de la sessió anterior:
+
+```{.c}
+int v[5] = {10, 20, 30, 40, 50};
+```
+
+---
+
+### Part A — `v` decau a punter
+
+```{.c}
+int *p = v;
+```
+
+Fixa't que aquí **no hi ha `&`**. Això és perquè, en la majoria de contextos, el nom d'un array es converteix automàticament (decau) en un punter al seu primer element.
+
+:::{.definicio}
+El **decaïment** (*array decay*) és la conversió automàtica de l'expressió `v` en un punter al seu primer element. `v` es comporta, en la majoria de contextos, com `&v[0]`.
+:::
+
+```{.c}
+printf("%zu\n", sizeof(v));
+printf("%zu\n", sizeof(p));
+```
+
+:::{.reflexio}
+Ja vas comprovar a la sessió anterior que `sizeof(v)` i `sizeof(pv)` (un punter al primer element, declarat amb `&v[0]`) no coincideixen: `sizeof(v)` mesura l'array complet, `sizeof(p)` només la mida d'un punter. Aquí `p` es comporta igual, encara que ara ve d'un decaïment (`int *p = v;`) i no d'un `&v[0]` explícit, el resultat és el mateix.
+:::
+
+:::{.errorcomu}
+El mateix decaïment passa quan passes un array com a paràmetre d'una funció: **dins la funció**, `sizeof` de l'array ja no dona la mida de l'array, sinó la mida d'un punter. És un dels errors més habituals quan es combina `sizeof` amb arrays i funcions.
+:::
+
+:::{.concepte}
+`v` i `p` es comporten igual quan hi accedeixes (`v[2]` i `p[2]` valen el mateix), però **el compilador els tracta com a tipus diferents**: `v` té tipus `int[5]` (un array), `p` té tipus `int *` (un punter). `sizeof` és precisament una de les poques operacions on aquesta diferència de tipus es fa evident.
+:::
+
+Però **`v` i `&v` tampoc no són el mateix**. Comprovem-ho:
+
+```{.c}
+printf("%p\n", (void *)v);
+printf("%p\n", (void *)(v + 1));
+printf("%p\n", (void *)&v);
+printf("%p\n", (void *)(&v + 1));
+```
+
+::: {.exercici}
+Abans d'executar-ho: `v + 1` i `&v + 1` avancen la mateixa quantitat de bytes respecte a `v` i `&v` respectivament?
+:::
+
+Executa-ho i observa les adreces.
+
+Mesura-ho amb exactitud, igual que vas fer a la sessió anterior:
+
+```{.c}
+printf("%td\n", (char *)(v + 1) - (char *)v);
+printf("%td\n", (char *)(&v + 1) - (char *)&v);
+printf("%zu\n", sizeof(int));
+```
+
+::: {.exercici}
+Compara els dos resultats de la resta amb `sizeof(int)` i amb `sizeof(v)` que acabes de mesurar. Amb quin es correspon cadascun? Tenies raó en la teva predicció?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+::: {.solucio}
+En aquesta expressió, `v` decau a un punter a `int`, de tipus `int *`. Per això, `v + 1` avança `sizeof(int)` bytes, coincidint amb el que has mesurat a `(char *)(v + 1) - (char *)v`. `&v`, en canvi, és l'adreça de l'array sencer i té tipus `int (*)[5]`; per això, `&v + 1` avança `sizeof(v)` bytes, és a dir, l'array complet, coincidint amb `(char *)(&v + 1) - (char *)&v`.
+
+Les dues expressions fan referència a la mateixa adreça inicial de l'array, però tenen tipus diferents. Per això, sumar-hi `1` no produeix el mateix resultat.
+:::
+
+</details>
+
+:::{.resum}
+**El que hem de retenir:** en la majoria de contextos, l'expressió `v` es converteix (decau) a un punter al primer element, de tipus `int *`; avançar-lo salta d'`int` en `int`. `&v`, en canvi, és un punter a **l'array sencer**, de tipus `int (*)[5]`; avançar-lo salta l'array sencer. `v` en si mateix continua sent un array (`int[5]`), no un punter, el decaïment afecta com es tracta l'expressió en cada context, no canvia què és `v`.
+:::
+
+```{.c}
+printf("%d\n", *p);
+printf("%d\n", *(p + 1));
+printf("%d\n", *(p + 2));
+```
+
+::: {.exercici}
+Abans d'executar-ho, prediu què imprimirà cadascuna de les tres expressions. Per què?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+::: {.solucio}
+`*p` val `10` (el primer element de `v`). `*(p + 1)` val `20`: `p + 1` avança un `int` (com ja has vist a l'exercici anterior), i desreferenciar-lo dona el valor de `v[1]`. `*(p + 2)` val `30`, pel mateix motiu amb `v[2]`. En general, `*(p + i)` i `v[i]` donen sempre el mateix valor, és, de fet, com el compilador interpreta `v[i]` per sota.
+:::
+
+</details>
+
+::: {.exercici}
+Dibuixa `p` apuntant a l'array `v`.
+:::
+
+<details>
+<summary><b>Pots veure la solució</b></summary>
+
+::: {.solucio}
+```
++------+------+------+------+------+
+|  10  |  20  |  30  |  40  |  50  |
++------+------+------+------+------+
+   ▲
+   p
+```
+:::
+
+</details>
+
+Ara fes:
+
+```{.c}
+p++;
+```
+
+::: {.exercici}
+Torna a dibuixar `p` sobre l'array, després de `p++`.
+:::
+
+<details>
+<summary><b>Pots veure la solució</b></summary>
+
+::: {.solucio}
+```
++------+------+------+------+------+
+|  10  |  20  |  30  |  40  |  50  |
++------+------+------+------+------+
+          ▲
+          p
+```
+`p` ha avançat una posició (un `int` sencer, no un byte), i ara apunta a `v[1]`.
+:::
+
+</details>
+
+::: {.exercici}
+**Pregunta clau.** Recorda el resultat que vas obtenir a la sessió anterior amb `(char *)&v[1] - (char *)&v[0]`. Amb aquest resultat, respon: què creus que significa `p + 1`, i per què no significa necessàriament *sumar un byte a l'adreça*?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+::: {.solucio}
+`p + 1` avança tants bytes com ocupa el tipus al qual apunta `p` (aquí, `sizeof(int)`), no un byte. És exactament el mateix patró que vas mesurar amb `&v[1] - &v[0]` a la sessió anterior: el compilador escala automàticament l'aritmètica segons la mida del tipus.
+:::
+
+</details>
+
+:::{.errorcomu}
+Un error molt habitual és pensar que `p + 1` sempre avança 1 byte. Només és així quan `p` és un punter a `char` (`sizeof(char) == 1`). Per a qualsevol altre tipus, `p + 1` avança `sizeof(tipus)` bytes.
+:::
+
+:::{.resum}
+L'aritmètica d'un punter està relacionada amb el tipus de l'objecte al qual apunta. `p + 1` avança tants bytes com ocupa un `int` (comprova-ho amb `sizeof(int)`), no un byte.
+:::
+
+---
+
+### Part B — Strings
+
+Recuperem les cadenes de caràcters:
+
+```{.c}
+char s[] = "cau";
+```
+
+```{mermaid}
+graph LR
+    A["s[0] = 'c'"] --- B["s[1] = 'a'"] --- C["s[2] = 'u'"] --- D["s[3] = '\0'"]
+```
+
+:::{.definicio}
+Una cadena de caràcters en C és un array de `char` que acaba amb el caràcter especial `'\0'` (byte nul), que marca el final de la cadena.
+:::
+
+::: {.exercici}
+Per què hi ha quatre bytes si la paraula "cau" té tres caràcters?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+::: {.solucio}
+Perquè cal reservar espai per al caràcter `'\0'`, que marca el final de la cadena. Sense aquest byte, no hi hauria manera de saber on acaba la cadena en memòria. `char s[] = "cau";` reserva automàticament aquest quart byte.
+:::
+
+</details>
+
+:::{.bonapractica}
+Si dimensiones a mà un array de caràcters (`char s[4]`, per exemple), recorda sempre reservar una posició extra per al `'\0'`. Si no ho fas, qualsevol funció que llegeixi la cadena (com `strlen` o `printf("%s", ...)`) llegirà més enllà del final de l'array.
+:::
+
+Ara:
+
+```{.c}
+char *p = s;
+```
+
+::: {.exercici}
+Quin valor tindrà cadascuna d'aquestes expressions?
+
+- `*p`
+- `*(p + 1)`
+- `*(p + 2)`
+- `*(p + 3)`
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+::: {.solucio}
+`*p` val `'c'`, `*(p + 1)` val `'a'`, `*(p + 2)` val `'u'`, `*(p + 3)` val `'\0'`. És exactament el mateix mecanisme que vas fer servir amb `v` a la Part A: `p` apunta al primer element, i sumar-hi `i` avança `i` posicions del tipus al qual apunta (`char`, aquí).
+:::
+
+</details>
+
+---
+
+### Part C — Construïm `strlen`
+
+:::{.exerciciprog}
+Sense mirar la solució encara, escriu una funció `mini_strlen` que recorri `s` amb un punter fins trobar `'\0'` i retorni la seva longitud (sense comptar el `'\0'`).
+
+<details>
+<summary><b>Pots veure una solució possible</b></summary>
+
+```{.c}
+size_t mini_strlen(const char *s)
+{
+    const char *p = s;
+
+    while (*p != '\0')
+        p++;
+
+    return p - s;
+}
+```
+
+</details>
+:::
+
+::: {.exercici}
+**Pregunta final.** Per què podem fer `p - s`?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+::: {.solucio}
+`p` i `s` apunten totes dues dins del mateix array de caràcters. Restar dos punters dins del mateix array dona el nombre d'elements que els separen (exactament com vas fer a la sessió anterior amb `&v[1] - &v[0]`). Com que `p` ha avançat un `char` per cada posició recorreguda fins trobar `'\0'`, `p - s` dona directament la longitud de la cadena.
+:::
+
+</details>
+
+:::{.errorcomu}
+Un error habitual en implementar `strlen` a mà és oblidar-se d'avançar `p` dins del `while` (`p++`), cosa que provoca un bucle infinit perquè `*p` mai canvia. Un altre és comptar el `'\0'` com a part de la longitud.
+:::
+
+:::{.repte}
+**Opcional.** Reescriu `mini_strlen` fent servir indexació (`s[i]`) en lloc de punters (`*p`). Compara totes dues versions: quina trobes més llegible? Recorda que, per sota, el compilador sol generar codi molt semblant per a totes dues.
+:::
+
+---
+
+### Part D — Una primera mirada a la memòria del procés
+
+Encara no entrarem en detall de com s'organitza la memòria d'un procés. Només plantegem la pregunta.
+
+```{.c}
+int main(void)
+{
+    int x = 42;
+    int v[5];
+
+    /* ... */
+}
+```
+
+```
+┌──────────────────────────┐
+│   Memòria d'un procés    │
+│                          │
+│            ?             │
+│                          │
+│            ?             │
+│                          │
+│            ?             │
+└──────────────────────────┘
+```
+
+:::{.reflexio}
+**Pregunta oberta** (no la responem avui, la recuperarem a teoria): aquestes dades estan en algun lloc de la memòria del procés. Com està organitzada aquesta memòria? A teoria apareixeran conceptes com *stack* i *heap*.
+:::

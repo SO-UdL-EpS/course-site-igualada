@@ -37,6 +37,17 @@ website:
       text: "Presentació del curs"
     - href: course-info/contributions/contribute.qmd
       text: "Contribueix al curs"
+    - section: "Blocs"
+      contents:
+        - section: "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari"
+          contents:
+            - section: Teoria
+            - section: "Pralabs"
+              contents: 
+              - href: blocs/01-espai-usuari/pralabs/01_c_mem.qmd
+              - href: blocs/01-espai-usuari/pralabs/02_c_mem.qmd
+            - section: "Activitats"
+
 
 format:
   udl-course-html:
