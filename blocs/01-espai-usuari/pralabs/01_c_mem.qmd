@@ -120,7 +120,6 @@ flowchart LR
     x["x = 42"]
     a["&x = 0x7ffee3b8c4a0"] -->|"és l'adreça de"| x
 ```
-```
 :::
 
 ---
