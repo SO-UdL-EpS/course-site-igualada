@@ -287,8 +287,8 @@ Jordi Mateo Fornés
 <p>El <strong>sistema operatiu</strong>, amb l’ajuda del <strong>hardware</strong>, proporciona mecanismes de protecció i aïllament de la memòria.</p>
 </div>
 </section>
-<section id="un-programa-mal-escrit-pot-fer-fallar-tot-el-sistema" class="slide level2">
-<h2>Un programa mal escrit pot fer fallar tot el sistema</h2>
+<section id="un-programa-mal-escrit-pot-fer-fallar-tot-el-sistema-i" class="slide level2">
+<h2>Un programa mal escrit pot fer fallar tot el sistema (I)</h2>
 <div class="fragment exercici udl-component udl-exercici" title="Què passa si executo aquest programa?">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici — Què passa si executo aquest programa?</span></div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><a aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
@@ -303,6 +303,9 @@ Jordi Mateo Fornés
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-repte"></use></svg><span>Repte</span></div>
 <p>Què passaria si no existís el <em>scheduler</em> o si no pogués interrompre el procés?</p>
 </div>
+</section>
+<section id="un-programa-mal-escrit-pot-fer-fallar-tot-el-sistema-ii" class="slide level2">
+<h2>Un programa mal escrit pot fer fallar tot el sistema (II)</h2>
 <div class="fragment exercici udl-component udl-exercici" title="Què passa si executo aquest programa?">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici — Què passa si executo aquest programa?</span></div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb2-1"><a aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
@@ -358,7 +361,8 @@ Jordi Mateo Fornés
 </section>
 <section id="com-accedeix-una-aplicació-al-hardware" class="slide level2">
 <h2>Com accedeix una aplicació al hardware?</h2>
-<div class="idea">
+<div class="concepte udl-component udl-concepte">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-concepte"></use></svg><span>Concepte</span></div>
 <p>Els programes en mode usuari no poden accedir directament als recursos del hardware. Demanen els serveis al sistema operatiu mitjançant una <strong>crida de sistema</strong>.</p>
 </div>
 <div class="fragment">
@@ -446,7 +450,7 @@ Jordi Mateo Fornés
 <section id="anàlisi-què-fa-aquest-programa-ii" class="slide level2">
 <h2>Anàlisi: què fa aquest programa? (II)</h2>
 <div class="center">
-<p><img data-src="figures/prog_A_B_Memory.png"></p>
+<p><img data-src="figures/prog_A_B_Memory.png" style="width:80.0%"></p>
 </div>
 <div class="fragment concepte udl-component udl-concepte">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-concepte"></use></svg><span>Concepte</span></div>

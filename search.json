@@ -185,11 +185,25 @@
     ]
   },
   {
-    "objectID": "blocs/01-espai-usuari/teoria/01_rols_funcions.html#un-programa-mal-escrit-pot-fer-fallar-tot-el-sistema",
-    "href": "blocs/01-espai-usuari/teoria/01_rols_funcions.html#un-programa-mal-escrit-pot-fer-fallar-tot-el-sistema",
+    "objectID": "blocs/01-espai-usuari/teoria/01_rols_funcions.html#un-programa-mal-escrit-pot-fer-fallar-tot-el-sistema-i",
+    "href": "blocs/01-espai-usuari/teoria/01_rols_funcions.html#un-programa-mal-escrit-pot-fer-fallar-tot-el-sistema-i",
     "title": "Rols i funcions d’un sistema operatiu",
-    "section": "Un programa mal escrit pot fer fallar tot el sistema",
-    "text": "Un programa mal escrit pot fer fallar tot el sistema\n\nExercici — Què passa si executo aquest programa?\nint main() {\n    while (1);\n}\n\n\nSolució\nÉs un bucle infinit: el procés no acaba per si mateix. En un sistema amb preempció, el scheduler pot interrompre temporalment el procés i donar CPU a altres processos. El procés, però, continua consumint recursos mentre segueixi executant-se.\n\n\nRepte\nQuè passaria si no existís el scheduler o si no pogués interrompre el procés?\n\n\nExercici — Què passa si executo aquest programa?\nint main() {\n    while (1)\n        fork();\n}\n\n\nSolució\nCada iteració crea nous processos. Aquests processos també continuen executant el bucle i poden crear nous processos, fent que el nombre de processos creixi molt ràpidament. Cosa que pot saturar el sistema i fer-lo inutilitzable. Aquest tipus de programa es coneix com a fork bomb.",
+    "section": "Un programa mal escrit pot fer fallar tot el sistema (I)",
+    "text": "Un programa mal escrit pot fer fallar tot el sistema (I)\n\nExercici — Què passa si executo aquest programa?\nint main() {\n    while (1);\n}\n\n\nSolució\nÉs un bucle infinit: el procés no acaba per si mateix. En un sistema amb preempció, el scheduler pot interrompre temporalment el procés i donar CPU a altres processos. El procés, però, continua consumint recursos mentre segueixi executant-se.\n\n\nRepte\nQuè passaria si no existís el scheduler o si no pogués interrompre el procés?",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "Rols i funcions d'un sistema operatiu"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/01_rols_funcions.html#un-programa-mal-escrit-pot-fer-fallar-tot-el-sistema-ii",
+    "href": "blocs/01-espai-usuari/teoria/01_rols_funcions.html#un-programa-mal-escrit-pot-fer-fallar-tot-el-sistema-ii",
+    "title": "Rols i funcions d’un sistema operatiu",
+    "section": "Un programa mal escrit pot fer fallar tot el sistema (II)",
+    "text": "Un programa mal escrit pot fer fallar tot el sistema (II)\n\nExercici — Què passa si executo aquest programa?\nint main() {\n    while (1)\n        fork();\n}\n\n\nSolució\nCada iteració crea nous processos. Aquests processos també continuen executant el bucle i poden crear nous processos, fent que el nombre de processos creixi molt ràpidament. Cosa que pot saturar el sistema i fer-lo inutilitzable. Aquest tipus de programa es coneix com a fork bomb.",
     "crumbs": [
       "Inici",
       "Blocs",
@@ -245,7 +259,7 @@
     "href": "blocs/01-espai-usuari/teoria/01_rols_funcions.html#com-accedeix-una-aplicació-al-hardware",
     "title": "Rols i funcions d’un sistema operatiu",
     "section": "Com accedeix una aplicació al hardware?",
-    "text": "Com accedeix una aplicació al hardware?\n\nEls programes en mode usuari no poden accedir directament als recursos del hardware. Demanen els serveis al sistema operatiu mitjançant una crida de sistema.\n\n\nprintf(\"Hola\\n\");\n\n\nprintf() \\(\\Rightarrow\\) libc \\(\\Rightarrow\\) write() \\(\\Rightarrow\\) system call \\(\\Rightarrow\\) kernel \\(\\Rightarrow\\) driver \\(\\Rightarrow\\) dispositiu\n\n\nResum\nEl programa no accedeix directament al dispositiu de sortida, sinó que crida a la funció printf() de la biblioteca estàndard de C (libc). Aquesta funció, al seu torn, crida a la funció write() del sistema operatiu, que és una crida de sistema (system call). El sistema operatiu, en mode kernel, accedeix al dispositiu de sortida i escriu el missatge. per simplificar, ignorem aquí el buffering intern de la llibreria stdio.",
+    "text": "Com accedeix una aplicació al hardware?\n\nConcepte\nEls programes en mode usuari no poden accedir directament als recursos del hardware. Demanen els serveis al sistema operatiu mitjançant una crida de sistema.\n\n\nprintf(\"Hola\\n\");\n\n\nprintf() \\(\\Rightarrow\\) libc \\(\\Rightarrow\\) write() \\(\\Rightarrow\\) system call \\(\\Rightarrow\\) kernel \\(\\Rightarrow\\) driver \\(\\Rightarrow\\) dispositiu\n\n\nResum\nEl programa no accedeix directament al dispositiu de sortida, sinó que crida a la funció printf() de la biblioteca estàndard de C (libc). Aquesta funció, al seu torn, crida a la funció write() del sistema operatiu, que és una crida de sistema (system call). El sistema operatiu, en mode kernel, accedeix al dispositiu de sortida i escriu el missatge. per simplificar, ignorem aquí el buffering intern de la llibreria stdio.",
     "crumbs": [
       "Inici",
       "Blocs",
