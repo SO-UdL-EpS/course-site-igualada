@@ -1,0 +1,47 @@
+---
+title: "The UNIX Time-Sharing System"
+subtitle: "Sistemes Operatius (SO)"
+format:
+  udl-course-html:
+    toc: false
+    number-sections: false
+---
+
+L'activitat és **no avaluable**. No cal lliurar-la ni preparar una resposta formal. L'objectiu és consolidar, a través d'una font primària, dues idees que hem vist avui a classe:
+
+- **el sistema operatiu es construeix sobre un nombre reduït de primitives** que ho sostenen tot, des del shell fins als dispositius.
+- **la simplicitat de disseny no és una limitació, és una decisió**,
+
+
+::: {.exercici title="Lectura: The UNIX Time-Sharing System"}
+
+Llegeix el capítol complet (és curt, ~15 pàgines) de:
+
+> Ritchie, D. M., i Thompson, K. (1974).
+> *The UNIX Time-Sharing System*.
+> Communications of the ACM, 17(7), 365–375.
+> (Reimprès a Bell System Technical Journal, 57(6), 1978.)
+
+Disponible en **accés obert**, en una edició allotjada pel MIT per al seu propi curs de sistemes operatius (6.828):
+
+[**MIT SIPB — The UNIX Time-Sharing System (PDF)**](https://sipb.mit.edu/iap/6.828/readings/ritchie78unix.pdf)
+
+És, literalment, el document fundacional d'Unix, escrit pels seus dos creadors. Gairebé tot el que hem vist avui a classe —procés, sistema de fitxers com a interfície uniforme, crides de sistema— hi apareix descrit per primer cop, amb el sistema real que ho va implementar.
+
+:::
+
+::: {.callout-tip title="Abans de començar"}
+- El text té 50 anys i descriu maquinari que ja no existeix (PDP-11, teletips, targetes perforades). 
+- **core** = memòria (RAM d'avui).
+- **image** = el que avui en diem procés en execució.
+- **teletype** = terminal.
+:::
+
+### Què heu de buscar en el text?
+
+No cal fer un resum del capítol. Busqueu els punts on el text **confirma, amb el sistema real, idees que avui hem vist en abstracte**.
+
+::: {.reflexio }
+El 1974, tot aquest sistema funcionava amb un kernel de 90 KB. Cinquanta anys després, els sistemes operatius moderns són ordres de magnitud més grans i complexos, però els mateixos tres primitius (procés, fitxer, crida de sistema) hi continuen al centre. Per què creieu que aquestes idees han sobreviscut cinquanta anys de canvi tecnològic?
+:::
+

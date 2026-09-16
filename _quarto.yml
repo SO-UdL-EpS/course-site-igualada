@@ -42,6 +42,8 @@ website:
         - section: "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari"
           contents:
             - section: Teoria
+              contents:
+              - href: blocs/01-espai-usuari/teoria/01_rols_funcions.qmd
             - section: "Pralabs"
               contents: 
               - href: blocs/01-espai-usuari/pralabs/01_c_mem.qmd
@@ -49,6 +51,7 @@ website:
             - section: "Activitats"
               contents:
               - href: blocs/01-espai-usuari/activitats/01_c_punters_arrays.qmd
+              - href: blocs/01-espai-usuari/activitats/01_rols_funcions.qmd
 
 
 format:
