@@ -81,7 +81,7 @@ Compila una versió preparada per inspeccionar-la:
 gcc -g -O0 -fno-omit-frame-pointer -mno-red-zone program.c -o program
 ```
 
-El `-mno-red-zone` és important perquè el pròleg de `suma()` es vegi complet. No cal entendre què fa aquesta opció per fer la pràctica — la utilitzem per obtenir una execució més propera al model de stack frame estudiat a classe.
+El `-mno-red-zone` ajuda a fer visible el pròleg de `suma()` en aquesta pràctica. No cal entendre què fa aquesta opció per fer la pràctica, la utilitzem per obtenir una execució més propera al model de stack frame estudiat a classe.
 
 Comandes mínimes de GDB (no en necessites més):
 
@@ -143,7 +143,7 @@ Respon amb les teves paraules, sense tornar a mirar GDB:
 Quina diferència hi ha entre **el codi de `suma()`** i **l'activació de `suma()`**?
 :::
 
-Aquesta última pregunta comprova una de les idees centrals de les dues sessions: la funció (el codi) viu al TEXT, únic i estàtic; la seva activació utilitza l'estructura de stack corresponent, que es crea i es destrueix a cada crida.
+Aquesta última pregunta comprova una de les idees centrals: La funció (el codi) viu al TEXT, mentre que cada crida crea un nou context d'execució. Aquest context pot utilitzar el stack, però la seva representació concreta depèn de l'arquitectura, l'ABI i l'optimització."
 
 ---
 
