@@ -1,5 +1,6 @@
 ---
 title: "Exercicis amb C · Apuntadors i arrays"
+subtitle: "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari"
 description: "Activitats per consolidar i ampliar els conceptes treballats als [Pralab 01](../pralabs/01_c_mem.qmd) i [Pralab 02](../pralabs/02_c_mem.qmd)."
 lang: ca
 ---

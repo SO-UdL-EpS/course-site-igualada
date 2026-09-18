@@ -1,0 +1,242 @@
+---
+title: "Què passa quan faig foo()?"
+subtitle: "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari"
+lang: ca
+---
+
+Pràctica **opcional i no avaluable** de consolidació de les sessions tèoriques [L'espai de memòria d'un procés](../teoria/02_espai_memoria_proces.qmd) i [Crides de funció: CPU, registres i stack](../teoria/03_crides_funcions_cpu_registres_stack.qmd) on s'han estudiat els conceptes espai d'adreces, stack frame, calling convention i registres. Durada estimada: **60–90 minuts**. 
+
+::: {.programari}
+`gcc` amb suport per a `-g`, `-O0`, `-O2` i `-mno-red-zone`; `gdb`. Qualsevol entorn Linux x86-64 (les màquines dels Pralabs són suficients).
+:::
+
+# Part 1 — Predir abans d'executar
+
+Aquest és el programa de partida. **No l'executis encara.**
+
+```{.c}
+#include <stdio.h>
+#include <stdlib.h>
+
+int global = 10;
+
+int suma(int a, int b)
+{
+    int local = 20;
+    return a + b + local;
+}
+
+int main(void)
+{
+    int x = 5;
+    int *p = malloc(sizeof(int));
+
+    *p = 30;
+
+    int r = suma(x, *p);
+
+    printf("%d\n", r);
+
+    free(p);
+    return 0;
+}
+```
+
+### On viu cadascun?
+
+| Element | Regió |
+|---|---|
+| `suma()` | ? |
+| `global` | ? |
+| `x` | ? |
+| `p` | ? |
+| `*p` | ? |
+| `local` | ? |
+| instruccions de `main()` | ? |
+
+::: {.reflexio}
+Recupera la idea de la Sessió 1: un punter i allò que apunta poden viure en regions diferents. On encaixen aquí `p` i `*p`?
+:::
+
+### La crida a suma()
+
+Quan `main()` crida `suma(x, *p)`:
+
+- Quins arguments s'han de passar, i en quin ordre?
+- Segons l'ABI x86-64 estudiada, en quins registres esperes trobar-los?
+- Quin registre contindrà el resultat?
+- Què esperes que passi amb `RSP` quan entrem a `suma()`?
+- Què esperes que passi amb la *return address*?
+- Què esperes que passi amb `RSP` després del `ret`?
+
+Escriu totes les respostes abans de passar a la Part 2 — són les que comprovaràs després.
+
+---
+
+# Part 2 — Comprovar-ho amb GDB
+
+Compila una versió preparada per inspeccionar-la:
+
+```bash
+gcc -g -O0 -fno-omit-frame-pointer -mno-red-zone program.c -o program
+```
+
+El `-mno-red-zone` és important perquè el pròleg de `suma()` es vegi complet. No cal entendre què fa aquesta opció per fer la pràctica — la utilitzem per obtenir una execució més propera al model de stack frame estudiat a classe.
+
+Comandes mínimes de GDB (no en necessites més):
+
+```
+break suma
+run
+info registers
+x/16gx $rsp
+disassemble suma
+```
+
+### A. Entrada a suma()
+
+- Quin és el valor de `RDI`?
+- Quin és el valor de `RSI`?
+- Quin valor té `RSP`?
+- Quin valor té `RBP`?
+- On és la *return address*?
+
+### B. Assembly
+
+Copia només les instruccions rellevants de `suma()` i anota'n l'efecte:
+
+```text
+instrucció        efecte
+-----------       ----------------
+push ...          ...
+mov ...           ...
+...
+ret               ...
+```
+
+No cal que entenguis cada instrucció assembly al detall. L'objectiu és relacionar:
+
+```
+C
+ ↓
+assembly
+ ↓
+registres
+ ↓
+stack
+```
+
+::: {.concepte}
+Una instrucció assembly no és un pas aïllat: cada una mou o llegeix algun registre o posició de la pila que ja coneixes pel nom.
+:::
+
+---
+
+# Part 3 — Explicar la diferència
+
+Respon amb les teves paraules, sense tornar a mirar GDB:
+
+1. Per què dues variables automàtiques qualssevol (per exemple, `x` a `main()` i `local` a `suma()`) no tenen per què acabar totes dues físicament al stack de la mateixa manera?
+2. Per què `p` i `*p` poden viure en regions diferents?
+
+::: {.repte}
+Quina diferència hi ha entre **el codi de `suma()`** i **l'activació de `suma()`**?
+:::
+
+Aquesta última pregunta comprova una de les idees centrals de les dues sessions: la funció (el codi) viu al TEXT, únic i estàtic; la seva activació utilitza l'estructura de stack corresponent, que es crea i es destrueix a cada crida.
+
+---
+
+# Part 4 — Trenca el model
+
+Pren aquesta versió, més senzilla, de la funció:
+
+```{.c}
+__attribute__((noinline))
+int suma(int a, int b)
+{
+    return a + b;
+}
+```
+
+::: {.reflexio}
+El compilador pot eliminar la funció del codi optimitzat. Hem afegit aquesta directiva perquè puguis comparar la funció a `-O0` i `-O2`.
+:::
+
+Compila-la de dues maneres:
+
+```bash
+gcc -g -O0 -fno-omit-frame-pointer program2.c -o program2_O0
+gcc -g -O2                        program2.c -o program2_O2
+```
+
+Fixa't que a la versió `-O2` **no** forcem `-fno-omit-frame-pointer` — volem veure què decideix el compilador pel seu compte.
+
+Desassembla `suma()` a totes dues (`gdb -batch -ex 'disassemble suma' programX`) i respon:
+
+- Continua existint `RBP` com abans?
+- Continua existint el stack frame clàssic (`push rbp; mov rsp,rbp; ...`)?
+- El codi assembly és igual?
+- Una variable de C ha de tenir necessàriament una adreça de memòria durant tota la seva vida? Justifica-ho a partir del que observes amb `-O2`.
+- Quina diferència hi ha entre el model que hem estudiat i una execució optimitzada?
+
+::: {.concepte}
+"Una funció sempre crea exactament aquest stack frame" és fals. El frame depèn de l'arquitectura, l'ABI, el compilador i les opcions d'optimització — el frame pointer es pot ometre, i una variable pot no tenir mai una adreça de memòria pròpia.
+:::
+
+---
+
+# Pregunta de síntesi
+
+Sense tornar a mirar GDB:
+
+::: {.repte}
+Explica, en 8–10 línies, què passa quan `main()` executa `suma(x, *p)`, des d'abans del `call` fins que `main()` recupera el control.
+:::
+
+Has d'integrar, en un sol relat continu: l'espai d'adreces, els arguments i l'ABI, `call`, la *return address*, `RSP`, `RBP`, la variable `local`, `RAX` i `ret`. Si ho pots explicar sencer sense saltar-te cap peça, has entès les dues sessions.
+
+---
+
+# Tancament de la pràctica
+
+Annota en un document de text o Markdown les teves respostes a totes les preguntes i reflexions. Si vols, pots afegir captures de pantalla de GDB per il·lustrar-les. 
+
+1. **Predicció** — què creus que passarà (Part 1).
+2. **Experiment** — què observes amb GDB (Part 2).
+3. **Diferència** — què no ha passat com esperaves, si escau.
+4. **Explicació** — per què (Part 3).
+5. **Model final** — completa aquest diagrama amb registres, *return address*, stack frame, resultat i `call`/`ret`. No et donem els valors: has de ser tu qui els situï.
+
+```text
+                     main()
+                       │
+                       │ suma(5, 30)
+                       │
+                       │
+                       ▼
+                  suma(a,b)
+               ┌───────────────┐
+               │               │
+               │               │
+               │               │
+               └───────────────┘
+                       │
+                       │
+                       │
+                       ▼
+                     main()
+```
+
+Inclou també la taula d'estat següent, omplerta amb els valors reals que has observat (no cal completar cap cel·la que consideris no rellevant). Fixa't que el pròleg i el càlcul són moments **diferents** — no els confonguis:
+
+| Moment | RIP | RSP | RBP | RDI | RSI | RAX |
+|---|---|---|---|---|---|---|
+| abans de `call` | | | | | | |
+| entrada a `suma` | | | | | | |
+| després del pròleg | | | | | | |
+| després del càlcul | | | | | | |
+| abans de `ret` | | | | | | |
+| retorn a `main` | | | | | | |
+
+

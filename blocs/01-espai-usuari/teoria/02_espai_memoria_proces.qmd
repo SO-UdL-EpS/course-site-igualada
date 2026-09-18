@@ -1,6 +1,6 @@
 ---
 title: "L'espai de memòria d'un procés"
-subtitle: "Sessió 1 · Gestió de processos i memòria"
+subtitle: "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari"
 author: "Jordi Mateo Fornés"
 
 format:

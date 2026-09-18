@@ -45,6 +45,7 @@ website:
               contents:
               - href: blocs/01-espai-usuari/teoria/01_rols_funcions.qmd
               - href: blocs/01-espai-usuari/teoria/02_espai_memoria_proces.qmd
+              - href: blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.qmd
             - section: "Pralabs"
               contents: 
               - href: blocs/01-espai-usuari/pralabs/01_c_mem.qmd
@@ -53,6 +54,7 @@ website:
               contents:
               - href: blocs/01-espai-usuari/activitats/01_c_punters_arrays.qmd
               - href: blocs/01-espai-usuari/activitats/01_rols_funcions.qmd
+              - href: blocs/01-espai-usuari/activitats/02_espai_funcions.qmd
 
 
 format:

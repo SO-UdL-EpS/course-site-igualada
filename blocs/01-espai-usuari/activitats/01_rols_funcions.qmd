@@ -1,6 +1,6 @@
 ---
 title: "The UNIX Time-Sharing System"
-subtitle: "Sistemes Operatius (SO)"
+subtitle: "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari"
 format:
   udl-course-html:
     toc: false
