@@ -281,34 +281,3 @@ Un error habitual en implementar `strlen` a mà és oblidar-se d'avançar `p` di
 **Opcional.** Reescriu `mini_strlen` fent servir indexació (`s[i]`) en lloc de punters (`*p`). Compara totes dues versions: quina trobes més llegible? Recorda que, per sota, el compilador sol generar codi molt semblant per a totes dues.
 :::
 
----
-
-### Part D — Una primera mirada a la memòria del procés
-
-Encara no entrarem en detall de com s'organitza la memòria d'un procés. Només plantegem la pregunta.
-
-```{.c}
-int main(void)
-{
-    int x = 42;
-    int v[5];
-
-    /* ... */
-}
-```
-
-```
-┌──────────────────────────┐
-│   Memòria d'un procés    │
-│                          │
-│            ?             │
-│                          │
-│            ?             │
-│                          │
-│            ?             │
-└──────────────────────────┘
-```
-
-:::{.reflexio}
-**Pregunta oberta** (no la responem avui, la recuperarem a teoria): aquestes dades estan en algun lloc de la memòria del procés. Com està organitzada aquesta memòria? A teoria apareixeran conceptes com *stack* i *heap*.
-:::
