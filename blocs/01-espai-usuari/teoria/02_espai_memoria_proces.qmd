@@ -48,32 +48,25 @@ Stack · Heap · Data · Text
 ## El procés té un espai d'adreces
 
 ::: {.columns}
-::: {.column width="30%"}
+::: {.column width="40%"}
 
 ### Procés
 
 ![](figures/02_espai_memoria/espai_adreces.png){ width=100%}
 :::
-::: {.column width="70%"}
+::: {.column width="60%"}
 
-::: {.concepte}
-Aquest és un **model conceptual**, no el mapa físic de la RAM. Les adreces
-que fa servir el procés són adreces del seu **espai virtual**.
+::: {.concepte .fragment}
+Aquest és un **model conceptual**, no el mapa físic de la RAM. Les adreces que fa servir el procés són adreces del seu **espai virtual**.
 :::
 
-::: {.bonapractica}
-Aquest model omet a posta la regió `mmap` (biblioteques compartides), l'espai
-de kernel i qualsevol detall d'**ASLR**. Les adreces reals no són fixes ni
-predictibles entre execucions — hi tornarem quan calgui.
+::: {.bonapractica .fragment}
+Aquest model omet la regió `mmap` (biblioteques compartides), l'espai de kernel i qualsevol detall d'**ASLR (Address Space Layout Randomization)**. Les adreces reals no són fixes ni  predictibles entre execucions. Ho veurem més endavant quan parlem de *memory allocators*.
 :::
 
 :::
 :::
 
-::: {.notes}
-Si algú pregunta per `mmap` o per per què les adreces canvien cada
-execució, la resposta curta és "ASLR — ho veurem quan calgui" i seguir.
-:::
 
 # TEXT
 
@@ -99,9 +92,6 @@ La funció `suma()` és una variable?
 executables del programa.
 :::
 
-::: {.notes}
-Resposta: no, és codi executable → TEXT.
-:::
 
 ## Codi ≠ dades
 
@@ -121,16 +111,11 @@ void foo(void)
 ```
 
 ::: {.errorcomu .fragment}
-**La funció està al stack.** $\Rightarrow$ Fals. El **codi** de `foo()` viu al *TEXT* i és la seva **activació** (la crida en curs) la que utilitza el *STACK*.
+- **La funció està al stack.** $\Rightarrow$ Fals. 
+- El **codi** de `foo()` viu al *TEXT* i és la seva **activació** (la crida en curs) la que utilitza el *STACK*.
 :::
 
 :::
-:::
-
-::: {.notes}
-Aquesta diapositiva és clau per trencar la confusió més freqüent d'avui.
-La funció com a codi és estàtica i única al TEXT; cada crida crea una
-activació nova al STACK.
 :::
 
 # DATA
@@ -180,14 +165,6 @@ d'ELF més endavant sense haver de corregir el model.
 :::
 :::
 
-
-
-
-::: {.notes}
-Diapositiva de rigor, no cal aprofundir. Prescindible si falta temps:
-es pot resumir oralment en una frase i saltar a l'activitat.
-:::
-
 # Activitat 1
 
 ## On viu cada cosa? (I)
@@ -213,7 +190,6 @@ void foo(void)
 | `x`      | ? |
 
 :::
-
 
 ## On viu cada cosa? (II)
 
@@ -250,15 +226,7 @@ $\text{Stack} = \text{variables automàtiques} + \text{informació de les crides
 
 
 ::: {.definicio}
-**Stack**: regió de memòria utilitzada per gestionar les crides de funcions
-i les dades automàtiques associades a aquestes crides.
-:::
-
-::: {.notes}
-Evitar dir simplement "el stack és on viuen les variables locals" — és
-imprecís. Millor: gestiona les crides *i* les variables automàtiques
-associades. Berkeley CS61C descriu cada crida com la creació d'un
-"stack frame".
+**Stack**: regió de memòria utilitzada per gestionar les crides de funcions i les dades automàtiques associades a aquestes crides.
 :::
 
 ## Una crida crea una activació
@@ -279,8 +247,7 @@ int main(void)
 ```
 
 ::: {.concepte}
-Cada crida de funció necessita **informació pròpia**, per això s'apila un
-nou marc cada vegada.
+Cada crida de funció necessita **informació pròpia**, per això s'apila un nou marc cada vegada.
 :::
 
 :::
@@ -308,8 +275,6 @@ La disposició exacta d'un **stack frame** depèn de l'arquitectura i de la conv
 Els *arguments* no sempre van a la pila. En **x86-64 (System V AMD64 ABI)**, els sis primers arguments enters es passen per **registres** (`rdi, rsi, rdx, rcx, r8, r9`), no s'apilen. *El detall complet el veurem a la propera sessió*.
 :::
 
-
-
 :::
 :::
 
@@ -328,8 +293,7 @@ void foo(void)
 :::
 
 ::: {.concepte .fragment}
-El *lifetime* d'una variable automàtica està lligat a l'**activació** de la
-funció, no al programa sencer. Això serà essencial per entendre el heap.
+El *lifetime* d'una variable automàtica està lligat a l'**activació** de la funció, no al programa sencer. Això serà essencial per entendre el heap.
 :::
 
 ## Aquesta funció és segura?
@@ -385,12 +349,12 @@ int *create(void)
 :::
 :::
 
-::: {.definicio}
+::: {.definicio .fragment}
 **Heap**: regió per a objectes amb *lifetime* controlat manualment, o amb
 una mida no coneguda en temps de compilació.
 :::
 
-::: {.concepte}
+::: {.concepte .fragment}
 `p` és una variable local (al **STACK**). La memòria que apunta és una reserva
 dinàmica (al **HEAP**) $\Rightarrow$ són dues coses diferents.
 :::
@@ -407,13 +371,12 @@ int *p = malloc(sizeof(int));
 free(p);
 ```
 
-::: {.exemple}
+::: {.exemple .fragment}
 `malloc()` reserva memòria al HEAP; `free()` la retorna com a disponible.
 :::
 
-::: {.bonapractica}
-Tot `malloc()` hauria de tenir el seu `free()` corresponent. Encara no cal
-saber com funciona per dins (`brk`, `sbrk`, *bins*, fragmentació) $\Rightarrow$ hi tornarem quan parlem dels *memory allocators*.
+::: {.bonapractica .fragment}
+Tot `malloc()` hauria de tenir el seu `free()` corresponent. Encara no cal saber com funciona per dins (`brk`, `sbrk`, *bins*, fragmentació) $\Rightarrow$ hi tornarem quan parlem dels *memory allocators*.
 :::
 
 # Síntesi
@@ -502,8 +465,7 @@ void foo(void)
 - Registres *callee-saved* (`rbx, rbp, r12-r15`) es guarden si es fan servir.
 
 ::: {.errorcomu}
-"El retorn sempre s'apila automàticament." Cert en x86 (`call`/`ret`), fals
-en ARM: `bl` només escriu `lr`; és la funció qui decideix si cal desar-lo.
+El retorn sempre s'apila automàticament. Cert en x86 (`call`/`ret`), fals en ARM: `bl` només escriu `lr`; és la funció qui decideix si cal desar-lo.
 :::
 
 
@@ -519,14 +481,11 @@ en ARM: `bl` només escriu `lr`; és la funció qui decideix si cal desar-lo.
 
 :::
 ::: {.column width="40%"}
-- No hi ha instrucció `call`/`ret` equivalent implícita: `bl` desa
-  l'adreça de retorn al registre `lr` (x30); cal desar-lo explícitament
-  a la pila si la funció fa una altra crida.
+- No hi ha instrucció `call`/`ret` equivalent implícita: `bl` desa l'adreça de retorn al registre `lr` (x30); cal desar-lo explícitament a la pila si la funció fa una altra crida.
 - 8 registres per a arguments enters, no 6.
 
 ::: {.errorcomu}
-"El retorn sempre s'apila automàticament." Cert en x86 (`call`/`ret`), fals
-en ARM: `bl` només escriu `lr`; és la funció qui decideix si cal desar-lo.
+El retorn sempre s'apila automàticament. Cert en x86 (`call`/`ret`), fals en ARM: `bl` només escriu `lr`; és la funció qui decideix si cal desar-lo.
 :::
 
 

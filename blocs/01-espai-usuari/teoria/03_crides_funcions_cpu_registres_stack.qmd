@@ -182,36 +182,31 @@ Una crida de funció necessita conservar el punt al qual haurà de tornar.
 ![](figures/03_crides_funcions_cpu_registres_stack/call-ret2.png){ width=70%}
 :::
 
-::: {.notes}
-La implementació concreta depèn de l'arquitectura — això permetrà comparar-ho amb ARM a la propera slide.
-:::
-
 ## BL i RET (AArch64)
 
 ::: {.columns}
-::: {.column width="65%"}
+::: {.column width="60%"}
 
 ![](figures/03_crides_funcions_cpu_registres_stack/bl-ret.png)
 
+
 :::
-::: {.column width="35%"}
+::: {.column width="40%"}
 ::: {.definicio}
 `BL foo` salta a `foo` **i** desa l'adreça de retorn a `X30` (*Link Register*).
 :::
 
-::: {.concepte}
-El mecanisme conceptual és el mateix i és l'arquitectura qui decideix com es representa.
+::: {.bonapractica .fragment}
+El mecanisme físic canvia (pila vs. registre), però **C no en sap res**: `foo()` és `foo()` en ambdues arquitectures. L'ABI i el maquinari decideixen com es representa la crida. El llenguatge només veu l'abstracció **crida una funció i torna**. Aquesta separació entre abstracció i mecanisme és la mateixa raó per la qual el mateix codi C es pot compilar per a qualsevol de les dues.
 :::
 
-::: {.bonapractica}
-El mecanisme físic canvia (pila vs. registre), però **C no en sap res**: `foo()` és `foo()` en ambdues arquitectures. L'ABI i el maquinari decideixen com es representa la crida; el llenguatge només veu l'abstracció "crida una funció i torna". Aquesta separació entre abstracció i mecanisme és la mateixa raó per la qual el mateix codi C es pot compilar per a qualsevol de les dues.
+
+
+:::
 :::
 
-::: {.reflexio}
+::: {.reflexio .fragment}
 I si `foo()` mateixa crida `bar()`? `BL bar` torna a escriure `X30` — qui preserva llavors l'adreça de retorn original de `foo()`? *(hi tornarem amb caller-saved / callee-saved)*
-:::
-
-:::
 :::
 
 # El stack pointer
@@ -333,17 +328,30 @@ void foo(void)
 
 ## RBP: Frame Pointer
 
+::::: {.columns}
+::: {.column width="50%"}
+
 ::: {.definicio}
 **RBP** — *Frame Pointer* (x86-64).
 :::
 
-:::{style="text-align:center;"}
-![](figures/03_crides_funcions_cpu_registres_stack/rbp.png){ width=25%}
+::: {.concepte}
+- `RSP` → posició actual del stack. 
+- `RBP` → referència estable al frame. 
+- `RSP` pot moure's.
+- `RBP` es manté fix mentre dura l'activació.
 :::
 
-::: {.concepte}
-`RSP` → posició actual del stack. `RBP` → referència estable al frame. `RSP` pot moure's; `RBP` es manté fix mentre dura l'activació.
 :::
+::: {.column width="50%"}
+
+:::{style="text-align:center;"}
+![](figures/03_crides_funcions_cpu_registres_stack/rbp.png)
+:::
+
+:::
+:::
+
 
 ## AArch64: X29
 
@@ -361,7 +369,7 @@ void foo(void)
 :::
 :::::
 
-::: {.concepte}
+::: {.concepte .fragment}
 El paper conceptual és el mateix però els registres tenen noms diferents.
 :::
 
@@ -372,7 +380,7 @@ El paper conceptual és el mateix però els registres tenen noms diferents.
 ![](figures/03_crides_funcions_cpu_registres_stack/construint-frame.png){ width=55%}
 :::
 
-::: {.bonapractica}
+::: {.bonapractica .fragment}
 Aquest és el patró clàssic. Els compiladors moderns poden ometre el frame pointer (*frame pointer omission*, típic amb `-O2`).
 :::
 
@@ -380,10 +388,6 @@ Aquest és el patró clàssic. Els compiladors moderns poden ometre el frame poi
 
 :::{style="text-align:center;"}
 ![](figures/03_crides_funcions_cpu_registres_stack/destruint-frame.png){ width=70%}
-:::
-
-::: notes
-Quan acaba l'activació de la funció, les variables automàtiques locals deixen de tenir *lifetime*. (No lligar-ho al frame físic desapareixent — el *lifetime* és un concepte del llenguatge, no de la implementació; amb optimització pot no haver-hi frame "clàssic" darrere.)
 :::
 
 # Arguments i ABI
@@ -401,8 +405,8 @@ int suma(int a, int b)
 Quan `main()` crida `suma(10, 20)`, on són `a` i `b`?
 :::
 
-::: {.errorcomu}
-**"Al stack."** $\Rightarrow$ No necessàriament.
+::: {.errorcomu .fragment}
+**Al stack.** $\Rightarrow$ No necessàriament.
 :::
 
 ## Calling convention
@@ -411,7 +415,7 @@ Quan `main()` crida `suma(10, 20)`, on són `a` i `b`?
 **Calling convention**: com es passen els arguments, on es retorna el resultat, quins registres cal preservar, i com es relacionen *caller* i *callee*.
 :::
 
-::: {.concepte}
+::: {.concepte .fragment}
 C defineix la funció. **L'ABI defineix com caller i callee es comuniquen.**
 :::
 
@@ -466,9 +470,6 @@ Model simplificat: el tractament real també depèn del tipus i de la classifica
 :::
 :::
 
-:::notes
-No es menciona l'alineament de 16 bytes de RSP abans de call (ja establert com a requisit a x86_64.png). Amb un únic argument extra de 8 bytes, un push sol deixaria RSP desalineat llevat que ja hi hagués padding previst. Com que aquest matís ja va quedar explícitament fora d'abast al .bonapractica d'aquesta mateixa diapositiva del guió ("model simplificat... depèn també del tipus i la classificació"), no cal afegir-ho aquí — només ho apunto per si en algun moment voleu ser exhaustius amb l'alineament en una diapositiva dedicada.
-:::
 
 ## No tots els registres es tracten igual
 
@@ -503,29 +504,62 @@ Si `foo()` modifica `RBX`, qui ha de garantir que el valor original es conserva?
 ## AArch64: caller / callee saved
 
 :::{style="text-align:center;"}
-![](figures/03_crides_funcions_cpu_registres_stack/caller-callee.png){ width=70%}
-:::
-
-
-::: {.notes}
-Prescindible si falta temps: es pot resumir oralment en una frase i saltar a la síntesi. Agrupar X8–X17 com a "registres temporals" homogenis amalgama X8 (que a l'AAPCS64 té un paper específic: indirect result location register, per retornar valors que no caben en registres) amb X9–X17, que sí són purament temporals. És una simplificació raonable i habitual a aquest nivell —i coherent amb el "no aprofundim més" que ja vau decidir per aquesta part—, però si algun dia voleu polir-ho més, X8 mereixeria una nota a part. No és un error, és una oportunitat de precisió si mai amplieu aquesta diapositiva.
-
-Tancar aquí el fil obert a "BL i RET": X30 surt com a caller-saved precisament perquè qualsevol crida interna (`bar()` dins de `foo()`) el sobreescriu amb `BL` — si `foo()` el necessita després, l'ha de preservar ella mateixa.
+![](figures/03_crides_funcions_cpu_registres_stack/caller-callee.png){ width=80%}
 :::
 
 # Síntesi
 
 ## Posem-ho tot junt
 
-:::{style="text-align:center;"}
-![](figures/03_crides_funcions_cpu_registres_stack/complet.png){ width=60%}
+::::: {.columns}
+::: {.column width="25%"}
+
+```{.c code-line-numbers="false" }
+int suma(int a, int b)
+{
+    int resultat = a + b;
+    return resultat;
+}
+```
+
+:::
+::: {.column width="75%"}
+
+:::{.concepte title="x86-64 amb System V ABI"}
+(1) `main()` posa arguments a `RDI` i `RSI` i fa `call suma`. (2) `suma()` crea frame, executa i deixa el resultat a `RAX`. (3) `ret` torna a `main()`, `RIP` apunta a `main()` i `RAX` conté el resultat.
 :::
 
-::: {.concepte}
-`RIP`/`RSP`/`RBP` i els registres d'arguments (`RDI`...) i de retorn (`RAX`) són les peces que ja podem seguir en qualsevol crida.
+:::
+:::
+
+:::{style="text-align:center;"}
+![](figures/03_crides_funcions_cpu_registres_stack/complet.png){width=80%}
 :::
 
 ## Ho podem observar?
+
+::::: {.columns}
+::: {.column width="35%"}
+
+```{.c code-line-numbers="false" }
+#include <stdio.h>
+
+int suma(int a, int b)
+{
+    int resultat = a + b;
+    return resultat;
+}
+
+int main(void)
+{
+    int x = suma(10, 20);
+    printf("resultat = %d\n", x);
+    return 0;
+}
+```
+
+:::
+::: {.column width="65%"}
 
 ::: {.exercici}
 Abans de mirar-ho, prediu:
@@ -536,13 +570,9 @@ Abans de mirar-ho, prediu:
 - Què passarà amb `RSP`?
 :::
 
-```
-programa C → compilador → executable → GDB → registres + stack
-```
-
-::: {.notes}
-Avui només l'utilitzarem per observar. Al proper Pralab l'utilitzarem de manera pràctica. No avancis cap resposta aquí — deixa les prediccions penjades fins després del vídeo.
 :::
+:::
+
 
 ## GDB en directe
 
@@ -566,9 +596,6 @@ AsciinemaPlayer.create(
 Coincideix amb la vostra predicció? On és `RIP`? On és `RSP`? On és `RBP`? On són els arguments? Què hi ha al stack?
 :::
 
-::: {.notes}
-No explicar la sintaxi de GDB en detall avui.
-:::
 
 ## Del dibuix al programa real
 
@@ -594,18 +621,3 @@ El model que hem construït (`RIP → codi`, `RSP → stack`, `RBP → frame`, `
 4. L'ABI defineix com caller i callee es comuniquen.
 :::
 
-::: {.notes}
-Frase de tancament: "El model és el mateix; l'arquitectura i l'ABI determinen els detalls." Si sobra temps, es pot repassar oralment la seqüència completa: preparar la crida → guardar return information → saltar a foo → gestionar el frame → executar → produir resultat → destruir el frame → retornar al caller.
-:::
-
-# Tancament
-
-## Lectures addicionals
-
-::: {.lectures}
-- CS:APP (Bryant & O'Hallaron) — *Machine-Level Programming: Procedures*
-- System V AMD64 ABI — secció de *calling convention*
-- ARM AAPCS64 (*Procedure Call Standard for the Arm 64-bit Architecture*)
-- Berkeley CS61C — stack frames i convencions de crida
-- MIT 6.172, Lecture 11 — Storage Allocation
-:::
