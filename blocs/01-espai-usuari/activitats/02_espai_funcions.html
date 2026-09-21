@@ -1,14 +1,13 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ca" xml:lang="ca"><head>
 
 <meta charset="utf-8">
 <meta name="generator" content="quarto-1.10.18">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Jordi Mateo Fornés">
 
-<title>Pralab 02: Del v[i] al punter – Sistemes Operatius</title>
+<title>Què passa quan faig foo()? – Sistemes Operatius</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -72,8 +71,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../../../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../../../">
-<link href="../../../blocs/01-espai-usuari/activitats/01_c_punters_arrays.html" rel="next">
-<link href="../../../blocs/01-espai-usuari/pralabs/01_c_mem.html" rel="prev">
+<link href="../../../blocs/01-espai-usuari/activitats/01_rols_funcions.html" rel="prev">
 <link href="../../../assets/logo.svg" rel="icon" type="image/svg+xml">
 <script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
@@ -103,27 +101,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   ],
   "show-item-context": false,
   "language": {
-    "search-no-results-text": "No results",
-    "search-matching-documents-text": "matching documents",
-    "search-copy-link-title": "Copy link to search",
-    "search-hide-matches-text": "Hide additional matches",
-    "search-more-match-text": "more match in this document",
-    "search-more-matches-text": "more matches in this document",
-    "search-clear-button-title": "Clear",
+    "search-no-results-text": "Cap resultat",
+    "search-matching-documents-text": "documents que coincideixen",
+    "search-copy-link-title": "Copia l'enllaç a la cerca",
+    "search-hide-matches-text": "Amaga les coincidències addicionals",
+    "search-more-match-text": "altra coincidència en aquest document",
+    "search-more-matches-text": "altres coincidències en aquest document",
+    "search-clear-button-title": "Neteja",
     "search-text-placeholder": "",
-    "search-detached-cancel-button-title": "Cancel",
-    "search-submit-button-title": "Submit",
-    "search-label": "Search"
+    "search-detached-cancel-button-title": "Cancel·la",
+    "search-submit-button-title": "Envia",
+    "search-label": "Cerca"
   }
 }</script>
-<script src="../../../site_libs/quarto-diagram/mermaid.min.js"></script>
-<script src="../../../site_libs/quarto-diagram/mermaid-init.js"></script>
-<link href="../../../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
 
 
 </head>
 
-<body class="nav-sidebar floating nav-fixed fullcontent quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+<body class="nav-sidebar floating nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
     const toggleBodyColorMode = (bsSheetEl) => {
       const mode = bsSheetEl.getAttribute("data-mode");
       const bodyEl = window.document.querySelector("body");
@@ -305,8 +300,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <span class="navbar-title">SO</span>
     </a>
   </div>
-            <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+            <div id="quarto-search" class="" title="Cerca"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Commuta la navegació" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
@@ -329,17 +324,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
           </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
-  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Commuta el mode fosc"><i class="bi"></i></a>
 </div>
       </div> <!-- /container-fluid -->
     </nav>
   <nav class="quarto-secondary-nav">
     <div class="container-fluid d-flex">
-      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Commuta la navegació de la barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Blocs</li><li class="breadcrumb-item">Bloc 1 · Desenvolupament de Programari en Espai d’Usuari</li><li class="breadcrumb-item"><a href="../../../blocs/01-espai-usuari/pralabs/01_c_mem.html">Pralabs</a></li><li class="breadcrumb-item"><a href="../../../blocs/01-espai-usuari/pralabs/02_c_mem.html">Pralab 02: Del <code>v[i]</code> al punter</a></li></ol></nav>
-        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Blocs</li><li class="breadcrumb-item">Bloc 1 · Desenvolupament de Programari en Espai d’Usuari</li><li class="breadcrumb-item"><a href="../../../blocs/01-espai-usuari/activitats/01_c_punters_arrays.html">Activitats</a></li><li class="breadcrumb-item"><a href="../../../blocs/01-espai-usuari/activitats/02_espai_funcions.html">Què passa quan faig foo()?</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Commuta la navegació de la barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
   </nav>
@@ -372,7 +367,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
  <span class="menu-text">Blocs</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Commuta la secció">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
@@ -381,7 +376,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
  <span class="menu-text">Bloc 1 · Desenvolupament de Programari en Espai d’Usuari</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Commuta la secció">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
@@ -390,7 +385,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
  <span class="menu-text">Teoria</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Commuta la secció">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
@@ -417,13 +412,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false">
  <span class="menu-text">Pralabs</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Commuta la secció">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth3 show">  
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth3 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../../blocs/01-espai-usuari/pralabs/01_c_mem.html" class="sidebar-item-text sidebar-link">
@@ -432,7 +427,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../blocs/01-espai-usuari/pralabs/02_c_mem.html" class="sidebar-item-text sidebar-link active">
+  <a href="../../../blocs/01-espai-usuari/pralabs/02_c_mem.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Pralab 02: Del <code>v[i]</code> al punter</span></a>
   </div>
 </li>
@@ -440,13 +435,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
  <span class="menu-text">Activitats</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Commuta la secció">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth3 ">  
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth3 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../../blocs/01-espai-usuari/activitats/01_c_punters_arrays.html" class="sidebar-item-text sidebar-link">
@@ -461,7 +456,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../../blocs/01-espai-usuari/activitats/02_espai_funcions.html" class="sidebar-item-text sidebar-link">
+  <a href="../../../blocs/01-espai-usuari/activitats/02_espai_funcions.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Què passa quan faig foo()?</span></a>
   </div>
 </li>
@@ -476,26 +471,42 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">En aquesta pàgina</h2>
+   
+  <ul>
+  <li><a href="#part-1-predir-abans-dexecutar" id="toc-part-1-predir-abans-dexecutar" class="nav-link active" data-scroll-target="#part-1-predir-abans-dexecutar">Part 1 · Predir abans d’executar</a>
+  <ul class="collapse">
+  <li><a href="#on-viu-cadascun" id="toc-on-viu-cadascun" class="nav-link" data-scroll-target="#on-viu-cadascun">On viu cadascun?</a></li>
+  <li><a href="#la-crida-a-suma" id="toc-la-crida-a-suma" class="nav-link" data-scroll-target="#la-crida-a-suma">La crida a suma()</a></li>
+  </ul></li>
+  <li><a href="#part-2-comprovar-ho-amb-gdb" id="toc-part-2-comprovar-ho-amb-gdb" class="nav-link" data-scroll-target="#part-2-comprovar-ho-amb-gdb">Part 2 · Comprovar-ho amb GDB</a>
+  <ul class="collapse">
+  <li><a href="#a.-entrada-a-suma" id="toc-a.-entrada-a-suma" class="nav-link" data-scroll-target="#a.-entrada-a-suma">A. Entrada a suma()</a></li>
+  <li><a href="#b.-assembly" id="toc-b.-assembly" class="nav-link" data-scroll-target="#b.-assembly">B. Assembly</a></li>
+  </ul></li>
+  <li><a href="#part-3-explicar-la-diferència" id="toc-part-3-explicar-la-diferència" class="nav-link" data-scroll-target="#part-3-explicar-la-diferència">Part 3 · Explicar la diferència</a></li>
+  <li><a href="#part-4-trenca-el-model" id="toc-part-4-trenca-el-model" class="nav-link" data-scroll-target="#part-4-trenca-el-model">Part 4 · Trenca el model</a></li>
+  <li><a href="#pregunta-de-síntesi" id="toc-pregunta-de-síntesi" class="nav-link" data-scroll-target="#pregunta-de-síntesi">Pregunta de síntesi</a></li>
+  <li><a href="#tancament-de-la-pràctica" id="toc-tancament-de-la-pràctica" class="nav-link" data-scroll-target="#tancament-de-la-pràctica">Tancament de la pràctica</a></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Blocs</li><li class="breadcrumb-item">Bloc 1 · Desenvolupament de Programari en Espai d’Usuari</li><li class="breadcrumb-item"><a href="../../../blocs/01-espai-usuari/pralabs/01_c_mem.html">Pralabs</a></li><li class="breadcrumb-item"><a href="../../../blocs/01-espai-usuari/pralabs/02_c_mem.html">Pralab 02: Del <code>v[i]</code> al punter</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Blocs</li><li class="breadcrumb-item">Bloc 1 · Desenvolupament de Programari en Espai d’Usuari</li><li class="breadcrumb-item"><a href="../../../blocs/01-espai-usuari/activitats/01_c_punters_arrays.html">Activitats</a></li><li class="breadcrumb-item"><a href="../../../blocs/01-espai-usuari/activitats/02_espai_funcions.html">Què passa quan faig foo()?</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Pralab 02: Del <code>v[i]</code> al punter</h1>
+<h1 class="title">Què passa quan faig foo()?</h1>
+<p class="subtitle lead">Bloc 1 · Desenvolupament de Programari en Espai d’Usuari</p>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
-    <div>
-    <div class="quarto-title-meta-heading">Author</div>
-    <div class="quarto-title-meta-contents">
-             <p>Jordi Mateo Fornés </p>
-          </div>
-  </div>
     
   
     
@@ -506,272 +517,296 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="introducció" class="level2">
-<h2 class="anchored" data-anchor-id="introducció">Introducció</h2>
-<p>A la sessió anterior vam començar a mirar els arrays des del punt de vista de la memòria: vam veure que els seus elements estan emmagatzemats de manera contigua i vam mesurar-ho amb <code>sizeof</code> i amb restes de punters. En aquesta sessió farem el pas següent: entendre què hi ha realment darrere de <code>v[i]</code>.</p>
-<p>Recuperem l’array de la sessió anterior:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> v<span class="op">[</span><span class="dv">5</span><span class="op">]</span> <span class="op">=</span> <span class="op">{</span><span class="dv">10</span><span class="op">,</span> <span class="dv">20</span><span class="op">,</span> <span class="dv">30</span><span class="op">,</span> <span class="dv">40</span><span class="op">,</span> <span class="dv">50</span><span class="op">};</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<hr>
-<section id="part-a-v-decau-a-punter" class="level3">
-<h3 class="anchored" data-anchor-id="part-a-v-decau-a-punter">Part A — <code>v</code> decau a punter</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> <span class="op">*</span>p <span class="op">=</span> v<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Fixa’t que aquí <strong>no hi ha <code>&amp;</code></strong>. Això és perquè, en la majoria de contextos, el nom d’un array es converteix automàticament (decau) en un punter al seu primer element.</p>
-<div class="definicio udl-component udl-definicio">
-<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-definicio"></use></svg><span>Definició</span></div>
-<p>El <strong>decaïment</strong> (<em>array decay</em>) és la conversió automàtica de l’expressió <code>v</code> en un punter al seu primer element. <code>v</code> es comporta, en la majoria de contextos, com <code>&amp;v[0]</code>.</p>
+<p>Pràctica <strong>opcional i no avaluable</strong> de consolidació de les sessions tèoriques <a href="../../../blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html">L’espai de memòria d’un procés</a> i <a href="../../../blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html">Crides de funció: CPU, registres i stack</a> on s’han estudiat els conceptes espai d’adreces, stack frame, calling convention i registres.</p>
+<div class="programari udl-component udl-programari">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-programari"></use></svg><span>Programari Necessari</span></div>
+<p><code>gcc</code> amb suport per a <code>-g</code>, <code>-O0</code>, <code>-O2</code> i <code>-mno-red-zone</code>; <code>gdb</code>. Qualsevol entorn Linux x86-64 (les màquines dels Pralabs són suficients).</p>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>printf<span class="op">(</span><span class="st">"</span><span class="sc">%zu\n</span><span class="st">"</span><span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span>v<span class="op">));</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>printf<span class="op">(</span><span class="st">"</span><span class="sc">%zu\n</span><span class="st">"</span><span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span>p<span class="op">));</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="part-1-predir-abans-dexecutar" class="level1">
+<h1>Part 1 · Predir abans d’executar</h1>
+<p>Aquest és el programa de partida. <strong>No l’executis encara.</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdlib.h&gt;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> global <span class="op">=</span> <span class="dv">10</span><span class="op">;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> suma<span class="op">(</span><span class="dt">int</span> a<span class="op">,</span> <span class="dt">int</span> b<span class="op">)</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> local <span class="op">=</span> <span class="dv">20</span><span class="op">;</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> a <span class="op">+</span> b <span class="op">+</span> local<span class="op">;</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> x <span class="op">=</span> <span class="dv">5</span><span class="op">;</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> <span class="op">*</span>p <span class="op">=</span> malloc<span class="op">(</span><span class="kw">sizeof</span><span class="op">(</span><span class="dt">int</span><span class="op">));</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>p <span class="op">=</span> <span class="dv">30</span><span class="op">;</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> r <span class="op">=</span> suma<span class="op">(</span>x<span class="op">,</span> <span class="op">*</span>p<span class="op">);</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"</span><span class="sc">%d\n</span><span class="st">"</span><span class="op">,</span> r<span class="op">);</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    free<span class="op">(</span>p<span class="op">);</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="on-viu-cadascun" class="level3">
+<h3 class="anchored" data-anchor-id="on-viu-cadascun">On viu cadascun?</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Element</th>
+<th>Regió</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>suma()</code></td>
+<td>?</td>
+</tr>
+<tr class="even">
+<td><code>global</code></td>
+<td>?</td>
+</tr>
+<tr class="odd">
+<td><code>x</code></td>
+<td>?</td>
+</tr>
+<tr class="even">
+<td><code>p</code></td>
+<td>?</td>
+</tr>
+<tr class="odd">
+<td><code>*p</code></td>
+<td>?</td>
+</tr>
+<tr class="even">
+<td><code>local</code></td>
+<td>?</td>
+</tr>
+<tr class="odd">
+<td>instruccions de <code>main()</code></td>
+<td>?</td>
+</tr>
+</tbody>
+</table>
 <div class="reflexio udl-component udl-reflexio">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-reflexio"></use></svg><span>Reflexió</span></div>
-<p>Ja vas comprovar a la sessió anterior que <code>sizeof(v)</code> i <code>sizeof(pv)</code> (un punter al primer element, declarat amb <code>&amp;v[0]</code>) no coincideixen: <code>sizeof(v)</code> mesura l’array complet, <code>sizeof(p)</code> només la mida d’un punter. Aquí <code>p</code> es comporta igual, encara que ara ve d’un decaïment (<code>int *p = v;</code>) i no d’un <code>&amp;v[0]</code> explícit, el resultat és el mateix.</p>
+<p>Recupera la idea de la Sessió 1: un punter i allò que apunta poden viure en regions diferents. On encaixen aquí <code>p</code> i <code>*p</code>?</p>
 </div>
-<div class="errorcomu udl-component udl-errorcomu">
-<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-errorcomu"></use></svg><span>Error Comú</span></div>
-<p>El mateix decaïment passa quan passes un array com a paràmetre d’una funció: <strong>dins la funció</strong>, <code>sizeof</code> de l’array ja no dona la mida de l’array, sinó la mida d’un punter. És un dels errors més habituals quan es combina <code>sizeof</code> amb arrays i funcions.</p>
-</div>
+</section>
+<section id="la-crida-a-suma" class="level3">
+<h3 class="anchored" data-anchor-id="la-crida-a-suma">La crida a suma()</h3>
+<p>Quan <code>main()</code> crida <code>suma(x, *p)</code>:</p>
+<ul>
+<li>Quins arguments s’han de passar, i en quin ordre?</li>
+<li>Segons l’ABI x86-64 estudiada, en quins registres esperes trobar-los?</li>
+<li>Quin registre contindrà el resultat?</li>
+<li>Què esperes que passi amb <code>RSP</code> quan entrem a <code>suma()</code>?</li>
+<li>Què esperes que passi amb la <em>return address</em>?</li>
+<li>Què esperes que passi amb <code>RSP</code> després del <code>ret</code>?</li>
+</ul>
+<p>Escriu totes les respostes abans de passar a la Part 2.</p>
+<hr>
+</section>
+</section>
+<section id="part-2-comprovar-ho-amb-gdb" class="level1">
+<h1>Part 2 · Comprovar-ho amb GDB</h1>
+<p>Compila una versió preparada per inspeccionar-la:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gcc</span> <span class="at">-g</span> <span class="at">-O0</span> <span class="at">-fno-omit-frame-pointer</span> <span class="at">-mno-red-zone</span> program.c <span class="at">-o</span> program</span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<p>El <code>-mno-red-zone</code> ajuda a fer visible el pròleg de <code>suma()</code> en aquesta pràctica. No cal entendre què fa aquesta opció per fer la pràctica, la utilitzem per obtenir una execució més propera al model de stack frame estudiat a classe.</p>
+<p>Comandes mínimes de GDB (no en necessites més):</p>
+<pre><code>break suma
+run
+info registers
+x/16gx $rsp
+disassemble suma</code></pre>
+<section id="a.-entrada-a-suma" class="level3">
+<h3 class="anchored" data-anchor-id="a.-entrada-a-suma">A. Entrada a suma()</h3>
+<ul>
+<li>Quin és el valor de <code>RDI</code>?</li>
+<li>Quin és el valor de <code>RSI</code>?</li>
+<li>Quin valor té <code>RSP</code>?</li>
+<li>Quin valor té <code>RBP</code>?</li>
+<li>On és la <em>return address</em>?</li>
+</ul>
+</section>
+<section id="b.-assembly" class="level3">
+<h3 class="anchored" data-anchor-id="b.-assembly">B. Assembly</h3>
+<p>Copia només les instruccions rellevants de <code>suma()</code> i anota’n l’efecte:</p>
+<pre class="text"><code>instrucció        efecte
+-----------       ----------------
+push ...          ...
+mov ...           ...
+...
+ret               ...</code></pre>
+<p>No cal que entenguis cada instrucció assembly al detall. L’objectiu és relacionar:</p>
+<pre><code>C
+ ↓
+assembly
+ ↓
+registres
+ ↓
+stack</code></pre>
 <div class="concepte udl-component udl-concepte">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-concepte"></use></svg><span>Concepte</span></div>
-<p><code>v</code> i <code>p</code> es comporten igual quan hi accedeixes (<code>v[2]</code> i <code>p[2]</code> valen el mateix), però <strong>el compilador els tracta com a tipus diferents</strong>: <code>v</code> té tipus <code>int[5]</code> (un array), <code>p</code> té tipus <code>int *</code> (un punter). <code>sizeof</code> és precisament una de les poques operacions on aquesta diferència de tipus es fa evident.</p>
-</div>
-<p>Però <strong><code>v</code> i <code>&amp;v</code> tampoc no són el mateix</strong>. Comprovem-ho:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>printf<span class="op">(</span><span class="st">"</span><span class="sc">%p\n</span><span class="st">"</span><span class="op">,</span> <span class="op">(</span><span class="dt">void</span> <span class="op">*)</span>v<span class="op">);</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>printf<span class="op">(</span><span class="st">"</span><span class="sc">%p\n</span><span class="st">"</span><span class="op">,</span> <span class="op">(</span><span class="dt">void</span> <span class="op">*)(</span>v <span class="op">+</span> <span class="dv">1</span><span class="op">));</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>printf<span class="op">(</span><span class="st">"</span><span class="sc">%p\n</span><span class="st">"</span><span class="op">,</span> <span class="op">(</span><span class="dt">void</span> <span class="op">*)&amp;</span>v<span class="op">);</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>printf<span class="op">(</span><span class="st">"</span><span class="sc">%p\n</span><span class="st">"</span><span class="op">,</span> <span class="op">(</span><span class="dt">void</span> <span class="op">*)(&amp;</span>v <span class="op">+</span> <span class="dv">1</span><span class="op">));</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="exercici udl-component udl-exercici">
-<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
-<p>Abans d’executar-ho: <code>v + 1</code> i <code>&amp;v + 1</code> avancen la mateixa quantitat de bytes respecte a <code>v</code> i <code>&amp;v</code> respectivament?</p>
-</div>
-<p>Executa-ho i observa les adreces.</p>
-<p>Mesura-ho amb exactitud, igual que vas fer a la sessió anterior:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>printf<span class="op">(</span><span class="st">"</span><span class="sc">%td\n</span><span class="st">"</span><span class="op">,</span> <span class="op">(</span><span class="dt">char</span> <span class="op">*)(</span>v <span class="op">+</span> <span class="dv">1</span><span class="op">)</span> <span class="op">-</span> <span class="op">(</span><span class="dt">char</span> <span class="op">*)</span>v<span class="op">);</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>printf<span class="op">(</span><span class="st">"</span><span class="sc">%td\n</span><span class="st">"</span><span class="op">,</span> <span class="op">(</span><span class="dt">char</span> <span class="op">*)(&amp;</span>v <span class="op">+</span> <span class="dv">1</span><span class="op">)</span> <span class="op">-</span> <span class="op">(</span><span class="dt">char</span> <span class="op">*)&amp;</span>v<span class="op">);</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>printf<span class="op">(</span><span class="st">"</span><span class="sc">%zu\n</span><span class="st">"</span><span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span><span class="dt">int</span><span class="op">));</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="exercici udl-component udl-exercici">
-<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
-<p>Compara els dos resultats de la resta amb <code>sizeof(int)</code> i amb <code>sizeof(v)</code> que acabes de mesurar. Amb quin es correspon cadascun? Tenies raó en la teva predicció?</p>
-</div>
-<details>
-<summary>
-<b>Pots veure el raonament</b>
-</summary>
-<div class="solucio udl-component udl-solucio">
-<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
-<p>En aquesta expressió, <code>v</code> decau a un punter a <code>int</code>, de tipus <code>int *</code>. Per això, <code>v + 1</code> avança <code>sizeof(int)</code> bytes, coincidint amb el que has mesurat a <code>(char *)(v + 1) - (char *)v</code>. <code>&amp;v</code>, en canvi, és l’adreça de l’array sencer i té tipus <code>int (*)[5]</code>; per això, <code>&amp;v + 1</code> avança <code>sizeof(v)</code> bytes, és a dir, l’array complet, coincidint amb <code>(char *)(&amp;v + 1) - (char *)&amp;v</code>.</p>
-<p>Les dues expressions fan referència a la mateixa adreça inicial de l’array, però tenen tipus diferents. Per això, sumar-hi <code>1</code> no produeix el mateix resultat.</p>
-</div>
-</details>
-<div class="resum udl-component udl-resum">
-<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-resum"></use></svg><span>Resum</span></div>
-<p><strong>El que hem de retenir:</strong> en la majoria de contextos, l’expressió <code>v</code> es converteix (decau) a un punter al primer element, de tipus <code>int *</code>; avançar-lo salta d’<code>int</code> en <code>int</code>. <code>&amp;v</code>, en canvi, és un punter a <strong>l’array sencer</strong>, de tipus <code>int (*)[5]</code>; avançar-lo salta l’array sencer. <code>v</code> en si mateix continua sent un array (<code>int[5]</code>), no un punter, el decaïment afecta com es tracta l’expressió en cada context, no canvia què és <code>v</code>.</p>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>printf<span class="op">(</span><span class="st">"</span><span class="sc">%d\n</span><span class="st">"</span><span class="op">,</span> <span class="op">*</span>p<span class="op">);</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>printf<span class="op">(</span><span class="st">"</span><span class="sc">%d\n</span><span class="st">"</span><span class="op">,</span> <span class="op">*(</span>p <span class="op">+</span> <span class="dv">1</span><span class="op">));</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>printf<span class="op">(</span><span class="st">"</span><span class="sc">%d\n</span><span class="st">"</span><span class="op">,</span> <span class="op">*(</span>p <span class="op">+</span> <span class="dv">2</span><span class="op">));</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="exercici udl-component udl-exercici">
-<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
-<p>Abans d’executar-ho, prediu què imprimirà cadascuna de les tres expressions. Per què?</p>
-</div>
-<details>
-<summary>
-<b>Pots veure el raonament</b>
-</summary>
-<div class="solucio udl-component udl-solucio">
-<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
-<p><code>*p</code> val <code>10</code> (el primer element de <code>v</code>). <code>*(p + 1)</code> val <code>20</code>: <code>p + 1</code> avança un <code>int</code> (com ja has vist a l’exercici anterior), i desreferenciar-lo dona el valor de <code>v[1]</code>. <code>*(p + 2)</code> val <code>30</code>, pel mateix motiu amb <code>v[2]</code>. En general, <code>*(p + i)</code> i <code>v[i]</code> donen sempre el mateix valor, és, de fet, com el compilador interpreta <code>v[i]</code> per sota.</p>
-</div>
-</details>
-<div class="exercici udl-component udl-exercici">
-<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
-<p>Dibuixa <code>p</code> apuntant a l’array <code>v</code>.</p>
-</div>
-<details>
-<summary>
-<b>Pots veure la solució</b>
-</summary>
-<div class="solucio udl-component udl-solucio">
-<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
-<pre><code>+------+------+------+------+------+
-|  10  |  20  |  30  |  40  |  50  |
-+------+------+------+------+------+
-   ▲
-   p</code></pre>
-</div>
-</details>
-<p>Ara fes:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>p<span class="op">++;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="exercici udl-component udl-exercici">
-<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
-<p>Torna a dibuixar <code>p</code> sobre l’array, després de <code>p++</code>.</p>
-</div>
-<details>
-<summary>
-<b>Pots veure la solució</b>
-</summary>
-<div class="solucio udl-component udl-solucio">
-<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
-<pre><code>+------+------+------+------+------+
-|  10  |  20  |  30  |  40  |  50  |
-+------+------+------+------+------+
-          ▲
-          p</code></pre>
-<p><code>p</code> ha avançat una posició (un <code>int</code> sencer, no un byte), i ara apunta a <code>v[1]</code>.</p>
-</div>
-</details>
-<div class="exercici udl-component udl-exercici">
-<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
-<p><strong>Pregunta clau.</strong> Recorda el resultat que vas obtenir a la sessió anterior amb <code>(char *)&amp;v[1] - (char *)&amp;v[0]</code>. Amb aquest resultat, respon: què creus que significa <code>p + 1</code>, i per què no significa necessàriament <em>sumar un byte a l’adreça</em>?</p>
-</div>
-<details>
-<summary>
-<b>Pots veure el raonament</b>
-</summary>
-<div class="solucio udl-component udl-solucio">
-<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
-<p><code>p + 1</code> avança tants bytes com ocupa el tipus al qual apunta <code>p</code> (aquí, <code>sizeof(int)</code>), no un byte. És exactament el mateix patró que vas mesurar amb <code>&amp;v[1] - &amp;v[0]</code> a la sessió anterior: el compilador escala automàticament l’aritmètica segons la mida del tipus.</p>
-</div>
-</details>
-<div class="errorcomu udl-component udl-errorcomu">
-<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-errorcomu"></use></svg><span>Error Comú</span></div>
-<p>Un error molt habitual és pensar que <code>p + 1</code> sempre avança 1 byte. Només és així quan <code>p</code> és un punter a <code>char</code> (<code>sizeof(char) == 1</code>). Per a qualsevol altre tipus, <code>p + 1</code> avança <code>sizeof(tipus)</code> bytes.</p>
-</div>
-<div class="resum udl-component udl-resum">
-<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-resum"></use></svg><span>Resum</span></div>
-<p>L’aritmètica d’un punter està relacionada amb el tipus de l’objecte al qual apunta. <code>p + 1</code> avança tants bytes com ocupa un <code>int</code> (comprova-ho amb <code>sizeof(int)</code>), no un byte.</p>
+<p>Una instrucció assembly no és un pas aïllat: cada una mou o llegeix algun registre o posició de la pila que ja coneixes pel nom.</p>
 </div>
 <hr>
 </section>
-<section id="part-b-strings" class="level3">
-<h3 class="anchored" data-anchor-id="part-b-strings">Part B — Strings</h3>
-<p>Recuperem les cadenes de caràcters:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="dt">char</span> s<span class="op">[]</span> <span class="op">=</span> <span class="st">"cau"</span><span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell" data-layout-align="default">
-<div class="cell-output-display">
-<div>
-<p></p><figure class="figure"><p></p>
-<div>
-<pre class="mermaid mermaid-js">graph LR
-    A["s[0] = 'c'"] --- B["s[1] = 'a'"] --- C["s[2] = 'u'"] --- D["s[3] = '\0'"]
-</pre>
-</div>
-<p></p></figure><p></p>
-</div>
-</div>
-</div>
-<div class="definicio udl-component udl-definicio">
-<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-definicio"></use></svg><span>Definició</span></div>
-<p>Una cadena de caràcters en C és un array de <code>char</code> que acaba amb el caràcter especial <code>'\0'</code> (byte nul), que marca el final de la cadena.</p>
-</div>
-<div class="exercici udl-component udl-exercici">
-<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
-<p>Per què hi ha quatre bytes si la paraula “cau” té tres caràcters?</p>
-</div>
-<details>
-<summary>
-<b>Pots veure el raonament</b>
-</summary>
-<div class="solucio udl-component udl-solucio">
-<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
-<p>Perquè cal reservar espai per al caràcter <code>'\0'</code>, que marca el final de la cadena. Sense aquest byte, no hi hauria manera de saber on acaba la cadena en memòria. <code>char s[] = "cau";</code> reserva automàticament aquest quart byte.</p>
-</div>
-</details>
-<div class="bonapractica udl-component udl-bonapractica">
-<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-bonapractica"></use></svg><span>Bona Pràctica</span></div>
-<p>Si dimensiones a mà un array de caràcters (<code>char s[4]</code>, per exemple), recorda sempre reservar una posició extra per al <code>'\0'</code>. Si no ho fas, qualsevol funció que llegeixi la cadena (com <code>strlen</code> o <code>printf("%s", ...)</code>) llegirà més enllà del final de l’array.</p>
-</div>
-<p>Ara:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="dt">char</span> <span class="op">*</span>p <span class="op">=</span> s<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="exercici udl-component udl-exercici">
-<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
-<p>Quin valor tindrà cadascuna d’aquestes expressions?</p>
-<ul>
-<li><code>*p</code></li>
-<li><code>*(p + 1)</code></li>
-<li><code>*(p + 2)</code></li>
-<li><code>*(p + 3)</code></li>
-</ul>
-</div>
-<details>
-<summary>
-<b>Pots veure el raonament</b>
-</summary>
-<div class="solucio udl-component udl-solucio">
-<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
-<p><code>*p</code> val <code>'c'</code>, <code>*(p + 1)</code> val <code>'a'</code>, <code>*(p + 2)</code> val <code>'u'</code>, <code>*(p + 3)</code> val <code>'\0'</code>. És exactament el mateix mecanisme que vas fer servir amb <code>v</code> a la Part A: <code>p</code> apunta al primer element, i sumar-hi <code>i</code> avança <code>i</code> posicions del tipus al qual apunta (<code>char</code>, aquí).</p>
-</div>
-</details>
-<hr>
 </section>
-<section id="part-c-construïm-strlen" class="level3">
-<h3 class="anchored" data-anchor-id="part-c-construïm-strlen">Part C — Construïm <code>strlen</code></h3>
-<div class="exerciciprog udl-component udl-exerciciprog">
-<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exerciciprog"></use></svg><span>Exercici de Programació</span></div>
-<p>Sense mirar la solució encara, escriu una funció <code>mini_strlen</code> que recorri <code>s</code> amb un punter fins trobar <code>'\0'</code> i retorni la seva longitud (sense comptar el <code>'\0'</code>).</p>
-<details>
-<summary>
-<b>Pots veure una solució possible</b>
-</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="dt">size_t</span> mini_strlen<span class="op">(</span><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>s<span class="op">)</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>p <span class="op">=</span> s<span class="op">;</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">(*</span>p <span class="op">!=</span> <span class="ch">'</span><span class="sc">\0</span><span class="ch">'</span><span class="op">)</span></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>        p<span class="op">++;</span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> p <span class="op">-</span> s<span class="op">;</span></span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-</div>
-<div class="exercici udl-component udl-exercici">
-<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
-<p><strong>Pregunta final.</strong> Per què podem fer <code>p - s</code>?</p>
-</div>
-<details>
-<summary>
-<b>Pots veure el raonament</b>
-</summary>
-<div class="solucio udl-component udl-solucio">
-<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
-<p><code>p</code> i <code>s</code> apunten totes dues dins del mateix array de caràcters. Restar dos punters dins del mateix array dona el nombre d’elements que els separen (exactament com vas fer a la sessió anterior amb <code>&amp;v[1] - &amp;v[0]</code>). Com que <code>p</code> ha avançat un <code>char</code> per cada posició recorreguda fins trobar <code>'\0'</code>, <code>p - s</code> dona directament la longitud de la cadena.</p>
-</div>
-</details>
-<div class="errorcomu udl-component udl-errorcomu">
-<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-errorcomu"></use></svg><span>Error Comú</span></div>
-<p>Un error habitual en implementar <code>strlen</code> a mà és oblidar-se d’avançar <code>p</code> dins del <code>while</code> (<code>p++</code>), cosa que provoca un bucle infinit perquè <code>*p</code> mai canvia. Un altre és comptar el <code>'\0'</code> com a part de la longitud.</p>
-</div>
+<section id="part-3-explicar-la-diferència" class="level1">
+<h1>Part 3 · Explicar la diferència</h1>
+<p>Respon amb les teves paraules, sense tornar a mirar GDB:</p>
+<ol type="1">
+<li>Per què dues variables automàtiques qualssevol (per exemple, <code>x</code> a <code>main()</code> i <code>local</code> a <code>suma()</code>) no tenen per què acabar totes dues físicament al stack de la mateixa manera?</li>
+<li>Per què <code>p</code> i <code>*p</code> poden viure en regions diferents?</li>
+</ol>
 <div class="repte udl-component udl-repte">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-repte"></use></svg><span>Repte</span></div>
-<p><strong>Opcional.</strong> Reescriu <code>mini_strlen</code> fent servir indexació (<code>s[i]</code>) en lloc de punters (<code>*p</code>). Compara totes dues versions: quina trobes més llegible? Recorda que, per sota, el compilador sol generar codi molt semblant per a totes dues.</p>
+<p>Quina diferència hi ha entre <strong>el codi de <code>suma()</code></strong> i <strong>l’activació de <code>suma()</code></strong>?</p>
 </div>
 <hr>
 </section>
-<section id="part-d-una-primera-mirada-a-la-memòria-del-procés" class="level3">
-<h3 class="anchored" data-anchor-id="part-d-una-primera-mirada-a-la-memòria-del-procés">Part D — Una primera mirada a la memòria del procés</h3>
-<p>Encara no entrarem en detall de com s’organitza la memòria d’un procés. Només plantegem la pregunta.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> x <span class="op">=</span> <span class="dv">42</span><span class="op">;</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> v<span class="op">[</span><span class="dv">5</span><span class="op">];</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">/* ... */</span></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<pre><code>┌──────────────────────────┐
-│   Memòria d'un procés    │
-│                          │
-│            ?             │
-│                          │
-│            ?             │
-│                          │
-│            ?             │
-└──────────────────────────┘</code></pre>
+<section id="part-4-trenca-el-model" class="level1">
+<h1>Part 4 · Trenca el model</h1>
+<p>Pren aquesta versió, més senzilla, de la funció:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>__attribute__<span class="op">((</span>noinline<span class="op">))</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> suma<span class="op">(</span><span class="dt">int</span> a<span class="op">,</span> <span class="dt">int</span> b<span class="op">)</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> a <span class="op">+</span> b<span class="op">;</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="reflexio udl-component udl-reflexio">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-reflexio"></use></svg><span>Reflexió</span></div>
-<p><strong>Pregunta oberta</strong> (no la responem avui, la recuperarem a teoria): aquestes dades estan en algun lloc de la memòria del procés. Com està organitzada aquesta memòria? A teoria apareixeran conceptes com <em>stack</em> i <em>heap</em>.</p>
+<p>El compilador pot eliminar la funció del codi optimitzat. Hem afegit aquesta directiva perquè puguis comparar la funció a <code>-O0</code> i <code>-O2</code>.</p>
 </div>
-
-
+<p>Compila-la de dues maneres:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gcc</span> <span class="at">-g</span> <span class="at">-O0</span> <span class="at">-fno-omit-frame-pointer</span> program2.c <span class="at">-o</span> program2_O0</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">gcc</span> <span class="at">-g</span> <span class="at">-O2</span>                        program2.c <span class="at">-o</span> program2_O2</span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Fixa’t que a la versió <code>-O2</code> <strong>no</strong> forcem <code>-fno-omit-frame-pointer</code>. Volem veure què decideix el compilador pel seu compte.</p>
+<p>Desassembla <code>suma()</code> a totes dues (<code>gdb -batch -ex 'disassemble suma' programX</code>) i respon:</p>
+<ul>
+<li>Continua existint <code>RBP</code> com abans?</li>
+<li>Continua existint el stack frame clàssic (<code>push rbp; mov rsp,rbp; ...</code>)?</li>
+<li>El codi assembly és igual?</li>
+<li>Una variable de C ha de tenir necessàriament una adreça de memòria durant tota la seva vida? Justifica-ho a partir del que observes amb <code>-O2</code>.</li>
+<li>Quina diferència hi ha entre el model que hem estudiat i una execució optimitzada?</li>
+</ul>
+<div class="concepte udl-component udl-concepte">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-concepte"></use></svg><span>Concepte</span></div>
+<p><strong>Una funció sempre crea exactament aquest stack frame</strong> és fals. El frame depèn de l’arquitectura, l’ABI, el compilador i les opcions d’optimització. El frame pointer es pot ometre, i una variable pot no tenir mai una adreça de memòria pròpia.</p>
+</div>
+<hr>
 </section>
+<section id="pregunta-de-síntesi" class="level1">
+<h1>Pregunta de síntesi</h1>
+<p>Sense tornar a mirar GDB:</p>
+<div class="repte udl-component udl-repte">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-repte"></use></svg><span>Repte</span></div>
+<p>Explica, en 8–10 línies, què passa quan <code>main()</code> executa <code>suma(x, *p)</code>, des d’abans del <code>call</code> fins que <code>main()</code> recupera el control.</p>
+</div>
+<p>Has d’integrar, en un sol relat continu: l’espai d’adreces, els arguments i l’ABI, <code>call</code>, la <em>return address</em>, <code>RSP</code>, <code>RBP</code>, la variable <code>local</code>, <code>RAX</code> i <code>ret</code>. Si ho pots explicar sencer sense saltar-te cap peça, has entès les dues sessions.</p>
+<hr>
+</section>
+<section id="tancament-de-la-pràctica" class="level1">
+<h1>Tancament de la pràctica</h1>
+<p>Annota en un document de text o Markdown les teves respostes a totes les preguntes i reflexions. Si vols, pots afegir captures de pantalla de GDB per il·lustrar-les.</p>
+<ol type="1">
+<li><strong>Predicció</strong> · què creus que passarà (Part 1).</li>
+<li><strong>Experiment</strong> · què observes amb GDB (Part 2).</li>
+<li><strong>Diferència</strong> · què no ha passat com esperaves, si escau.</li>
+<li><strong>Explicació</strong> · per què (Part 3).</li>
+<li><strong>Model final</strong> · completa aquest diagrama amb registres, <em>return address</em>, stack frame, resultat i <code>call</code>/<code>ret</code>. No et donem els valors: has de ser tu qui els situï.</li>
+</ol>
+<pre class="text"><code>                     main()
+                       │
+                       │ suma(5, 30)
+                       │
+                       │
+                       ▼
+                  suma(a,b)
+               ┌───────────────┐
+               │               │
+               │               │
+               │               │
+               └───────────────┘
+                       │
+                       │
+                       │
+                       ▼
+                     main()</code></pre>
+<p>Inclou també la taula d’estat següent, omplerta amb els valors reals que has observat (no cal completar cap cel·la que consideris no rellevant).</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Moment</th>
+<th>RIP</th>
+<th>RSP</th>
+<th>RBP</th>
+<th>RDI</th>
+<th>RSI</th>
+<th>RAX</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>abans de <code>call</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>entrada a <code>suma</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>després del pròleg</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>després del càlcul</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>abans de <code>ret</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>retorn a <code>main</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+
 </section>
 
 </main> <!-- /main -->
@@ -813,12 +848,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       // flash "checked"
       button.classList.add('code-copy-button-checked');
       var currentTitle = button.getAttribute("title");
-      button.setAttribute("title", "Copied!");
+      button.setAttribute("title", "Copiat!");
       let tooltip;
       if (window.bootstrap) {
         button.setAttribute("data-bs-toggle", "tooltip");
         button.setAttribute("data-bs-placement", "left");
-        button.setAttribute("data-bs-title", "Copied!");
+        button.setAttribute("data-bs-title", "Copiat!");
         tooltip = new bootstrap.Tooltip(button, 
           { trigger: "manual", 
             customClass: "code-copy-button-tooltip",
@@ -1190,14 +1225,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../../../blocs/01-espai-usuari/pralabs/01_c_mem.html" class="pagination-link" aria-label="Pralab 01: Del C a la memòria (I)">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Pralab 01: Del C a la memòria (I)</span>
+      <a href="../../../blocs/01-espai-usuari/activitats/01_rols_funcions.html" class="pagination-link" aria-label="The UNIX Time-Sharing System">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">The UNIX Time-Sharing System</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../../../blocs/01-espai-usuari/activitats/01_c_punters_arrays.html" class="pagination-link" aria-label="Exercicis amb C · Apuntadors i arrays">
-        <span class="nav-page-text">Exercicis amb C · Apuntadors i arrays</span> <i class="bi bi-arrow-right-short"></i>
-      </a>
   </div>
 </nav>
 </div> <!-- /content -->

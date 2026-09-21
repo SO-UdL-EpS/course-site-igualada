@@ -143,6 +143,972 @@
     ]
   },
   {
+    "objectID": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#crides-de-funció-cpu-registres-i-stack",
+    "href": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#crides-de-funció-cpu-registres-i-stack",
+    "title": "Crides de funció: CPU, registres i stack",
+    "section": "Crides de funció: CPU, registres i stack",
+    "text": "Crides de funció: CPU, registres i stack\n\nQuè passa realment quan fem foo()?",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "Crides de funció: CPU, registres i stack"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#objectius-daprenentatge",
+    "href": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#objectius-daprenentatge",
+    "title": "Crides de funció: CPU, registres i stack",
+    "section": "Objectius d’aprenentatge",
+    "text": "Objectius d’aprenentatge\n\nObjectius d'Aprenentatge\n\nReconstruir el mecanisme complet d’una crida de funció, de principi a fi\nDistingir RIP/RSP/RBP i els seus equivalents PC/SP/X29 en AArch64\nExplicar què és una calling convention i quin paper hi juga l’ABI\nIdentificar quins registres ha de preservar una funció (caller-saved vs callee-saved)\nObservar aquests conceptes en execució real amb GDB",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "Crides de funció: CPU, registres i stack"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#prerequisits",
+    "href": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#prerequisits",
+    "title": "Crides de funció: CPU, registres i stack",
+    "section": "Prerequisits",
+    "text": "Prerequisits\n\nPrerequisits\n\nEspai d’adreces d’un procés: TEXT, DATA, HEAP, STACK\nConcepte de stack frame i lifetime d’una variable automàtica\nSintaxi bàsica de funcions en C",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "Crides de funció: CPU, registres i stack"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#on-ens-vam-quedar",
+    "href": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#on-ens-vam-quedar",
+    "title": "Crides de funció: CPU, registres i stack",
+    "section": "On ens vam quedar?",
+    "text": "On ens vam quedar?\n\n\n\n\nint main(void)\n{\n    foo();\n}\n\nReflexió\nPerò què fa la CPU quan executem aquesta crida?",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "Crides de funció: CPU, registres i stack"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#un-programa-és-una-seqüència-dinstruccions",
+    "href": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#un-programa-és-una-seqüència-dinstruccions",
+    "title": "Crides de funció: CPU, registres i stack",
+    "section": "Un programa és una seqüència d’instruccions",
+    "text": "Un programa és una seqüència d’instruccions\n\n\n\n\n\nConcepte\nLa CPU executa instruccions una darrere l’altra sequencialment.\n\n\nConcepte\nLes instruccions poden ser de diferents tipus (aritmètiques, de salt, de càrrega,…) i la seva mida no és sempre la mateixa: en x86-64 és variable (entre 1 i 15 bytes segons la instrucció); en AArch64 és fixa, sempre 4 bytes.\n\n\nBona Pràctica\nPer això en AArch64 la instrucció següent sempre és PC + 4. En x86-64, RIP + 4 no funciona en general — cal conèixer la longitud real de la instrucció actual per saber on comença la següent.\n\n\nReflexió\nCom sap la CPU quina instrucció ha d’executar?",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "Crides de funció: CPU, registres i stack"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#rip-instruction-pointer",
+    "href": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#rip-instruction-pointer",
+    "title": "Crides de funció: CPU, registres i stack",
+    "section": "RIP: Instruction Pointer",
+    "text": "RIP: Instruction Pointer\n\n\n\n\n\nDefinició\n\nx86-64: RIP: Instruction Pointer.\nAArch64: PC: Program Counter.\n\n\n\nConcepte\nEl nom canvia, però el concepte és el mateix: indicar on continua l’execució.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "Crides de funció: CPU, registres i stack"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#ara-fem-foo",
+    "href": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#ara-fem-foo",
+    "title": "Crides de funció: CPU, registres i stack",
+    "section": "Ara fem foo()",
+    "text": "Ara fem foo()\n\n\n{\n    foo();\n    printf(\"fi\\n\");\n}\n\nReflexió\nQuan foo() acaba, com sap la CPU on ha de tornar?",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "Crides de funció: CPU, registres i stack"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#return-address",
+    "href": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#return-address",
+    "title": "Crides de funció: CPU, registres i stack",
+    "section": "Return address",
+    "text": "Return address\n\n\n\n\n\nDefinició\nReturn address: la instrucció a la qual cal tornar un cop acabada la funció cridada.\n\n\nConcepte\nUna crida de funció necessita conservar el punt al qual haurà de tornar.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "Crides de funció: CPU, registres i stack"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#call-i-ret-x86-64",
+    "href": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#call-i-ret-x86-64",
+    "title": "Crides de funció: CPU, registres i stack",
+    "section": "call i ret (x86-64)",
+    "text": "call i ret (x86-64)",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "Crides de funció: CPU, registres i stack"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#bl-i-ret-aarch64",
+    "href": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#bl-i-ret-aarch64",
+    "title": "Crides de funció: CPU, registres i stack",
+    "section": "BL i RET (AArch64)",
+    "text": "BL i RET (AArch64)\n\n\n\n\n\nDefinició\nBL foo salta a foo i desa l’adreça de retorn a X30 (Link Register).\n\n\nBona Pràctica\nEl mecanisme físic canvia (pila vs. registre), però C no en sap res: foo() és foo() en ambdues arquitectures. L’ABI i el maquinari decideixen com es representa la crida. El llenguatge només veu l’abstracció crida una funció i torna. Aquesta separació entre abstracció i mecanisme és la mateixa raó per la qual el mateix codi C es pot compilar per a qualsevol de les dues.\n\n\n\nReflexió\nI si foo() mateixa crida bar()? BL bar torna a escriure X30 — qui preserva llavors l’adreça de retorn original de foo()? (hi tornarem amb caller-saved / callee-saved)",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "Crides de funció: CPU, registres i stack"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#però-on-està-el-stack",
+    "href": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#però-on-està-el-stack",
+    "title": "Crides de funció: CPU, registres i stack",
+    "section": "Però… on està el stack?",
+    "text": "Però… on està el stack?\nLa STACK és una regió de memòria que creix cap a adreces més baixes. Per tant, cal un registre que indiqui on és el top actual del stack.\n\nDefinició\n\nRSP (x86-64): Stack Pointer.\nSP (AArch64): Stack Pointer.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "Crides de funció: CPU, registres i stack"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#rsp-sp",
+    "href": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#rsp-sp",
+    "title": "Crides de funció: CPU, registres i stack",
+    "section": "RSP / SP",
+    "text": "RSP / SP\n\n\n\n\n\nConcepte\nRSP/SP identifica la posició actual del stack: push i pop (x86-64) el modifiquen.\n\n\nBona Pràctica\nPer a AArch64 no parlem de push/pop com a instruccions literals — el model conceptual és el mateix, però la implementació és diferent.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "Crides de funció: CPU, registres i stack"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#una-funció-necessita-espai",
+    "href": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#una-funció-necessita-espai",
+    "title": "Crides de funció: CPU, registres i stack",
+    "section": "Una funció necessita espai",
+    "text": "Una funció necessita espai\n\n\nvoid foo(void)\n{\n    int x = 10;\n    int y = 20;\n}\n\nReflexió\nQuè passa amb RSP quan reservem i alliberem aquest espai?",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "Crides de funció: CPU, registres i stack"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#el-stack-frame-recordatori",
+    "href": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#el-stack-frame-recordatori",
+    "title": "Crides de funció: CPU, registres i stack",
+    "section": "El stack frame — recordatori",
+    "text": "El stack frame — recordatori\n\n\n\n\n\nDefinició\nStack frame: la part del stack associada a una activació d’una funció (Sessió 1).\n\n\nBona Pràctica\nNo existeix un únic format universal de stack frame. Depèn de l’arquitectura, l’ABI/calling convention, el compilador i les opcions d’optimització.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "Crides de funció: CPU, registres i stack"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#el-problema-de-rsp",
+    "href": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#el-problema-de-rsp",
+    "title": "Crides de funció: CPU, registres i stack",
+    "section": "El problema de RSP",
+    "text": "El problema de RSP\n\n\nvoid foo(void)\n{\n    int x = 10;\n    int y = 20;\n    ...\n}\n\nReflexió\nRSP es mou constantment. Podem tenir un punt de referència estable per al frame?\n\n\nx86_64 i set instruccions AT&T",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "Crides de funció: CPU, registres i stack"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#rbp-frame-pointer",
+    "href": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#rbp-frame-pointer",
+    "title": "Crides de funció: CPU, registres i stack",
+    "section": "RBP: Frame Pointer",
+    "text": "RBP: Frame Pointer\n\n\n\nDefinició\nRBP — Frame Pointer (x86-64).\n\n\nConcepte\n\nRSP → posició actual del stack.\nRBP → referència estable al frame.\nRSP pot moure’s.\nRBP es manté fix mentre dura l’activació.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "Crides de funció: CPU, registres i stack"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#aarch64-x29",
+    "href": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#aarch64-x29",
+    "title": "Crides de funció: CPU, registres i stack",
+    "section": "AArch64: X29",
+    "text": "AArch64: X29\n\n\nx86-64\n\nRBP → frame pointer\n\n\nAArch64\n\nX29 → frame pointer\nX30 → link register\n\n\n\nConcepte\nEl paper conceptual és el mateix però els registres tenen noms diferents.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "Crides de funció: CPU, registres i stack"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#construint-el-frame-x86-64",
+    "href": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#construint-el-frame-x86-64",
+    "title": "Crides de funció: CPU, registres i stack",
+    "section": "Construint el frame (x86-64)",
+    "text": "Construint el frame (x86-64)\n\n\n\n\nBona Pràctica\nAquest és el patró clàssic. Els compiladors moderns poden ometre el frame pointer (frame pointer omission, típic amb -O2).",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "Crides de funció: CPU, registres i stack"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#destruint-el-frame",
+    "href": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#destruint-el-frame",
+    "title": "Crides de funció: CPU, registres i stack",
+    "section": "Destruint el frame",
+    "text": "Destruint el frame",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "Crides de funció: CPU, registres i stack"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#i-els-arguments",
+    "href": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#i-els-arguments",
+    "title": "Crides de funció: CPU, registres i stack",
+    "section": "I els arguments?",
+    "text": "I els arguments?\nint suma(int a, int b)\n{\n    return a + b;\n}\n\nReflexió\nQuan main() crida suma(10, 20), on són a i b?\n\n\nError Comú\nAl stack. \\(\\Rightarrow\\) No necessàriament.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "Crides de funció: CPU, registres i stack"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#calling-convention",
+    "href": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#calling-convention",
+    "title": "Crides de funció: CPU, registres i stack",
+    "section": "Calling convention",
+    "text": "Calling convention\n\nDefinició\nCalling convention: com es passen els arguments, on es retorna el resultat, quins registres cal preservar, i com es relacionen caller i callee.\n\n\nConcepte\nC defineix la funció. L’ABI defineix com caller i callee es comuniquen.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "Crides de funció: CPU, registres i stack"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#system-v-amd64-pas-darguments",
+    "href": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#system-v-amd64-pas-darguments",
+    "title": "Crides de funció: CPU, registres i stack",
+    "section": "System V AMD64: pas d’arguments",
+    "text": "System V AMD64: pas d’arguments\n\n\n\n\n\nExemple\nArguments 1–6 (enters/punters) → RDI, RSI, RDX, RCX, R8, R9. Valor de retorn → RAX.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "Crides de funció: CPU, registres i stack"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#aarch64-pas-darguments",
+    "href": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#aarch64-pas-darguments",
+    "title": "Crides de funció: CPU, registres i stack",
+    "section": "AArch64: pas d’arguments",
+    "text": "AArch64: pas d’arguments\n\n\n\n\n\nExemple\nArguments 1–8 (enters/punters) → X0–X7. Valor de retorn → X0.\n\n\nConcepte\nLa calling convention és específica de l’ABI: 6 registres en System V AMD64, 8 en AArch64.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "Crides de funció: CPU, registres i stack"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#i-si-no-caben-als-registres",
+    "href": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#i-si-no-caben-als-registres",
+    "title": "Crides de funció: CPU, registres i stack",
+    "section": "I si no caben als registres?",
+    "text": "I si no caben als registres?\n\n\n\n\n\nBona Pràctica\nModel simplificat: el tractament real també depèn del tipus i de la classificació dels arguments (p. ex. enters vs. punt flotant) definida per l’ABI.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "Crides de funció: CPU, registres i stack"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#no-tots-els-registres-es-tracten-igual",
+    "href": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#no-tots-els-registres-es-tracten-igual",
+    "title": "Crides de funció: CPU, registres i stack",
+    "section": "No tots els registres es tracten igual",
+    "text": "No tots els registres es tracten igual\n\n\nCaller-saved\n\nRAX\nRCX\nRDX\nRDI\nRSI\nR8-R11\n\n\nCallee-saved\n\nRBX\nRBP\nR12–R15\n\n\n\nRepte\nSi foo() modifica RBX, qui ha de garantir que el valor original es conserva?\n\n\nSolució\nRBX és callee-saved: és foo() qui ha de preservar-lo, no qui la crida. No cal memoritzar tota la llista, però sí saber distingir les dues categories.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "Crides de funció: CPU, registres i stack"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#aarch64-caller-callee-saved",
+    "href": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#aarch64-caller-callee-saved",
+    "title": "Crides de funció: CPU, registres i stack",
+    "section": "AArch64: caller / callee saved",
+    "text": "AArch64: caller / callee saved",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "Crides de funció: CPU, registres i stack"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#posem-ho-tot-junt",
+    "href": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#posem-ho-tot-junt",
+    "title": "Crides de funció: CPU, registres i stack",
+    "section": "Posem-ho tot junt",
+    "text": "Posem-ho tot junt\n\n\nint suma(int a, int b)\n{\n    int resultat = a + b;\n    return resultat;\n}\n\n\nConcepte — x86-64 amb System V ABI\n\nmain() posa arguments a RDI i RSI i fa call suma. (2) suma() crea frame, executa i deixa el resultat a RAX. (3) ret torna a main(), RIP apunta a main() i RAX conté el resultat.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "Crides de funció: CPU, registres i stack"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#ho-podem-observar",
+    "href": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#ho-podem-observar",
+    "title": "Crides de funció: CPU, registres i stack",
+    "section": "Ho podem observar?",
+    "text": "Ho podem observar?\n\n\n#include &lt;stdio.h&gt;\n\nint suma(int a, int b)\n{\n    int resultat = a + b;\n    return resultat;\n}\n\nint main(void)\n{\n    int x = suma(10, 20);\n    printf(\"resultat = %d\\n\", x);\n    return 0;\n}\n\n\nExercici\nAbans de mirar-ho, prediu:\n\nOn creieu que estarà el valor 10?\nI el 20?\nQuan fem call, què espereu que canviï?\nQuè passarà amb RSP?",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "Crides de funció: CPU, registres i stack"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#gdb-en-directe",
+    "href": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#gdb-en-directe",
+    "title": "Crides de funció: CPU, registres i stack",
+    "section": "GDB en directe",
+    "text": "GDB en directe\n\n\n\n\n\nReflexió\nCoincideix amb la vostra predicció? On és RIP? On és RSP? On és RBP? On són els arguments? Què hi ha al stack?",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "Crides de funció: CPU, registres i stack"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#del-dibuix-al-programa-real",
+    "href": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#del-dibuix-al-programa-real",
+    "title": "Crides de funció: CPU, registres i stack",
+    "section": "Del dibuix al programa real",
+    "text": "Del dibuix al programa real\n\nConcepte\nEl model que hem construït (RIP → codi, RSP → stack, RBP → frame, RDI/RSI → arguments, RAX → retorn) no és només un dibuix: podem observar-ne parts en un programa real amb GDB.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "Crides de funció: CPU, registres i stack"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#x86-64-i-aarch64-síntesi-final",
+    "href": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html#x86-64-i-aarch64-síntesi-final",
+    "title": "Crides de funció: CPU, registres i stack",
+    "section": "x86-64 i AArch64 — síntesi final",
+    "text": "x86-64 i AArch64 — síntesi final\n\n\n\nConcepte\nx86-64\nAArch64\n\n\n\n\nInstruction pointer\nRIP\nPC\n\n\nStack pointer\nRSP\nSP\n\n\nFrame pointer\nRBP\nX29\n\n\nReturn/link\nstack (via call)\nX30 (via BL)\n\n\nArguments\nRDI…R9\nX0…X7\n\n\nReturn value\nRAX\nX0\n\n\n\n\nResum\n\nUna funció en execució té una activació associada al stack.\nLa CPU utilitza registres per gestionar l’execució, el stack i els arguments.\ncall/ret i BL/RET implementen el mecanisme de crida segons l’arquitectura.\nL’ABI defineix com caller i callee es comuniquen.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "Crides de funció: CPU, registres i stack"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#memòria-dun-procés",
+    "href": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#memòria-dun-procés",
+    "title": "L’espai de memòria d’un procés",
+    "section": "Memòria d’un procés",
+    "text": "Memòria d’un procés\n\nStack · Heap · Data · Text",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "L'espai de memòria d'un procés"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#objectius-daprenentatge",
+    "href": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#objectius-daprenentatge",
+    "title": "L’espai de memòria d’un procés",
+    "section": "Objectius d’aprenentatge",
+    "text": "Objectius d’aprenentatge\n\nObjectius d'Aprenentatge\n\nDescriure el model conceptual de l’espai d’adreces: Text · Data · Heap · Stack\nClassificar variables i funcions segons la regió de memòria on viuen\nExplicar què és un stack frame i el lifetime d’una variable automàtica\nJustificar per què calen reserves al heap per a dades que sobreviuen a la funció que les crea.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "L'espai de memòria d'un procés"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#prerequisits",
+    "href": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#prerequisits",
+    "title": "L’espai de memòria d’un procés",
+    "section": "Prerequisits",
+    "text": "Prerequisits\n\nPrerequisits\n\nPunters i l’operador & (Pralab 01, Pralab 02)\nSintaxi bàsica de definició i crida de funcions en C",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "L'espai de memòria d'un procés"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#el-procés-té-un-espai-dadreces",
+    "href": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#el-procés-té-un-espai-dadreces",
+    "title": "L’espai de memòria d’un procés",
+    "section": "El procés té un espai d’adreces",
+    "text": "El procés té un espai d’adreces\n\n\nProcés\n\n\n\nConcepte\nAquest és un model conceptual, no el mapa físic de la RAM. Les adreces que fa servir el procés són adreces del seu espai virtual.\n\n\nBona Pràctica\nAquest model omet la regió mmap (biblioteques compartides), l’espai de kernel i qualsevol detall d’ASLR (Address Space Layout Randomization). Les adreces reals no són fixes ni predictibles entre execucions. Ho veurem més endavant quan parlem de memory allocators.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "L'espai de memòria d'un procés"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#què-hi-ha-al-text",
+    "href": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#què-hi-ha-al-text",
+    "title": "L’espai de memòria d’un procés",
+    "section": "Què hi ha al TEXT?",
+    "text": "Què hi ha al TEXT?\n\nInstruccions\nCodi executable\nFuncions\n\nint suma(int a, int b)\n{\n    return a + b;\n}\n\nReflexió\nLa funció suma() és una variable?\n\n\nDefinició\nText segment: la zona de l’espai d’adreces on viuen les instruccions executables del programa.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "L'espai de memòria d'un procés"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#codi-dades",
+    "href": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#codi-dades",
+    "title": "L’espai de memòria d’un procés",
+    "section": "Codi ≠ dades",
+    "text": "Codi ≠ dades\n\n\n\n\nvoid foo(void)\n{\n    int x = 10;\n}\n\nError Comú\n\nLa funció està al stack. \\(\\Rightarrow\\) Fals.\nEl codi de foo() viu al TEXT i és la seva activació (la crida en curs) la que utilitza el STACK.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "L'espai de memòria d'un procés"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#variables-globals",
+    "href": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#variables-globals",
+    "title": "L’espai de memòria d’un procés",
+    "section": "Variables globals",
+    "text": "Variables globals\nAquestes variables viuen a la regió DATA de l’espai d’adreces.\nint counter = 0;\n\nint main(void)\n{\n    ...\n}\n\nConcepte\nVariables globals i static tenen una vida que s’estén durant tota l’execució del procés \\(\\Rightarrow\\) no depenen de cap crida de funció.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "L'espai de memòria d'un procés"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#initialized-data-i-bss",
+    "href": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#initialized-data-i-bss",
+    "title": "L’espai de memòria d’un procés",
+    "section": "Initialized data i BSS",
+    "text": "Initialized data i BSS\n\n\nint initialized = 42;\nint uninitialized;\nint main(void)\n{\n    ...\n}\n\nConcepte\nEl model DATA que fem servir simplifica diverses seccions que l’executable real diferencia (.data, .bss…). Ens permetrà parlar d’ELF més endavant sense haver de corregir el model.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "L'espai de memòria d'un procés"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#on-viu-cada-cosa-i",
+    "href": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#on-viu-cada-cosa-i",
+    "title": "L’espai de memòria d’un procés",
+    "section": "On viu cada cosa? (I)",
+    "text": "On viu cada cosa? (I)\n\nExercici — Classifica variables i funcions\nint global = 10;\n\nstatic int total = 20;\n\nvoid foo(void)\n{\n    int x = 30;\n}\n\n\n\nElement\nOn?\n\n\n\n\nglobal\n?\n\n\ntotal\n?\n\n\nfoo()\n?\n\n\nx\n?",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "L'espai de memòria d'un procés"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#on-viu-cada-cosa-ii",
+    "href": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#on-viu-cada-cosa-ii",
+    "title": "L’espai de memòria d’un procés",
+    "section": "On viu cada cosa? (II)",
+    "text": "On viu cada cosa? (II)\n\nSolució — Classifica variables i funcions\nint global = 10;\n\nstatic int total = 20;\n\nvoid foo(void)\n{\n    int x = 30;\n}\n\n\n\nElement\nRegió\n\n\n\n\nglobal\nDATA\n\n\ntotal\nDATA\n\n\nfoo()\nTEXT\n\n\nx\nSTACK",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "L'espai de memòria d'un procés"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#què-és-el-stack",
+    "href": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#què-és-el-stack",
+    "title": "L’espai de memòria d’un procés",
+    "section": "Què és el stack?",
+    "text": "Què és el stack?\n\n\\(\\text{Stack} = \\text{variables automàtiques} + \\text{informació de les crides}\\)\n\n\nDefinició\nStack: regió de memòria utilitzada per gestionar les crides de funcions i les dades automàtiques associades a aquestes crides.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "L'espai de memòria d'un procés"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#una-crida-crea-una-activació",
+    "href": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#una-crida-crea-una-activació",
+    "title": "L’espai de memòria d’un procés",
+    "section": "Una crida crea una activació",
+    "text": "Una crida crea una activació\n\n\nvoid foo(void)\n{\n    int x = 10;\n}\n\nint main(void)\n{\n    foo();\n}\n\nConcepte\nCada crida de funció necessita informació pròpia, per això s’apila un nou marc cada vegada.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "L'espai de memòria d'un procés"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#stack-frame",
+    "href": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#stack-frame",
+    "title": "L’espai de memòria d’un procés",
+    "section": "Stack frame",
+    "text": "Stack frame\n\n\n\n\n\nConcepte\nLa disposició exacta d’un stack frame depèn de l’arquitectura i de la convenció de crida (calling convention).\n\n\nError Comú\nEls arguments no sempre van a la pila. En x86-64 (System V AMD64 ABI), els sis primers arguments enters es passen per registres (rdi, rsi, rdx, rcx, r8, r9), no s’apilen. El detall complet el veurem a la propera sessió.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "L'espai de memòria d'un procés"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#lifetime-duna-variable-automàtica",
+    "href": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#lifetime-duna-variable-automàtica",
+    "title": "L’espai de memòria d’un procés",
+    "section": "Lifetime d’una variable automàtica",
+    "text": "Lifetime d’una variable automàtica\nvoid foo(void)\n{\n    int x = 10;\n}\n\nfoo() → crea frame → x existeix → foo() retorna → frame desapareix → x deixa d’existir\n\n\nConcepte\nEl lifetime d’una variable automàtica està lligat a l’activació de la funció, no al programa sencer. Això serà essencial per entendre el heap.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "L'espai de memòria d'un procés"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#aquesta-funció-és-segura",
+    "href": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#aquesta-funció-és-segura",
+    "title": "L’espai de memòria d’un procés",
+    "section": "Aquesta funció és segura?",
+    "text": "Aquesta funció és segura?\nint *create(void)\n{\n    int x = 42;\n\n    return &x;\n}\n\nReflexió\ncreate() → x = 42 → return &x → frame desapareix\n\n\nError Comú\nEstem retornant una adreça que correspon a una variable automàtica que ja no té una activació activa. El punter resultant és penjat (dangling).\n\n\nConcepte\nL’adreça sobreviu, la variable no.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "L'espai de memòria d'un procés"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#memòria-dinàmica",
+    "href": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#memòria-dinàmica",
+    "title": "L’espai de memòria d’un procés",
+    "section": "Memòria dinàmica",
+    "text": "Memòria dinàmica\n\n\nint *create(void)\n{\n    int *p = malloc(sizeof(int));\n\n    *p = 42;\n\n    return p;\n}\n\n\n\n\nDefinició\nHeap: regió per a objectes amb lifetime controlat manualment, o amb una mida no coneguda en temps de compilació.\n\n\nConcepte\np és una variable local (al STACK). La memòria que apunta és una reserva dinàmica (al HEAP) \\(\\Rightarrow\\) són dues coses diferents.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "L'espai de memòria d'un procés"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#malloc-free",
+    "href": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#malloc-free",
+    "title": "L’espai de memòria d’un procés",
+    "section": "malloc() / free()",
+    "text": "malloc() / free()\nint *p = malloc(sizeof(int));\n\n*p = 42;\n\n/* use p */\n\nfree(p);\n\nExemple\nmalloc() reserva memòria al HEAP; free() la retorna com a disponible.\n\n\nBona Pràctica\nTot malloc() hauria de tenir el seu free() corresponent. Encara no cal saber com funciona per dins (brk, sbrk, bins, fragmentació) \\(\\Rightarrow\\) hi tornarem quan parlem dels memory allocators.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "L'espai de memòria d'un procés"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#conclusions",
+    "href": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#conclusions",
+    "title": "L’espai de memòria d’un procés",
+    "section": "Conclusions",
+    "text": "Conclusions\n\n\n\nResum\n\nEn el model tradicional, el STACK creix cap a adreces més baixes i el HEAP cap a adreces més altes.\nTEXT i DATA no creixen dinàmicament com el STACK o el HEAP.\nLes variables globals i static viuen a DATA; les automàtiques al STACK; les reserves dinàmiques al HEAP.\nEl lifetime d’una variable automàtica està lligat a l’activació de la funció; el lifetime d’una reserva dinàmica està controlat pel programador.\nUn punter i allò que apunta poden viure en regions diferents.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "L'espai de memòria d'un procés"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#classifica-variables-i-funcions-iii",
+    "href": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#classifica-variables-i-funcions-iii",
+    "title": "L’espai de memòria d’un procés",
+    "section": "Classifica variables i funcions (III)",
+    "text": "Classifica variables i funcions (III)\nint global = 10;\n\nvoid foo(void)\n{\n    int x = 20;\n    int *p = malloc(sizeof(int));\n\n    *p = 30;\n}\n\nExercici\nClassifica: foo(), global, x, p, *p",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "L'espai de memòria d'un procés"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#classifica-variables-i-funcions-iv",
+    "href": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#classifica-variables-i-funcions-iv",
+    "title": "L’espai de memòria d’un procés",
+    "section": "Classifica variables i funcions (IV)",
+    "text": "Classifica variables i funcions (IV)\nint global = 10;\n\nvoid foo(void)\n{\n    int x = 20;\n    int *p = malloc(sizeof(int));\n\n    *p = 30;\n}\n\nSolució\n\n\n\nElement\nRegió\n\n\n\n\nfoo()\nTEXT\n\n\nglobal\nDATA\n\n\nx\nSTACK\n\n\np\nSTACK\n\n\n*p\nHEAP",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "L'espai de memòria d'un procés"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#stack-frame-en-detall-x86-64-vs-arm",
+    "href": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html#stack-frame-en-detall-x86-64-vs-arm",
+    "title": "L’espai de memòria d’un procés",
+    "section": "Stack frame en detall: x86-64 vs ARM",
+    "text": "Stack frame en detall: x86-64 vs ARM\n\nx86-64 (System V AMD64 ABI)ARM (AArch64)\n\n\n\n\n\n\n\ncall apila l’adreça de retorn; ret la desapila.\nRegistres callee-saved (rbx, rbp, r12-r15) es guarden si es fan servir.\n\n\nError Comú\nEl retorn sempre s’apila automàticament. Cert en x86 (call/ret), fals en ARM: bl només escriu lr; és la funció qui decideix si cal desar-lo.\n\n\n\n\n\n\n\n\n\nNo hi ha instrucció call/ret equivalent implícita: bl desa l’adreça de retorn al registre lr (x30); cal desar-lo explícitament a la pila si la funció fa una altra crida.\n8 registres per a arguments enters, no 6.\n\n\nError Comú\nEl retorn sempre s’apila automàticament. Cert en x86 (call/ret), fals en ARM: bl només escriu lr; és la funció qui decideix si cal desar-lo.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "L'espai de memòria d'un procés"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/pralabs/01_c_mem.html",
+    "href": "blocs/01-espai-usuari/pralabs/01_c_mem.html",
+    "title": "Pralab 01: Del C a la memòria (I)",
+    "section": "",
+    "text": "Durant el primer curs has treballat amb variables, arrays i cadenes de caràcters en C.\n\nExercici de Programació\nEl primer exercici d’aquest pralab consisteix a sumar dos vectors vector1 amb (1.5, 2.0, -3.5) i vector2 (2.5, -1.0, 4.0) de tres elements cadascun, i imprimir el vector resultant.\n\n\nPots veure la solució\n\n#include &lt;stdio.h&gt;\n\n#define DIMENSIO 3\n\nint main() {\n    float vector1[DIMENSIO] = {1.5, 2.0, -3.5};\n    float vector2[DIMENSIO] = {2.5, -1.0, 4.0};\n    float vector_suma[DIMENSIO];\n\n    for (int i = 0; i &lt; DIMENSIO; i++) {\n        vector_suma[i] = vector1[i] + vector2[i];\n    }\n\n    printf(\"El vector resultant de la suma es:\\n\");\n    printf(\"(\");\n    for (int i = 0; i &lt; DIMENSIO; i++) {\n        printf(\"%.2f\", vector_suma[i]);\n        if (i &lt; DIMENSIO - 1) {\n            printf(\", \"); \n        }\n    }\n    printf(\")\\n\");\n\n    return 0;\n}\n\n\nPerò hi ha una pregunta que l’any passat no vau resoldre. Imagineu que el programa té un array v i que volem accedir a l’element v[i]. Com sap el programa on està v[i]?\nEn aquest pralab comencem a mirar la programació amb C des d’un altre punt de vista: el de la memòria. Aquest laboratori és la base sobre la qual construirem, més endavant, com un sistema operatiu organitza la memòria d’un procés. Aquesta sessió és més experimental que teòrica: anirem fent proves amb petits programes i mirant què passa a la memòria.\n\n\n\nComencem amb aquest programa:\n#include &lt;stdio.h&gt;\n\nint main(void)\n{\n    int x = 42;\n\n    printf(\"x = %d\\n\", x);\n    printf(\"&x = %p\\n\", (void *) &x);\n\n    return 0;\n}\nx   = ?\n&x  = ?\n\nExercici\nAbans d’executar-ho, anota en el teu quadern les respostes a aquestes preguntes:\n\nQuè imprimirà x?\nQuina mena de valor representa &x?\nEsperes que &x tingui el mateix valor que x?\n\n\n\nExercici\nCompila i executa el programa dues vegades seguides i compara els valors de &x que obtens.\n\nSón iguals o diferents?\nSi són diferents, què creus que ha passat?\n\n\n\nExercici\nAfegeix ara aquesta línia i torna a executar:\nprintf(\"%zu\\n\", sizeof(x));\nCompara el que imprimeix sizeof(x) amb el que imprimeix &x. Són el mateix tipus d’informació?\n\n\n\nPots veure el raonament\n\n\nSolució\n\nx és una variable de tipus enter i conté el valor 42.\n&x és l’adreça de memòria on està emmagatzemat x. És un valor que indica la posició a la memòria del procés on es troba x.\nNo, &x no té el mateix valor que x.\nDues execucions poden donar adreces diferents per &x perquè el sistema operatiu assigna, a cada execució, una disposició diferent de la memòria del procés. Aquest mecanisme es diu ASLR (Address Space Layout Randomization, aleatorització de l’espai d’adreces) i el veurem amb detall quan parlem de com el sistema operatiu gestiona la memòria d’un procés. De moment, queda’t amb la idea: l’adreça de x no és fixa ni depèn només del teu codi, sinó també de decisions que pren el sistema operatiu en temps d’execució.\nsizeof(x) retorna la mida en bytes de la variable x, que és diferent de l’adreça de memòria que retorna &x. Per exemple, en un sistema de 64 bits, sizeof(x) podria retornar 4 (si int ocupa 4 bytes), mentre que &x podria ser una adreça com 0x7ffee3b8c4a0.\n\n\n\n\n\n\nflowchart LR\n    x[\"x = 42\"]\n    a[\"&x = 0x7ffee3b8c4a0\"] --&gt;|\"és l'adreça de\"| x\n\n\n\n\n\n\n\n\n\n\n\nIntroduïm ara:\nint x = 42;\nint *p = &x;\n\n\n\n\n\nflowchart LR\n    P[\"p\"] --&gt; X[\"x = 42\"]\n\n\n\n\n\n\nprintf(\"%d\\n\", *p);\n\nExercici\nQuè imprimirà aquest printf?\n\nL’adreça de x\n42\nL’adreça de p\nError de compilació\n\n\n\n\nPots veure el raonament\n\n\nSolució\nEl printf(\"%d\\n\", *p); imprimirà 42, ja que *p accedeix al valor de la variable a la qual apunta p, que és x.\n\n\nAra prova això:\n*p = 99;\nprintf(\"%d\\n\", x);\n\nExercici\nHas modificat p o has modificat x?\n\n\n\nPots veure el raonament\n\n\nSolució\nQuan fas *p = 99;, estàs modificant el valor de x a través del punter p. Així que després d’aquesta línia, x tindrà el valor 99.\n\n\nAmb això ja podem fixar dues definicions formals:\n\nDefinició\nUn punter és una variable que emmagatzema una adreça de memòria.\n\n\nDefinició\nL’operador * permet accedir a l’objecte que es troba a l’adreça emmagatzemada en el punter.\n\n\nReflexió\nNota de compilador. Prova de compilar printf(\"%d\\n\", p); (sense *) amb gcc -Wall -Wextra. Fixa’t en l’avís del compilador: el valor que passes a %d té tipus int *, però %d espera un int — hi ha una incompatibilitat de tipus entre l’argument i el format. Per imprimir un punter amb printf, fem servir %p i convertim el valor a void *, exactament com hem fet a la Part A amb (void *)&x.\n\n\n\n\n\nPartim de:\nint v[5] = {10, 20, 30, 40, 50};\nComencem amb una cosa que probablement ja has fet servir:\nprintf(\"%zu\\n\", sizeof(v));\nprintf(\"%zu\\n\", sizeof(v[0]));\nprintf(\"%zu\\n\", sizeof(v) / sizeof(v[0]));\n\nExercici\nQuè imprimeix cada línia?\n\n\n\nPots veure el raonament\n\n\nSolució\n\nsizeof(v) retorna la mida total de l’array v en bytes. Com que v és un array de 5 enters i cada enter ocupa, per exemple, 4 bytes, sizeof(v) seria 20.\nsizeof(v[0]) retorna la mida d’un sol element de l’array, que és un enter, així que seria 4.\nsizeof(v) / sizeof(v[0]) calcula el nombre d’elements de l’array dividint la mida total de l’array per la mida d’un element, així que seria 20 / 4 = 5.\n\n\n\nJa saps utilitzar v[0], v[1], v[2]. Ara mirem-ho des del punt de vista de la memòria:\nprintf(\"%p\\n\", (void *)&v[0]);\nprintf(\"%p\\n\", (void *)&v[1]);\n\nExercici\nQuè observes en les dues adreces que s’imprimeixen?\n\n\n\nPots veure el raonament\n\n\nSolució\nLes adreces segueixen el mateix patró: cada element ocupa sizeof(int) bytes i els elements d’un array estan emmagatzemats de manera contigua.\n\n\nAra mesura-ho:\nprintf(\"%zu\\n\", sizeof(v[0]));\nprintf(\"%td\\n\", (char *)&v[1] - (char *)&v[0]);\nConvertim temporalment les adreces a char *. Això ens permet expressar la diferència entre les dues adreces en unitats de bytes.\nAra compara els dos resultats.\n\nExercici\nQuina relació observes entre el resultat de la resta amb char * i el valor de sizeof(v[0])?\n\n\n\nPots veure el raonament\n\n\nSolució\nQuan restem dos punters a elements del mateix array, el resultat depèn del tipus del punter. Sense el cast, &v[1] - &v[0] també és una resta vàlida, però el resultat s’expressa en nombre d’elements int, no en bytes. Com que apunten a elements consecutius, dona 1. La diferència en bytes és la que has obtingut amb (char *)&v[1] - (char *)&v[0], i coincideix amb sizeof(int) en aquest sistema (C no garanteix que sizeof(int) valgui el mateix a tot arreu, només que sigui com a mínim de 2 bytes).\n\n\nAmplia-ho amb &v[2]:\nprintf(\"%p\\n\", (void *)&v[2]);\nprintf(\"%td\\n\", (char *)&v[2] - (char *)&v[1]);\n\nExercici\nEs manté el mateix patró? Diries que els elements de v estan repartits de qualsevol manera per la memòria, o segueixen una estructura?\n\n\n\nPots veure el raonament\n\n\nSolució\nEls elements de l’array v estan emmagatzemats de manera contigua a la memòria. Podem visualitzar el que acabes de mesurar:\n\n\n\n\n\ngraph LR\n    subgraph v[\"array v\"]\n        A[\"v[0]&lt;br/&gt;&lt;b&gt;10&lt;/b&gt;&lt;br/&gt;0x1000\"]\n        B[\"v[1]&lt;br/&gt;&lt;b&gt;20&lt;/b&gt;&lt;br/&gt;0x1004\"]\n        C[\"v[2]&lt;br/&gt;&lt;b&gt;30&lt;/b&gt;&lt;br/&gt;0x1008\"]\n        D[\"v[3]&lt;br/&gt;&lt;b&gt;40&lt;/b&gt;&lt;br/&gt;0x100C\"]\n        E[\"v[4]&lt;br/&gt;&lt;b&gt;50&lt;/b&gt;&lt;br/&gt;0x1010\"]\n\n        A --&gt;|\"+sizeof(int) bytes\"| B\n        B --&gt;|\"+sizeof(int) bytes\"| C\n        C --&gt;|\"+sizeof(int) bytes\"| D\n        D --&gt;|\"+sizeof(int) bytes\"| E\n    end\n\n\n\n\n\n\n\n\nAra fes una mesura global:\nprintf(\"%zu\\n\", sizeof(v));\n\nExercici\nAquest resultat, coincideix amb el que esperaries a partir del que has mesurat element a element?\n\n\n\nPots veure el raonament\n\n\nSolució\nSí, sizeof(v) hauria de ser igual a sizeof(v[0]) * 5, ja que v és un array de 5 elements de tipus int. Si sizeof(v[0]) és 4 bytes, aleshores sizeof(v) serà 20 bytes.\n\n\nAra revisem el que hem anat aprenent sobre v i &v:\nint *pv = &v[0];\n\nprintf(\"%zu\\n\", sizeof(v));\nprintf(\"%zu\\n\", sizeof(pv));\n\nExercici\n\nRaona si v i pv et permeten accedir a les mateixes dades (v[2] i pv[2] valen el mateix). sizeof donarà el mateix resultat per tots dos?\n\n\n\n\nPots veure el raonament\n\n\nSolució\nsizeof(v) continua valent 20: és la mida de tot l’array, els seus 5 elements sencers. En canvi, sizeof(pv) val 8 (en un sistema de 64 bits): és només la mida d’una adreça de memòria, independentment de quantes dades hi hagi al darrere. Encara que v i pv es comportin de manera semblant quan hi accedeixes amb [i], no són el mateix tipus de cosa: v és un array i per tant el compilador en coneix la mida sencera, mentre que pv és només un punter, el compilador només sap que apunta a un int, no quants n’hi ha darrere.\n\n\nFins ara hem utilitzat punters per guardar adreces, accedir als valors i mesurar distàncies entre adreces. Ara veurem què passa quan sumem un nombre a un punter.\nprintf(\"%p\\n\", (void *)&v[2]);\nprintf(\"%p\\n\", (void *)(pv + 2));\n\nExercici\nAbans d’executar-ho: quan sumes 2 a pv, creus que avança 2 bytes o 2 elements de tipus int? Compara els resultats.\n\n\n\nPots veure el raonament\n\n\nSolució\nSí, &v[2] i pv + 2 donen exactament la mateixa adreça. Igual que passava amb la resta de punters, la suma també té en compte automàticament la mida del tipus: pv + 2 no avança 2 bytes, sinó 2 elements int (és a dir, 2 * sizeof(int) bytes). Si el compilador avancés sempre en bytes, independentment del tipus al qual apunta pv, pv + 2 acabaria apuntant enmig d’un element en lloc de l’inici del tercer, i tota l’aritmètica d’arrays deixaria de funcionar.\n\n\n\nExercici de Programació\nUn programa llegeix les dades d’un sensor i les guarda en un array. El programador afirma que el sensor ha registrat: 10, 20, 30, 40. Però quan executa el programa obté:\ngcc -Wall -Wextra sensor.c -o sensor\n# En compilar-lo amb -Wall -Wextra apareixen alguns avisos, però no tots els errors del programa en generen.\nAquest és el codi del programa sensor.c:\n#include &lt;stdio.h&gt;\n\nint main(void)\n{\n    int mesures[4] = {10, 20, 30, 40};\n\n    int *sensor = &mesures[0];\n\n    printf(\"Mesura actual: %d\\n\", sensor);\n    printf(\"Adreça de la mesura: %d\\n\", *sensor);\n\n    sensor = 99;\n\n    printf(\"Nova mesura: %d\\n\", *sensor);\n    printf(\"Mesura original: %d\\n\", mesures[0]);\n\n    return 0;\n}\n\nEl programa té diversos errors. Troba’ls sense executar-lo.\n\n\n\nPots veure el raonament\n\n\nSolució\n\n(avís del compilador) sensor és un punter i conté una adreça. Passar-lo directament a %d és un error de tipus que -Wall detecta (“format ‘%d’ expects argument of type ‘int’, but argument has type ’int ’“*). Per obtenir el valor al qual apunta hem d’utilitzar *sensor.\n(error de lectura, el compilador no l’avisa) *sensor és el valor de la mesura (10), no la seva adreça — és un int, i %d és tècnicament correcte per imprimir-lo. El problema és només que l’etiqueta del text (“Adreça de la mesura”) no es correspon amb el que realment s’imprimeix. Cap avís del compilador et pot dir això: cal llegir el codi amb cura. Per imprimir l’adreça de debò cal sensor amb %p.\n(avís del compilador) sensor = 99 assigna un enter literal a un punter, i el compilador ja avisa d’això amb -Wextra (“makes pointer from integer without a cast”). sensor passa a contenir l’adreça 99, que gairebé segur no és una adreça vàlida dins l’espai de memòria del procés. Desreferenciar-la després amb *sensor és comportament indefinit: normalment provocarà un segmentation fault. Per això et demanem que trobis els errors sense executar el programa.\n\n\n\n\nVolem modificar la mesura a través del punter sensor perquè passi de 10 a 99. Quina instrucció has d’escriure? Explica què passa amb mesures[0] i per què?\n\n\n\nPots veure el raonament\n\n\nSolució\nQuan assignem *sensor = 99, estem modificant el valor de la variable a la qual apunta sensor, que és mesures[0]. Per tant, després d’aquesta assignació, mesures[0] tindrà el valor 99. Això és perquè sensor és un punter que apunta a l’adreça de mesures[0], i desreferenciar-lo amb *sensor ens permet accedir i modificar el valor emmagatzemat en aquesta adreça.\n\n\n\nCorregeix el programa, intentant mantenir el mateix nombre de línies, per obtenir la sortida següent:\n\nMesura actual: 10\nAdreça de la mesura: 0x...\nNova mesura: 99\nMesura original: 99\n\n\nPots veure la solució\n\n\nSolució\n#include &lt;stdio.h&gt;\nint main(void)\n{\n    int mesures[4] = {10, 20, 30, 40};\n    int *sensor = &mesures[0];\n\n    printf(\"Mesura actual: %d\\n\", *sensor);\n    printf(\"Adreça de la mesura: %p\\n\", (void *)sensor);\n\n    *sensor = 99;\n\n    printf(\"Nova mesura: %d\\n\", *sensor);\n    printf(\"Mesura original: %d\\n\", mesures[0]);\n    return 0;\n}\n\n\n\nJa podem començar a respondre la pregunta inicial: com pot C localitzar v[i]?\n\nResultat d'Aprenentatge\nEls elements d’un array estan emmagatzemats de manera contigua. Per accedir a v[i], C parteix de l’adreça del primer element i avança i elements. Com que cada element ocupa sizeof(int) bytes, això equival a avançar i * sizeof(int) bytes. En C, aquesta idea es representa mitjançant l’aritmètica de punters: &v[i] == &v[0] + i. Quan sumem i a un punter a int, C no avança i bytes, sinó i elements de tipus int. El compilador té en compte automàticament la mida de cada element.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Pralabs",
+      "Pralab 01: Del C a la memòria (I)"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/pralabs/01_c_mem.html#introducció",
+    "href": "blocs/01-espai-usuari/pralabs/01_c_mem.html#introducció",
+    "title": "Pralab 01: Del C a la memòria (I)",
+    "section": "",
+    "text": "Durant el primer curs has treballat amb variables, arrays i cadenes de caràcters en C.\n\nExercici de Programació\nEl primer exercici d’aquest pralab consisteix a sumar dos vectors vector1 amb (1.5, 2.0, -3.5) i vector2 (2.5, -1.0, 4.0) de tres elements cadascun, i imprimir el vector resultant.\n\n\nPots veure la solució\n\n#include &lt;stdio.h&gt;\n\n#define DIMENSIO 3\n\nint main() {\n    float vector1[DIMENSIO] = {1.5, 2.0, -3.5};\n    float vector2[DIMENSIO] = {2.5, -1.0, 4.0};\n    float vector_suma[DIMENSIO];\n\n    for (int i = 0; i &lt; DIMENSIO; i++) {\n        vector_suma[i] = vector1[i] + vector2[i];\n    }\n\n    printf(\"El vector resultant de la suma es:\\n\");\n    printf(\"(\");\n    for (int i = 0; i &lt; DIMENSIO; i++) {\n        printf(\"%.2f\", vector_suma[i]);\n        if (i &lt; DIMENSIO - 1) {\n            printf(\", \"); \n        }\n    }\n    printf(\")\\n\");\n\n    return 0;\n}\n\n\nPerò hi ha una pregunta que l’any passat no vau resoldre. Imagineu que el programa té un array v i que volem accedir a l’element v[i]. Com sap el programa on està v[i]?\nEn aquest pralab comencem a mirar la programació amb C des d’un altre punt de vista: el de la memòria. Aquest laboratori és la base sobre la qual construirem, més endavant, com un sistema operatiu organitza la memòria d’un procés. Aquesta sessió és més experimental que teòrica: anirem fent proves amb petits programes i mirant què passa a la memòria.\n\n\n\nComencem amb aquest programa:\n#include &lt;stdio.h&gt;\n\nint main(void)\n{\n    int x = 42;\n\n    printf(\"x = %d\\n\", x);\n    printf(\"&x = %p\\n\", (void *) &x);\n\n    return 0;\n}\nx   = ?\n&x  = ?\n\nExercici\nAbans d’executar-ho, anota en el teu quadern les respostes a aquestes preguntes:\n\nQuè imprimirà x?\nQuina mena de valor representa &x?\nEsperes que &x tingui el mateix valor que x?\n\n\n\nExercici\nCompila i executa el programa dues vegades seguides i compara els valors de &x que obtens.\n\nSón iguals o diferents?\nSi són diferents, què creus que ha passat?\n\n\n\nExercici\nAfegeix ara aquesta línia i torna a executar:\nprintf(\"%zu\\n\", sizeof(x));\nCompara el que imprimeix sizeof(x) amb el que imprimeix &x. Són el mateix tipus d’informació?\n\n\n\nPots veure el raonament\n\n\nSolució\n\nx és una variable de tipus enter i conté el valor 42.\n&x és l’adreça de memòria on està emmagatzemat x. És un valor que indica la posició a la memòria del procés on es troba x.\nNo, &x no té el mateix valor que x.\nDues execucions poden donar adreces diferents per &x perquè el sistema operatiu assigna, a cada execució, una disposició diferent de la memòria del procés. Aquest mecanisme es diu ASLR (Address Space Layout Randomization, aleatorització de l’espai d’adreces) i el veurem amb detall quan parlem de com el sistema operatiu gestiona la memòria d’un procés. De moment, queda’t amb la idea: l’adreça de x no és fixa ni depèn només del teu codi, sinó també de decisions que pren el sistema operatiu en temps d’execució.\nsizeof(x) retorna la mida en bytes de la variable x, que és diferent de l’adreça de memòria que retorna &x. Per exemple, en un sistema de 64 bits, sizeof(x) podria retornar 4 (si int ocupa 4 bytes), mentre que &x podria ser una adreça com 0x7ffee3b8c4a0.\n\n\n\n\n\n\nflowchart LR\n    x[\"x = 42\"]\n    a[\"&x = 0x7ffee3b8c4a0\"] --&gt;|\"és l'adreça de\"| x\n\n\n\n\n\n\n\n\n\n\n\nIntroduïm ara:\nint x = 42;\nint *p = &x;\n\n\n\n\n\nflowchart LR\n    P[\"p\"] --&gt; X[\"x = 42\"]\n\n\n\n\n\n\nprintf(\"%d\\n\", *p);\n\nExercici\nQuè imprimirà aquest printf?\n\nL’adreça de x\n42\nL’adreça de p\nError de compilació\n\n\n\n\nPots veure el raonament\n\n\nSolució\nEl printf(\"%d\\n\", *p); imprimirà 42, ja que *p accedeix al valor de la variable a la qual apunta p, que és x.\n\n\nAra prova això:\n*p = 99;\nprintf(\"%d\\n\", x);\n\nExercici\nHas modificat p o has modificat x?\n\n\n\nPots veure el raonament\n\n\nSolució\nQuan fas *p = 99;, estàs modificant el valor de x a través del punter p. Així que després d’aquesta línia, x tindrà el valor 99.\n\n\nAmb això ja podem fixar dues definicions formals:\n\nDefinició\nUn punter és una variable que emmagatzema una adreça de memòria.\n\n\nDefinició\nL’operador * permet accedir a l’objecte que es troba a l’adreça emmagatzemada en el punter.\n\n\nReflexió\nNota de compilador. Prova de compilar printf(\"%d\\n\", p); (sense *) amb gcc -Wall -Wextra. Fixa’t en l’avís del compilador: el valor que passes a %d té tipus int *, però %d espera un int — hi ha una incompatibilitat de tipus entre l’argument i el format. Per imprimir un punter amb printf, fem servir %p i convertim el valor a void *, exactament com hem fet a la Part A amb (void *)&x.\n\n\n\n\n\nPartim de:\nint v[5] = {10, 20, 30, 40, 50};\nComencem amb una cosa que probablement ja has fet servir:\nprintf(\"%zu\\n\", sizeof(v));\nprintf(\"%zu\\n\", sizeof(v[0]));\nprintf(\"%zu\\n\", sizeof(v) / sizeof(v[0]));\n\nExercici\nQuè imprimeix cada línia?\n\n\n\nPots veure el raonament\n\n\nSolució\n\nsizeof(v) retorna la mida total de l’array v en bytes. Com que v és un array de 5 enters i cada enter ocupa, per exemple, 4 bytes, sizeof(v) seria 20.\nsizeof(v[0]) retorna la mida d’un sol element de l’array, que és un enter, així que seria 4.\nsizeof(v) / sizeof(v[0]) calcula el nombre d’elements de l’array dividint la mida total de l’array per la mida d’un element, així que seria 20 / 4 = 5.\n\n\n\nJa saps utilitzar v[0], v[1], v[2]. Ara mirem-ho des del punt de vista de la memòria:\nprintf(\"%p\\n\", (void *)&v[0]);\nprintf(\"%p\\n\", (void *)&v[1]);\n\nExercici\nQuè observes en les dues adreces que s’imprimeixen?\n\n\n\nPots veure el raonament\n\n\nSolució\nLes adreces segueixen el mateix patró: cada element ocupa sizeof(int) bytes i els elements d’un array estan emmagatzemats de manera contigua.\n\n\nAra mesura-ho:\nprintf(\"%zu\\n\", sizeof(v[0]));\nprintf(\"%td\\n\", (char *)&v[1] - (char *)&v[0]);\nConvertim temporalment les adreces a char *. Això ens permet expressar la diferència entre les dues adreces en unitats de bytes.\nAra compara els dos resultats.\n\nExercici\nQuina relació observes entre el resultat de la resta amb char * i el valor de sizeof(v[0])?\n\n\n\nPots veure el raonament\n\n\nSolució\nQuan restem dos punters a elements del mateix array, el resultat depèn del tipus del punter. Sense el cast, &v[1] - &v[0] també és una resta vàlida, però el resultat s’expressa en nombre d’elements int, no en bytes. Com que apunten a elements consecutius, dona 1. La diferència en bytes és la que has obtingut amb (char *)&v[1] - (char *)&v[0], i coincideix amb sizeof(int) en aquest sistema (C no garanteix que sizeof(int) valgui el mateix a tot arreu, només que sigui com a mínim de 2 bytes).\n\n\nAmplia-ho amb &v[2]:\nprintf(\"%p\\n\", (void *)&v[2]);\nprintf(\"%td\\n\", (char *)&v[2] - (char *)&v[1]);\n\nExercici\nEs manté el mateix patró? Diries que els elements de v estan repartits de qualsevol manera per la memòria, o segueixen una estructura?\n\n\n\nPots veure el raonament\n\n\nSolució\nEls elements de l’array v estan emmagatzemats de manera contigua a la memòria. Podem visualitzar el que acabes de mesurar:\n\n\n\n\n\ngraph LR\n    subgraph v[\"array v\"]\n        A[\"v[0]&lt;br/&gt;&lt;b&gt;10&lt;/b&gt;&lt;br/&gt;0x1000\"]\n        B[\"v[1]&lt;br/&gt;&lt;b&gt;20&lt;/b&gt;&lt;br/&gt;0x1004\"]\n        C[\"v[2]&lt;br/&gt;&lt;b&gt;30&lt;/b&gt;&lt;br/&gt;0x1008\"]\n        D[\"v[3]&lt;br/&gt;&lt;b&gt;40&lt;/b&gt;&lt;br/&gt;0x100C\"]\n        E[\"v[4]&lt;br/&gt;&lt;b&gt;50&lt;/b&gt;&lt;br/&gt;0x1010\"]\n\n        A --&gt;|\"+sizeof(int) bytes\"| B\n        B --&gt;|\"+sizeof(int) bytes\"| C\n        C --&gt;|\"+sizeof(int) bytes\"| D\n        D --&gt;|\"+sizeof(int) bytes\"| E\n    end\n\n\n\n\n\n\n\n\nAra fes una mesura global:\nprintf(\"%zu\\n\", sizeof(v));\n\nExercici\nAquest resultat, coincideix amb el que esperaries a partir del que has mesurat element a element?\n\n\n\nPots veure el raonament\n\n\nSolució\nSí, sizeof(v) hauria de ser igual a sizeof(v[0]) * 5, ja que v és un array de 5 elements de tipus int. Si sizeof(v[0]) és 4 bytes, aleshores sizeof(v) serà 20 bytes.\n\n\nAra revisem el que hem anat aprenent sobre v i &v:\nint *pv = &v[0];\n\nprintf(\"%zu\\n\", sizeof(v));\nprintf(\"%zu\\n\", sizeof(pv));\n\nExercici\n\nRaona si v i pv et permeten accedir a les mateixes dades (v[2] i pv[2] valen el mateix). sizeof donarà el mateix resultat per tots dos?\n\n\n\n\nPots veure el raonament\n\n\nSolució\nsizeof(v) continua valent 20: és la mida de tot l’array, els seus 5 elements sencers. En canvi, sizeof(pv) val 8 (en un sistema de 64 bits): és només la mida d’una adreça de memòria, independentment de quantes dades hi hagi al darrere. Encara que v i pv es comportin de manera semblant quan hi accedeixes amb [i], no són el mateix tipus de cosa: v és un array i per tant el compilador en coneix la mida sencera, mentre que pv és només un punter, el compilador només sap que apunta a un int, no quants n’hi ha darrere.\n\n\nFins ara hem utilitzat punters per guardar adreces, accedir als valors i mesurar distàncies entre adreces. Ara veurem què passa quan sumem un nombre a un punter.\nprintf(\"%p\\n\", (void *)&v[2]);\nprintf(\"%p\\n\", (void *)(pv + 2));\n\nExercici\nAbans d’executar-ho: quan sumes 2 a pv, creus que avança 2 bytes o 2 elements de tipus int? Compara els resultats.\n\n\n\nPots veure el raonament\n\n\nSolució\nSí, &v[2] i pv + 2 donen exactament la mateixa adreça. Igual que passava amb la resta de punters, la suma també té en compte automàticament la mida del tipus: pv + 2 no avança 2 bytes, sinó 2 elements int (és a dir, 2 * sizeof(int) bytes). Si el compilador avancés sempre en bytes, independentment del tipus al qual apunta pv, pv + 2 acabaria apuntant enmig d’un element en lloc de l’inici del tercer, i tota l’aritmètica d’arrays deixaria de funcionar.\n\n\n\nExercici de Programació\nUn programa llegeix les dades d’un sensor i les guarda en un array. El programador afirma que el sensor ha registrat: 10, 20, 30, 40. Però quan executa el programa obté:\ngcc -Wall -Wextra sensor.c -o sensor\n# En compilar-lo amb -Wall -Wextra apareixen alguns avisos, però no tots els errors del programa en generen.\nAquest és el codi del programa sensor.c:\n#include &lt;stdio.h&gt;\n\nint main(void)\n{\n    int mesures[4] = {10, 20, 30, 40};\n\n    int *sensor = &mesures[0];\n\n    printf(\"Mesura actual: %d\\n\", sensor);\n    printf(\"Adreça de la mesura: %d\\n\", *sensor);\n\n    sensor = 99;\n\n    printf(\"Nova mesura: %d\\n\", *sensor);\n    printf(\"Mesura original: %d\\n\", mesures[0]);\n\n    return 0;\n}\n\nEl programa té diversos errors. Troba’ls sense executar-lo.\n\n\n\nPots veure el raonament\n\n\nSolució\n\n(avís del compilador) sensor és un punter i conté una adreça. Passar-lo directament a %d és un error de tipus que -Wall detecta (“format ‘%d’ expects argument of type ‘int’, but argument has type ’int ’“*). Per obtenir el valor al qual apunta hem d’utilitzar *sensor.\n(error de lectura, el compilador no l’avisa) *sensor és el valor de la mesura (10), no la seva adreça — és un int, i %d és tècnicament correcte per imprimir-lo. El problema és només que l’etiqueta del text (“Adreça de la mesura”) no es correspon amb el que realment s’imprimeix. Cap avís del compilador et pot dir això: cal llegir el codi amb cura. Per imprimir l’adreça de debò cal sensor amb %p.\n(avís del compilador) sensor = 99 assigna un enter literal a un punter, i el compilador ja avisa d’això amb -Wextra (“makes pointer from integer without a cast”). sensor passa a contenir l’adreça 99, que gairebé segur no és una adreça vàlida dins l’espai de memòria del procés. Desreferenciar-la després amb *sensor és comportament indefinit: normalment provocarà un segmentation fault. Per això et demanem que trobis els errors sense executar el programa.\n\n\n\n\nVolem modificar la mesura a través del punter sensor perquè passi de 10 a 99. Quina instrucció has d’escriure? Explica què passa amb mesures[0] i per què?\n\n\n\nPots veure el raonament\n\n\nSolució\nQuan assignem *sensor = 99, estem modificant el valor de la variable a la qual apunta sensor, que és mesures[0]. Per tant, després d’aquesta assignació, mesures[0] tindrà el valor 99. Això és perquè sensor és un punter que apunta a l’adreça de mesures[0], i desreferenciar-lo amb *sensor ens permet accedir i modificar el valor emmagatzemat en aquesta adreça.\n\n\n\nCorregeix el programa, intentant mantenir el mateix nombre de línies, per obtenir la sortida següent:\n\nMesura actual: 10\nAdreça de la mesura: 0x...\nNova mesura: 99\nMesura original: 99\n\n\nPots veure la solució\n\n\nSolució\n#include &lt;stdio.h&gt;\nint main(void)\n{\n    int mesures[4] = {10, 20, 30, 40};\n    int *sensor = &mesures[0];\n\n    printf(\"Mesura actual: %d\\n\", *sensor);\n    printf(\"Adreça de la mesura: %p\\n\", (void *)sensor);\n\n    *sensor = 99;\n\n    printf(\"Nova mesura: %d\\n\", *sensor);\n    printf(\"Mesura original: %d\\n\", mesures[0]);\n    return 0;\n}\n\n\n\nJa podem començar a respondre la pregunta inicial: com pot C localitzar v[i]?\n\nResultat d'Aprenentatge\nEls elements d’un array estan emmagatzemats de manera contigua. Per accedir a v[i], C parteix de l’adreça del primer element i avança i elements. Com que cada element ocupa sizeof(int) bytes, això equival a avançar i * sizeof(int) bytes. En C, aquesta idea es representa mitjançant l’aritmètica de punters: &v[i] == &v[0] + i. Quan sumem i a un punter a int, C no avança i bytes, sinó i elements de tipus int. El compilador té en compte automàticament la mida de cada element.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Pralabs",
+      "Pralab 01: Del C a la memòria (I)"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/activitats/01_rols_funcions.html",
+    "href": "blocs/01-espai-usuari/activitats/01_rols_funcions.html",
+    "title": "The UNIX Time-Sharing System",
+    "section": "",
+    "text": "L’activitat és no avaluable. No cal lliurar-la ni preparar una resposta formal. L’objectiu és consolidar, a través d’una font primària, dues idees que hem vist avui a classe:\n\nel sistema operatiu es construeix sobre un nombre reduït de primitives que ho sostenen tot, des del shell fins als dispositius.\nla simplicitat de disseny no és una limitació, és una decisió,\n\n\nExercici — Lectura: The UNIX Time-Sharing System\nLlegeix el capítol complet (és curt, ~15 pàgines) de:\n\nRitchie, D. M., i Thompson, K. (1974). The UNIX Time-Sharing System. Communications of the ACM, 17(7), 365–375. (Reimprès a Bell System Technical Journal, 57(6), 1978.)\n\nDisponible en accés obert, en una edició allotjada pel MIT per al seu propi curs de sistemes operatius (6.828):\nMIT SIPB — The UNIX Time-Sharing System (PDF)\nÉs, literalment, el document fundacional d’Unix, escrit pels seus dos creadors. Gairebé tot el que hem vist avui a classe —procés, sistema de fitxers com a interfície uniforme, crides de sistema— hi apareix descrit per primer cop, amb el sistema real que ho va implementar.\n\n\n\n\n\n\n\nTipAbans de començar\n\n\n\n\nEl text té 50 anys i descriu maquinari que ja no existeix (PDP-11, teletips, targetes perforades).\ncore = memòria (RAM d’avui).\nimage = el que avui en diem procés en execució.\nteletype = terminal.\n\n\n\n\nQuè heu de buscar en el text?\nNo cal fer un resum del capítol. Busqueu els punts on el text confirma, amb el sistema real, idees que avui hem vist en abstracte.\n\nReflexió\nEl 1974, tot aquest sistema funcionava amb un kernel de 90 KB. Cinquanta anys després, els sistemes operatius moderns són ordres de magnitud més grans i complexos, però els mateixos tres primitius (procés, fitxer, crida de sistema) hi continuen al centre. Per què creieu que aquestes idees han sobreviscut cinquanta anys de canvi tecnològic?",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Activitats",
+      "The UNIX Time-Sharing System"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Sistemes Operatius",
+    "section": "",
+    "text": "Aquesta assignatura proporciona els coneixements necessaris per comprendre el funcionament intern dels sistemes operatius, amb Linux com a plataforma de referència."
+  },
+  {
+    "objectID": "index.html#professorat",
+    "href": "index.html#professorat",
+    "title": "Sistemes Operatius",
+    "section": "Professorat",
+    "text": "Professorat\n\nJordi Mateo mailto:jordi.mateo@udl.cat"
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html",
+    "href": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html",
+    "title": "Exercicis amb C · Apuntadors i arrays",
+    "section": "",
+    "text": "Conjunt d’exercicis per consolidar i ampliar els conceptes treballats als Pralab 01 i Pralab 02. Pots utilitzar el fòrum del campus virtual per compartir, debatre i resoldre els exercicis amb els teus companys. Explica el teu raonament, planteja els dubtes que et sorgeixin i comenta les propostes dels altres.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Activitats",
+      "Exercicis amb C · Apuntadors i arrays"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html#un-punter-sempre-apunta-a-la-variable",
+    "href": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html#un-punter-sempre-apunta-a-la-variable",
+    "title": "Exercicis amb C · Apuntadors i arrays",
+    "section": "1. Un punter sempre apunta a la variable",
+    "text": "1. Un punter sempre apunta a la variable\nQuin serà el resultat d’aquesta execució?\n#include &lt;stdio.h&gt;\n\nint main(void)\n{\n    int x = 5;\n    int *p = &x;\n\n    x++;\n\n    printf(\"%d\\n\", *p);\n\n    return 0;\n}\n\nAbans d’executar\nPrediu:\n\nquin valor tindrà x després de x++;\nquè imprimirà *p;\nsi p continua apuntant a x.\n\n\nRecorda què significa p = &x i què significa *p.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Activitats",
+      "Exercicis amb C · Apuntadors i arrays"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html#recórrer-un-string-amb-un-punter",
+    "href": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html#recórrer-un-string-amb-un-punter",
+    "title": "Exercicis amb C · Apuntadors i arrays",
+    "section": "2. Recórrer un string amb un punter",
+    "text": "2. Recórrer un string amb un punter\nCompleta el programa perquè imprimeixi:\nHola\nsense utilitzar s[i].\n#include &lt;stdio.h&gt;\n\nint main(void)\n{\n    char str[] = \"Hola\";\n    const char *s = str;\n\n    while (*s != '\\0') {\n        printf(\"%c\", ???);\n        ???;\n    }\n\n    printf(\"\\n\");\n\n    return 0;\n}\n\nPreguntes\n\nQuè representa *s?\nQuè ha de fer s++?\nQuan acaba el while?\n\n\nPensa què ha de passar amb s després d’imprimir cada caràcter.\n\n\nRepte\nModifica el programa perquè imprimeixi els caràcters un per línia.\n\nNomés cal canviar un caràcter dins del printf que ja tens.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Activitats",
+      "Exercicis amb C · Apuntadors i arrays"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html#array-i-aritmètica-de-punters",
+    "href": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html#array-i-aritmètica-de-punters",
+    "title": "Exercicis amb C · Apuntadors i arrays",
+    "section": "3. Array i aritmètica de punters",
+    "text": "3. Array i aritmètica de punters\nDonat:\nint v[5] = {10, 20, 30, 40, 50};\nint *p = v;\nQuin valor té cadascuna de les expressions següents?\n\n*p\n*(p + 1)\n*(p + 2)\n*(p + 4)\n\nDesprés, escriu una versió equivalent utilitzant v[i].\n\nReflexió\nQuina relació observes entre v[i] i *(p + i)?",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Activitats",
+      "Exercicis amb C · Apuntadors i arrays"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html#modificar-un-array-mitjançant-un-punter",
+    "href": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html#modificar-un-array-mitjançant-un-punter",
+    "title": "Exercicis amb C · Apuntadors i arrays",
+    "section": "4. Modificar un array mitjançant un punter",
+    "text": "4. Modificar un array mitjançant un punter\nDonat:\nint v[5] = {10, 20, 30, 40, 50};\nint *p = v;\nCompleta el programa perquè multipliqui per 2 tots els elements de l’array utilitzant només el punter p per accedir als elements.\n#include &lt;stdio.h&gt;\n\nint main(void)\n{\n    int v[5] = {10, 20, 30, 40, 50};\n    int *p = v;\n\n    for (int i = 0; i &lt; 5; i++) {\n        ???;\n    }\n\n    for (int i = 0; i &lt; 5; i++)\n        printf(\"%d \", v[i]);\n\n    printf(\"\\n\");\n\n    return 0;\n}\nEl resultat ha de ser:\n20 40 60 80 100\n\nSi p apunta a v[0], què representa p + i?\nI què representa *(p + i)?",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Activitats",
+      "Exercicis amb C · Apuntadors i arrays"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html#un-punter-com-a-paràmetre",
+    "href": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html#un-punter-com-a-paràmetre",
+    "title": "Exercicis amb C · Apuntadors i arrays",
+    "section": "5. Un punter com a paràmetre",
+    "text": "5. Un punter com a paràmetre\nAnalitza el programa següent:\n#include &lt;stdio.h&gt;\n\nvoid foo(int *p)\n{\n    int j = 22;\n\n    p = &j;\n\n    printf(\"%d \", *p);\n}\n\nint main(void)\n{\n    int i = 17;\n    int *p = &i;\n\n    foo(&i);\n\n    printf(\"%d \", *p);\n\n    return 0;\n}\n\nPreguntes\n\nQuè imprimirà foo?\nQuè imprimirà main?\nPer què modificar p dins de foo no modifica p de main?\nQuè passaria si dins de foo féssim *p = 22; en lloc de p = &j;? (Si vols provar-ho compilant, elimina també la línia int j = 22;, ja que deixaria de fer-se servir i -Wall ho marcaria com a avís.)\n\n\nConcepte\nModificar el punter no és el mateix que modificar l’objecte al qual apunta.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Activitats",
+      "Exercicis amb C · Apuntadors i arrays"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html#punter-a-punter",
+    "href": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html#punter-a-punter",
+    "title": "Exercicis amb C · Apuntadors i arrays",
+    "section": "6. Punter a punter",
+    "text": "6. Punter a punter\nAnalitza:\n#include &lt;stdio.h&gt;\n\nint main(void)\n{\n    int k = 5;\n    int *p = &k;\n    int **m = &p;\n\n    **m = 6;\n\n    printf(\"%d\\n\", k);\n\n    return 0;\n}\n\nAbans d’executar\nDibuixa les tres variables:\nk\np\nm\ni indica què conté cadascuna.\nDesprés respon:\n\nQuè representa p?\nQuè representa *p?\nQuè representa m?\nQuè representa *m?\nQuè representa **m?\n\n\nRepte\nIntenta predir el resultat sense executar el programa.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Activitats",
+      "Exercicis amb C · Apuntadors i arrays"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html#p-i-recorregut-dun-array",
+    "href": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html#p-i-recorregut-dun-array",
+    "title": "Exercicis amb C · Apuntadors i arrays",
+    "section": "7. p++ i recorregut d’un array",
+    "text": "7. p++ i recorregut d’un array\nTenim:\nint v[5] = {10, 20, 30, 40, 50};\nint *p = v;\nAnalitza aquest codi:\nprintf(\"%d\\n\", *p);\n\np++;\nprintf(\"%d\\n\", *p);\n\np++;\nprintf(\"%d\\n\", *p);\n\nPreguntes\n\nQuins valors s’imprimiran?\nA quin element apunta p després del primer p++?\nA quin element apunta després del segon?\nQuants bytes ha avançat p després de dos p++?\n\n\nReflexió\nRecorda l’experiment dels Pralabs amb:\n(char *)&v[1] - (char *)&v[0]\nCom pots relacionar aquell resultat amb p++?",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Activitats",
+      "Exercicis amb C · Apuntadors i arrays"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html#sumar-un-array-amb-un-punter",
+    "href": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html#sumar-un-array-amb-un-punter",
+    "title": "Exercicis amb C · Apuntadors i arrays",
+    "section": "8. Sumar un array amb un punter",
+    "text": "8. Sumar un array amb un punter\nImplementa una funció que calculi la suma dels elements d’un array utilitzant un punter per recórrer-lo.\nint suma(const int *v, int n)\n{\n    // ...\n}\nPer exemple:\nint v[] = {10, 20, 30, 40, 50};\n\nprintf(\"%d\\n\", suma(v, 5));\nha d’imprimir:\n150\n\nCondició\nDins de suma no utilitzis:\nv[i]\nRecorre l’array mitjançant punters.\n\nPots començar amb:\nconst int *p = v;\ni avançar amb p++.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Activitats",
+      "Exercicis amb C · Apuntadors i arrays"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html#trobar-un-caràcter",
+    "href": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html#trobar-un-caràcter",
+    "title": "Exercicis amb C · Apuntadors i arrays",
+    "section": "9. Trobar un caràcter",
+    "text": "9. Trobar un caràcter\nImplementa una funció que retorni un punter al primer caràcter d’una cadena que sigui igual al caràcter indicat.\nconst char *troba(const char *s, char c)\n{\n    // ...\n}\nPer exemple:\nconst char *p = troba(\"Universitat\", 's');\n\nif (p != NULL)\n    printf(\"%c\\n\", *p);\nha d’imprimir:\ns\n\nPreguntes\n\nQuè ha de retornar la funció si no troba el caràcter?\nPer què retornem un punter (char *) i no simplement el caràcter (char)?\nPer què aquest punter és const char * i no char *?\nQuè representa p quan la funció acaba?\n\n\nRepte\nModifica la funció perquè retorni un punter al darrer caràcter que coincideixi amb c.\n\nJa no pots fer return s; en el moment que trobes una coincidència, perquè n’hi pot haver una altra més endavant. Guarda la darrera posició trobada en una variable a part i recorre tota la cadena fins al final abans de retornar.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Activitats",
+      "Exercicis amb C · Apuntadors i arrays"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/activitats/02_espai_funcions.html",
+    "href": "blocs/01-espai-usuari/activitats/02_espai_funcions.html",
+    "title": "Què passa quan faig foo()?",
+    "section": "",
+    "text": "Pràctica opcional i no avaluable de consolidació de les sessions tèoriques L’espai de memòria d’un procés i Crides de funció: CPU, registres i stack on s’han estudiat els conceptes espai d’adreces, stack frame, calling convention i registres.\n\nProgramari Necessari\ngcc amb suport per a -g, -O0, -O2 i -mno-red-zone; gdb. Qualsevol entorn Linux x86-64 (les màquines dels Pralabs són suficients).\n\n\nPart 1 · Predir abans d’executar\nAquest és el programa de partida. No l’executis encara.\n#include &lt;stdio.h&gt;\n#include &lt;stdlib.h&gt;\n\nint global = 10;\n\nint suma(int a, int b)\n{\n    int local = 20;\n    return a + b + local;\n}\n\nint main(void)\n{\n    int x = 5;\n    int *p = malloc(sizeof(int));\n\n    *p = 30;\n\n    int r = suma(x, *p);\n\n    printf(\"%d\\n\", r);\n\n    free(p);\n    return 0;\n}\n\nOn viu cadascun?\n\n\n\nElement\nRegió\n\n\n\n\nsuma()\n?\n\n\nglobal\n?\n\n\nx\n?\n\n\np\n?\n\n\n*p\n?\n\n\nlocal\n?\n\n\ninstruccions de main()\n?\n\n\n\n\nReflexió\nRecupera la idea de la Sessió 1: un punter i allò que apunta poden viure en regions diferents. On encaixen aquí p i *p?\n\n\n\nLa crida a suma()\nQuan main() crida suma(x, *p):\n\nQuins arguments s’han de passar, i en quin ordre?\nSegons l’ABI x86-64 estudiada, en quins registres esperes trobar-los?\nQuin registre contindrà el resultat?\nQuè esperes que passi amb RSP quan entrem a suma()?\nQuè esperes que passi amb la return address?\nQuè esperes que passi amb RSP després del ret?\n\nEscriu totes les respostes abans de passar a la Part 2.\n\n\n\n\nPart 2 · Comprovar-ho amb GDB\nCompila una versió preparada per inspeccionar-la:\ngcc -g -O0 -fno-omit-frame-pointer -mno-red-zone program.c -o program\nEl -mno-red-zone ajuda a fer visible el pròleg de suma() en aquesta pràctica. No cal entendre què fa aquesta opció per fer la pràctica, la utilitzem per obtenir una execució més propera al model de stack frame estudiat a classe.\nComandes mínimes de GDB (no en necessites més):\nbreak suma\nrun\ninfo registers\nx/16gx $rsp\ndisassemble suma\n\nA. Entrada a suma()\n\nQuin és el valor de RDI?\nQuin és el valor de RSI?\nQuin valor té RSP?\nQuin valor té RBP?\nOn és la return address?\n\n\n\nB. Assembly\nCopia només les instruccions rellevants de suma() i anota’n l’efecte:\ninstrucció        efecte\n-----------       ----------------\npush ...          ...\nmov ...           ...\n...\nret               ...\nNo cal que entenguis cada instrucció assembly al detall. L’objectiu és relacionar:\nC\n ↓\nassembly\n ↓\nregistres\n ↓\nstack\n\nConcepte\nUna instrucció assembly no és un pas aïllat: cada una mou o llegeix algun registre o posició de la pila que ja coneixes pel nom.\n\n\n\n\n\nPart 3 · Explicar la diferència\nRespon amb les teves paraules, sense tornar a mirar GDB:\n\nPer què dues variables automàtiques qualssevol (per exemple, x a main() i local a suma()) no tenen per què acabar totes dues físicament al stack de la mateixa manera?\nPer què p i *p poden viure en regions diferents?\n\n\nRepte\nQuina diferència hi ha entre el codi de suma() i l’activació de suma()?\n\n\n\n\nPart 4 · Trenca el model\nPren aquesta versió, més senzilla, de la funció:\n__attribute__((noinline))\nint suma(int a, int b)\n{\n    return a + b;\n}\n\nReflexió\nEl compilador pot eliminar la funció del codi optimitzat. Hem afegit aquesta directiva perquè puguis comparar la funció a -O0 i -O2.\n\nCompila-la de dues maneres:\ngcc -g -O0 -fno-omit-frame-pointer program2.c -o program2_O0\ngcc -g -O2                        program2.c -o program2_O2\nFixa’t que a la versió -O2 no forcem -fno-omit-frame-pointer. Volem veure què decideix el compilador pel seu compte.\nDesassembla suma() a totes dues (gdb -batch -ex 'disassemble suma' programX) i respon:\n\nContinua existint RBP com abans?\nContinua existint el stack frame clàssic (push rbp; mov rsp,rbp; ...)?\nEl codi assembly és igual?\nUna variable de C ha de tenir necessàriament una adreça de memòria durant tota la seva vida? Justifica-ho a partir del que observes amb -O2.\nQuina diferència hi ha entre el model que hem estudiat i una execució optimitzada?\n\n\nConcepte\nUna funció sempre crea exactament aquest stack frame és fals. El frame depèn de l’arquitectura, l’ABI, el compilador i les opcions d’optimització. El frame pointer es pot ometre, i una variable pot no tenir mai una adreça de memòria pròpia.\n\n\n\n\nPregunta de síntesi\nSense tornar a mirar GDB:\n\nRepte\nExplica, en 8–10 línies, què passa quan main() executa suma(x, *p), des d’abans del call fins que main() recupera el control.\n\nHas d’integrar, en un sol relat continu: l’espai d’adreces, els arguments i l’ABI, call, la return address, RSP, RBP, la variable local, RAX i ret. Si ho pots explicar sencer sense saltar-te cap peça, has entès les dues sessions.\n\n\n\nTancament de la pràctica\nAnnota en un document de text o Markdown les teves respostes a totes les preguntes i reflexions. Si vols, pots afegir captures de pantalla de GDB per il·lustrar-les.\n\nPredicció · què creus que passarà (Part 1).\nExperiment · què observes amb GDB (Part 2).\nDiferència · què no ha passat com esperaves, si escau.\nExplicació · per què (Part 3).\nModel final · completa aquest diagrama amb registres, return address, stack frame, resultat i call/ret. No et donem els valors: has de ser tu qui els situï.\n\n                     main()\n                       │\n                       │ suma(5, 30)\n                       │\n                       │\n                       ▼\n                  suma(a,b)\n               ┌───────────────┐\n               │               │\n               │               │\n               │               │\n               └───────────────┘\n                       │\n                       │\n                       │\n                       ▼\n                     main()\nInclou també la taula d’estat següent, omplerta amb els valors reals que has observat (no cal completar cap cel·la que consideris no rellevant).\n\n\n\nMoment\nRIP\nRSP\nRBP\nRDI\nRSI\nRAX\n\n\n\n\nabans de call\n\n\n\n\n\n\n\n\nentrada a suma\n\n\n\n\n\n\n\n\ndesprés del pròleg\n\n\n\n\n\n\n\n\ndesprés del càlcul\n\n\n\n\n\n\n\n\nabans de ret\n\n\n\n\n\n\n\n\nretorn a main",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Activitats",
+      "Què passa quan faig foo()?"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/pralabs/02_c_mem.html",
+    "href": "blocs/01-espai-usuari/pralabs/02_c_mem.html",
+    "title": "Pralab 02: Del v[i] al punter",
+    "section": "",
+    "text": "A la sessió anterior vam començar a mirar els arrays des del punt de vista de la memòria: vam veure que els seus elements estan emmagatzemats de manera contigua i vam mesurar-ho amb sizeof i amb restes de punters. En aquesta sessió farem el pas següent: entendre què hi ha realment darrere de v[i].\nRecuperem l’array de la sessió anterior:\nint v[5] = {10, 20, 30, 40, 50};\n\n\n\nint *p = v;\nFixa’t que aquí no hi ha &. Això és perquè, en la majoria de contextos, el nom d’un array es converteix automàticament (decau) en un punter al seu primer element.\n\nDefinició\nEl decaïment (array decay) és la conversió automàtica de l’expressió v en un punter al seu primer element. v es comporta, en la majoria de contextos, com &v[0].\n\nprintf(\"%zu\\n\", sizeof(v));\nprintf(\"%zu\\n\", sizeof(p));\n\nReflexió\nJa vas comprovar a la sessió anterior que sizeof(v) i sizeof(pv) (un punter al primer element, declarat amb &v[0]) no coincideixen: sizeof(v) mesura l’array complet, sizeof(p) només la mida d’un punter. Aquí p es comporta igual, encara que ara ve d’un decaïment (int *p = v;) i no d’un &v[0] explícit, el resultat és el mateix.\n\n\nError Comú\nEl mateix decaïment passa quan passes un array com a paràmetre d’una funció: dins la funció, sizeof de l’array ja no dona la mida de l’array, sinó la mida d’un punter. És un dels errors més habituals quan es combina sizeof amb arrays i funcions.\n\n\nConcepte\nv i p es comporten igual quan hi accedeixes (v[2] i p[2] valen el mateix), però el compilador els tracta com a tipus diferents: v té tipus int[5] (un array), p té tipus int * (un punter). sizeof és precisament una de les poques operacions on aquesta diferència de tipus es fa evident.\n\nPerò v i &v tampoc no són el mateix. Comprovem-ho:\nprintf(\"%p\\n\", (void *)v);\nprintf(\"%p\\n\", (void *)(v + 1));\nprintf(\"%p\\n\", (void *)&v);\nprintf(\"%p\\n\", (void *)(&v + 1));\n\nExercici\nAbans d’executar-ho: v + 1 i &v + 1 avancen la mateixa quantitat de bytes respecte a v i &v respectivament?\n\nExecuta-ho i observa les adreces.\nMesura-ho amb exactitud, igual que vas fer a la sessió anterior:\nprintf(\"%td\\n\", (char *)(v + 1) - (char *)v);\nprintf(\"%td\\n\", (char *)(&v + 1) - (char *)&v);\nprintf(\"%zu\\n\", sizeof(int));\n\nExercici\nCompara els dos resultats de la resta amb sizeof(int) i amb sizeof(v) que acabes de mesurar. Amb quin es correspon cadascun? Tenies raó en la teva predicció?\n\n\n\nPots veure el raonament\n\n\nSolució\nEn aquesta expressió, v decau a un punter a int, de tipus int *. Per això, v + 1 avança sizeof(int) bytes, coincidint amb el que has mesurat a (char *)(v + 1) - (char *)v. &v, en canvi, és l’adreça de l’array sencer i té tipus int (*)[5]; per això, &v + 1 avança sizeof(v) bytes, és a dir, l’array complet, coincidint amb (char *)(&v + 1) - (char *)&v.\nLes dues expressions fan referència a la mateixa adreça inicial de l’array, però tenen tipus diferents. Per això, sumar-hi 1 no produeix el mateix resultat.\n\n\n\nResum\nEl que hem de retenir: en la majoria de contextos, l’expressió v es converteix (decau) a un punter al primer element, de tipus int *; avançar-lo salta d’int en int. &v, en canvi, és un punter a l’array sencer, de tipus int (*)[5]; avançar-lo salta l’array sencer. v en si mateix continua sent un array (int[5]), no un punter, el decaïment afecta com es tracta l’expressió en cada context, no canvia què és v.\n\nprintf(\"%d\\n\", *p);\nprintf(\"%d\\n\", *(p + 1));\nprintf(\"%d\\n\", *(p + 2));\n\nExercici\nAbans d’executar-ho, prediu què imprimirà cadascuna de les tres expressions. Per què?\n\n\n\nPots veure el raonament\n\n\nSolució\n*p val 10 (el primer element de v). *(p + 1) val 20: p + 1 avança un int (com ja has vist a l’exercici anterior), i desreferenciar-lo dona el valor de v[1]. *(p + 2) val 30, pel mateix motiu amb v[2]. En general, *(p + i) i v[i] donen sempre el mateix valor, és, de fet, com el compilador interpreta v[i] per sota.\n\n\n\nExercici\nDibuixa p apuntant a l’array v.\n\n\n\nPots veure la solució\n\n\nSolució\n+------+------+------+------+------+\n|  10  |  20  |  30  |  40  |  50  |\n+------+------+------+------+------+\n   ▲\n   p\n\n\nAra fes:\np++;\n\nExercici\nTorna a dibuixar p sobre l’array, després de p++.\n\n\n\nPots veure la solució\n\n\nSolució\n+------+------+------+------+------+\n|  10  |  20  |  30  |  40  |  50  |\n+------+------+------+------+------+\n          ▲\n          p\np ha avançat una posició (un int sencer, no un byte), i ara apunta a v[1].\n\n\n\nExercici\nPregunta clau. Recorda el resultat que vas obtenir a la sessió anterior amb (char *)&v[1] - (char *)&v[0]. Amb aquest resultat, respon: què creus que significa p + 1, i per què no significa necessàriament sumar un byte a l’adreça?\n\n\n\nPots veure el raonament\n\n\nSolució\np + 1 avança tants bytes com ocupa el tipus al qual apunta p (aquí, sizeof(int)), no un byte. És exactament el mateix patró que vas mesurar amb &v[1] - &v[0] a la sessió anterior: el compilador escala automàticament l’aritmètica segons la mida del tipus.\n\n\n\nError Comú\nUn error molt habitual és pensar que p + 1 sempre avança 1 byte. Només és així quan p és un punter a char (sizeof(char) == 1). Per a qualsevol altre tipus, p + 1 avança sizeof(tipus) bytes.\n\n\nResum\nL’aritmètica d’un punter està relacionada amb el tipus de l’objecte al qual apunta. p + 1 avança tants bytes com ocupa un int (comprova-ho amb sizeof(int)), no un byte.\n\n\n\n\n\nRecuperem les cadenes de caràcters:\nchar s[] = \"cau\";\n\n\n\n\n\ngraph LR\n    A[\"s[0] = 'c'\"] --- B[\"s[1] = 'a'\"] --- C[\"s[2] = 'u'\"] --- D[\"s[3] = '\\0'\"]\n\n\n\n\n\n\n\nDefinició\nUna cadena de caràcters en C és un array de char que acaba amb el caràcter especial '\\0' (byte nul), que marca el final de la cadena.\n\n\nExercici\nPer què hi ha quatre bytes si la paraula “cau” té tres caràcters?\n\n\n\nPots veure el raonament\n\n\nSolució\nPerquè cal reservar espai per al caràcter '\\0', que marca el final de la cadena. Sense aquest byte, no hi hauria manera de saber on acaba la cadena en memòria. char s[] = \"cau\"; reserva automàticament aquest quart byte.\n\n\n\nBona Pràctica\nSi dimensiones a mà un array de caràcters (char s[4], per exemple), recorda sempre reservar una posició extra per al '\\0'. Si no ho fas, qualsevol funció que llegeixi la cadena (com strlen o printf(\"%s\", ...)) llegirà més enllà del final de l’array.\n\nAra:\nchar *p = s;\n\nExercici\nQuin valor tindrà cadascuna d’aquestes expressions?\n\n*p\n*(p + 1)\n*(p + 2)\n*(p + 3)\n\n\n\n\nPots veure el raonament\n\n\nSolució\n*p val 'c', *(p + 1) val 'a', *(p + 2) val 'u', *(p + 3) val '\\0'. És exactament el mateix mecanisme que vas fer servir amb v a la Part A: p apunta al primer element, i sumar-hi i avança i posicions del tipus al qual apunta (char, aquí).\n\n\n\n\n\n\n\nExercici de Programació\nSense mirar la solució encara, escriu una funció mini_strlen que recorri s amb un punter fins trobar '\\0' i retorni la seva longitud (sense comptar el '\\0').\n\n\nPots veure una solució possible\n\nsize_t mini_strlen(const char *s)\n{\n    const char *p = s;\n\n    while (*p != '\\0')\n        p++;\n\n    return p - s;\n}\n\n\n\nExercici\nPregunta final. Per què podem fer p - s?\n\n\n\nPots veure el raonament\n\n\nSolució\np i s apunten totes dues dins del mateix array de caràcters. Restar dos punters dins del mateix array dona el nombre d’elements que els separen (exactament com vas fer a la sessió anterior amb &v[1] - &v[0]). Com que p ha avançat un char per cada posició recorreguda fins trobar '\\0', p - s dona directament la longitud de la cadena.\n\n\n\nError Comú\nUn error habitual en implementar strlen a mà és oblidar-se d’avançar p dins del while (p++), cosa que provoca un bucle infinit perquè *p mai canvia. Un altre és comptar el '\\0' com a part de la longitud.\n\n\nRepte\nOpcional. Reescriu mini_strlen fent servir indexació (s[i]) en lloc de punters (*p). Compara totes dues versions: quina trobes més llegible? Recorda que, per sota, el compilador sol generar codi molt semblant per a totes dues.\n\n\n\n\n\nEncara no entrarem en detall de com s’organitza la memòria d’un procés. Només plantegem la pregunta.\nint main(void)\n{\n    int x = 42;\n    int v[5];\n\n    /* ... */\n}\n┌──────────────────────────┐\n│   Memòria d'un procés    │\n│                          │\n│            ?             │\n│                          │\n│            ?             │\n│                          │\n│            ?             │\n└──────────────────────────┘\n\nReflexió\nPregunta oberta (no la responem avui, la recuperarem a teoria): aquestes dades estan en algun lloc de la memòria del procés. Com està organitzada aquesta memòria? A teoria apareixeran conceptes com stack i heap.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Pralabs",
+      "Pralab 02: Del `v[i]` al punter"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/pralabs/02_c_mem.html#introducció",
+    "href": "blocs/01-espai-usuari/pralabs/02_c_mem.html#introducció",
+    "title": "Pralab 02: Del v[i] al punter",
+    "section": "",
+    "text": "A la sessió anterior vam començar a mirar els arrays des del punt de vista de la memòria: vam veure que els seus elements estan emmagatzemats de manera contigua i vam mesurar-ho amb sizeof i amb restes de punters. En aquesta sessió farem el pas següent: entendre què hi ha realment darrere de v[i].\nRecuperem l’array de la sessió anterior:\nint v[5] = {10, 20, 30, 40, 50};\n\n\n\nint *p = v;\nFixa’t que aquí no hi ha &. Això és perquè, en la majoria de contextos, el nom d’un array es converteix automàticament (decau) en un punter al seu primer element.\n\nDefinició\nEl decaïment (array decay) és la conversió automàtica de l’expressió v en un punter al seu primer element. v es comporta, en la majoria de contextos, com &v[0].\n\nprintf(\"%zu\\n\", sizeof(v));\nprintf(\"%zu\\n\", sizeof(p));\n\nReflexió\nJa vas comprovar a la sessió anterior que sizeof(v) i sizeof(pv) (un punter al primer element, declarat amb &v[0]) no coincideixen: sizeof(v) mesura l’array complet, sizeof(p) només la mida d’un punter. Aquí p es comporta igual, encara que ara ve d’un decaïment (int *p = v;) i no d’un &v[0] explícit, el resultat és el mateix.\n\n\nError Comú\nEl mateix decaïment passa quan passes un array com a paràmetre d’una funció: dins la funció, sizeof de l’array ja no dona la mida de l’array, sinó la mida d’un punter. És un dels errors més habituals quan es combina sizeof amb arrays i funcions.\n\n\nConcepte\nv i p es comporten igual quan hi accedeixes (v[2] i p[2] valen el mateix), però el compilador els tracta com a tipus diferents: v té tipus int[5] (un array), p té tipus int * (un punter). sizeof és precisament una de les poques operacions on aquesta diferència de tipus es fa evident.\n\nPerò v i &v tampoc no són el mateix. Comprovem-ho:\nprintf(\"%p\\n\", (void *)v);\nprintf(\"%p\\n\", (void *)(v + 1));\nprintf(\"%p\\n\", (void *)&v);\nprintf(\"%p\\n\", (void *)(&v + 1));\n\nExercici\nAbans d’executar-ho: v + 1 i &v + 1 avancen la mateixa quantitat de bytes respecte a v i &v respectivament?\n\nExecuta-ho i observa les adreces.\nMesura-ho amb exactitud, igual que vas fer a la sessió anterior:\nprintf(\"%td\\n\", (char *)(v + 1) - (char *)v);\nprintf(\"%td\\n\", (char *)(&v + 1) - (char *)&v);\nprintf(\"%zu\\n\", sizeof(int));\n\nExercici\nCompara els dos resultats de la resta amb sizeof(int) i amb sizeof(v) que acabes de mesurar. Amb quin es correspon cadascun? Tenies raó en la teva predicció?\n\n\n\nPots veure el raonament\n\n\nSolució\nEn aquesta expressió, v decau a un punter a int, de tipus int *. Per això, v + 1 avança sizeof(int) bytes, coincidint amb el que has mesurat a (char *)(v + 1) - (char *)v. &v, en canvi, és l’adreça de l’array sencer i té tipus int (*)[5]; per això, &v + 1 avança sizeof(v) bytes, és a dir, l’array complet, coincidint amb (char *)(&v + 1) - (char *)&v.\nLes dues expressions fan referència a la mateixa adreça inicial de l’array, però tenen tipus diferents. Per això, sumar-hi 1 no produeix el mateix resultat.\n\n\n\nResum\nEl que hem de retenir: en la majoria de contextos, l’expressió v es converteix (decau) a un punter al primer element, de tipus int *; avançar-lo salta d’int en int. &v, en canvi, és un punter a l’array sencer, de tipus int (*)[5]; avançar-lo salta l’array sencer. v en si mateix continua sent un array (int[5]), no un punter, el decaïment afecta com es tracta l’expressió en cada context, no canvia què és v.\n\nprintf(\"%d\\n\", *p);\nprintf(\"%d\\n\", *(p + 1));\nprintf(\"%d\\n\", *(p + 2));\n\nExercici\nAbans d’executar-ho, prediu què imprimirà cadascuna de les tres expressions. Per què?\n\n\n\nPots veure el raonament\n\n\nSolució\n*p val 10 (el primer element de v). *(p + 1) val 20: p + 1 avança un int (com ja has vist a l’exercici anterior), i desreferenciar-lo dona el valor de v[1]. *(p + 2) val 30, pel mateix motiu amb v[2]. En general, *(p + i) i v[i] donen sempre el mateix valor, és, de fet, com el compilador interpreta v[i] per sota.\n\n\n\nExercici\nDibuixa p apuntant a l’array v.\n\n\n\nPots veure la solució\n\n\nSolució\n+------+------+------+------+------+\n|  10  |  20  |  30  |  40  |  50  |\n+------+------+------+------+------+\n   ▲\n   p\n\n\nAra fes:\np++;\n\nExercici\nTorna a dibuixar p sobre l’array, després de p++.\n\n\n\nPots veure la solució\n\n\nSolució\n+------+------+------+------+------+\n|  10  |  20  |  30  |  40  |  50  |\n+------+------+------+------+------+\n          ▲\n          p\np ha avançat una posició (un int sencer, no un byte), i ara apunta a v[1].\n\n\n\nExercici\nPregunta clau. Recorda el resultat que vas obtenir a la sessió anterior amb (char *)&v[1] - (char *)&v[0]. Amb aquest resultat, respon: què creus que significa p + 1, i per què no significa necessàriament sumar un byte a l’adreça?\n\n\n\nPots veure el raonament\n\n\nSolució\np + 1 avança tants bytes com ocupa el tipus al qual apunta p (aquí, sizeof(int)), no un byte. És exactament el mateix patró que vas mesurar amb &v[1] - &v[0] a la sessió anterior: el compilador escala automàticament l’aritmètica segons la mida del tipus.\n\n\n\nError Comú\nUn error molt habitual és pensar que p + 1 sempre avança 1 byte. Només és així quan p és un punter a char (sizeof(char) == 1). Per a qualsevol altre tipus, p + 1 avança sizeof(tipus) bytes.\n\n\nResum\nL’aritmètica d’un punter està relacionada amb el tipus de l’objecte al qual apunta. p + 1 avança tants bytes com ocupa un int (comprova-ho amb sizeof(int)), no un byte.\n\n\n\n\n\nRecuperem les cadenes de caràcters:\nchar s[] = \"cau\";\n\n\n\n\n\ngraph LR\n    A[\"s[0] = 'c'\"] --- B[\"s[1] = 'a'\"] --- C[\"s[2] = 'u'\"] --- D[\"s[3] = '\\0'\"]\n\n\n\n\n\n\n\nDefinició\nUna cadena de caràcters en C és un array de char que acaba amb el caràcter especial '\\0' (byte nul), que marca el final de la cadena.\n\n\nExercici\nPer què hi ha quatre bytes si la paraula “cau” té tres caràcters?\n\n\n\nPots veure el raonament\n\n\nSolució\nPerquè cal reservar espai per al caràcter '\\0', que marca el final de la cadena. Sense aquest byte, no hi hauria manera de saber on acaba la cadena en memòria. char s[] = \"cau\"; reserva automàticament aquest quart byte.\n\n\n\nBona Pràctica\nSi dimensiones a mà un array de caràcters (char s[4], per exemple), recorda sempre reservar una posició extra per al '\\0'. Si no ho fas, qualsevol funció que llegeixi la cadena (com strlen o printf(\"%s\", ...)) llegirà més enllà del final de l’array.\n\nAra:\nchar *p = s;\n\nExercici\nQuin valor tindrà cadascuna d’aquestes expressions?\n\n*p\n*(p + 1)\n*(p + 2)\n*(p + 3)\n\n\n\n\nPots veure el raonament\n\n\nSolució\n*p val 'c', *(p + 1) val 'a', *(p + 2) val 'u', *(p + 3) val '\\0'. És exactament el mateix mecanisme que vas fer servir amb v a la Part A: p apunta al primer element, i sumar-hi i avança i posicions del tipus al qual apunta (char, aquí).\n\n\n\n\n\n\n\nExercici de Programació\nSense mirar la solució encara, escriu una funció mini_strlen que recorri s amb un punter fins trobar '\\0' i retorni la seva longitud (sense comptar el '\\0').\n\n\nPots veure una solució possible\n\nsize_t mini_strlen(const char *s)\n{\n    const char *p = s;\n\n    while (*p != '\\0')\n        p++;\n\n    return p - s;\n}\n\n\n\nExercici\nPregunta final. Per què podem fer p - s?\n\n\n\nPots veure el raonament\n\n\nSolució\np i s apunten totes dues dins del mateix array de caràcters. Restar dos punters dins del mateix array dona el nombre d’elements que els separen (exactament com vas fer a la sessió anterior amb &v[1] - &v[0]). Com que p ha avançat un char per cada posició recorreguda fins trobar '\\0', p - s dona directament la longitud de la cadena.\n\n\n\nError Comú\nUn error habitual en implementar strlen a mà és oblidar-se d’avançar p dins del while (p++), cosa que provoca un bucle infinit perquè *p mai canvia. Un altre és comptar el '\\0' com a part de la longitud.\n\n\nRepte\nOpcional. Reescriu mini_strlen fent servir indexació (s[i]) en lloc de punters (*p). Compara totes dues versions: quina trobes més llegible? Recorda que, per sota, el compilador sol generar codi molt semblant per a totes dues.\n\n\n\n\n\nEncara no entrarem en detall de com s’organitza la memòria d’un procés. Només plantegem la pregunta.\nint main(void)\n{\n    int x = 42;\n    int v[5];\n\n    /* ... */\n}\n┌──────────────────────────┐\n│   Memòria d'un procés    │\n│                          │\n│            ?             │\n│                          │\n│            ?             │\n│                          │\n│            ?             │\n└──────────────────────────┘\n\nReflexió\nPregunta oberta (no la responem avui, la recuperarem a teoria): aquestes dades estan en algun lloc de la memòria del procés. Com està organitzada aquesta memòria? A teoria apareixeran conceptes com stack i heap.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Pralabs",
+      "Pralab 02: Del `v[i]` al punter"
+    ]
+  },
+  {
     "objectID": "blocs/01-espai-usuari/teoria/01_rols_funcions.html#un-món-de-sistemes-informàtics",
     "href": "blocs/01-espai-usuari/teoria/01_rols_funcions.html#un-món-de-sistemes-informàtics",
     "title": "Rols i funcions d’un sistema operatiu",
@@ -630,230 +1596,6 @@
       "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
       "Teoria",
       "Rols i funcions d'un sistema operatiu"
-    ]
-  },
-  {
-    "objectID": "blocs/01-espai-usuari/pralabs/01_c_mem.html",
-    "href": "blocs/01-espai-usuari/pralabs/01_c_mem.html",
-    "title": "Pralab 01: Del C a la memòria (I)",
-    "section": "",
-    "text": "Durant el primer curs has treballat amb variables, arrays i cadenes de caràcters en C.\n\nExercici de Programació\nEl primer exercici d’aquest pralab consisteix a sumar dos vectors vector1 amb (1.5, 2.0, -3.5) i vector2 (2.5, -1.0, 4.0) de tres elements cadascun, i imprimir el vector resultant.\n\n\nPots veure la solució\n\n#include &lt;stdio.h&gt;\n\n#define DIMENSIO 3\n\nint main() {\n    float vector1[DIMENSIO] = {1.5, 2.0, -3.5};\n    float vector2[DIMENSIO] = {2.5, -1.0, 4.0};\n    float vector_suma[DIMENSIO];\n\n    for (int i = 0; i &lt; DIMENSIO; i++) {\n        vector_suma[i] = vector1[i] + vector2[i];\n    }\n\n    printf(\"El vector resultant de la suma es:\\n\");\n    printf(\"(\");\n    for (int i = 0; i &lt; DIMENSIO; i++) {\n        printf(\"%.2f\", vector_suma[i]);\n        if (i &lt; DIMENSIO - 1) {\n            printf(\", \"); \n        }\n    }\n    printf(\")\\n\");\n\n    return 0;\n}\n\n\nPerò hi ha una pregunta que l’any passat no vau resoldre. Imagineu que el programa té un array v i que volem accedir a l’element v[i]. Com sap el programa on està v[i]?\nEn aquest pralab comencem a mirar la programació amb C des d’un altre punt de vista: el de la memòria. Aquest laboratori és la base sobre la qual construirem, més endavant, com un sistema operatiu organitza la memòria d’un procés. Aquesta sessió és més experimental que teòrica: anirem fent proves amb petits programes i mirant què passa a la memòria.\n\n\n\nComencem amb aquest programa:\n#include &lt;stdio.h&gt;\n\nint main(void)\n{\n    int x = 42;\n\n    printf(\"x = %d\\n\", x);\n    printf(\"&x = %p\\n\", (void *) &x);\n\n    return 0;\n}\nx   = ?\n&x  = ?\n\nExercici\nAbans d’executar-ho, anota en el teu quadern les respostes a aquestes preguntes:\n\nQuè imprimirà x?\nQuina mena de valor representa &x?\nEsperes que &x tingui el mateix valor que x?\n\n\n\nExercici\nCompila i executa el programa dues vegades seguides i compara els valors de &x que obtens.\n\nSón iguals o diferents?\nSi són diferents, què creus que ha passat?\n\n\n\nExercici\nAfegeix ara aquesta línia i torna a executar:\nprintf(\"%zu\\n\", sizeof(x));\nCompara el que imprimeix sizeof(x) amb el que imprimeix &x. Són el mateix tipus d’informació?\n\n\n\nPots veure el raonament\n\n\nSolució\n\nx és una variable de tipus enter i conté el valor 42.\n&x és l’adreça de memòria on està emmagatzemat x. És un valor que indica la posició a la memòria del procés on es troba x.\nNo, &x no té el mateix valor que x.\nDues execucions poden donar adreces diferents per &x perquè el sistema operatiu assigna, a cada execució, una disposició diferent de la memòria del procés. Aquest mecanisme es diu ASLR (Address Space Layout Randomization, aleatorització de l’espai d’adreces) i el veurem amb detall quan parlem de com el sistema operatiu gestiona la memòria d’un procés. De moment, queda’t amb la idea: l’adreça de x no és fixa ni depèn només del teu codi, sinó també de decisions que pren el sistema operatiu en temps d’execució.\nsizeof(x) retorna la mida en bytes de la variable x, que és diferent de l’adreça de memòria que retorna &x. Per exemple, en un sistema de 64 bits, sizeof(x) podria retornar 4 (si int ocupa 4 bytes), mentre que &x podria ser una adreça com 0x7ffee3b8c4a0.\n\n\n\n\n\n\nflowchart LR\n    x[\"x = 42\"]\n    a[\"&x = 0x7ffee3b8c4a0\"] --&gt;|\"és l'adreça de\"| x\n\n\n\n\n\n\n\n\n\n\n\nIntroduïm ara:\nint x = 42;\nint *p = &x;\n\n\n\n\n\nflowchart LR\n    P[\"p\"] --&gt; X[\"x = 42\"]\n\n\n\n\n\n\nprintf(\"%d\\n\", *p);\n\nExercici\nQuè imprimirà aquest printf?\n\nL’adreça de x\n42\nL’adreça de p\nError de compilació\n\n\n\n\nPots veure el raonament\n\n\nSolució\nEl printf(\"%d\\n\", *p); imprimirà 42, ja que *p accedeix al valor de la variable a la qual apunta p, que és x.\n\n\nAra prova això:\n*p = 99;\nprintf(\"%d\\n\", x);\n\nExercici\nHas modificat p o has modificat x?\n\n\n\nPots veure el raonament\n\n\nSolució\nQuan fas *p = 99;, estàs modificant el valor de x a través del punter p. Així que després d’aquesta línia, x tindrà el valor 99.\n\n\nAmb això ja podem fixar dues definicions formals:\n\nDefinició\nUn punter és una variable que emmagatzema una adreça de memòria.\n\n\nDefinició\nL’operador * permet accedir a l’objecte que es troba a l’adreça emmagatzemada en el punter.\n\n\nReflexió\nNota de compilador. Prova de compilar printf(\"%d\\n\", p); (sense *) amb gcc -Wall -Wextra. Fixa’t en l’avís del compilador: el valor que passes a %d té tipus int *, però %d espera un int — hi ha una incompatibilitat de tipus entre l’argument i el format. Per imprimir un punter amb printf, fem servir %p i convertim el valor a void *, exactament com hem fet a la Part A amb (void *)&x.\n\n\n\n\n\nPartim de:\nint v[5] = {10, 20, 30, 40, 50};\nComencem amb una cosa que probablement ja has fet servir:\nprintf(\"%zu\\n\", sizeof(v));\nprintf(\"%zu\\n\", sizeof(v[0]));\nprintf(\"%zu\\n\", sizeof(v) / sizeof(v[0]));\n\nExercici\nQuè imprimeix cada línia?\n\n\n\nPots veure el raonament\n\n\nSolució\n\nsizeof(v) retorna la mida total de l’array v en bytes. Com que v és un array de 5 enters i cada enter ocupa, per exemple, 4 bytes, sizeof(v) seria 20.\nsizeof(v[0]) retorna la mida d’un sol element de l’array, que és un enter, així que seria 4.\nsizeof(v) / sizeof(v[0]) calcula el nombre d’elements de l’array dividint la mida total de l’array per la mida d’un element, així que seria 20 / 4 = 5.\n\n\n\nJa saps utilitzar v[0], v[1], v[2]. Ara mirem-ho des del punt de vista de la memòria:\nprintf(\"%p\\n\", (void *)&v[0]);\nprintf(\"%p\\n\", (void *)&v[1]);\n\nExercici\nQuè observes en les dues adreces que s’imprimeixen?\n\n\n\nPots veure el raonament\n\n\nSolució\nLes adreces segueixen el mateix patró: cada element ocupa sizeof(int) bytes i els elements d’un array estan emmagatzemats de manera contigua.\n\n\nAra mesura-ho:\nprintf(\"%zu\\n\", sizeof(v[0]));\nprintf(\"%td\\n\", (char *)&v[1] - (char *)&v[0]);\nConvertim temporalment les adreces a char *. Això ens permet expressar la diferència entre les dues adreces en unitats de bytes.\nAra compara els dos resultats.\n\nExercici\nQuina relació observes entre el resultat de la resta amb char * i el valor de sizeof(v[0])?\n\n\n\nPots veure el raonament\n\n\nSolució\nQuan restem dos punters a elements del mateix array, el resultat depèn del tipus del punter. Sense el cast, &v[1] - &v[0] també és una resta vàlida, però el resultat s’expressa en nombre d’elements int, no en bytes. Com que apunten a elements consecutius, dona 1. La diferència en bytes és la que has obtingut amb (char *)&v[1] - (char *)&v[0], i coincideix amb sizeof(int) en aquest sistema (C no garanteix que sizeof(int) valgui el mateix a tot arreu, només que sigui com a mínim de 2 bytes).\n\n\nAmplia-ho amb &v[2]:\nprintf(\"%p\\n\", (void *)&v[2]);\nprintf(\"%td\\n\", (char *)&v[2] - (char *)&v[1]);\n\nExercici\nEs manté el mateix patró? Diries que els elements de v estan repartits de qualsevol manera per la memòria, o segueixen una estructura?\n\n\n\nPots veure el raonament\n\n\nSolució\nEls elements de l’array v estan emmagatzemats de manera contigua a la memòria. Podem visualitzar el que acabes de mesurar:\n\n\n\n\n\ngraph LR\n    subgraph v[\"array v\"]\n        A[\"v[0]&lt;br/&gt;&lt;b&gt;10&lt;/b&gt;&lt;br/&gt;0x1000\"]\n        B[\"v[1]&lt;br/&gt;&lt;b&gt;20&lt;/b&gt;&lt;br/&gt;0x1004\"]\n        C[\"v[2]&lt;br/&gt;&lt;b&gt;30&lt;/b&gt;&lt;br/&gt;0x1008\"]\n        D[\"v[3]&lt;br/&gt;&lt;b&gt;40&lt;/b&gt;&lt;br/&gt;0x100C\"]\n        E[\"v[4]&lt;br/&gt;&lt;b&gt;50&lt;/b&gt;&lt;br/&gt;0x1010\"]\n\n        A --&gt;|\"+sizeof(int) bytes\"| B\n        B --&gt;|\"+sizeof(int) bytes\"| C\n        C --&gt;|\"+sizeof(int) bytes\"| D\n        D --&gt;|\"+sizeof(int) bytes\"| E\n    end\n\n\n\n\n\n\n\n\nAra fes una mesura global:\nprintf(\"%zu\\n\", sizeof(v));\n\nExercici\nAquest resultat, coincideix amb el que esperaries a partir del que has mesurat element a element?\n\n\n\nPots veure el raonament\n\n\nSolució\nSí, sizeof(v) hauria de ser igual a sizeof(v[0]) * 5, ja que v és un array de 5 elements de tipus int. Si sizeof(v[0]) és 4 bytes, aleshores sizeof(v) serà 20 bytes.\n\n\nAra revisem el que hem anat aprenent sobre v i &v:\nint *pv = &v[0];\n\nprintf(\"%zu\\n\", sizeof(v));\nprintf(\"%zu\\n\", sizeof(pv));\n\nExercici\n\nRaona si v i pv et permeten accedir a les mateixes dades (v[2] i pv[2] valen el mateix). sizeof donarà el mateix resultat per tots dos?\n\n\n\n\nPots veure el raonament\n\n\nSolució\nsizeof(v) continua valent 20: és la mida de tot l’array, els seus 5 elements sencers. En canvi, sizeof(pv) val 8 (en un sistema de 64 bits): és només la mida d’una adreça de memòria, independentment de quantes dades hi hagi al darrere. Encara que v i pv es comportin de manera semblant quan hi accedeixes amb [i], no són el mateix tipus de cosa: v és un array i per tant el compilador en coneix la mida sencera, mentre que pv és només un punter, el compilador només sap que apunta a un int, no quants n’hi ha darrere.\n\n\nFins ara hem utilitzat punters per guardar adreces, accedir als valors i mesurar distàncies entre adreces. Ara veurem què passa quan sumem un nombre a un punter.\nprintf(\"%p\\n\", (void *)&v[2]);\nprintf(\"%p\\n\", (void *)(pv + 2));\n\nExercici\nAbans d’executar-ho: quan sumes 2 a pv, creus que avança 2 bytes o 2 elements de tipus int? Compara els resultats.\n\n\n\nPots veure el raonament\n\n\nSolució\nSí, &v[2] i pv + 2 donen exactament la mateixa adreça. Igual que passava amb la resta de punters, la suma també té en compte automàticament la mida del tipus: pv + 2 no avança 2 bytes, sinó 2 elements int (és a dir, 2 * sizeof(int) bytes). Si el compilador avancés sempre en bytes, independentment del tipus al qual apunta pv, pv + 2 acabaria apuntant enmig d’un element en lloc de l’inici del tercer, i tota l’aritmètica d’arrays deixaria de funcionar.\n\n\n\nExercici de Programació\nUn programa llegeix les dades d’un sensor i les guarda en un array. El programador afirma que el sensor ha registrat: 10, 20, 30, 40. Però quan executa el programa obté:\ngcc -Wall -Wextra sensor.c -o sensor\n# En compilar-lo amb -Wall -Wextra apareixen alguns avisos, però no tots els errors del programa en generen.\nAquest és el codi del programa sensor.c:\n#include &lt;stdio.h&gt;\n\nint main(void)\n{\n    int mesures[4] = {10, 20, 30, 40};\n\n    int *sensor = &mesures[0];\n\n    printf(\"Mesura actual: %d\\n\", sensor);\n    printf(\"Adreça de la mesura: %d\\n\", *sensor);\n\n    sensor = 99;\n\n    printf(\"Nova mesura: %d\\n\", *sensor);\n    printf(\"Mesura original: %d\\n\", mesures[0]);\n\n    return 0;\n}\n\nEl programa té diversos errors. Troba’ls sense executar-lo.\n\n\n\nPots veure el raonament\n\n\nSolució\n\n(avís del compilador) sensor és un punter i conté una adreça. Passar-lo directament a %d és un error de tipus que -Wall detecta (“format ‘%d’ expects argument of type ‘int’, but argument has type ’int ’“*). Per obtenir el valor al qual apunta hem d’utilitzar *sensor.\n(error de lectura, el compilador no l’avisa) *sensor és el valor de la mesura (10), no la seva adreça — és un int, i %d és tècnicament correcte per imprimir-lo. El problema és només que l’etiqueta del text (“Adreça de la mesura”) no es correspon amb el que realment s’imprimeix. Cap avís del compilador et pot dir això: cal llegir el codi amb cura. Per imprimir l’adreça de debò cal sensor amb %p.\n(avís del compilador) sensor = 99 assigna un enter literal a un punter, i el compilador ja avisa d’això amb -Wextra (“makes pointer from integer without a cast”). sensor passa a contenir l’adreça 99, que gairebé segur no és una adreça vàlida dins l’espai de memòria del procés. Desreferenciar-la després amb *sensor és comportament indefinit: normalment provocarà un segmentation fault. Per això et demanem que trobis els errors sense executar el programa.\n\n\n\n\nVolem modificar la mesura a través del punter sensor perquè passi de 10 a 99. Quina instrucció has d’escriure? Explica què passa amb mesures[0] i per què?\n\n\n\nPots veure el raonament\n\n\nSolució\nQuan assignem *sensor = 99, estem modificant el valor de la variable a la qual apunta sensor, que és mesures[0]. Per tant, després d’aquesta assignació, mesures[0] tindrà el valor 99. Això és perquè sensor és un punter que apunta a l’adreça de mesures[0], i desreferenciar-lo amb *sensor ens permet accedir i modificar el valor emmagatzemat en aquesta adreça.\n\n\n\nCorregeix el programa, intentant mantenir el mateix nombre de línies, per obtenir la sortida següent:\n\nMesura actual: 10\nAdreça de la mesura: 0x...\nNova mesura: 99\nMesura original: 99\n\n\nPots veure la solució\n\n\nSolució\n#include &lt;stdio.h&gt;\nint main(void)\n{\n    int mesures[4] = {10, 20, 30, 40};\n    int *sensor = &mesures[0];\n\n    printf(\"Mesura actual: %d\\n\", *sensor);\n    printf(\"Adreça de la mesura: %p\\n\", (void *)sensor);\n\n    *sensor = 99;\n\n    printf(\"Nova mesura: %d\\n\", *sensor);\n    printf(\"Mesura original: %d\\n\", mesures[0]);\n    return 0;\n}\n\n\n\nJa podem començar a respondre la pregunta inicial: com pot C localitzar v[i]?\n\nResultat d'Aprenentatge\nEls elements d’un array estan emmagatzemats de manera contigua. Per accedir a v[i], C parteix de l’adreça del primer element i avança i elements. Com que cada element ocupa sizeof(int) bytes, això equival a avançar i * sizeof(int) bytes. En C, aquesta idea es representa mitjançant l’aritmètica de punters: &v[i] == &v[0] + i. Quan sumem i a un punter a int, C no avança i bytes, sinó i elements de tipus int. El compilador té en compte automàticament la mida de cada element.",
-    "crumbs": [
-      "Inici",
-      "Blocs",
-      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
-      "Pralabs",
-      "Pralab 01: Del C a la memòria (I)"
-    ]
-  },
-  {
-    "objectID": "blocs/01-espai-usuari/pralabs/01_c_mem.html#introducció",
-    "href": "blocs/01-espai-usuari/pralabs/01_c_mem.html#introducció",
-    "title": "Pralab 01: Del C a la memòria (I)",
-    "section": "",
-    "text": "Durant el primer curs has treballat amb variables, arrays i cadenes de caràcters en C.\n\nExercici de Programació\nEl primer exercici d’aquest pralab consisteix a sumar dos vectors vector1 amb (1.5, 2.0, -3.5) i vector2 (2.5, -1.0, 4.0) de tres elements cadascun, i imprimir el vector resultant.\n\n\nPots veure la solució\n\n#include &lt;stdio.h&gt;\n\n#define DIMENSIO 3\n\nint main() {\n    float vector1[DIMENSIO] = {1.5, 2.0, -3.5};\n    float vector2[DIMENSIO] = {2.5, -1.0, 4.0};\n    float vector_suma[DIMENSIO];\n\n    for (int i = 0; i &lt; DIMENSIO; i++) {\n        vector_suma[i] = vector1[i] + vector2[i];\n    }\n\n    printf(\"El vector resultant de la suma es:\\n\");\n    printf(\"(\");\n    for (int i = 0; i &lt; DIMENSIO; i++) {\n        printf(\"%.2f\", vector_suma[i]);\n        if (i &lt; DIMENSIO - 1) {\n            printf(\", \"); \n        }\n    }\n    printf(\")\\n\");\n\n    return 0;\n}\n\n\nPerò hi ha una pregunta que l’any passat no vau resoldre. Imagineu que el programa té un array v i que volem accedir a l’element v[i]. Com sap el programa on està v[i]?\nEn aquest pralab comencem a mirar la programació amb C des d’un altre punt de vista: el de la memòria. Aquest laboratori és la base sobre la qual construirem, més endavant, com un sistema operatiu organitza la memòria d’un procés. Aquesta sessió és més experimental que teòrica: anirem fent proves amb petits programes i mirant què passa a la memòria.\n\n\n\nComencem amb aquest programa:\n#include &lt;stdio.h&gt;\n\nint main(void)\n{\n    int x = 42;\n\n    printf(\"x = %d\\n\", x);\n    printf(\"&x = %p\\n\", (void *) &x);\n\n    return 0;\n}\nx   = ?\n&x  = ?\n\nExercici\nAbans d’executar-ho, anota en el teu quadern les respostes a aquestes preguntes:\n\nQuè imprimirà x?\nQuina mena de valor representa &x?\nEsperes que &x tingui el mateix valor que x?\n\n\n\nExercici\nCompila i executa el programa dues vegades seguides i compara els valors de &x que obtens.\n\nSón iguals o diferents?\nSi són diferents, què creus que ha passat?\n\n\n\nExercici\nAfegeix ara aquesta línia i torna a executar:\nprintf(\"%zu\\n\", sizeof(x));\nCompara el que imprimeix sizeof(x) amb el que imprimeix &x. Són el mateix tipus d’informació?\n\n\n\nPots veure el raonament\n\n\nSolució\n\nx és una variable de tipus enter i conté el valor 42.\n&x és l’adreça de memòria on està emmagatzemat x. És un valor que indica la posició a la memòria del procés on es troba x.\nNo, &x no té el mateix valor que x.\nDues execucions poden donar adreces diferents per &x perquè el sistema operatiu assigna, a cada execució, una disposició diferent de la memòria del procés. Aquest mecanisme es diu ASLR (Address Space Layout Randomization, aleatorització de l’espai d’adreces) i el veurem amb detall quan parlem de com el sistema operatiu gestiona la memòria d’un procés. De moment, queda’t amb la idea: l’adreça de x no és fixa ni depèn només del teu codi, sinó també de decisions que pren el sistema operatiu en temps d’execució.\nsizeof(x) retorna la mida en bytes de la variable x, que és diferent de l’adreça de memòria que retorna &x. Per exemple, en un sistema de 64 bits, sizeof(x) podria retornar 4 (si int ocupa 4 bytes), mentre que &x podria ser una adreça com 0x7ffee3b8c4a0.\n\n\n\n\n\n\nflowchart LR\n    x[\"x = 42\"]\n    a[\"&x = 0x7ffee3b8c4a0\"] --&gt;|\"és l'adreça de\"| x\n\n\n\n\n\n\n\n\n\n\n\nIntroduïm ara:\nint x = 42;\nint *p = &x;\n\n\n\n\n\nflowchart LR\n    P[\"p\"] --&gt; X[\"x = 42\"]\n\n\n\n\n\n\nprintf(\"%d\\n\", *p);\n\nExercici\nQuè imprimirà aquest printf?\n\nL’adreça de x\n42\nL’adreça de p\nError de compilació\n\n\n\n\nPots veure el raonament\n\n\nSolució\nEl printf(\"%d\\n\", *p); imprimirà 42, ja que *p accedeix al valor de la variable a la qual apunta p, que és x.\n\n\nAra prova això:\n*p = 99;\nprintf(\"%d\\n\", x);\n\nExercici\nHas modificat p o has modificat x?\n\n\n\nPots veure el raonament\n\n\nSolució\nQuan fas *p = 99;, estàs modificant el valor de x a través del punter p. Així que després d’aquesta línia, x tindrà el valor 99.\n\n\nAmb això ja podem fixar dues definicions formals:\n\nDefinició\nUn punter és una variable que emmagatzema una adreça de memòria.\n\n\nDefinició\nL’operador * permet accedir a l’objecte que es troba a l’adreça emmagatzemada en el punter.\n\n\nReflexió\nNota de compilador. Prova de compilar printf(\"%d\\n\", p); (sense *) amb gcc -Wall -Wextra. Fixa’t en l’avís del compilador: el valor que passes a %d té tipus int *, però %d espera un int — hi ha una incompatibilitat de tipus entre l’argument i el format. Per imprimir un punter amb printf, fem servir %p i convertim el valor a void *, exactament com hem fet a la Part A amb (void *)&x.\n\n\n\n\n\nPartim de:\nint v[5] = {10, 20, 30, 40, 50};\nComencem amb una cosa que probablement ja has fet servir:\nprintf(\"%zu\\n\", sizeof(v));\nprintf(\"%zu\\n\", sizeof(v[0]));\nprintf(\"%zu\\n\", sizeof(v) / sizeof(v[0]));\n\nExercici\nQuè imprimeix cada línia?\n\n\n\nPots veure el raonament\n\n\nSolució\n\nsizeof(v) retorna la mida total de l’array v en bytes. Com que v és un array de 5 enters i cada enter ocupa, per exemple, 4 bytes, sizeof(v) seria 20.\nsizeof(v[0]) retorna la mida d’un sol element de l’array, que és un enter, així que seria 4.\nsizeof(v) / sizeof(v[0]) calcula el nombre d’elements de l’array dividint la mida total de l’array per la mida d’un element, així que seria 20 / 4 = 5.\n\n\n\nJa saps utilitzar v[0], v[1], v[2]. Ara mirem-ho des del punt de vista de la memòria:\nprintf(\"%p\\n\", (void *)&v[0]);\nprintf(\"%p\\n\", (void *)&v[1]);\n\nExercici\nQuè observes en les dues adreces que s’imprimeixen?\n\n\n\nPots veure el raonament\n\n\nSolució\nLes adreces segueixen el mateix patró: cada element ocupa sizeof(int) bytes i els elements d’un array estan emmagatzemats de manera contigua.\n\n\nAra mesura-ho:\nprintf(\"%zu\\n\", sizeof(v[0]));\nprintf(\"%td\\n\", (char *)&v[1] - (char *)&v[0]);\nConvertim temporalment les adreces a char *. Això ens permet expressar la diferència entre les dues adreces en unitats de bytes.\nAra compara els dos resultats.\n\nExercici\nQuina relació observes entre el resultat de la resta amb char * i el valor de sizeof(v[0])?\n\n\n\nPots veure el raonament\n\n\nSolució\nQuan restem dos punters a elements del mateix array, el resultat depèn del tipus del punter. Sense el cast, &v[1] - &v[0] també és una resta vàlida, però el resultat s’expressa en nombre d’elements int, no en bytes. Com que apunten a elements consecutius, dona 1. La diferència en bytes és la que has obtingut amb (char *)&v[1] - (char *)&v[0], i coincideix amb sizeof(int) en aquest sistema (C no garanteix que sizeof(int) valgui el mateix a tot arreu, només que sigui com a mínim de 2 bytes).\n\n\nAmplia-ho amb &v[2]:\nprintf(\"%p\\n\", (void *)&v[2]);\nprintf(\"%td\\n\", (char *)&v[2] - (char *)&v[1]);\n\nExercici\nEs manté el mateix patró? Diries que els elements de v estan repartits de qualsevol manera per la memòria, o segueixen una estructura?\n\n\n\nPots veure el raonament\n\n\nSolució\nEls elements de l’array v estan emmagatzemats de manera contigua a la memòria. Podem visualitzar el que acabes de mesurar:\n\n\n\n\n\ngraph LR\n    subgraph v[\"array v\"]\n        A[\"v[0]&lt;br/&gt;&lt;b&gt;10&lt;/b&gt;&lt;br/&gt;0x1000\"]\n        B[\"v[1]&lt;br/&gt;&lt;b&gt;20&lt;/b&gt;&lt;br/&gt;0x1004\"]\n        C[\"v[2]&lt;br/&gt;&lt;b&gt;30&lt;/b&gt;&lt;br/&gt;0x1008\"]\n        D[\"v[3]&lt;br/&gt;&lt;b&gt;40&lt;/b&gt;&lt;br/&gt;0x100C\"]\n        E[\"v[4]&lt;br/&gt;&lt;b&gt;50&lt;/b&gt;&lt;br/&gt;0x1010\"]\n\n        A --&gt;|\"+sizeof(int) bytes\"| B\n        B --&gt;|\"+sizeof(int) bytes\"| C\n        C --&gt;|\"+sizeof(int) bytes\"| D\n        D --&gt;|\"+sizeof(int) bytes\"| E\n    end\n\n\n\n\n\n\n\n\nAra fes una mesura global:\nprintf(\"%zu\\n\", sizeof(v));\n\nExercici\nAquest resultat, coincideix amb el que esperaries a partir del que has mesurat element a element?\n\n\n\nPots veure el raonament\n\n\nSolució\nSí, sizeof(v) hauria de ser igual a sizeof(v[0]) * 5, ja que v és un array de 5 elements de tipus int. Si sizeof(v[0]) és 4 bytes, aleshores sizeof(v) serà 20 bytes.\n\n\nAra revisem el que hem anat aprenent sobre v i &v:\nint *pv = &v[0];\n\nprintf(\"%zu\\n\", sizeof(v));\nprintf(\"%zu\\n\", sizeof(pv));\n\nExercici\n\nRaona si v i pv et permeten accedir a les mateixes dades (v[2] i pv[2] valen el mateix). sizeof donarà el mateix resultat per tots dos?\n\n\n\n\nPots veure el raonament\n\n\nSolució\nsizeof(v) continua valent 20: és la mida de tot l’array, els seus 5 elements sencers. En canvi, sizeof(pv) val 8 (en un sistema de 64 bits): és només la mida d’una adreça de memòria, independentment de quantes dades hi hagi al darrere. Encara que v i pv es comportin de manera semblant quan hi accedeixes amb [i], no són el mateix tipus de cosa: v és un array i per tant el compilador en coneix la mida sencera, mentre que pv és només un punter, el compilador només sap que apunta a un int, no quants n’hi ha darrere.\n\n\nFins ara hem utilitzat punters per guardar adreces, accedir als valors i mesurar distàncies entre adreces. Ara veurem què passa quan sumem un nombre a un punter.\nprintf(\"%p\\n\", (void *)&v[2]);\nprintf(\"%p\\n\", (void *)(pv + 2));\n\nExercici\nAbans d’executar-ho: quan sumes 2 a pv, creus que avança 2 bytes o 2 elements de tipus int? Compara els resultats.\n\n\n\nPots veure el raonament\n\n\nSolució\nSí, &v[2] i pv + 2 donen exactament la mateixa adreça. Igual que passava amb la resta de punters, la suma també té en compte automàticament la mida del tipus: pv + 2 no avança 2 bytes, sinó 2 elements int (és a dir, 2 * sizeof(int) bytes). Si el compilador avancés sempre en bytes, independentment del tipus al qual apunta pv, pv + 2 acabaria apuntant enmig d’un element en lloc de l’inici del tercer, i tota l’aritmètica d’arrays deixaria de funcionar.\n\n\n\nExercici de Programació\nUn programa llegeix les dades d’un sensor i les guarda en un array. El programador afirma que el sensor ha registrat: 10, 20, 30, 40. Però quan executa el programa obté:\ngcc -Wall -Wextra sensor.c -o sensor\n# En compilar-lo amb -Wall -Wextra apareixen alguns avisos, però no tots els errors del programa en generen.\nAquest és el codi del programa sensor.c:\n#include &lt;stdio.h&gt;\n\nint main(void)\n{\n    int mesures[4] = {10, 20, 30, 40};\n\n    int *sensor = &mesures[0];\n\n    printf(\"Mesura actual: %d\\n\", sensor);\n    printf(\"Adreça de la mesura: %d\\n\", *sensor);\n\n    sensor = 99;\n\n    printf(\"Nova mesura: %d\\n\", *sensor);\n    printf(\"Mesura original: %d\\n\", mesures[0]);\n\n    return 0;\n}\n\nEl programa té diversos errors. Troba’ls sense executar-lo.\n\n\n\nPots veure el raonament\n\n\nSolució\n\n(avís del compilador) sensor és un punter i conté una adreça. Passar-lo directament a %d és un error de tipus que -Wall detecta (“format ‘%d’ expects argument of type ‘int’, but argument has type ’int ’“*). Per obtenir el valor al qual apunta hem d’utilitzar *sensor.\n(error de lectura, el compilador no l’avisa) *sensor és el valor de la mesura (10), no la seva adreça — és un int, i %d és tècnicament correcte per imprimir-lo. El problema és només que l’etiqueta del text (“Adreça de la mesura”) no es correspon amb el que realment s’imprimeix. Cap avís del compilador et pot dir això: cal llegir el codi amb cura. Per imprimir l’adreça de debò cal sensor amb %p.\n(avís del compilador) sensor = 99 assigna un enter literal a un punter, i el compilador ja avisa d’això amb -Wextra (“makes pointer from integer without a cast”). sensor passa a contenir l’adreça 99, que gairebé segur no és una adreça vàlida dins l’espai de memòria del procés. Desreferenciar-la després amb *sensor és comportament indefinit: normalment provocarà un segmentation fault. Per això et demanem que trobis els errors sense executar el programa.\n\n\n\n\nVolem modificar la mesura a través del punter sensor perquè passi de 10 a 99. Quina instrucció has d’escriure? Explica què passa amb mesures[0] i per què?\n\n\n\nPots veure el raonament\n\n\nSolució\nQuan assignem *sensor = 99, estem modificant el valor de la variable a la qual apunta sensor, que és mesures[0]. Per tant, després d’aquesta assignació, mesures[0] tindrà el valor 99. Això és perquè sensor és un punter que apunta a l’adreça de mesures[0], i desreferenciar-lo amb *sensor ens permet accedir i modificar el valor emmagatzemat en aquesta adreça.\n\n\n\nCorregeix el programa, intentant mantenir el mateix nombre de línies, per obtenir la sortida següent:\n\nMesura actual: 10\nAdreça de la mesura: 0x...\nNova mesura: 99\nMesura original: 99\n\n\nPots veure la solució\n\n\nSolució\n#include &lt;stdio.h&gt;\nint main(void)\n{\n    int mesures[4] = {10, 20, 30, 40};\n    int *sensor = &mesures[0];\n\n    printf(\"Mesura actual: %d\\n\", *sensor);\n    printf(\"Adreça de la mesura: %p\\n\", (void *)sensor);\n\n    *sensor = 99;\n\n    printf(\"Nova mesura: %d\\n\", *sensor);\n    printf(\"Mesura original: %d\\n\", mesures[0]);\n    return 0;\n}\n\n\n\nJa podem començar a respondre la pregunta inicial: com pot C localitzar v[i]?\n\nResultat d'Aprenentatge\nEls elements d’un array estan emmagatzemats de manera contigua. Per accedir a v[i], C parteix de l’adreça del primer element i avança i elements. Com que cada element ocupa sizeof(int) bytes, això equival a avançar i * sizeof(int) bytes. En C, aquesta idea es representa mitjançant l’aritmètica de punters: &v[i] == &v[0] + i. Quan sumem i a un punter a int, C no avança i bytes, sinó i elements de tipus int. El compilador té en compte automàticament la mida de cada element.",
-    "crumbs": [
-      "Inici",
-      "Blocs",
-      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
-      "Pralabs",
-      "Pralab 01: Del C a la memòria (I)"
-    ]
-  },
-  {
-    "objectID": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html",
-    "href": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html",
-    "title": "Exercicis amb C · Apuntadors i arrays",
-    "section": "",
-    "text": "Conjunt d’exercicis per consolidar i ampliar els conceptes treballats als Pralab 01 i Pralab 02. Pots utilitzar el fòrum del campus virtual per compartir, debatre i resoldre els exercicis amb els teus companys. Explica el teu raonament, planteja els dubtes que et sorgeixin i comenta les propostes dels altres.",
-    "crumbs": [
-      "Inici",
-      "Blocs",
-      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
-      "Activitats",
-      "Exercicis amb C · Apuntadors i arrays"
-    ]
-  },
-  {
-    "objectID": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html#un-punter-sempre-apunta-a-la-variable",
-    "href": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html#un-punter-sempre-apunta-a-la-variable",
-    "title": "Exercicis amb C · Apuntadors i arrays",
-    "section": "1. Un punter sempre apunta a la variable",
-    "text": "1. Un punter sempre apunta a la variable\nQuin serà el resultat d’aquesta execució?\n#include &lt;stdio.h&gt;\n\nint main(void)\n{\n    int x = 5;\n    int *p = &x;\n\n    x++;\n\n    printf(\"%d\\n\", *p);\n\n    return 0;\n}\n\nAbans d’executar\nPrediu:\n\nquin valor tindrà x després de x++;\nquè imprimirà *p;\nsi p continua apuntant a x.\n\n\nRecorda què significa p = &x i què significa *p.",
-    "crumbs": [
-      "Inici",
-      "Blocs",
-      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
-      "Activitats",
-      "Exercicis amb C · Apuntadors i arrays"
-    ]
-  },
-  {
-    "objectID": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html#recórrer-un-string-amb-un-punter",
-    "href": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html#recórrer-un-string-amb-un-punter",
-    "title": "Exercicis amb C · Apuntadors i arrays",
-    "section": "2. Recórrer un string amb un punter",
-    "text": "2. Recórrer un string amb un punter\nCompleta el programa perquè imprimeixi:\nHola\nsense utilitzar s[i].\n#include &lt;stdio.h&gt;\n\nint main(void)\n{\n    char str[] = \"Hola\";\n    const char *s = str;\n\n    while (*s != '\\0') {\n        printf(\"%c\", ???);\n        ???;\n    }\n\n    printf(\"\\n\");\n\n    return 0;\n}\n\nPreguntes\n\nQuè representa *s?\nQuè ha de fer s++?\nQuan acaba el while?\n\n\nPensa què ha de passar amb s després d’imprimir cada caràcter.\n\n\nRepte\nModifica el programa perquè imprimeixi els caràcters un per línia.\n\nNomés cal canviar un caràcter dins del printf que ja tens.",
-    "crumbs": [
-      "Inici",
-      "Blocs",
-      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
-      "Activitats",
-      "Exercicis amb C · Apuntadors i arrays"
-    ]
-  },
-  {
-    "objectID": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html#array-i-aritmètica-de-punters",
-    "href": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html#array-i-aritmètica-de-punters",
-    "title": "Exercicis amb C · Apuntadors i arrays",
-    "section": "3. Array i aritmètica de punters",
-    "text": "3. Array i aritmètica de punters\nDonat:\nint v[5] = {10, 20, 30, 40, 50};\nint *p = v;\nQuin valor té cadascuna de les expressions següents?\n\n*p\n*(p + 1)\n*(p + 2)\n*(p + 4)\n\nDesprés, escriu una versió equivalent utilitzant v[i].\n\nReflexió\nQuina relació observes entre v[i] i *(p + i)?",
-    "crumbs": [
-      "Inici",
-      "Blocs",
-      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
-      "Activitats",
-      "Exercicis amb C · Apuntadors i arrays"
-    ]
-  },
-  {
-    "objectID": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html#modificar-un-array-mitjançant-un-punter",
-    "href": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html#modificar-un-array-mitjançant-un-punter",
-    "title": "Exercicis amb C · Apuntadors i arrays",
-    "section": "4. Modificar un array mitjançant un punter",
-    "text": "4. Modificar un array mitjançant un punter\nDonat:\nint v[5] = {10, 20, 30, 40, 50};\nint *p = v;\nCompleta el programa perquè multipliqui per 2 tots els elements de l’array utilitzant només el punter p per accedir als elements.\n#include &lt;stdio.h&gt;\n\nint main(void)\n{\n    int v[5] = {10, 20, 30, 40, 50};\n    int *p = v;\n\n    for (int i = 0; i &lt; 5; i++) {\n        ???;\n    }\n\n    for (int i = 0; i &lt; 5; i++)\n        printf(\"%d \", v[i]);\n\n    printf(\"\\n\");\n\n    return 0;\n}\nEl resultat ha de ser:\n20 40 60 80 100\n\nSi p apunta a v[0], què representa p + i?\nI què representa *(p + i)?",
-    "crumbs": [
-      "Inici",
-      "Blocs",
-      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
-      "Activitats",
-      "Exercicis amb C · Apuntadors i arrays"
-    ]
-  },
-  {
-    "objectID": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html#un-punter-com-a-paràmetre",
-    "href": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html#un-punter-com-a-paràmetre",
-    "title": "Exercicis amb C · Apuntadors i arrays",
-    "section": "5. Un punter com a paràmetre",
-    "text": "5. Un punter com a paràmetre\nAnalitza el programa següent:\n#include &lt;stdio.h&gt;\n\nvoid foo(int *p)\n{\n    int j = 22;\n\n    p = &j;\n\n    printf(\"%d \", *p);\n}\n\nint main(void)\n{\n    int i = 17;\n    int *p = &i;\n\n    foo(&i);\n\n    printf(\"%d \", *p);\n\n    return 0;\n}\n\nPreguntes\n\nQuè imprimirà foo?\nQuè imprimirà main?\nPer què modificar p dins de foo no modifica p de main?\nQuè passaria si dins de foo féssim *p = 22; en lloc de p = &j;? (Si vols provar-ho compilant, elimina també la línia int j = 22;, ja que deixaria de fer-se servir i -Wall ho marcaria com a avís.)\n\n\nConcepte\nModificar el punter no és el mateix que modificar l’objecte al qual apunta.",
-    "crumbs": [
-      "Inici",
-      "Blocs",
-      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
-      "Activitats",
-      "Exercicis amb C · Apuntadors i arrays"
-    ]
-  },
-  {
-    "objectID": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html#punter-a-punter",
-    "href": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html#punter-a-punter",
-    "title": "Exercicis amb C · Apuntadors i arrays",
-    "section": "6. Punter a punter",
-    "text": "6. Punter a punter\nAnalitza:\n#include &lt;stdio.h&gt;\n\nint main(void)\n{\n    int k = 5;\n    int *p = &k;\n    int **m = &p;\n\n    **m = 6;\n\n    printf(\"%d\\n\", k);\n\n    return 0;\n}\n\nAbans d’executar\nDibuixa les tres variables:\nk\np\nm\ni indica què conté cadascuna.\nDesprés respon:\n\nQuè representa p?\nQuè representa *p?\nQuè representa m?\nQuè representa *m?\nQuè representa **m?\n\n\nRepte\nIntenta predir el resultat sense executar el programa.",
-    "crumbs": [
-      "Inici",
-      "Blocs",
-      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
-      "Activitats",
-      "Exercicis amb C · Apuntadors i arrays"
-    ]
-  },
-  {
-    "objectID": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html#p-i-recorregut-dun-array",
-    "href": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html#p-i-recorregut-dun-array",
-    "title": "Exercicis amb C · Apuntadors i arrays",
-    "section": "7. p++ i recorregut d’un array",
-    "text": "7. p++ i recorregut d’un array\nTenim:\nint v[5] = {10, 20, 30, 40, 50};\nint *p = v;\nAnalitza aquest codi:\nprintf(\"%d\\n\", *p);\n\np++;\nprintf(\"%d\\n\", *p);\n\np++;\nprintf(\"%d\\n\", *p);\n\nPreguntes\n\nQuins valors s’imprimiran?\nA quin element apunta p després del primer p++?\nA quin element apunta després del segon?\nQuants bytes ha avançat p després de dos p++?\n\n\nReflexió\nRecorda l’experiment dels Pralabs amb:\n(char *)&v[1] - (char *)&v[0]\nCom pots relacionar aquell resultat amb p++?",
-    "crumbs": [
-      "Inici",
-      "Blocs",
-      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
-      "Activitats",
-      "Exercicis amb C · Apuntadors i arrays"
-    ]
-  },
-  {
-    "objectID": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html#sumar-un-array-amb-un-punter",
-    "href": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html#sumar-un-array-amb-un-punter",
-    "title": "Exercicis amb C · Apuntadors i arrays",
-    "section": "8. Sumar un array amb un punter",
-    "text": "8. Sumar un array amb un punter\nImplementa una funció que calculi la suma dels elements d’un array utilitzant un punter per recórrer-lo.\nint suma(const int *v, int n)\n{\n    // ...\n}\nPer exemple:\nint v[] = {10, 20, 30, 40, 50};\n\nprintf(\"%d\\n\", suma(v, 5));\nha d’imprimir:\n150\n\nCondició\nDins de suma no utilitzis:\nv[i]\nRecorre l’array mitjançant punters.\n\nPots començar amb:\nconst int *p = v;\ni avançar amb p++.",
-    "crumbs": [
-      "Inici",
-      "Blocs",
-      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
-      "Activitats",
-      "Exercicis amb C · Apuntadors i arrays"
-    ]
-  },
-  {
-    "objectID": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html#trobar-un-caràcter",
-    "href": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html#trobar-un-caràcter",
-    "title": "Exercicis amb C · Apuntadors i arrays",
-    "section": "9. Trobar un caràcter",
-    "text": "9. Trobar un caràcter\nImplementa una funció que retorni un punter al primer caràcter d’una cadena que sigui igual al caràcter indicat.\nconst char *troba(const char *s, char c)\n{\n    // ...\n}\nPer exemple:\nconst char *p = troba(\"Universitat\", 's');\n\nif (p != NULL)\n    printf(\"%c\\n\", *p);\nha d’imprimir:\ns\n\nPreguntes\n\nQuè ha de retornar la funció si no troba el caràcter?\nPer què retornem un punter (char *) i no simplement el caràcter (char)?\nPer què aquest punter és const char * i no char *?\nQuè representa p quan la funció acaba?\n\n\nRepte\nModifica la funció perquè retorni un punter al darrer caràcter que coincideixi amb c.\n\nJa no pots fer return s; en el moment que trobes una coincidència, perquè n’hi pot haver una altra més endavant. Guarda la darrera posició trobada en una variable a part i recorre tota la cadena fins al final abans de retornar.",
-    "crumbs": [
-      "Inici",
-      "Blocs",
-      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
-      "Activitats",
-      "Exercicis amb C · Apuntadors i arrays"
-    ]
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Sistemes Operatius",
-    "section": "",
-    "text": "Aquesta assignatura proporciona els coneixements necessaris per comprendre el funcionament intern dels sistemes operatius, amb Linux com a plataforma de referència."
-  },
-  {
-    "objectID": "index.html#professorat",
-    "href": "index.html#professorat",
-    "title": "Sistemes Operatius",
-    "section": "Professorat",
-    "text": "Professorat\n\nJordi Mateo mailto:jordi.mateo@udl.cat"
-  },
-  {
-    "objectID": "blocs/01-espai-usuari/activitats/01_rols_funcions.html",
-    "href": "blocs/01-espai-usuari/activitats/01_rols_funcions.html",
-    "title": "The UNIX Time-Sharing System",
-    "section": "",
-    "text": "L’activitat és no avaluable. No cal lliurar-la ni preparar una resposta formal. L’objectiu és consolidar, a través d’una font primària, dues idees que hem vist avui a classe:\n\nel sistema operatiu es construeix sobre un nombre reduït de primitives que ho sostenen tot, des del shell fins als dispositius.\nla simplicitat de disseny no és una limitació, és una decisió,\n\n\nExercici — Lectura: The UNIX Time-Sharing System\nLlegeix el capítol complet (és curt, ~15 pàgines) de:\n\nRitchie, D. M., i Thompson, K. (1974). The UNIX Time-Sharing System. Communications of the ACM, 17(7), 365–375. (Reimprès a Bell System Technical Journal, 57(6), 1978.)\n\nDisponible en accés obert, en una edició allotjada pel MIT per al seu propi curs de sistemes operatius (6.828):\nMIT SIPB — The UNIX Time-Sharing System (PDF)\nÉs, literalment, el document fundacional d’Unix, escrit pels seus dos creadors. Gairebé tot el que hem vist avui a classe —procés, sistema de fitxers com a interfície uniforme, crides de sistema— hi apareix descrit per primer cop, amb el sistema real que ho va implementar.\n\n\n\n\n\n\n\nTipAbans de començar\n\n\n\n\nEl text té 50 anys i descriu maquinari que ja no existeix (PDP-11, teletips, targetes perforades).\ncore = memòria (RAM d’avui).\nimage = el que avui en diem procés en execució.\nteletype = terminal.\n\n\n\n\nQuè heu de buscar en el text?\nNo cal fer un resum del capítol. Busqueu els punts on el text confirma, amb el sistema real, idees que avui hem vist en abstracte.\n\nReflexió\nEl 1974, tot aquest sistema funcionava amb un kernel de 90 KB. Cinquanta anys després, els sistemes operatius moderns són ordres de magnitud més grans i complexos, però els mateixos tres primitius (procés, fitxer, crida de sistema) hi continuen al centre. Per què creieu que aquestes idees han sobreviscut cinquanta anys de canvi tecnològic?",
-    "crumbs": [
-      "Inici",
-      "Blocs",
-      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
-      "Activitats",
-      "The UNIX Time-Sharing System"
-    ]
-  },
-  {
-    "objectID": "blocs/01-espai-usuari/pralabs/02_c_mem.html",
-    "href": "blocs/01-espai-usuari/pralabs/02_c_mem.html",
-    "title": "Pralab 02: Del v[i] al punter",
-    "section": "",
-    "text": "A la sessió anterior vam començar a mirar els arrays des del punt de vista de la memòria: vam veure que els seus elements estan emmagatzemats de manera contigua i vam mesurar-ho amb sizeof i amb restes de punters. En aquesta sessió farem el pas següent: entendre què hi ha realment darrere de v[i].\nRecuperem l’array de la sessió anterior:\nint v[5] = {10, 20, 30, 40, 50};\n\n\n\nint *p = v;\nFixa’t que aquí no hi ha &. Això és perquè, en la majoria de contextos, el nom d’un array es converteix automàticament (decau) en un punter al seu primer element.\n\nDefinició\nEl decaïment (array decay) és la conversió automàtica de l’expressió v en un punter al seu primer element. v es comporta, en la majoria de contextos, com &v[0].\n\nprintf(\"%zu\\n\", sizeof(v));\nprintf(\"%zu\\n\", sizeof(p));\n\nReflexió\nJa vas comprovar a la sessió anterior que sizeof(v) i sizeof(pv) (un punter al primer element, declarat amb &v[0]) no coincideixen: sizeof(v) mesura l’array complet, sizeof(p) només la mida d’un punter. Aquí p es comporta igual, encara que ara ve d’un decaïment (int *p = v;) i no d’un &v[0] explícit, el resultat és el mateix.\n\n\nError Comú\nEl mateix decaïment passa quan passes un array com a paràmetre d’una funció: dins la funció, sizeof de l’array ja no dona la mida de l’array, sinó la mida d’un punter. És un dels errors més habituals quan es combina sizeof amb arrays i funcions.\n\n\nConcepte\nv i p es comporten igual quan hi accedeixes (v[2] i p[2] valen el mateix), però el compilador els tracta com a tipus diferents: v té tipus int[5] (un array), p té tipus int * (un punter). sizeof és precisament una de les poques operacions on aquesta diferència de tipus es fa evident.\n\nPerò v i &v tampoc no són el mateix. Comprovem-ho:\nprintf(\"%p\\n\", (void *)v);\nprintf(\"%p\\n\", (void *)(v + 1));\nprintf(\"%p\\n\", (void *)&v);\nprintf(\"%p\\n\", (void *)(&v + 1));\n\nExercici\nAbans d’executar-ho: v + 1 i &v + 1 avancen la mateixa quantitat de bytes respecte a v i &v respectivament?\n\nExecuta-ho i observa les adreces.\nMesura-ho amb exactitud, igual que vas fer a la sessió anterior:\nprintf(\"%td\\n\", (char *)(v + 1) - (char *)v);\nprintf(\"%td\\n\", (char *)(&v + 1) - (char *)&v);\nprintf(\"%zu\\n\", sizeof(int));\n\nExercici\nCompara els dos resultats de la resta amb sizeof(int) i amb sizeof(v) que acabes de mesurar. Amb quin es correspon cadascun? Tenies raó en la teva predicció?\n\n\n\nPots veure el raonament\n\n\nSolució\nEn aquesta expressió, v decau a un punter a int, de tipus int *. Per això, v + 1 avança sizeof(int) bytes, coincidint amb el que has mesurat a (char *)(v + 1) - (char *)v. &v, en canvi, és l’adreça de l’array sencer i té tipus int (*)[5]; per això, &v + 1 avança sizeof(v) bytes, és a dir, l’array complet, coincidint amb (char *)(&v + 1) - (char *)&v.\nLes dues expressions fan referència a la mateixa adreça inicial de l’array, però tenen tipus diferents. Per això, sumar-hi 1 no produeix el mateix resultat.\n\n\n\nResum\nEl que hem de retenir: en la majoria de contextos, l’expressió v es converteix (decau) a un punter al primer element, de tipus int *; avançar-lo salta d’int en int. &v, en canvi, és un punter a l’array sencer, de tipus int (*)[5]; avançar-lo salta l’array sencer. v en si mateix continua sent un array (int[5]), no un punter, el decaïment afecta com es tracta l’expressió en cada context, no canvia què és v.\n\nprintf(\"%d\\n\", *p);\nprintf(\"%d\\n\", *(p + 1));\nprintf(\"%d\\n\", *(p + 2));\n\nExercici\nAbans d’executar-ho, prediu què imprimirà cadascuna de les tres expressions. Per què?\n\n\n\nPots veure el raonament\n\n\nSolució\n*p val 10 (el primer element de v). *(p + 1) val 20: p + 1 avança un int (com ja has vist a l’exercici anterior), i desreferenciar-lo dona el valor de v[1]. *(p + 2) val 30, pel mateix motiu amb v[2]. En general, *(p + i) i v[i] donen sempre el mateix valor, és, de fet, com el compilador interpreta v[i] per sota.\n\n\n\nExercici\nDibuixa p apuntant a l’array v.\n\n\n\nPots veure la solució\n\n\nSolució\n+------+------+------+------+------+\n|  10  |  20  |  30  |  40  |  50  |\n+------+------+------+------+------+\n   ▲\n   p\n\n\nAra fes:\np++;\n\nExercici\nTorna a dibuixar p sobre l’array, després de p++.\n\n\n\nPots veure la solució\n\n\nSolució\n+------+------+------+------+------+\n|  10  |  20  |  30  |  40  |  50  |\n+------+------+------+------+------+\n          ▲\n          p\np ha avançat una posició (un int sencer, no un byte), i ara apunta a v[1].\n\n\n\nExercici\nPregunta clau. Recorda el resultat que vas obtenir a la sessió anterior amb (char *)&v[1] - (char *)&v[0]. Amb aquest resultat, respon: què creus que significa p + 1, i per què no significa necessàriament sumar un byte a l’adreça?\n\n\n\nPots veure el raonament\n\n\nSolució\np + 1 avança tants bytes com ocupa el tipus al qual apunta p (aquí, sizeof(int)), no un byte. És exactament el mateix patró que vas mesurar amb &v[1] - &v[0] a la sessió anterior: el compilador escala automàticament l’aritmètica segons la mida del tipus.\n\n\n\nError Comú\nUn error molt habitual és pensar que p + 1 sempre avança 1 byte. Només és així quan p és un punter a char (sizeof(char) == 1). Per a qualsevol altre tipus, p + 1 avança sizeof(tipus) bytes.\n\n\nResum\nL’aritmètica d’un punter està relacionada amb el tipus de l’objecte al qual apunta. p + 1 avança tants bytes com ocupa un int (comprova-ho amb sizeof(int)), no un byte.\n\n\n\n\n\nRecuperem les cadenes de caràcters:\nchar s[] = \"cau\";\n\n\n\n\n\ngraph LR\n    A[\"s[0] = 'c'\"] --- B[\"s[1] = 'a'\"] --- C[\"s[2] = 'u'\"] --- D[\"s[3] = '\\0'\"]\n\n\n\n\n\n\n\nDefinició\nUna cadena de caràcters en C és un array de char que acaba amb el caràcter especial '\\0' (byte nul), que marca el final de la cadena.\n\n\nExercici\nPer què hi ha quatre bytes si la paraula “cau” té tres caràcters?\n\n\n\nPots veure el raonament\n\n\nSolució\nPerquè cal reservar espai per al caràcter '\\0', que marca el final de la cadena. Sense aquest byte, no hi hauria manera de saber on acaba la cadena en memòria. char s[] = \"cau\"; reserva automàticament aquest quart byte.\n\n\n\nBona Pràctica\nSi dimensiones a mà un array de caràcters (char s[4], per exemple), recorda sempre reservar una posició extra per al '\\0'. Si no ho fas, qualsevol funció que llegeixi la cadena (com strlen o printf(\"%s\", ...)) llegirà més enllà del final de l’array.\n\nAra:\nchar *p = s;\n\nExercici\nQuin valor tindrà cadascuna d’aquestes expressions?\n\n*p\n*(p + 1)\n*(p + 2)\n*(p + 3)\n\n\n\n\nPots veure el raonament\n\n\nSolució\n*p val 'c', *(p + 1) val 'a', *(p + 2) val 'u', *(p + 3) val '\\0'. És exactament el mateix mecanisme que vas fer servir amb v a la Part A: p apunta al primer element, i sumar-hi i avança i posicions del tipus al qual apunta (char, aquí).\n\n\n\n\n\n\n\nExercici de Programació\nSense mirar la solució encara, escriu una funció mini_strlen que recorri s amb un punter fins trobar '\\0' i retorni la seva longitud (sense comptar el '\\0').\n\n\nPots veure una solució possible\n\nsize_t mini_strlen(const char *s)\n{\n    const char *p = s;\n\n    while (*p != '\\0')\n        p++;\n\n    return p - s;\n}\n\n\n\nExercici\nPregunta final. Per què podem fer p - s?\n\n\n\nPots veure el raonament\n\n\nSolució\np i s apunten totes dues dins del mateix array de caràcters. Restar dos punters dins del mateix array dona el nombre d’elements que els separen (exactament com vas fer a la sessió anterior amb &v[1] - &v[0]). Com que p ha avançat un char per cada posició recorreguda fins trobar '\\0', p - s dona directament la longitud de la cadena.\n\n\n\nError Comú\nUn error habitual en implementar strlen a mà és oblidar-se d’avançar p dins del while (p++), cosa que provoca un bucle infinit perquè *p mai canvia. Un altre és comptar el '\\0' com a part de la longitud.\n\n\nRepte\nOpcional. Reescriu mini_strlen fent servir indexació (s[i]) en lloc de punters (*p). Compara totes dues versions: quina trobes més llegible? Recorda que, per sota, el compilador sol generar codi molt semblant per a totes dues.\n\n\n\n\n\nEncara no entrarem en detall de com s’organitza la memòria d’un procés. Només plantegem la pregunta.\nint main(void)\n{\n    int x = 42;\n    int v[5];\n\n    /* ... */\n}\n┌──────────────────────────┐\n│   Memòria d'un procés    │\n│                          │\n│            ?             │\n│                          │\n│            ?             │\n│                          │\n│            ?             │\n└──────────────────────────┘\n\nReflexió\nPregunta oberta (no la responem avui, la recuperarem a teoria): aquestes dades estan en algun lloc de la memòria del procés. Com està organitzada aquesta memòria? A teoria apareixeran conceptes com stack i heap.",
-    "crumbs": [
-      "Inici",
-      "Blocs",
-      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
-      "Pralabs",
-      "Pralab 02: Del `v[i]` al punter"
-    ]
-  },
-  {
-    "objectID": "blocs/01-espai-usuari/pralabs/02_c_mem.html#introducció",
-    "href": "blocs/01-espai-usuari/pralabs/02_c_mem.html#introducció",
-    "title": "Pralab 02: Del v[i] al punter",
-    "section": "",
-    "text": "A la sessió anterior vam començar a mirar els arrays des del punt de vista de la memòria: vam veure que els seus elements estan emmagatzemats de manera contigua i vam mesurar-ho amb sizeof i amb restes de punters. En aquesta sessió farem el pas següent: entendre què hi ha realment darrere de v[i].\nRecuperem l’array de la sessió anterior:\nint v[5] = {10, 20, 30, 40, 50};\n\n\n\nint *p = v;\nFixa’t que aquí no hi ha &. Això és perquè, en la majoria de contextos, el nom d’un array es converteix automàticament (decau) en un punter al seu primer element.\n\nDefinició\nEl decaïment (array decay) és la conversió automàtica de l’expressió v en un punter al seu primer element. v es comporta, en la majoria de contextos, com &v[0].\n\nprintf(\"%zu\\n\", sizeof(v));\nprintf(\"%zu\\n\", sizeof(p));\n\nReflexió\nJa vas comprovar a la sessió anterior que sizeof(v) i sizeof(pv) (un punter al primer element, declarat amb &v[0]) no coincideixen: sizeof(v) mesura l’array complet, sizeof(p) només la mida d’un punter. Aquí p es comporta igual, encara que ara ve d’un decaïment (int *p = v;) i no d’un &v[0] explícit, el resultat és el mateix.\n\n\nError Comú\nEl mateix decaïment passa quan passes un array com a paràmetre d’una funció: dins la funció, sizeof de l’array ja no dona la mida de l’array, sinó la mida d’un punter. És un dels errors més habituals quan es combina sizeof amb arrays i funcions.\n\n\nConcepte\nv i p es comporten igual quan hi accedeixes (v[2] i p[2] valen el mateix), però el compilador els tracta com a tipus diferents: v té tipus int[5] (un array), p té tipus int * (un punter). sizeof és precisament una de les poques operacions on aquesta diferència de tipus es fa evident.\n\nPerò v i &v tampoc no són el mateix. Comprovem-ho:\nprintf(\"%p\\n\", (void *)v);\nprintf(\"%p\\n\", (void *)(v + 1));\nprintf(\"%p\\n\", (void *)&v);\nprintf(\"%p\\n\", (void *)(&v + 1));\n\nExercici\nAbans d’executar-ho: v + 1 i &v + 1 avancen la mateixa quantitat de bytes respecte a v i &v respectivament?\n\nExecuta-ho i observa les adreces.\nMesura-ho amb exactitud, igual que vas fer a la sessió anterior:\nprintf(\"%td\\n\", (char *)(v + 1) - (char *)v);\nprintf(\"%td\\n\", (char *)(&v + 1) - (char *)&v);\nprintf(\"%zu\\n\", sizeof(int));\n\nExercici\nCompara els dos resultats de la resta amb sizeof(int) i amb sizeof(v) que acabes de mesurar. Amb quin es correspon cadascun? Tenies raó en la teva predicció?\n\n\n\nPots veure el raonament\n\n\nSolució\nEn aquesta expressió, v decau a un punter a int, de tipus int *. Per això, v + 1 avança sizeof(int) bytes, coincidint amb el que has mesurat a (char *)(v + 1) - (char *)v. &v, en canvi, és l’adreça de l’array sencer i té tipus int (*)[5]; per això, &v + 1 avança sizeof(v) bytes, és a dir, l’array complet, coincidint amb (char *)(&v + 1) - (char *)&v.\nLes dues expressions fan referència a la mateixa adreça inicial de l’array, però tenen tipus diferents. Per això, sumar-hi 1 no produeix el mateix resultat.\n\n\n\nResum\nEl que hem de retenir: en la majoria de contextos, l’expressió v es converteix (decau) a un punter al primer element, de tipus int *; avançar-lo salta d’int en int. &v, en canvi, és un punter a l’array sencer, de tipus int (*)[5]; avançar-lo salta l’array sencer. v en si mateix continua sent un array (int[5]), no un punter, el decaïment afecta com es tracta l’expressió en cada context, no canvia què és v.\n\nprintf(\"%d\\n\", *p);\nprintf(\"%d\\n\", *(p + 1));\nprintf(\"%d\\n\", *(p + 2));\n\nExercici\nAbans d’executar-ho, prediu què imprimirà cadascuna de les tres expressions. Per què?\n\n\n\nPots veure el raonament\n\n\nSolució\n*p val 10 (el primer element de v). *(p + 1) val 20: p + 1 avança un int (com ja has vist a l’exercici anterior), i desreferenciar-lo dona el valor de v[1]. *(p + 2) val 30, pel mateix motiu amb v[2]. En general, *(p + i) i v[i] donen sempre el mateix valor, és, de fet, com el compilador interpreta v[i] per sota.\n\n\n\nExercici\nDibuixa p apuntant a l’array v.\n\n\n\nPots veure la solució\n\n\nSolució\n+------+------+------+------+------+\n|  10  |  20  |  30  |  40  |  50  |\n+------+------+------+------+------+\n   ▲\n   p\n\n\nAra fes:\np++;\n\nExercici\nTorna a dibuixar p sobre l’array, després de p++.\n\n\n\nPots veure la solució\n\n\nSolució\n+------+------+------+------+------+\n|  10  |  20  |  30  |  40  |  50  |\n+------+------+------+------+------+\n          ▲\n          p\np ha avançat una posició (un int sencer, no un byte), i ara apunta a v[1].\n\n\n\nExercici\nPregunta clau. Recorda el resultat que vas obtenir a la sessió anterior amb (char *)&v[1] - (char *)&v[0]. Amb aquest resultat, respon: què creus que significa p + 1, i per què no significa necessàriament sumar un byte a l’adreça?\n\n\n\nPots veure el raonament\n\n\nSolució\np + 1 avança tants bytes com ocupa el tipus al qual apunta p (aquí, sizeof(int)), no un byte. És exactament el mateix patró que vas mesurar amb &v[1] - &v[0] a la sessió anterior: el compilador escala automàticament l’aritmètica segons la mida del tipus.\n\n\n\nError Comú\nUn error molt habitual és pensar que p + 1 sempre avança 1 byte. Només és així quan p és un punter a char (sizeof(char) == 1). Per a qualsevol altre tipus, p + 1 avança sizeof(tipus) bytes.\n\n\nResum\nL’aritmètica d’un punter està relacionada amb el tipus de l’objecte al qual apunta. p + 1 avança tants bytes com ocupa un int (comprova-ho amb sizeof(int)), no un byte.\n\n\n\n\n\nRecuperem les cadenes de caràcters:\nchar s[] = \"cau\";\n\n\n\n\n\ngraph LR\n    A[\"s[0] = 'c'\"] --- B[\"s[1] = 'a'\"] --- C[\"s[2] = 'u'\"] --- D[\"s[3] = '\\0'\"]\n\n\n\n\n\n\n\nDefinició\nUna cadena de caràcters en C és un array de char que acaba amb el caràcter especial '\\0' (byte nul), que marca el final de la cadena.\n\n\nExercici\nPer què hi ha quatre bytes si la paraula “cau” té tres caràcters?\n\n\n\nPots veure el raonament\n\n\nSolució\nPerquè cal reservar espai per al caràcter '\\0', que marca el final de la cadena. Sense aquest byte, no hi hauria manera de saber on acaba la cadena en memòria. char s[] = \"cau\"; reserva automàticament aquest quart byte.\n\n\n\nBona Pràctica\nSi dimensiones a mà un array de caràcters (char s[4], per exemple), recorda sempre reservar una posició extra per al '\\0'. Si no ho fas, qualsevol funció que llegeixi la cadena (com strlen o printf(\"%s\", ...)) llegirà més enllà del final de l’array.\n\nAra:\nchar *p = s;\n\nExercici\nQuin valor tindrà cadascuna d’aquestes expressions?\n\n*p\n*(p + 1)\n*(p + 2)\n*(p + 3)\n\n\n\n\nPots veure el raonament\n\n\nSolució\n*p val 'c', *(p + 1) val 'a', *(p + 2) val 'u', *(p + 3) val '\\0'. És exactament el mateix mecanisme que vas fer servir amb v a la Part A: p apunta al primer element, i sumar-hi i avança i posicions del tipus al qual apunta (char, aquí).\n\n\n\n\n\n\n\nExercici de Programació\nSense mirar la solució encara, escriu una funció mini_strlen que recorri s amb un punter fins trobar '\\0' i retorni la seva longitud (sense comptar el '\\0').\n\n\nPots veure una solució possible\n\nsize_t mini_strlen(const char *s)\n{\n    const char *p = s;\n\n    while (*p != '\\0')\n        p++;\n\n    return p - s;\n}\n\n\n\nExercici\nPregunta final. Per què podem fer p - s?\n\n\n\nPots veure el raonament\n\n\nSolució\np i s apunten totes dues dins del mateix array de caràcters. Restar dos punters dins del mateix array dona el nombre d’elements que els separen (exactament com vas fer a la sessió anterior amb &v[1] - &v[0]). Com que p ha avançat un char per cada posició recorreguda fins trobar '\\0', p - s dona directament la longitud de la cadena.\n\n\n\nError Comú\nUn error habitual en implementar strlen a mà és oblidar-se d’avançar p dins del while (p++), cosa que provoca un bucle infinit perquè *p mai canvia. Un altre és comptar el '\\0' com a part de la longitud.\n\n\nRepte\nOpcional. Reescriu mini_strlen fent servir indexació (s[i]) en lloc de punters (*p). Compara totes dues versions: quina trobes més llegible? Recorda que, per sota, el compilador sol generar codi molt semblant per a totes dues.\n\n\n\n\n\nEncara no entrarem en detall de com s’organitza la memòria d’un procés. Només plantegem la pregunta.\nint main(void)\n{\n    int x = 42;\n    int v[5];\n\n    /* ... */\n}\n┌──────────────────────────┐\n│   Memòria d'un procés    │\n│                          │\n│            ?             │\n│                          │\n│            ?             │\n│                          │\n│            ?             │\n└──────────────────────────┘\n\nReflexió\nPregunta oberta (no la responem avui, la recuperarem a teoria): aquestes dades estan en algun lloc de la memòria del procés. Com està organitzada aquesta memòria? A teoria apareixeran conceptes com stack i heap.",
-    "crumbs": [
-      "Inici",
-      "Blocs",
-      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
-      "Pralabs",
-      "Pralab 02: Del `v[i]` al punter"
     ]
   },
   {

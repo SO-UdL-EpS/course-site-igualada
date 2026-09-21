@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<link href="../../../assets/logo.svg" rel="icon" type="image/svg+xml">
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-html/tabby.min.js"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.10.18">
+
+  <meta name="author" content="Jordi Mateo Fornés">
+  <title>Sistemes Operatius – Crides de funció: CPU, registres i stack</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="../../../site_libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="../../../site_libs/revealjs/dist/reveal.css">
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="../../../site_libs/revealjs/dist/theme/quarto-f5dc026c75e330951b2ebe3764ecdfcd.css">
+  <link href="../../../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="../../../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="../../../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="../../../site_libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/asciinema-player@3.9.0/dist/bundle/asciinema-player.css">
+  <script src="https://cdn.jsdelivr.net/npm/asciinema-player@3.9.0/dist/bundle/asciinema-player.min.js"></script>
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="quarto-title-block center">
+  <h1 class="title">Crides de funció: CPU, registres i stack</h1>
+  <p class="subtitle">Bloc 1 · Desenvolupament de Programari en Espai d’Usuari</p>
+
+<div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+Jordi Mateo Fornés
+</div>
+</div>
+</div>
+
+</section>
+<section>
+<section id="introducció" class="title-slide slide level1 center">
+<h1>Introducció</h1>
+
+</section>
+<section id="crides-de-funció-cpu-registres-i-stack" class="slide level2 center">
+<h2>Crides de funció: CPU, registres i stack</h2>
+<div class="r-fit-text">
+<p>Què passa realment quan fem <code>foo()</code>?</p>
+</div>
+</section>
+<section id="objectius-daprenentatge" class="slide level2">
+<h2>Objectius d’aprenentatge</h2>
+<div class="objectius udl-component udl-objectius">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-objectius"></use></svg><span>Objectius d'Aprenentatge</span></div>
+<ul>
+<li class="fragment">Reconstruir el mecanisme complet d’una crida de funció, de principi a fi</li>
+<li class="fragment">Distingir <strong>RIP/RSP/RBP</strong> i els seus equivalents <strong>PC/SP/X29</strong> en AArch64</li>
+<li class="fragment">Explicar què és una <strong>calling convention</strong> i quin paper hi juga l’ABI</li>
+<li class="fragment">Identificar quins registres ha de preservar una funció (<em>caller-saved</em> vs <em>callee-saved</em>)</li>
+<li class="fragment">Observar aquests conceptes en execució real amb GDB</li>
+</ul>
+</div>
+</section>
+<section id="prerequisits" class="slide level2">
+<h2>Prerequisits</h2>
+<div class="prerequisits udl-component udl-prerequisits">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-prerequisits"></use></svg><span>Prerequisits</span></div>
+<ul>
+<li class="fragment">Espai d’adreces d’un procés: TEXT, DATA, HEAP, STACK</li>
+<li class="fragment">Concepte de <em>stack frame</em> i <em>lifetime</em> d’una variable automàtica</li>
+<li class="fragment">Sintaxi bàsica de funcions en C</li>
+</ul>
+</div>
+</section>
+<section id="on-ens-vam-quedar" class="slide level2">
+<h2>On ens vam quedar?</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><img data-src="figures/02_espai_memoria/espai_adreces.png" style="width:90.0%"></p>
+</div><div class="column" style="width:50%;">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><a aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
+<span id="cb1-2"><a aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb1-3"><a aria-hidden="true" tabindex="-1"></a>    foo<span class="op">();</span></span>
+<span id="cb1-4"><a aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="reflexio udl-component udl-reflexio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-reflexio"></use></svg><span>Reflexió</span></div>
+<p>Però què fa la CPU quan executem aquesta crida?</p>
+</div>
+</div></div>
+</section></section>
+<section>
+<section id="el-punter-dinstrucció" class="title-slide slide level1 center">
+<h1>El punter d’instrucció</h1>
+
+</section>
+<section id="un-programa-és-una-seqüència-dinstruccions" class="slide level2">
+<h2>Un programa és una seqüència d’instruccions</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><img data-src="figures/03_crides_funcions_cpu_registres_stack/instruccions.png" style="width:90.0%"></p>
+</div><div class="column" style="width:50%;">
+<div class="concepte udl-component udl-concepte">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-concepte"></use></svg><span>Concepte</span></div>
+<p>La CPU executa instruccions una darrere l’altra <strong>sequencialment</strong>.</p>
+</div>
+<div class="concepte fragment udl-component udl-concepte">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-concepte"></use></svg><span>Concepte</span></div>
+<p>Les instruccions poden ser de diferents tipus (aritmètiques, de salt, de càrrega,…) i la seva mida <strong>no és sempre la mateixa</strong>: en <strong>x86-64</strong> és <strong>variable</strong> (entre 1 i 15 bytes segons la instrucció); en <strong>AArch64</strong> és <strong>fixa</strong>, sempre 4 bytes.</p>
+</div>
+<div class="bonapractica fragment udl-component udl-bonapractica">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-bonapractica"></use></svg><span>Bona Pràctica</span></div>
+<p>Per això en AArch64 la instrucció següent sempre és <code>PC + 4</code>. En x86-64, <code>RIP + 4</code> <strong>no funciona en general</strong> — cal conèixer la longitud real de la instrucció actual per saber on comença la següent.</p>
+</div>
+<div class="reflexio fragment udl-component udl-reflexio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-reflexio"></use></svg><span>Reflexió</span></div>
+<p>Com sap la CPU quina instrucció ha d’executar?</p>
+</div>
+</div></div>
+</section>
+<section id="rip-instruction-pointer" class="slide level2">
+<h2>RIP: Instruction Pointer</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><img data-src="figures/03_crides_funcions_cpu_registres_stack/rip.png" style="width:90.0%"></p>
+</div><div class="column" style="width:50%;">
+<div class="definicio udl-component udl-definicio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-definicio"></use></svg><span>Definició</span></div>
+<ul>
+<li class="fragment"><strong>x86-64</strong>: <code>RIP</code>: <em>Instruction Pointer</em>.</li>
+<li class="fragment"><strong>AArch64</strong>: <code>PC</code>: <em>Program Counter</em>.</li>
+</ul>
+</div>
+<div class="concepte fragment udl-component udl-concepte">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-concepte"></use></svg><span>Concepte</span></div>
+<p>El nom canvia, però el concepte és el mateix: indicar on continua l’execució.</p>
+</div>
+</div></div>
+</section></section>
+<section>
+<section id="return-address-i-callret" class="title-slide slide level1 center">
+<h1>Return address i call/ret</h1>
+
+</section>
+<section id="ara-fem-foo" class="slide level2">
+<h2>Ara fem <code>foo()</code></h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb2-1"><a aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb2-2"><a aria-hidden="true" tabindex="-1"></a>    foo<span class="op">();</span></span>
+<span id="cb2-3"><a aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"fi</span><span class="sc">\n</span><span class="st">"</span><span class="op">);</span></span>
+<span id="cb2-4"><a aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="reflexio udl-component udl-reflexio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-reflexio"></use></svg><span>Reflexió</span></div>
+<p>Quan <code>foo()</code> acaba, com sap la CPU on ha de tornar?</p>
+</div>
+</div><div class="column" style="width:50%;">
+<p><img data-src="figures/03_crides_funcions_cpu_registres_stack/call-ret.png" style="width:80.0%"></p>
+</div></div>
+</section>
+<section id="return-address" class="slide level2">
+<h2>Return address</h2>
+<div class="columns">
+<div class="column" style="width:65%;">
+<p><img data-src="figures/03_crides_funcions_cpu_registres_stack/call-ret1.png" style="width:80.0%"></p>
+</div><div class="column" style="width:35%;">
+<div class="definicio udl-component udl-definicio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-definicio"></use></svg><span>Definició</span></div>
+<p><strong>Return address</strong>: la instrucció a la qual cal tornar un cop acabada la funció cridada.</p>
+</div>
+<div class="concepte udl-component udl-concepte">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-concepte"></use></svg><span>Concepte</span></div>
+<p>Una crida de funció necessita conservar el punt al qual haurà de tornar.</p>
+</div>
+</div></div>
+</section>
+<section id="call-i-ret-x86-64" class="slide level2">
+<h2>call i ret (x86-64)</h2>
+<div style="text-align:center;">
+<p><img data-src="figures/03_crides_funcions_cpu_registres_stack/call-ret2.png" style="width:70.0%"></p>
+</div>
+</section>
+<section id="bl-i-ret-aarch64" class="slide level2">
+<h2>BL i RET (AArch64)</h2>
+<div class="columns">
+<div class="column" style="width:60%;">
+<p><img data-src="figures/03_crides_funcions_cpu_registres_stack/bl-ret.png"></p>
+</div><div class="column" style="width:40%;">
+<div class="definicio udl-component udl-definicio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-definicio"></use></svg><span>Definició</span></div>
+<p><code>BL foo</code> salta a <code>foo</code> <strong>i</strong> desa l’adreça de retorn a <code>X30</code> (<em>Link Register</em>).</p>
+</div>
+<div class="bonapractica fragment udl-component udl-bonapractica">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-bonapractica"></use></svg><span>Bona Pràctica</span></div>
+<p>El mecanisme físic canvia (pila vs.&nbsp;registre), però <strong>C no en sap res</strong>: <code>foo()</code> és <code>foo()</code> en ambdues arquitectures. L’ABI i el maquinari decideixen com es representa la crida. El llenguatge només veu l’abstracció <strong>crida una funció i torna</strong>. Aquesta separació entre abstracció i mecanisme és la mateixa raó per la qual el mateix codi C es pot compilar per a qualsevol de les dues.</p>
+</div>
+</div></div>
+<div class="reflexio fragment udl-component udl-reflexio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-reflexio"></use></svg><span>Reflexió</span></div>
+<p>I si <code>foo()</code> mateixa crida <code>bar()</code>? <code>BL bar</code> torna a escriure <code>X30</code> — qui preserva llavors l’adreça de retorn original de <code>foo()</code>? <em>(hi tornarem amb caller-saved / callee-saved)</em></p>
+</div>
+</section></section>
+<section>
+<section id="el-stack-pointer" class="title-slide slide level1 center">
+<h1>El stack pointer</h1>
+
+</section>
+<section id="però-on-està-el-stack" class="slide level2">
+<h2>Però… on està el stack?</h2>
+<p>La <strong>STACK</strong> és una regió de memòria que creix cap a adreces més baixes. Per tant, cal un registre que indiqui on és el <em>top</em> actual del stack.</p>
+<div class="definicio udl-component udl-definicio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-definicio"></use></svg><span>Definició</span></div>
+<ul>
+<li class="fragment"><strong>RSP</strong> (<em>x86-64</em>): <em>Stack Pointer</em>.</li>
+<li class="fragment"><strong>SP</strong> (<em>AArch64</em>): <em>Stack Pointer</em>.</li>
+</ul>
+</div>
+</section>
+<section id="rsp-sp" class="slide level2">
+<h2>RSP / SP</h2>
+<div class="columns">
+<div class="column" style="width:65%;">
+<p><img data-src="figures/03_crides_funcions_cpu_registres_stack/rsp-sp.png"></p>
+</div><div class="column" style="width:35%;">
+<div class="concepte udl-component udl-concepte">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-concepte"></use></svg><span>Concepte</span></div>
+<p><code>RSP</code>/<code>SP</code> identifica la posició actual del stack: <code>push</code> i <code>pop</code> (x86-64) el modifiquen.</p>
+</div>
+<div class="bonapractica udl-component udl-bonapractica">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-bonapractica"></use></svg><span>Bona Pràctica</span></div>
+<p>Per a AArch64 no parlem de <code>push</code>/<code>pop</code> com a instruccions literals — el model conceptual és el mateix, però la implementació és diferent.</p>
+</div>
+</div></div>
+</section>
+<section id="una-funció-necessita-espai" class="slide level2">
+<h2>Una funció necessita espai</h2>
+<div class="columns">
+<div class="column" style="width:35%;">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb3-1"><a aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> foo<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
+<span id="cb3-2"><a aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb3-3"><a aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> x <span class="op">=</span> <span class="dv">10</span><span class="op">;</span></span>
+<span id="cb3-4"><a aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> y <span class="op">=</span> <span class="dv">20</span><span class="op">;</span></span>
+<span id="cb3-5"><a aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="reflexio udl-component udl-reflexio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-reflexio"></use></svg><span>Reflexió</span></div>
+<p>Què passa amb <code>RSP</code> quan reservem i alliberem aquest espai?</p>
+</div>
+</div><div class="column" style="width:65%;">
+<p><img data-src="figures/03_crides_funcions_cpu_registres_stack/rsp.png" style="width:90.0%"></p>
+</div></div>
+</section>
+<section id="el-stack-frame-recordatori" class="slide level2">
+<h2>El stack frame — recordatori</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><img data-src="figures/02_espai_memoria/stackframe.png" style="width:75.0%"></p>
+</div><div class="column" style="width:50%;">
+<div class="definicio udl-component udl-definicio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-definicio"></use></svg><span>Definició</span></div>
+<p><strong>Stack frame</strong>: la part del stack associada a una activació d’una funció (Sessió 1).</p>
+</div>
+<div class="bonapractica udl-component udl-bonapractica">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-bonapractica"></use></svg><span>Bona Pràctica</span></div>
+<p>No existeix un únic format universal de stack frame. Depèn de l’arquitectura, l’ABI/<em>calling convention</em>, el compilador i les opcions d’optimització.</p>
+</div>
+</div></div>
+</section>
+<section id="el-problema-de-rsp" class="slide level2">
+<h2>El problema de RSP</h2>
+<div class="columns">
+<div class="column" style="width:25%;">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb4-1"><a aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> foo<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
+<span id="cb4-2"><a aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb4-3"><a aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> x <span class="op">=</span> <span class="dv">10</span><span class="op">;</span></span>
+<span id="cb4-4"><a aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> y <span class="op">=</span> <span class="dv">20</span><span class="op">;</span></span>
+<span id="cb4-5"><a aria-hidden="true" tabindex="-1"></a>    <span class="op">...</span></span>
+<span id="cb4-6"><a aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="reflexio udl-component udl-reflexio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-reflexio"></use></svg><span>Reflexió</span></div>
+<p><code>RSP</code> es mou constantment. Podem tenir un punt de referència <strong>estable</strong> per al frame?</p>
+</div>
+<blockquote>
+<p>x86_64 i set instruccions AT&amp;T</p>
+</blockquote>
+</div><div class="column" style="width:75%;">
+<p><img data-src="figures/03_crides_funcions_cpu_registres_stack/rsp-problema.png"></p>
+</div></div>
+</section></section>
+<section>
+<section id="el-frame-pointer" class="title-slide slide level1 center">
+<h1>El frame pointer</h1>
+
+</section>
+<section id="rbp-frame-pointer" class="slide level2">
+<h2>RBP: Frame Pointer</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="definicio udl-component udl-definicio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-definicio"></use></svg><span>Definició</span></div>
+<p><strong>RBP</strong> — <em>Frame Pointer</em> (x86-64).</p>
+</div>
+<div class="concepte udl-component udl-concepte">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-concepte"></use></svg><span>Concepte</span></div>
+<ul>
+<li class="fragment"><code>RSP</code> → posició actual del stack.</li>
+<li class="fragment"><code>RBP</code> → referència estable al frame.</li>
+<li class="fragment"><code>RSP</code> pot moure’s.</li>
+<li class="fragment"><code>RBP</code> es manté fix mentre dura l’activació.</li>
+</ul>
+</div>
+</div><div class="column" style="width:50%;">
+<div style="text-align:center;">
+<p><img data-src="figures/03_crides_funcions_cpu_registres_stack/rbp.png"></p>
+</div>
+</div></div>
+</section>
+<section id="aarch64-x29" class="slide level2">
+<h2>AArch64: X29</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><strong>x86-64</strong></p>
+<ul>
+<li class="fragment"><code>RBP</code> → <em>frame pointer</em></li>
+</ul>
+</div><div class="column" style="width:50%;">
+<p><strong>AArch64</strong></p>
+<ul>
+<li class="fragment"><code>X29</code> → <em>frame pointer</em></li>
+<li class="fragment"><code>X30</code> → <em>link register</em></li>
+</ul>
+</div></div>
+<div class="concepte fragment udl-component udl-concepte">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-concepte"></use></svg><span>Concepte</span></div>
+<p>El paper conceptual és el mateix però els registres tenen noms diferents.</p>
+</div>
+</section>
+<section id="construint-el-frame-x86-64" class="slide level2">
+<h2>Construint el frame (x86-64)</h2>
+<div style="text-align:center;">
+<p><img data-src="figures/03_crides_funcions_cpu_registres_stack/construint-frame.png" style="width:55.0%"></p>
+</div>
+<div class="bonapractica fragment udl-component udl-bonapractica">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-bonapractica"></use></svg><span>Bona Pràctica</span></div>
+<p>Aquest és el patró clàssic. Els compiladors moderns poden ometre el frame pointer (<em>frame pointer omission</em>, típic amb <code>-O2</code>).</p>
+</div>
+</section>
+<section id="destruint-el-frame" class="slide level2">
+<h2>Destruint el frame</h2>
+<div style="text-align:center;">
+<p><img data-src="figures/03_crides_funcions_cpu_registres_stack/destruint-frame.png" style="width:70.0%"></p>
+</div>
+</section></section>
+<section>
+<section id="arguments-i-abi" class="title-slide slide level1 center">
+<h1>Arguments i ABI</h1>
+
+</section>
+<section id="i-els-arguments" class="slide level2">
+<h2>I els arguments?</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb5-1"><a aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> suma<span class="op">(</span><span class="dt">int</span> a<span class="op">,</span> <span class="dt">int</span> b<span class="op">)</span></span>
+<span id="cb5-2"><a aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb5-3"><a aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> a <span class="op">+</span> b<span class="op">;</span></span>
+<span id="cb5-4"><a aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="reflexio udl-component udl-reflexio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-reflexio"></use></svg><span>Reflexió</span></div>
+<p>Quan <code>main()</code> crida <code>suma(10, 20)</code>, on són <code>a</code> i <code>b</code>?</p>
+</div>
+<div class="errorcomu fragment udl-component udl-errorcomu">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-errorcomu"></use></svg><span>Error Comú</span></div>
+<p><strong>Al stack.</strong> <span class="math inline">\(\Rightarrow\)</span> No necessàriament.</p>
+</div>
+</section>
+<section id="calling-convention" class="slide level2">
+<h2>Calling convention</h2>
+<div class="definicio udl-component udl-definicio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-definicio"></use></svg><span>Definició</span></div>
+<p><strong>Calling convention</strong>: com es passen els arguments, on es retorna el resultat, quins registres cal preservar, i com es relacionen <em>caller</em> i <em>callee</em>.</p>
+</div>
+<div class="concepte fragment udl-component udl-concepte">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-concepte"></use></svg><span>Concepte</span></div>
+<p>C defineix la funció. <strong>L’ABI defineix com caller i callee es comuniquen.</strong></p>
+</div>
+</section>
+<section id="system-v-amd64-pas-darguments" class="slide level2">
+<h2>System V AMD64: pas d’arguments</h2>
+<div class="columns">
+<div class="column" style="width:70%;">
+<p><img data-src="figures/02_espai_memoria/x86_64.png" style="width:90.0%"></p>
+</div><div class="column" style="width:30%;">
+<div class="exemple udl-component udl-exemple">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exemple"></use></svg><span>Exemple</span></div>
+<p>Arguments 1–6 (enters/punters) → <code>RDI, RSI, RDX, RCX, R8, R9</code>. Valor de retorn → <code>RAX</code>.</p>
+</div>
+</div></div>
+</section>
+<section id="aarch64-pas-darguments" class="slide level2">
+<h2>AArch64: pas d’arguments</h2>
+<div class="columns">
+<div class="column" style="width:70%;">
+<p><img data-src="figures/02_espai_memoria/arm.png" style="width:90.0%"></p>
+</div><div class="column" style="width:30%;">
+<div class="exemple udl-component udl-exemple">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exemple"></use></svg><span>Exemple</span></div>
+<p>Arguments 1–8 (enters/punters) → <code>X0</code>–<code>X7</code>. Valor de retorn → <code>X0</code>.</p>
+</div>
+<div class="concepte udl-component udl-concepte">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-concepte"></use></svg><span>Concepte</span></div>
+<p>La <em>calling convention</em> és específica de l’ABI: 6 registres en System V AMD64, 8 en AArch64.</p>
+</div>
+</div></div>
+</section>
+<section id="i-si-no-caben-als-registres" class="slide level2">
+<h2>I si no caben als registres?</h2>
+<div class="columns">
+<div class="column" style="width:70%;">
+<p><img data-src="figures/03_crides_funcions_cpu_registres_stack/no-caben.png"></p>
+</div><div class="column" style="width:30%;">
+<div class="bonapractica udl-component udl-bonapractica">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-bonapractica"></use></svg><span>Bona Pràctica</span></div>
+<p>Model simplificat: el tractament real també depèn del tipus i de la classificació dels arguments (p.&nbsp;ex. enters vs.&nbsp;punt flotant) definida per l’ABI.</p>
+</div>
+</div></div>
+</section>
+<section id="no-tots-els-registres-es-tracten-igual" class="slide level2">
+<h2>No tots els registres es tracten igual</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><strong>Caller-saved</strong></p>
+<ul>
+<li class="fragment"><code>RAX</code></li>
+<li class="fragment"><code>RCX</code></li>
+<li class="fragment"><code>RDX</code></li>
+<li class="fragment"><code>RDI</code></li>
+<li class="fragment"><code>RSI</code></li>
+<li class="fragment"><code>R8</code>-<code>R11</code></li>
+</ul>
+</div><div class="column" style="width:50%;">
+<p><strong>Callee-saved</strong></p>
+<ul>
+<li class="fragment"><code>RBX</code></li>
+<li class="fragment"><code>RBP</code></li>
+<li class="fragment"><code>R12</code>–<code>R15</code></li>
+</ul>
+</div></div>
+<div class="repte fragment udl-component udl-repte">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-repte"></use></svg><span>Repte</span></div>
+<p>Si <code>foo()</code> modifica <code>RBX</code>, qui ha de garantir que el valor original es conserva?</p>
+</div>
+<div class="solucio fragment udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<p><code>RBX</code> és <em>callee-saved</em>: és <strong><code>foo()</code></strong> qui ha de preservar-lo, no qui la crida. No cal memoritzar tota la llista, però sí saber distingir les dues categories.</p>
+</div>
+</section>
+<section id="aarch64-caller-callee-saved" class="slide level2">
+<h2>AArch64: caller / callee saved</h2>
+<div style="text-align:center;">
+<p><img data-src="figures/03_crides_funcions_cpu_registres_stack/caller-callee.png" style="width:80.0%"></p>
+</div>
+</section></section>
+<section>
+<section id="síntesi" class="title-slide slide level1 center">
+<h1>Síntesi</h1>
+
+</section>
+<section id="posem-ho-tot-junt" class="slide level2">
+<h2>Posem-ho tot junt</h2>
+<div class="columns">
+<div class="column" style="width:25%;">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb6-1"><a aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> suma<span class="op">(</span><span class="dt">int</span> a<span class="op">,</span> <span class="dt">int</span> b<span class="op">)</span></span>
+<span id="cb6-2"><a aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb6-3"><a aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> resultat <span class="op">=</span> a <span class="op">+</span> b<span class="op">;</span></span>
+<span id="cb6-4"><a aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> resultat<span class="op">;</span></span>
+<span id="cb6-5"><a aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div><div class="column" style="width:75%;">
+<div class="concepte udl-component udl-concepte" title="x86-64 amb System V ABI">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-concepte"></use></svg><span>Concepte — x86-64 amb System V ABI</span></div>
+<ol type="1">
+<li class="fragment"><code>main()</code> posa arguments a <code>RDI</code> i <code>RSI</code> i fa <code>call suma</code>. (2) <code>suma()</code> crea frame, executa i deixa el resultat a <code>RAX</code>. (3) <code>ret</code> torna a <code>main()</code>, <code>RIP</code> apunta a <code>main()</code> i <code>RAX</code> conté el resultat.</li>
+</ol>
+</div>
+</div></div>
+<div style="text-align:center;">
+<p><img data-src="figures/03_crides_funcions_cpu_registres_stack/complet.png" style="width:80.0%"></p>
+</div>
+</section>
+<section id="ho-podem-observar" class="slide level2">
+<h2>Ho podem observar?</h2>
+<div class="columns">
+<div class="column" style="width:35%;">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb7-1"><a aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb7-2"><a aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> suma<span class="op">(</span><span class="dt">int</span> a<span class="op">,</span> <span class="dt">int</span> b<span class="op">)</span></span>
+<span id="cb7-4"><a aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb7-5"><a aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> resultat <span class="op">=</span> a <span class="op">+</span> b<span class="op">;</span></span>
+<span id="cb7-6"><a aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> resultat<span class="op">;</span></span>
+<span id="cb7-7"><a aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb7-8"><a aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
+<span id="cb7-10"><a aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb7-11"><a aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> x <span class="op">=</span> suma<span class="op">(</span><span class="dv">10</span><span class="op">,</span> <span class="dv">20</span><span class="op">);</span></span>
+<span id="cb7-12"><a aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"resultat = </span><span class="sc">%d\n</span><span class="st">"</span><span class="op">,</span> x<span class="op">);</span></span>
+<span id="cb7-13"><a aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb7-14"><a aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div><div class="column" style="width:65%;">
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p>Abans de mirar-ho, prediu:</p>
+<ul>
+<li class="fragment">On creieu que estarà el valor <code>10</code>?</li>
+<li class="fragment">I el <code>20</code>?</li>
+<li class="fragment">Quan fem <code>call</code>, què espereu que canviï?</li>
+<li class="fragment">Què passarà amb <code>RSP</code>?</li>
+</ul>
+</div>
+</div></div>
+</section>
+<section id="gdb-en-directe" class="slide level2">
+<h2>GDB en directe</h2>
+<div id="gdb-demo">
+
+</div>
+<script>
+AsciinemaPlayer.create(
+  'cast/03_crides_funcions_cpu_registres_stack/gdb-demo.cast',
+  document.getElementById('gdb-demo'),
+  {
+    autoPlay: false,
+    loop: false,
+    speed: 0.8,
+    cols: 150,
+    rows: 20
+  }
+);
+</script>
+<div class="reflexio udl-component udl-reflexio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-reflexio"></use></svg><span>Reflexió</span></div>
+<p>Coincideix amb la vostra predicció? On és <code>RIP</code>? On és <code>RSP</code>? On és <code>RBP</code>? On són els arguments? Què hi ha al stack?</p>
+</div>
+</section>
+<section id="del-dibuix-al-programa-real" class="slide level2">
+<h2>Del dibuix al programa real</h2>
+<div class="concepte udl-component udl-concepte">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-concepte"></use></svg><span>Concepte</span></div>
+<p>El model que hem construït (<code>RIP → codi</code>, <code>RSP → stack</code>, <code>RBP → frame</code>, <code>RDI/RSI → arguments</code>, <code>RAX → retorn</code>) no és només un dibuix: podem observar-ne parts en un programa real amb GDB.</p>
+</div>
+</section>
+<section id="x86-64-i-aarch64-síntesi-final" class="slide level2">
+<h2>x86-64 i AArch64 — síntesi final</h2>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Concepte</th>
+<th>x86-64</th>
+<th>AArch64</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Instruction pointer</td>
+<td>RIP</td>
+<td>PC</td>
+</tr>
+<tr class="even">
+<td>Stack pointer</td>
+<td>RSP</td>
+<td>SP</td>
+</tr>
+<tr class="odd">
+<td>Frame pointer</td>
+<td>RBP</td>
+<td>X29</td>
+</tr>
+<tr class="even">
+<td>Return/link</td>
+<td>stack (via <code>call</code>)</td>
+<td>X30 (via <code>BL</code>)</td>
+</tr>
+<tr class="odd">
+<td>Arguments</td>
+<td>RDI…R9</td>
+<td>X0…X7</td>
+</tr>
+<tr class="even">
+<td>Return value</td>
+<td>RAX</td>
+<td>X0</td>
+</tr>
+</tbody>
+</table>
+<div class="resum udl-component udl-resum">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-resum"></use></svg><span>Resum</span></div>
+<ol type="1">
+<li class="fragment">Una funció en execució té una activació associada al stack.</li>
+<li class="fragment">La CPU utilitza registres per gestionar l’execució, el stack i els arguments.</li>
+<li class="fragment"><code>call</code>/<code>ret</code> i <code>BL</code>/<code>RET</code> implementen el mecanisme de crida segons l’arquitectura.</li>
+<li class="fragment">L’ABI defineix com caller i callee es comuniquen.</li>
+</ol>
+</div>
+
+
+</section></section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+<p>Sistemes Operatius (SO) &nbsp; <a href="../../../index.html" class="home-link" aria-label="Inici"><svg class="home-icon" viewbox="0 0 120 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 52 C27 43 39 31 60 12 C78 30 93 42 108 51" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"></path><path d="M25 48 C25 64 25 76 24 87 C35 84 45 85 53 87 M95 48 C95 64 95 76 97 87 C87 84 77 85 68 87" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M51 87V70 C51 64 55 60 60 60 C65 60 69 64 69 70V87Z" fill="currentColor"></path><path d="M82 29V17 C82 14 84 13 87 13H94 C96 13 97 15 96 17 C94 20 93 24 94 32Z" fill="currentColor"></path></svg></a></p>
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="../../../site_libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="../../../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="../../../site_libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="../../../site_libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="../../../site_libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="../../../site_libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="../../../site_libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="../../../site_libs/revealjs/plugin/search/search.js"></script>
+  <script src="../../../site_libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="../../../site_libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'fade',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1600,
+
+        height: 900,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 8.0e-2,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+          const outerScaffold = trigger.parentElement.cloneNode(true);
+          const codeEl = outerScaffold.querySelector('code');
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp("https:\/\/igualada\.os\.udl\.cat");
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>
