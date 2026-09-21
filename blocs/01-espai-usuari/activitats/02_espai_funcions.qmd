@@ -4,13 +4,13 @@ subtitle: "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari"
 lang: ca
 ---
 
-Pràctica **opcional i no avaluable** de consolidació de les sessions tèoriques [L'espai de memòria d'un procés](../teoria/02_espai_memoria_proces.qmd) i [Crides de funció: CPU, registres i stack](../teoria/03_crides_funcions_cpu_registres_stack.qmd) on s'han estudiat els conceptes espai d'adreces, stack frame, calling convention i registres. Durada estimada: **60–90 minuts**. 
+Pràctica **opcional i no avaluable** de consolidació de les sessions tèoriques [L'espai de memòria d'un procés](../teoria/02_espai_memoria_proces.qmd) i [Crides de funció: CPU, registres i stack](../teoria/03_crides_funcions_cpu_registres_stack.qmd) on s'han estudiat els conceptes espai d'adreces, stack frame, calling convention i registres.
 
 ::: {.programari}
 `gcc` amb suport per a `-g`, `-O0`, `-O2` i `-mno-red-zone`; `gdb`. Qualsevol entorn Linux x86-64 (les màquines dels Pralabs són suficients).
 :::
 
-# Part 1 — Predir abans d'executar
+# Part 1 · Predir abans d'executar
 
 Aquest és el programa de partida. **No l'executis encara.**
 
@@ -69,11 +69,11 @@ Quan `main()` crida `suma(x, *p)`:
 - Què esperes que passi amb la *return address*?
 - Què esperes que passi amb `RSP` després del `ret`?
 
-Escriu totes les respostes abans de passar a la Part 2 — són les que comprovaràs després.
+Escriu totes les respostes abans de passar a la Part 2.
 
 ---
 
-# Part 2 — Comprovar-ho amb GDB
+# Part 2 · Comprovar-ho amb GDB
 
 Compila una versió preparada per inspeccionar-la:
 
@@ -132,7 +132,7 @@ Una instrucció assembly no és un pas aïllat: cada una mou o llegeix algun reg
 
 ---
 
-# Part 3 — Explicar la diferència
+# Part 3 · Explicar la diferència
 
 Respon amb les teves paraules, sense tornar a mirar GDB:
 
@@ -143,11 +143,9 @@ Respon amb les teves paraules, sense tornar a mirar GDB:
 Quina diferència hi ha entre **el codi de `suma()`** i **l'activació de `suma()`**?
 :::
 
-Aquesta última pregunta comprova una de les idees centrals: La funció (el codi) viu al TEXT, mentre que cada crida crea un nou context d'execució. Aquest context pot utilitzar el stack, però la seva representació concreta depèn de l'arquitectura, l'ABI i l'optimització."
-
 ---
 
-# Part 4 — Trenca el model
+# Part 4 · Trenca el model
 
 Pren aquesta versió, més senzilla, de la funció:
 
@@ -170,7 +168,7 @@ gcc -g -O0 -fno-omit-frame-pointer program2.c -o program2_O0
 gcc -g -O2                        program2.c -o program2_O2
 ```
 
-Fixa't que a la versió `-O2` **no** forcem `-fno-omit-frame-pointer` — volem veure què decideix el compilador pel seu compte.
+Fixa't que a la versió `-O2` **no** forcem `-fno-omit-frame-pointer`. Volem veure què decideix el compilador pel seu compte.
 
 Desassembla `suma()` a totes dues (`gdb -batch -ex 'disassemble suma' programX`) i respon:
 
@@ -181,7 +179,7 @@ Desassembla `suma()` a totes dues (`gdb -batch -ex 'disassemble suma' programX`)
 - Quina diferència hi ha entre el model que hem estudiat i una execució optimitzada?
 
 ::: {.concepte}
-"Una funció sempre crea exactament aquest stack frame" és fals. El frame depèn de l'arquitectura, l'ABI, el compilador i les opcions d'optimització — el frame pointer es pot ometre, i una variable pot no tenir mai una adreça de memòria pròpia.
+**Una funció sempre crea exactament aquest stack frame** és fals. El frame depèn de l'arquitectura, l'ABI, el compilador i les opcions d'optimització. El frame pointer es pot ometre, i una variable pot no tenir mai una adreça de memòria pròpia.
 :::
 
 ---
@@ -202,11 +200,11 @@ Has d'integrar, en un sol relat continu: l'espai d'adreces, els arguments i l'AB
 
 Annota en un document de text o Markdown les teves respostes a totes les preguntes i reflexions. Si vols, pots afegir captures de pantalla de GDB per il·lustrar-les. 
 
-1. **Predicció** — què creus que passarà (Part 1).
-2. **Experiment** — què observes amb GDB (Part 2).
-3. **Diferència** — què no ha passat com esperaves, si escau.
-4. **Explicació** — per què (Part 3).
-5. **Model final** — completa aquest diagrama amb registres, *return address*, stack frame, resultat i `call`/`ret`. No et donem els valors: has de ser tu qui els situï.
+1. **Predicció** · què creus que passarà (Part 1).
+2. **Experiment** · què observes amb GDB (Part 2).
+3. **Diferència** · què no ha passat com esperaves, si escau.
+4. **Explicació** · per què (Part 3).
+5. **Model final** · completa aquest diagrama amb registres, *return address*, stack frame, resultat i `call`/`ret`. No et donem els valors: has de ser tu qui els situï.
 
 ```text
                      main()
@@ -228,7 +226,7 @@ Annota en un document de text o Markdown les teves respostes a totes les pregunt
                      main()
 ```
 
-Inclou també la taula d'estat següent, omplerta amb els valors reals que has observat (no cal completar cap cel·la que consideris no rellevant). Fixa't que el pròleg i el càlcul són moments **diferents** — no els confonguis:
+Inclou també la taula d'estat següent, omplerta amb els valors reals que has observat (no cal completar cap cel·la que consideris no rellevant). 
 
 | Moment | RIP | RSP | RBP | RDI | RSI | RAX |
 |---|---|---|---|---|---|---|
