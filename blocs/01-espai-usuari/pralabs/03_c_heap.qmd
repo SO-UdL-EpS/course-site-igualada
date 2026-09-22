@@ -1,0 +1,607 @@
+---
+title: "Pralab 03: Memòria dinàmica (I) — `malloc`, `free` i `lifetime`"
+author: "Jordi Mateo Fornés"
+format:
+  udl-course-html:
+    toc: false
+    number-sections: false
+---
+
+## Introducció
+
+Als ([Pralab 01](../pralabs/01_c_mem.qmd), [Pralab 02](../pralabs/02_c_mem.qmd)) has treballat amb arrays **locals**, com `int v[5]`. A teoria has vist que un procés té una regió de memòria anomenada **heap**, pensada per a dades que han de viure més enllà de la funció que les crea, o que tenen una mida que només es coneix en executar.
+
+Avui aprendrem a fer-la servir i, sobretot, a entendre **fins quan viu** una dada i **qui n'és responsable**. La pregunta d'avui és:
+
+> **Què ha canviat quan un array passa de la pila al heap, i què continua sent igual?**
+
+:::{.objectius}
+En acabar el pralab hauràs de ser capaç de:
+
+- crear un array dinàmic amb `malloc` i accedir-hi amb `v[i]`, `*(v + i)` i `&v[i]`;
+- explicar per què `sizeof(v)` ja no dona la mida de l'array;
+- distingir l'adreça de la **variable** `v` (`&v`) de l'adreça **a la qual apunta** (`v`);
+- explicar què fa `free` i per què un punter que s'usa després d'un `free` és un **punter penjat**;
+- comparar la vida d'una variable local amb la d'un bloc dinàmic;
+- explicar quin fragment de codi és el **propietari** d'un bloc dinàmic.
+:::
+
+:::{.prerequisits}
+- Pralab 01 i Pralab 02 (adreces, punters, `v[i]` i `*(v + i)`, decaïment).
+- Teoria: *L'espai de memòria d'un procés* (heap, *lifetime*, `malloc()` / `free()`, punter penjat).
+:::
+
+:::{.programari}
+- `gcc`. Sistema de referència: Debian bookworm.
+- Arquitectura: **x86-64** o **arm64**. Tot el pralab funciona igual a les dues, només canviaran els valors de les adreces.
+- Compila sempre amb `gcc -Wall -Wextra -g -O0`.
+:::
+
+:::{.bonapractica}
+Les mides i les adreces que veuràs (`sizeof(int)` és 4 i un punter ocupa 8) són les dels **nostres sistemes de 64 bits**. El llenguatge C **no fixa** aquestes mides: per això, quan calgui, raonarem amb `sizeof(int)` i `sizeof(int *)`, i els números seran només el que observem aquí. Fixa't en el **patró**, no en els valors.
+:::
+
+---
+
+### Part A — De l'array local a l'array dinàmic
+
+Crea `01_local_vs_heap.c`. Conté els dos arrays: el local que ja coneixes i el dinàmic.
+
+```{.c}
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void)
+{
+    int loc[5] = {10, 20, 30, 40, 50};
+
+    int *v = malloc(5 * sizeof(int));
+
+    if (v == NULL) {
+        return 1;
+    }
+
+    for (int i = 0; i < 5; i++) {
+        v[i] = (i + 1) * 10;
+    }
+
+    /* aquí afegirem les proves */
+
+    free(v);
+
+    return 0;
+}
+```
+
+:::{.definicio}
+`malloc(n)` reserva `n` bytes consecutius al **heap** i retorna l'adreça del primer byte, o `NULL` si no hi ha prou memòria. La memòria reservada **no s'inicialitza**.
+
+`free(p)` indica que aquesta memòria ja no és necessària i la deixa disponible per a futures reserves.
+:::
+
+De moment escriu `free(v)` i no li donis més importància: a la Part B veurem què fa exactament.
+
+#### A.1 — Què continua sent igual
+
+Substitueix el comentari per aquestes línies:
+
+```{.c}
+printf("%d %d\n", loc[2], v[2]);
+printf("%d %d\n", *(loc + 2), *(v + 2));
+printf("%p %p\n", (void *)&loc[2], (void *)&v[2]);
+printf("%p\n", (void *)(v + 2));
+printf("%td\n", (char *)&v[1] - (char *)&v[0]);
+```
+
+::: {.exercici}
+Abans d'executar-ho: quins valors esperes en cada línia? Quins dels valors impresos seran iguals entre si?
+:::
+
+```{.bash}
+gcc -Wall -Wextra -g -O0 -o 01_local_vs_heap 01_local_vs_heap.c
+./01_local_vs_heap
+```
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+- Les dues primeres línies imprimeixen `30 30`: `loc[2]` i `v[2]` valen el mateix, i `*(loc + 2)` i `*(v + 2)` també. **`v[i] == *(v + i)` continua sent cert**, exactament com al Pralab 02.
+- A la tercera, `&loc[2]` i `&v[2]` són adreces **diferents** (són dos arrays diferents). La quarta línia mostra que `v + 2` i `&v[2]` **són la mateixa adreça**.
+- L'última línia val `sizeof(int)` (`4` als nostres sistemes): els elements de `v` estan un darrere l'altre, tal com vas mesurar al Pralab 01. Els elements del bloc dinàmic són **contigus**.
+:::
+
+</details>
+
+Tot el que vas veure sobre arrays i aritmètica de punters funciona igual amb un bloc dinàmic.
+
+#### A.2 — Què ha canviat: la mida
+
+Afegeix:
+
+```{.c}
+printf("sizeof(loc) = %zu\n", sizeof(loc));
+printf("sizeof(v)   = %zu\n", sizeof(v));
+printf("&loc + 1: %td\n", (char *)(&loc + 1) - (char *)&loc);
+printf("&v + 1  : %td\n", (char *)(&v + 1) - (char *)&v);
+printf("elements: %zu %zu\n", sizeof(loc) / sizeof(loc[0]), sizeof(v) / sizeof(v[0]));
+```
+
+::: {.exercici}
+Prediu el que imprimirà cada línia. Recorda el Pralab 02: què eren `&v` i `&v + 1` quan `v` era un array local? Pot ser que el compilador tingui alguna cosa a dir sobre l'última línia: mira els avisos en compilar.
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+| Línia | Expressió equivalent | Als nostres sistemes | Per què |
+|-------|----------------------|----------------------|---------|
+| `sizeof(loc)` | `5 * sizeof(int)` | `20` | l'array sencer |
+| `sizeof(v)` | `sizeof(int *)` | `8` | només un **punter** |
+| `&loc + 1` | `sizeof(loc)` | `20` | `&loc` és un punter a l'array sencer (`int (*)[5]`) |
+| `&v + 1` | `sizeof(int *)` | `8` | `&v` és l'adreça d'un **punter** (`int **`) |
+| elements | `sizeof(int *) / sizeof(int)` | `5 2` | la segona divisió **no** compta elements |
+
+`gcc` avisa: `division 'sizeof (int *) / sizeof (int)' does not compute the number of array elements`.
+
+`v` és un `int *`: només diu "aquí hi ha un `int`", no quants n'hi ha darrere. **La mida del bloc no forma part del tipus `int *`**; si la necessites, l'has de conservar explícitament (per exemple, en una variable `n`).
+:::
+
+</details>
+
+:::{.errorcomu}
+Comptar els elements amb `sizeof(v) / sizeof(v[0])` funciona amb un array local i **falla en silenci** amb un punter: el resultat és `sizeof(int *) / sizeof(int)` (`2` als nostres sistemes), no `5`. Amb memòria dinàmica has de guardar sempre la mida tu mateix.
+:::
+
+Observa que `&v` té tipus `int **`. **No cal que encara sàpigues utilitzar un `int **`**:
+
+#### A.3 — Dues adreces diferents
+
+Afegeix:
+
+```{.c}
+printf("&loc[0] = %p\n", (void *)&loc[0]);
+printf("&v      = %p\n", (void *)&v);
+printf(" v      = %p\n", (void *)v);
+```
+
+::: {.exercici}
+Abans d'executar-ho: de les tres adreces, quines dues creus que seran **properes**? Quina creus que serà molt diferent? Què representa cadascuna?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+`&loc[0]` i `&v` són properes: `loc` és un array de la pila i `v` és una **variable local** (un punter), que també viu a la pila. En canvi, `v` (el **valor** del punter) és molt diferent: és l'adreça del bloc reservat al **heap**.
+
+Hi ha dues adreces: `&v` (on viu la variable `v`) i `v` (on viu el que `v` apunta).
+
+```{mermaid}
+flowchart LR
+    subgraph Pila
+        L["loc[5]<br/>(5 * sizeof(int))"]
+        V["v (punter)<br/>adreça: &v"]
+    end
+    subgraph Heap
+        B["bloc de 5 * sizeof(int) bytes<br/>v[0] ... v[4]<br/>adreça: v"]
+    end
+    V --> B
+```
+
+Ho vas veure a teoria: **un punter i allò que apunta poden viure en regions diferents.**
+:::
+
+</details>
+
+:::{.resultat}
+**Què ha canviat i què continua sent igual?**
+
+| | Array local `int v[5]` | Bloc dinàmic `int *v = malloc(...)` |
+|---|---|---|
+| `v[i]`, `*(v + i)`, `&v[i] == v + i` | ✔ | ✔ (igual) |
+| Elements contigus (`+ sizeof(int)`) | ✔ | ✔ (igual) |
+| `sizeof(v)` | `5 * sizeof(int)` (l'array sencer) | `sizeof(int *)` (només un punter) |
+| Tipus de `&v` | `int (*)[5]` | `int **` |
+| Mida | forma part del tipus de l'array | **no** forma part del tipus `int *`: l'has de conservar tu |
+| On viu | pila | `v` a la pila, els elements al **heap** |
+| Contingut inicial | indeterminat | indeterminat (`malloc` no inicialitza) |
+| Quan mor | en retornar la funció | quan tu ho decideixes |
+:::
+
+:::{.errorcomu}
+`malloc` posa la memòria a zero. Fals. Si alguna vegada veus zeros és perquè aquella zona del heap era nova; no és una garantia. Si necessites zeros, `calloc(n, sizeof(int))` els inicialitza; si no, has d'escriure tu els valors.
+:::
+
+L'última fila de la taula és la que fa que tot el que segueix sigui important.
+
+---
+
+### Part B — Lifetime: fins quan viu una dada
+
+#### B.1 — Què fa `free`
+
+Crea `02_free.c`:
+
+```{.c}
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void)
+{
+    int *p = malloc(sizeof(int));
+
+    if (p == NULL) {
+        return 1;
+    }
+
+    *p = 42;
+    printf("abans de free:   p = %p, *p = %d\n", (void *)p, *p);
+
+    free(p);
+
+    printf("despres de free: p = %p, *p = %d\n", (void *)p, *p);
+
+    return 0;
+}
+```
+
+Aquest programa fa una cosa incorrecta a propòsit. **Compila'l, però encara no l'executis:**
+
+```{.bash}
+gcc -Wall -Wextra -g -O0 -o 02_free 02_free.c
+```
+
+::: {.exercici}
+- Quin avís dona el compilador? Què vol dir?
+- `free(p)` modifica la variable `p`?
+- Què podem fer ara amb `p`? I com arreglaries el programa?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+- En versions recents de `GCC` és possible que aparegui un avís sobre l'ús de `p` després de `free`. Tal com `pointer 'p' used after 'free' [-Wuse-after-free]`. Vol dir que el programa fa servir `p` després d'haver alliberat el bloc
+- Independentment de si el compilador ho detecta, el programa és incorrecte.
+- **No.** `free` allibera el bloc; **no canvia la variable `p`** que conté el punter (C passa els arguments per valor: `free` rep una còpia).
+- Després de `free`, **no has d'utilitzar `p` per accedir al bloc alliberat**. Si el punter continuarà existint, és habitual assignar-li `NULL` per deixar explícit que ja no apunta a una reserva vàlida.
+
+Per arreglar el programa, fes-ho en una **còpia** (`02_free_ok.c`, així conserves l'original per a l'ampliació): elimina el segon `printf` i afegeix `p = NULL;` després del `free`:
+
+```{.c}
+    free(p);
+    p = NULL;
+```
+
+Ara el compilador ja no avisa: no es fa servir el bloc alliberat.
+:::
+
+</details>
+
+:::{.definicio}
+Un **punter penjat** (*dangling pointer*) és un punter que ha quedat apuntant a una memòria que ja no és vàlida. La variable del punter continua existint; allò a què apuntava, no.
+:::
+
+```{mermaid}
+flowchart TD
+    A["malloc"] --> B["bloc vàlid: p apunta a memòria vàlida"]
+    B --> C["free"]
+    C --> D["el bloc deixa de ser vàlid"]
+    D --> E["la variable p continua existint, però no s'ha de fer servir per accedir al bloc"]
+```
+
+És el mateix que vas veure a teoria amb la pila: allà la variable moria en retornar la funció; aquí mor el bloc quan cridem `free`.
+
+:::{.errorcomu}
+"Després de `free(p)`, `p` continua apuntant al bloc, així que puc seguir usant-lo." **No.** El bloc ja no és teu. Encara que el programa "sembli funcionar", estàs accedint a memòria que ja no et pertany.
+:::
+
+#### B.2 — Local o heap: qui decideix quan mor?
+
+Crea `03_vector.c`:
+
+```{.c}
+#include <stdio.h>
+#include <stdlib.h>
+
+int *crea_vector(int n)
+{
+    int *v = malloc(n * sizeof(int));
+
+    if (v == NULL) {
+        return NULL;
+    }
+
+    for (int i = 0; i < n; i++) {
+        v[i] = i + 1;
+    }
+
+    return v;
+}
+
+int main(void)
+{
+    int *v = crea_vector(5);
+
+    if (v == NULL) {
+        return 1;
+    }
+
+    for (int i = 0; i < 5; i++) {
+        printf("v[%d] = %d\n", i, v[i]);
+    }
+
+    free(v);
+
+    return 0;
+}
+```
+
+Afegeix ara aquesta funció a l'arxiu (a sobre de `main`) i torna a compilar:
+
+```{.c}
+int *crea_local(void)
+{
+    int a[3] = {1, 2, 3};
+
+    return a;
+}
+```
+
+::: {.exercici}
+Quin avís dona `gcc`? Per què `crea_vector` pot retornar el seu array i `crea_local` no?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+`crea_local` genera `function returns address of local variable [-Wreturn-local-addr]`: l'array local **mor en retornar la funció**, així que l'adreça retornada apuntaria a memòria que ja no és vàlida. L'array del heap no mor amb la funció: **viu fins que algú crida `free`**.
+:::
+
+</details>
+
+:::{.concepte}
+Qui decideix quan acaba la vida d'una dada?
+
+| On viu | Quan acaba | Qui ho decideix |
+|--------|------------|-----------------|
+| Variable local (pila) | quan retorna la funció | el llenguatge |
+| Variable global o `static` | quan acaba el programa | el llenguatge |
+| Bloc del heap | quan es crida `free` | **el programador** |
+:::
+
+---
+
+### Part C — Ownership: qui allibera?
+
+Mira de nou `03_vector.c` (sense `crea_local`). `crea_vector` fa el `malloc` i `main` fa el `free`.
+
+::: {.exercici}
+- Qui fa el `malloc`? Qui fa el `free`? Són el mateix fragment de codi?
+- Què passaria si `main` s'oblidés del `free(v)`?
+- Què passaria si `crea_vector` cridés `free(v)` just abans de `return v`?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+- `crea_vector` fa el `malloc` i `main` fa el `free`: **no són el mateix fragment de codi**. El bloc sobreviu al retorn de `crea_vector` precisament perquè el seu *lifetime* el controla el programador, no la funció.
+- Sense `free(v)` el programa no falla ni mostra res diferent: el bloc **no s'allibera mai**. És una **fuga de memòria** (la detectarem amb Valgrind).
+- Si `crea_vector` fes `free(v)` abans de retornar, `main` rebria un **punter penjat**: l'adreça d'un bloc ja alliberat.
+:::
+
+</details>
+
+:::{.definicio}
+En aquest curs, considerarem **propietari** d'un bloc dinàmic el codi que té la **responsabilitat d'alliberar-lo** amb `free` quan ja no el necessita. Una mateixa reserva **no s'ha d'alliberar dues vegades**.
+:::
+
+L'ownership és un **model de responsabilitat**: no vol dir "qui escriu la línia amb `free`", sinó "qui ha de fer que es cridi". A `crea_vector` la responsabilitat **passa** al cridant en retornar el bloc.
+
+:::{.bonapractica}
+Documenta sempre qui és el propietari. Per exemple, sobre `crea_vector`: `/* El cridant és el propietari del vector retornat i l'ha d'alliberar amb free(). */`. Regla pràctica: **cada reserva té un responsable d'alliberar-la**.
+:::
+
+:::{.repte}
+**Opcional.** Si tens `valgrind` instal·lat, executa `valgrind ./03_vector` i mira **només l'última part** de la sortida: hauria d'aparèixer `All heap blocks were freed -- no leaks are possible`. Ara treu el `free(v)`, recompila i torna-hi. Què canvia?
+:::
+
+---
+
+### Resum
+
+:::{.resum}
+- Un bloc dinàmic es comporta com un array: `v[i] == *(v + i)` i `&v[i] == v + i`.
+- Però `v` és només un **punter**: la mida del bloc no forma part del tipus `int *` i l'has de conservar tu. `&v` té tipus `int **`.
+- La variable `v` viu a la pila; el bloc al qual apunta, al heap.
+- Un bloc del heap viu fins que algú fa `free`. **Un punter usat després d'un `free` és un punter penjat**: no s'ha de fer servir.
+- Un bloc té un **propietari**: el codi responsable d'alliberar-lo, una sola vegada.
+:::
+
+:::{.reflexio}
+Fixa't que `free(p)` no ha pogut modificar `p` per nosaltres: només rep una còpia. I a `crea_vector` hem hagut de **retornar** el punter per fer-lo arribar al cridant. **Pots escriure una funció `void crea(...)` que faci que el `p` del cridant apunti a un bloc nou?** És la pregunta de la propera sessió, i la resposta necessita el `int **` que ja has vist a `&v`.
+:::
+
+---
+
+### Ampliació (opcional)
+
+Aquests experiments **no formen part del nucli**. Són opcionals: per revisar a casa si no dona temps a classe.
+
+#### E.1 — La pila és limitada
+
+Podries pensar: **si la mida només la sé en executar, per què no faig servir sempre un array local?**. A C existeixen els **VLA** (*variable length arrays*, C99): `int v[n];` amb `n` decidit en execució. Funcionen, però viuen a la pila. Crea `04_pila_heap.c`:
+
+```{.c}
+#include <stdio.h>
+#include <stdlib.h>
+
+void a_la_pila(int n)
+{
+    int v[n];
+
+    printf("VLA: sizeof(v) = %zu, n * sizeof(int) = %zu\n", sizeof(v), n * sizeof(int));
+
+    v[n - 1] = 1;
+    printf("pila: v[n-1] = %d\n", v[n - 1]);
+}
+
+int main(void)
+{
+    int petit = 1000;
+    int gran = 10000000;
+
+    a_la_pila(petit);
+
+    int *h = malloc(gran * sizeof(int));
+
+    if (h == NULL) {
+        printf("heap: malloc ha fallat\n");
+        return 1;
+    }
+
+    h[gran - 1] = 1;
+    printf("heap: h[gran-1] = %d\n", h[gran - 1]);
+    fflush(stdout);
+    free(h);
+
+    a_la_pila(gran);
+
+    return 0;
+}
+```
+
+::: {.exercici}
+`gran` són 10 milions d'enters, uns 40 MB. Abans d'executar-ho: què creus que passarà amb `a_la_pila(petit)`? I amb `a_la_pila(gran)`? I al heap? Executa `ulimit -s` per veure una pista.
+:::
+
+```{.bash}
+gcc -Wall -Wextra -g -O0 -o 04_pila_heap 04_pila_heap.c
+./04_pila_heap
+ulimit -s
+```
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+Amb `petit` tot va bé, i fins i tot `sizeof(v)` es calcula **en execució** (`4000`). Al heap, els 40 MB també van bé. Amb `gran`, `a_la_pila` és habitual que acabi amb `Segmentation fault`. `ulimit -s` mostra `8192` (KB): la pila d'un procés té una mida **limitada** (típicament 8 MB), mentre que el heap pot créixer fins on el sistema tingui memòria. (Si al teu sistema `ulimit -s` mostra `unlimited`, executa `ulimit -s 8192` abans de provar-ho.)
+
+Un VLA té a més les limitacions de la pila: si no hi cap, **no obtens un `NULL` que puguis comprovar**: el programa cau. I igual que qualsevol array local, **mor quan la funció retorna**: per això no el pots retornar.
+:::
+
+</details>
+
+#### E.2 — Observem un punter penjat (comportament indefinit)
+
+Al B.1 has vist que fer servir un punter després d'un `free` és incorrecte i que el compilador ho avisa. Ara **l'executem només per observar**: el que veurem és què fa **la teva implementació**, no una garantia del llenguatge.
+
+```{.bash}
+./02_free
+```
+
+::: {.exercici}
+Què val `*p` després del `free`? Era el que esperaves?
+:::
+
+Crea ara `05_reuse.c`:
+
+```{.c}
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void)
+{
+    int *p = malloc(sizeof(int));
+
+    if (p == NULL) {
+        return 1;
+    }
+
+    *p = 42;
+    free(p);
+
+    int *q = malloc(sizeof(int));
+
+    if (q == NULL) {
+        return 1;
+    }
+
+    *q = 7;
+
+    printf("p = %p, q = %p\n", (void *)p, (void *)q);
+    printf("*p = %d, *q = %d\n", *p, *q);
+
+    free(q);
+
+    return 0;
+}
+```
+
+::: {.exercici}
+Fixa't que **no toquem `p`** després del `free`. Creus que `q` tindrà una adreça diferent de `p`? Què creus que imprimirà `*p`?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+En `02_free`, `*p` **no val 42**: apareix un valor sense sentit (per exemple `1437671713`; el concret no es pot predir). L'al·locador ha reutilitzat aquest bloc per guardar les seves pròpies dades.
+
+En `05_reuse`, en un sistema típic (`glibc`), `p` i `q` acaben tenint **la mateixa adreça** i `*p` val `7`: l'al·locador ha reutilitzat el bloc que acabava de rebre per a la petició següent de la mateixa mida. `*p` ha canviat sense que hàgim tocat `p`.
+
+**Res d'això és una garantia de C.** Una altra implementació podria fer una altra cosa. El que il·lustra és el perill: un punter penjat pot acabar apuntant a dades vàlides d'un altre propietari, i el programa "funciona" fins que deixa de fer-ho.
+:::
+
+</details>
+
+#### E.3 — `NULL` després de `free`
+
+Crea `06_null.c`:
+
+```{.c}
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void)
+{
+    int *p = malloc(sizeof(int));
+
+    if (p == NULL) {
+        return 1;
+    }
+
+    *p = 42;
+
+    free(p);
+    p = NULL;
+
+    printf("*p = %d\n", *p);
+
+    return 0;
+}
+```
+
+::: {.exercici}
+Què passarà en executar-ho? En què es diferencia de l'error silenciós que has vist a E.2?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+En els nostres sistemes el programa acaba amb `Segmentation fault`: `*p` és ara un accés a `NULL`, que el sistema operatiu atura. A E.2 el mateix tipus d'error passava **sense avisar**.
+
+Això no és una garantia de C (desreferenciar `NULL` també és comportament indefinit), però en la pràctica sol fer visible la fallada.
+:::
+
+</details>
+
+:::{.bonapractica}
+Si el punter **continuarà existint** i podria tornar-se a fer servir, posar-lo a `NULL` després del `free` pot ajudar a detectar-ne usos posteriors incorrectes. Si el punter deixa de tenir rellevància immediatament (per exemple, es fa `free(v); return;`), no cal. A més, `free(NULL)` és vàlid i **no fa res**.
+:::
+

@@ -1,0 +1,643 @@
+---
+title: "Pralab 04: Memòria dinàmica (II) — Punters a punters"
+author: "Jordi Mateo Fornés"
+format:
+  udl-course-html:
+    toc: false
+    number-sections: false
+---
+
+## Introducció
+
+Al Pralab 03 vas veure que un bloc dinàmic viu al heap fins que algú en fa `free`, i que té un **propietari**. També vas veure que `crea_vector` havia de **retornar** el punter perquè arribés al cridant.
+
+Avui ens fem una pregunta més general:
+
+> **Pot una funció modificar un punter que pertany a qui l'ha cridada?**
+
+La resposta necessita un tipus que ja vas trobar sense adonar-te'n: `&v` quan `v` era un punter tenia tipus `int **`.
+
+
+:::{.objectius}
+En acabar el pralab hauràs de ser capaç de:
+
+- **decidir si una funció necessita `T *` o `T **` segons què ha de modificar**;
+- explicar què és un punter a punter (`int **`) i quantes desreferències calen per arribar a un valor;
+- explicar per què C passa els arguments **per valor**, també els punters;
+- escriure una funció que **modifiqui un punter del cridant** i una que el **destrueixi**;
+- crear, omplir i destruir un array dinàmic amb funcions, amb un contracte clar de propietat.
+:::
+
+:::{.prerequisits}
+- Pralab 03 (`malloc`, `free`, propietari, punter penjat, `&v` d'un punter).
+- Teoria: *Crides de funció* (cada crida té el seu *stack frame*).
+:::
+
+:::{.programari}
+- `gcc`. Sistema de referència: Debian bookworm.
+- Arquitectura: **x86-64** o **arm64**. Tot el pralab funciona igual a les dues.
+- Compila sempre amb `gcc -Wall -Wextra -g -O0`.
+:::
+
+:::{.bonapractica}
+Com al Pralab 03, les mides que veuràs (`sizeof(int)` és 4 i un punter en ocupa 8) són les del **nostre sistema de referència de 64 bits**: el llenguatge C no les fixa.
+:::
+
+---
+
+### Part A — Punter a punter
+
+Crea `01_ptrptr.c`:
+
+```{.c}
+#include <stdio.h>
+
+int main(void)
+{
+    int x = 42;
+    int *p = &x;
+    int **pp = &p;
+
+    printf("%d\n", x);
+    printf("%d\n", *p);
+    printf("%d\n", **pp);
+
+    return 0;
+}
+```
+
+::: {.exercici}
+Sense executar-lo: què imprimeix cada línia? Quantes **desreferències** (`*`) necessites per arribar al `42` des de `x`, des de `p` i des de `pp`?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+Les tres línies imprimeixen `42`. Des de `x` no en calen cap; des de `p` en cal una (`*p`); des de `pp` en calen dues (`**pp`): la primera (`*pp`) ens dona `p`, la segona ens dona `x`.
+:::
+
+</details>
+
+Afegeix ara:
+
+```{.c}
+printf("&x = %p\n", (void *)&x);
+printf(" p = %p\n", (void *)p);
+printf("&p = %p\n", (void *)&p);
+printf("pp = %p\n", (void *)pp);
+```
+
+::: {.exercici}
+Quines d'aquestes quatre adreces creus que seran iguals? Dibuixa `x`, `p` i `pp` amb fletxes.
+:::
+
+```{.bash}
+gcc -Wall -Wextra -g -O0 -o 01_ptrptr 01_ptrptr.c
+./01_ptrptr
+```
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+`p` **conté el mateix valor d'adreça** que l'expressió `&x`, i `pp` conté el mateix valor que `&p`. Fixa't que `p` és una **variable** (que guarda una adreça) i `&x` és una **expressió** (que produeix una adreça): imprimeixen el mateix perquè `p` es va inicialitzar amb `&x`. Però `pp` **no** conté el mateix valor que `&x`: hi ha tres variables i, per tant, **tres adreces diferents**.
+
+```
+   pp            p            x
++------+     +------+     +------+
+|  &p  | --> |  &x  | --> |  42  |
++------+     +------+     +------+
+```
+
+Cada `*` és un pas per una fletxa.
+:::
+
+</details>
+
+Ara mesurem, com al Pralab 02:
+
+```{.c}
+printf("%zu %zu %zu\n", sizeof(x), sizeof(p), sizeof(pp));
+printf("%td\n", (char *)(p + 1) - (char *)p);
+printf("%td\n", (char *)(pp + 1) - (char *)pp);
+```
+
+::: {.exercici}
+Prediu els tres resultats. Recorda: l'aritmètica de punters avança tants bytes com ocupa el tipus **al qual apunta**. A què apunta `pp`?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+Imprimeix `4 8 8`, després `4` i després `8`. Al nostre sistema de referència de 64 bits, els punters ocupen 8 bytes independentment del tipus apuntat. `p + 1` avança `sizeof(int)` (4 bytes aquí); `pp + 1` avança `sizeof(int *)` (8 bytes aquí), perquè `pp` apunta a un **punter**. És la mateixa regla del Pralab 02, un nivell més amunt.
+:::
+
+</details>
+
+:::{.concepte}
+Els tipus, de fora cap a dins:
+
+- `pp` té tipus `int **`
+- `*pp` té tipus `int *` (és `p`)
+- `**pp` té tipus `int` (és `x`)
+:::
+
+**Tots els programes que has escrit ja usen un `char **`.** Crea `02_argv.c`:
+
+```{.c}
+#include <stdio.h>
+
+int main(int argc, char **argv)
+{
+    for (int i = 0; i < argc; i++) {
+        printf("argv[%d] = %s\n", i, argv[i]);
+    }
+
+    printf("%td\n", (char *)(argv + 1) - (char *)argv);
+    printf("%d\n", argv[argc] == NULL);
+
+    return 0;
+}
+```
+
+```{.bash}
+gcc -Wall -Wextra -g -O0 -o 02_argv 02_argv.c
+./02_argv hola adeu
+```
+
+::: {.exercici}
+- Quin és el tipus de `argv[1]`? I d'`argv`?
+- Per què `argv + 1` avança 8 bytes?
+- Què vol dir que `argv[argc] == NULL`? Recorda la teoria 01: què passava en executar `./prog` sense arguments i imprimir `argv[1]`?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+`argv[1]` és un `char *` (un punter a la primera lletra de la cadena `"hola"`) i `argv` és un `char **`: un punter al primer element d'un array de punters. `argv + 1` avança `sizeof(char *)` (8 bytes aquí). L'array d'arguments **acaba amb un `NULL`** (`argv[argc]`), tal com les cadenes acaben amb `'\0'`. Per a `./02_argv hola adeu`:
+
+```
+argv --> +--------+
+         | char * | --> "./02_argv\0"
+         +--------+
+         | char * | --> "hola\0"
+         +--------+
+         | char * | --> "adeu\0"
+         +--------+
+         |  NULL  |
+         +--------+
+```
+
+És un **array de punters acabat amb una sentinella**. A la teoria 01, `./prog` sense arguments feia que `argv[1]` fos aquest `NULL`, i imprimir-lo amb `%s` era comportament indefinit.
+:::
+
+</details>
+
+---
+
+### Part B — Per què necessitem `int **`
+
+#### B.1 — Modificar el que apunta un punter
+
+Crea `03_set.c`:
+
+```{.c}
+#include <stdio.h>
+
+void posa42(int *p)
+{
+    *p = 42;
+}
+
+int main(void)
+{
+    int x = 0;
+
+    posa42(&x);
+
+    printf("x = %d\n", x);
+
+    return 0;
+}
+```
+
+::: {.exercici}
+Què imprimeix? Per què la funció ha pogut modificar `x`, que és una variable de `main`?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+Imprimeix `x = 42`. La funció rep l'**adreça** de `x` i, com al Pralab 01 amb `*p = 99`, escriu al lloc on apunta el punter.
+:::
+
+</details>
+
+#### B.2 — Modificar el propi punter
+
+Ara volem una funció que faci que un punter del cridant apunti a un bloc nou. Crea `04_modifica.c`:
+
+```{.c}
+#include <stdio.h>
+#include <stdlib.h>
+
+void modifica(int *p)
+{
+    printf("dins : &p = %p, p = %p\n", (void *)&p, (void *)p);
+
+    p = malloc(sizeof(int));
+
+    printf("dins : p despres de malloc = %p\n", (void *)p);
+}
+
+int main(void)
+{
+    int *p = NULL;
+
+    printf("main : &p = %p, p = %p\n", (void *)&p, (void *)p);
+
+    modifica(p);
+
+    printf("main : p = %p\n", (void *)p);
+
+    return 0;
+}
+```
+
+::: {.exercici}
+Abans d'executar-ho:
+
+- Després de `modifica(p)`, continuarà `p` de `main` sent `NULL`?
+- Creus que els dos `&p` seran iguals?
+- Aquesta funció té un **segon problema**. Quin?
+:::
+
+```{.bash}
+gcc -Wall -Wextra -g -O0 -o 04_modifica 04_modifica.c
+./04_modifica
+```
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+`p` de `main` continua sent `NULL` (`(nil)` a `glibc`). Els dos `&p` són **diferents**: `main` i `modifica` tenen cadascun el seu *stack frame* i, per tant, la seva pròpia variable `p`. Són **dues variables diferents**: quan es fa la crida, el **valor** que conté la `p` de `main` (`NULL`) es copia a la nova variable `p` de `modifica`. Després, `modifica` canvia només la seva.
+
+```
+  en cridar:               després del malloc:        en retornar:
+
+  main      modifica       main      modifica         main
+  p: NULL   p: NULL        p: NULL   p: --> [bloc]    p: NULL      [bloc]
+  (dues variables,         (només canvia la de        (la p de modifica desapareix;
+   mateix valor)            modifica)                  ningú coneix el bloc)
+```
+
+El segon problema és una **fuga de memòria**: el bloc reservat amb `malloc` només és apuntat per la variable local `p` de `modifica`. En retornar la funció, aquesta variable desapareix i **ningú no coneix l'adreça del bloc**: no es pot alliberar.
+
+Si esborres els dos `printf` de dins de `modifica`, `gcc -Wextra` t'avisa: `parameter 'p' set but not used`.
+:::
+
+</details>
+
+:::{.errorcomu}
+Si passo un punter a una funció, la funció pot canviar el meu punter. Fals. **C passa sempre els arguments per valor**, també els punters: la funció té la seva **pròpia variable** `p`, on es copia el valor de la `p` del cridant. Pot canviar el que hi ha **darrere** de l'adreça (com `posa42`), però no la variable del cridant.
+:::
+
+#### B.3 — La solució: passar l'adreça del punter
+
+:::{.resultat}
+Per modificar una variable de tipus **`T`** des d'una funció, cal passar-ne l'adreça, de tipus **`T *`**. La pregunta per decidir el tipus del paràmetre és: **què vull modificar?**
+
+| Què vull modificar? | Passo | Paràmetre |
+|---------------------|-------|-----------|
+| el valor d'un `int` (`x`) | `&x` | `int *` |
+| el valor d'un punter (`p`) | `&p` | `int **` |
+
+A `posa42`, `T` era `int`, i el paràmetre era `int *`. Ara volem modificar un punter: `T` és `int *`, així que el paràmetre ha de ser **`int **`**.
+:::
+
+Crea `05_out.c`:
+
+```{.c}
+#include <stdio.h>
+#include <stdlib.h>
+
+int crea_int(int **pp)
+{
+    if (pp == NULL) {
+        return -1;
+    }
+
+    *pp = malloc(sizeof(int));
+
+    if (*pp == NULL) {
+        return -1;
+    }
+
+    **pp = 42;
+
+    return 0;
+}
+
+void destrueix_int(int **pp)
+{
+    if (pp == NULL) {
+        return;
+    }
+
+    free(*pp);
+    *pp = NULL;
+}
+
+int main(void)
+{
+    int *p = NULL;
+
+    if (crea_int(&p) != 0) {
+        return 1;
+    }
+
+    printf("p = %p, *p = %d\n", (void *)p, *p);
+
+    destrueix_int(&p);
+
+    printf("despres: p = %p\n", (void *)p);
+
+    destrueix_int(&p);
+
+    return 0;
+}
+```
+
+::: {.exercici}
+- Dins de `crea_int`, a què apunta `pp`? Què és `*pp`? I `**pp`?
+- Dibuixa `main` i `crea_int` amb `p` i `pp`.
+- Per què `destrueix_int` rep un `int **` i no un `int *`? Què li passaria a `p` de `main` si `destrueix_int` rebés només `int *p` i fes `free(p)`?
+- Per què no passa res en cridar `destrueix_int(&p)` per **segona vegada**?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+- `pp` apunta a la variable `p` **de `main`**. `*pp` és aquesta mateixa `p`, i `**pp` és el bloc al qual apunta.
+
+```
+      main                  crea_int
+   +---------+            +---------+
+   |    p    |  <-------  |   pp    |
+   +---------+            +---------+
+        |
+        v
+   [ bloc al heap ]
+```
+
+- Amb `int *p`, `free(p)` alliberaria el bloc però **`p` de `main` continuaria contenint l'adreça**: un punter penjat (Pralab 03). Amb `int **`, la funció allibera el bloc **i** posa el `p` del cridant a `NULL`.
+- La segona crida fa `free(NULL)`, que és vàlid i **no fa res**. Per això després de `destrueix_int` és segur tornar-la a cridar. La seqüència és:
+
+```
+1a crida:  free(*pp);  *pp = NULL;     -->  el p de main passa a NULL
+2a crida:  *pp ja és NULL              -->  free(NULL)  (no fa res)
+```
+:::
+
+</details>
+
+:::{.concepte}
+**Per què `crea_int` retorna un `int` i no el punter?** El valor de retorn es reserva per a un **codi d'error** (`0` correcte, `-1` error). El punter creat surt per un paràmetre. Aquest patró és el de les APIs reals de C: `posix_memalign(void **memptr, size_t alignment, size_t size)` i `getline(char **lineptr, size_t *n, FILE *stream)` retornen l'estat i deixen el resultat a través d'un punter a punter.
+:::
+
+---
+
+### Part C — Array dinàmic + `int **`
+
+Ara ho ajuntem tot. Volem tres funcions per gestionar un vector d'enters al heap. Crea `06_vector.c` amb aquest `main` i escriu tu les tres funcions:
+
+```{.c}
+#include <stdio.h>
+#include <stdlib.h>
+
+/* Reserva n enters al heap i deixa l'adreça a *v.
+   Retorna 0 si va bé, -1 si hi ha error (*v queda sense canvis).
+   El cridant és el propietari del bloc. */
+int crea_vector(int **v, int n);
+
+/* Escriu 1, 2, ..., n a v. */
+void omple_vector(int *v, int n);
+
+/* Allibera el bloc i deixa *v a NULL. */
+void destrueix_vector(int **v);
+
+int main(void)
+{
+    int *v = NULL;
+    int n = 5;
+
+    if (crea_vector(&v, n) != 0) {
+        return 1;
+    }
+
+    omple_vector(v, n);
+
+    for (int i = 0; i < n; i++) {
+        printf("v[%d] = %d\n", i, v[i]);
+    }
+
+    destrueix_vector(&v);
+
+    return 0;
+}
+```
+
+::: {.exercici}
+Abans d'implementar res, mira els prototips i completa la taula: per a cada funció, **què ha de modificar** i per què el paràmetre és `T *` o `T **`.
+
+| Funció | Què ha de modificar? | Tipus del paràmetre |
+|--------|----------------------|---------------------|
+| `crea_vector` | ? | ? |
+| `omple_vector` | ? | ? |
+| `destrueix_vector` | ? | ? |
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+| Funció | Què ha de modificar? | Tipus del paràmetre |
+|--------|----------------------|---------------------|
+| `crea_vector` | **el punter `v` del cridant** (perquè apunti al bloc nou) | `int **` |
+| `omple_vector` | **el contingut** del bloc (els enters) | `int *` |
+| `destrueix_vector` | **el punter `v` del cridant** (perquè quedi a `NULL`) | `int **` |
+
+Regla: si la funció ha de canviar **el que hi ha darrere** de l'adreça → `T *`; si ha de canviar **l'adreça mateixa** (el punter del cridant) → `T **`.
+:::
+
+</details>
+
+:::{.exerciciprog}
+Implementa `crea_vector`, `omple_vector` i `destrueix_vector` seguint els comentaris. Han de complir:
+
+- `crea_vector` comprova que `v` no sigui `NULL`, que `n > 0` i que `malloc` no falli;
+- `destrueix_vector` es pot cridar dues vegades seguides sense problema.
+
+<details>
+<summary><b>Pots veure la solució</b></summary>
+
+```{.c}
+int crea_vector(int **v, int n)
+{
+    if (v == NULL || n <= 0) {
+        return -1;
+    }
+
+    int *nou = malloc(n * sizeof(int));
+
+    if (nou == NULL) {
+        return -1;
+    }
+
+    *v = nou;
+
+    return 0;
+}
+
+void omple_vector(int *v, int n)
+{
+    for (int i = 0; i < n; i++) {
+        v[i] = i + 1;
+    }
+}
+
+void destrueix_vector(int **v)
+{
+    if (v == NULL) {
+        return;
+    }
+
+    free(*v);
+    *v = NULL;
+}
+```
+
+Fixa't que a `crea_vector` es fa servir una variable temporal `nou` i només s'assigna a `*v` si el `malloc` ha funcionat: així, si falla, `*v` queda **sense canvis**, tal com diu el comentari.
+</details>
+:::
+
+```{.bash}
+gcc -Wall -Wextra -g -O0 -o 06_vector 06_vector.c
+./06_vector
+```
+
+::: {.exercici}
+- Després de `destrueix_vector(&v)`, què val `v` a `main`?
+- Qui és el propietari del vector? Qui l'ha d'alliberar?
+- El programa guarda `v` i `n` en dues variables separades. Quin risc té?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+- `v` val `NULL`.
+- El propietari és el **cridant** (`main`): és qui fa `destrueix_vector`. La funció `crea_vector` només reserva.
+- `v` i `n` viatgen per separat: si els passes malament o modifiques un i no l'altre, tens un vector amb una mida incorrecta i un accés fora de límits. Cada cop que cridem una funció amb `v` hem de recordar passar la `n` que li correspon. Això és el problema que resol una `struct`, i és el tema de la propera sessió.
+:::
+
+</details>
+
+:::{.repte}
+**Opcional.** Escriu `int redimensiona_vector(int **v, int nou_n)` que canviï la mida del vector amb `realloc`.
+
+Pista: `realloc(p, mida)` pot **moure** el bloc a una altra adreça, i pot **fallar** retornant `NULL` sense alliberar el bloc original. Què ha de passar amb `*v` en cada cas?
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+```{.c}
+int redimensiona_vector(int **v, int nou_n)
+{
+    if (v == NULL || nou_n <= 0) {
+        return -1;
+    }
+
+    int *nou = realloc(*v, nou_n * sizeof(int));
+
+    if (nou == NULL) {
+        return -1;
+    }
+
+    *v = nou;
+
+    return 0;
+}
+```
+
+Aquí es veu per què cal `int **`: `realloc` **pot moure** el bloc, de manera que l'adreça antiga pot deixar de ser vàlida (seria un punter penjat). La funció ha d'actualitzar el `v` del cridant.
+
+**No escriguis `*v = realloc(*v, ...)` directament**: si `realloc` falla, retorna `NULL` i sobreescriuries `*v` perdent l'únic punter al bloc original, que **continua reservat**: una fuga. Amb la variable temporal `nou`, si falla, `*v` continua apuntant al bloc vàlid. Els elements nous no estan inicialitzats.
+:::
+
+</details>
+:::
+
+:::{.repte}
+**Extensió opcional: fins on podem continuar?** Si podem tenir un punter a un punter, també podem afegir-ne un altre nivell:
+
+```{.c}
+int x = 42;
+int *p = &x;
+int **pp = &p;
+int ***ppp = &pp;
+
+printf("%d\n", ***ppp);
+printf("%zu %zu %zu %zu\n", sizeof(x), sizeof(p), sizeof(pp), sizeof(ppp));
+```
+
+Quin valor imprimeix `***ppp`? Quant ocupa cada variable?
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+`***ppp` és `42` i les mides són `4 8 8 8` als nostres sistemes: tots els punters ocupen el mateix, sigui a què apunti.
+
+```
+int  →  int *  →  int **  →  int ***
+```
+
+Cada `*` afegeix **un nivell d'indirecció**; no cal aprendre cap regla nova. Però en aquest curs ens interessa sobretot entendre **per què `int **` és necessari**, no arribar a més nivells. En aquest curs no necessitarem més de dos nivells. Quan la representació comença a acumular molts nivells d'indirecció, sovint val la pena preguntar-se si una `struct` faria el codi més clar.
+:::
+
+</details>
+:::
+
+---
+
+### Resum
+
+:::{.resum}
+```{.text}
+punter
+  +
+punter a punter
+  +
+malloc
+  +
+array
+  +
+funció
+  +
+lifetime
+```
+
+- `int **pp = &p` és un punter que apunta a un punter. Cada `*` és un pas per una fletxa.
+- **C passa sempre per valor**: la funció té la seva pròpia variable, amb una còpia del valor, i no pot canviar la del cridant.
+- Què vull modificar? El valor d'un `int` → passo `&x` (`int *`). El valor d'un punter → passo `&p` (**`int **`**). Per modificar una variable de tipus `T` des d'una funció, cal passar `T *`.
+- Una funció que crea memòria ha de dir **qui n'és el propietari**, i una que la destrueix pot deixar el punter del cridant a `NULL`.
+:::
+
