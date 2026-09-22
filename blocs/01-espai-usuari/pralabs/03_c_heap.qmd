@@ -1,5 +1,5 @@
 ---
-title: "Pralab 03: Memòria dinàmica (I) — `malloc`, `free` i `lifetime`"
+title: "Pralab 03: Memòria dinàmica (I): `malloc`, `free` i `lifetime`"
 author: "Jordi Mateo Fornés"
 format:
   udl-course-html:
@@ -27,7 +27,7 @@ En acabar el pralab hauràs de ser capaç de:
 :::
 
 :::{.prerequisits}
-- Pralab 01 i Pralab 02 (adreces, punters, `v[i]` i `*(v + i)`, decaïment).
+- ([Pralab 01](../pralabs/01_c_mem.qmd), [Pralab 02](../pralabs/02_c_mem.qmd)) (adreces, punters, `v[i]` i `*(v + i)`, decaïment).
 - Teoria: *L'espai de memòria d'un procés* (heap, *lifetime*, `malloc()` / `free()`, punter penjat).
 :::
 
@@ -38,7 +38,7 @@ En acabar el pralab hauràs de ser capaç de:
 :::
 
 :::{.bonapractica}
-Les mides i les adreces que veuràs (`sizeof(int)` és 4 i un punter ocupa 8) són les dels **nostres sistemes de 64 bits**. El llenguatge C **no fixa** aquestes mides: per això, quan calgui, raonarem amb `sizeof(int)` i `sizeof(int *)`, i els números seran només el que observem aquí. Fixa't en el **patró**, no en els valors.
+Les mides i les adreces que veuràs (`sizeof(int)` és 4 i un punter ocupa 8) són les dels **nostres sistemes de 64 bits**. El llenguatge C **no fixa** aquestes mides.
 :::
 
 ---

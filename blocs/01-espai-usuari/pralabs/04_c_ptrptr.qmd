@@ -1,5 +1,5 @@
 ---
-title: "Pralab 04: Memòria dinàmica (II) — Punters a punters"
+title: "Pralab 04: Memòria dinàmica (II): Punters a punters"
 author: "Jordi Mateo Fornés"
 format:
   udl-course-html:
@@ -9,7 +9,7 @@ format:
 
 ## Introducció
 
-Al Pralab 03 vas veure que un bloc dinàmic viu al heap fins que algú en fa `free`, i que té un **propietari**. També vas veure que `crea_vector` havia de **retornar** el punter perquè arribés al cridant.
+Al [Pralab 03](../pralabs/03_c_heap.qmd) vas veure que un bloc dinàmic viu al heap fins que algú en fa `free`, i que té un **propietari**. També vas veure que `crea_vector` havia de **retornar** el punter perquè arribés al cridant.
 
 Avui ens fem una pregunta més general:
 
@@ -29,7 +29,7 @@ En acabar el pralab hauràs de ser capaç de:
 :::
 
 :::{.prerequisits}
-- Pralab 03 (`malloc`, `free`, propietari, punter penjat, `&v` d'un punter).
+- [Pralab 03](../pralabs/03_c_heap.qmd)  (`malloc`, `free`, propietari, punter penjat, `&v` d'un punter).
 - Teoria: *Crides de funció* (cada crida té el seu *stack frame*).
 :::
 
@@ -40,7 +40,7 @@ En acabar el pralab hauràs de ser capaç de:
 :::
 
 :::{.bonapractica}
-Com al Pralab 03, les mides que veuràs (`sizeof(int)` és 4 i un punter en ocupa 8) són les del **nostre sistema de referència de 64 bits**: el llenguatge C no les fixa.
+Les mides que veuràs (`sizeof(int)` és 4 i un punter en ocupa 8) són les del **nostre sistema de referència de 64 bits**: el llenguatge C no les fixa.
 :::
 
 ---
@@ -170,7 +170,7 @@ gcc -Wall -Wextra -g -O0 -o 02_argv 02_argv.c
 ::: {.exercici}
 - Quin és el tipus de `argv[1]`? I d'`argv`?
 - Per què `argv + 1` avança 8 bytes?
-- Què vol dir que `argv[argc] == NULL`? Recorda la teoria 01: què passava en executar `./prog` sense arguments i imprimir `argv[1]`?
+- Què vol dir que `argv[argc] == NULL`? Recorda la teoria: què passava en executar `./prog` sense arguments i imprimir `argv[1]`?
 :::
 
 <details>
@@ -191,7 +191,7 @@ argv --> +--------+
          +--------+
 ```
 
-És un **array de punters acabat amb una sentinella**. A la teoria 01, `./prog` sense arguments feia que `argv[1]` fos aquest `NULL`, i imprimir-lo amb `%s` era comportament indefinit.
+És un **array de punters acabat amb una sentinella**. A la teoria, `./prog` sense arguments feia que `argv[1]` fos aquest `NULL`, i imprimir-lo amb `%s` era comportament indefinit.
 :::
 
 </details>
