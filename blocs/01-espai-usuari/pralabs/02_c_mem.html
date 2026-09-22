@@ -72,7 +72,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../../../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../../../">
-<link href="../../../blocs/01-espai-usuari/activitats/01_c_punters_arrays.html" rel="next">
+<link href="../../../blocs/01-espai-usuari/pralabs/03_c_heap.html" rel="next">
 <link href="../../../blocs/01-espai-usuari/pralabs/01_c_mem.html" rel="prev">
 <link href="../../../assets/logo.svg" rel="icon" type="image/svg+xml">
 <script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
@@ -413,6 +413,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text">Crides de funció: CPU, registres i stack</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/teoria/04_construccio_progama_c.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Com es construeix un programa C?</span></a>
+  </div>
+</li>
       </ul>
   </li>
           <li class="sidebar-item sidebar-item-section">
@@ -434,6 +440,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <div class="sidebar-item-container"> 
   <a href="../../../blocs/01-espai-usuari/pralabs/02_c_mem.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Pralab 02: Del <code>v[i]</code> al punter</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/pralabs/03_c_heap.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pralab 03: Memòria dinàmica (I): <code>malloc</code>, <code>free</code> i <code>lifetime</code></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/pralabs/04_c_ptrptr.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pralab 04: Memòria dinàmica (II): Punters a punters</span></a>
   </div>
 </li>
       </ul>
@@ -743,31 +761,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="repte udl-component udl-repte">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-repte"></use></svg><span>Repte</span></div>
 <p><strong>Opcional.</strong> Reescriu <code>mini_strlen</code> fent servir indexació (<code>s[i]</code>) en lloc de punters (<code>*p</code>). Compara totes dues versions: quina trobes més llegible? Recorda que, per sota, el compilador sol generar codi molt semblant per a totes dues.</p>
-</div>
-<hr>
-</section>
-<section id="part-d-una-primera-mirada-a-la-memòria-del-procés" class="level3">
-<h3 class="anchored" data-anchor-id="part-d-una-primera-mirada-a-la-memòria-del-procés">Part D — Una primera mirada a la memòria del procés</h3>
-<p>Encara no entrarem en detall de com s’organitza la memòria d’un procés. Només plantegem la pregunta.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> x <span class="op">=</span> <span class="dv">42</span><span class="op">;</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> v<span class="op">[</span><span class="dv">5</span><span class="op">];</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">/* ... */</span></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<pre><code>┌──────────────────────────┐
-│   Memòria d'un procés    │
-│                          │
-│            ?             │
-│                          │
-│            ?             │
-│                          │
-│            ?             │
-└──────────────────────────┘</code></pre>
-<div class="reflexio udl-component udl-reflexio">
-<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-reflexio"></use></svg><span>Reflexió</span></div>
-<p><strong>Pregunta oberta</strong> (no la responem avui, la recuperarem a teoria): aquestes dades estan en algun lloc de la memòria del procés. Com està organitzada aquesta memòria? A teoria apareixeran conceptes com <em>stack</em> i <em>heap</em>.</p>
 </div>
 
 
@@ -1195,8 +1188,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../../../blocs/01-espai-usuari/activitats/01_c_punters_arrays.html" class="pagination-link" aria-label="Exercicis amb C · Apuntadors i arrays">
-        <span class="nav-page-text">Exercicis amb C · Apuntadors i arrays</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../../../blocs/01-espai-usuari/pralabs/03_c_heap.html" class="pagination-link" aria-label="Pralab 03: Memòria dinàmica (I): `malloc`, `free` i `lifetime`">
+        <span class="nav-page-text">Pralab 03: Memòria dinàmica (I): <code>malloc</code>, <code>free</code> i <code>lifetime</code></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

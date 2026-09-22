@@ -1,0 +1,1643 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Jordi Mateo Fornés">
+
+<title>Pralab 03: Memòria dinàmica (I): malloc, free i lifetime – Sistemes Operatius</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../../blocs/01-espai-usuari/pralabs/04_c_ptrptr.html" rel="next">
+<link href="../../../blocs/01-espai-usuari/pralabs/02_c_mem.html" rel="prev">
+<link href="../../../assets/logo.svg" rel="icon" type="image/svg+xml">
+<script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-b9e697b59370f47497522b7983a7c1dc.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/bootstrap/bootstrap-dark-81cc67d4ae614c4e3e0031abe30b645a.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../../site_libs/bootstrap/bootstrap-b9e697b59370f47497522b7983a7c1dc.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="../../../site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="../../../site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="../../../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
+
+
+</head>
+
+<body class="nav-sidebar floating nav-fixed fullcontent quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const queryPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    const darkModeDefault = queryPrefersDark.matches;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    queryPrefersDark.addEventListener("change", e => {
+      if(window.localStorage.getItem("quarto-color-scheme") !== null)
+        return;
+      const alternate = e.matches
+      toggleColorMode(alternate);
+      localAlternateSentinel = e.matches ? 'alternate' : 'default'; // this is used alongside local storage!
+      toggleGiscusIfUsed(alternate, darkModeDefault);
+    });
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">SO</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../../index.html"> 
+<span class="menu-text">Inici</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://guiadocent.udl.cat/html/2026-27_105012"> 
+<span class="menu-text">Guia docent</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/SO-UdL-EpS/course-site"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Blocs</li><li class="breadcrumb-item">Bloc 1 · Desenvolupament de Programari en Espai d’Usuari</li><li class="breadcrumb-item"><a href="../../../blocs/01-espai-usuari/pralabs/01_c_mem.html">Pralabs</a></li><li class="breadcrumb-item"><a href="../../../blocs/01-espai-usuari/pralabs/03_c_heap.html">Pralab 03: Memòria dinàmica (I): <code>malloc</code>, <code>free</code> i <code>lifetime</code></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+      <a href="../../../index.html" class="sidebar-logo-link">
+      <img src="../../../assets/logo.png" alt="AMSA Logo" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../../../assets/logo.png" alt="AMSA Logo" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../course-info/presentation-slides.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Presentació del curs</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../course-info/contributions/contribute.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Contribueix al curs</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Blocs</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Bloc 1 · Desenvolupament de Programari en Espai d’Usuari</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+ <span class="menu-text">Teoria</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/teoria/01_rols_funcions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Rols i funcions d’un sistema operatiu</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">L’espai de memòria d’un procés</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Crides de funció: CPU, registres i stack</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/teoria/04_construccio_progama_c.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Com es construeix un programa C?</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Pralabs</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth3 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/pralabs/01_c_mem.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pralab 01: Del C a la memòria (I)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/pralabs/02_c_mem.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pralab 02: Del <code>v[i]</code> al punter</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/pralabs/03_c_heap.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Pralab 03: Memòria dinàmica (I): <code>malloc</code>, <code>free</code> i <code>lifetime</code></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/pralabs/04_c_ptrptr.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pralab 04: Memòria dinàmica (II): Punters a punters</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false">
+ <span class="menu-text">Activitats</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/activitats/01_c_punters_arrays.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exercicis amb C · Apuntadors i arrays</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/activitats/01_rols_funcions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">The UNIX Time-Sharing System</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/activitats/02_espai_funcions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Què passa quan faig foo()?</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Blocs</li><li class="breadcrumb-item">Bloc 1 · Desenvolupament de Programari en Espai d’Usuari</li><li class="breadcrumb-item"><a href="../../../blocs/01-espai-usuari/pralabs/01_c_mem.html">Pralabs</a></li><li class="breadcrumb-item"><a href="../../../blocs/01-espai-usuari/pralabs/03_c_heap.html">Pralab 03: Memòria dinàmica (I): <code>malloc</code>, <code>free</code> i <code>lifetime</code></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Pralab 03: Memòria dinàmica (I): <code>malloc</code>, <code>free</code> i <code>lifetime</code></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Jordi Mateo Fornés </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introducció" class="level2">
+<h2 class="anchored" data-anchor-id="introducció">Introducció</h2>
+<p>Als (<a href="../../../blocs/01-espai-usuari/pralabs/01_c_mem.html">Pralab 01</a>, <a href="../../../blocs/01-espai-usuari/pralabs/02_c_mem.html">Pralab 02</a>) has treballat amb arrays <strong>locals</strong>, com <code>int v[5]</code>. A teoria has vist que un procés té una regió de memòria anomenada <strong>heap</strong>, pensada per a dades que han de viure més enllà de la funció que les crea, o que tenen una mida que només es coneix en executar.</p>
+<p>Avui aprendrem a fer-la servir i, sobretot, a entendre <strong>fins quan viu</strong> una dada i <strong>qui n’és responsable</strong>. La pregunta d’avui és:</p>
+<blockquote class="blockquote">
+<p><strong>Què ha canviat quan un array passa de la pila al heap, i què continua sent igual?</strong></p>
+</blockquote>
+<div class="objectius udl-component udl-objectius">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-objectius"></use></svg><span>Objectius d'Aprenentatge</span></div>
+<p>En acabar el pralab hauràs de ser capaç de:</p>
+<ul>
+<li>crear un array dinàmic amb <code>malloc</code> i accedir-hi amb <code>v[i]</code>, <code>*(v + i)</code> i <code>&amp;v[i]</code>;</li>
+<li>explicar per què <code>sizeof(v)</code> ja no dona la mida de l’array;</li>
+<li>distingir l’adreça de la <strong>variable</strong> <code>v</code> (<code>&amp;v</code>) de l’adreça <strong>a la qual apunta</strong> (<code>v</code>);</li>
+<li>explicar què fa <code>free</code> i per què un punter que s’usa després d’un <code>free</code> és un <strong>punter penjat</strong>;</li>
+<li>comparar la vida d’una variable local amb la d’un bloc dinàmic;</li>
+<li>explicar quin fragment de codi és el <strong>propietari</strong> d’un bloc dinàmic.</li>
+</ul>
+</div>
+<div class="prerequisits udl-component udl-prerequisits">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-prerequisits"></use></svg><span>Prerequisits</span></div>
+<ul>
+<li>(<a href="../../../blocs/01-espai-usuari/pralabs/01_c_mem.html">Pralab 01</a>, <a href="../../../blocs/01-espai-usuari/pralabs/02_c_mem.html">Pralab 02</a>) (adreces, punters, <code>v[i]</code> i <code>*(v + i)</code>, decaïment).</li>
+<li>Teoria: <em>L’espai de memòria d’un procés</em> (heap, <em>lifetime</em>, <code>malloc()</code> / <code>free()</code>, punter penjat).</li>
+</ul>
+</div>
+<div class="programari udl-component udl-programari">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-programari"></use></svg><span>Programari Necessari</span></div>
+<ul>
+<li><code>gcc</code>. Sistema de referència: Debian bookworm.</li>
+<li>Arquitectura: <strong>x86-64</strong> o <strong>arm64</strong>. Tot el pralab funciona igual a les dues, només canviaran els valors de les adreces.</li>
+<li>Compila sempre amb <code>gcc -Wall -Wextra -g -O0</code>.</li>
+</ul>
+</div>
+<div class="bonapractica udl-component udl-bonapractica">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-bonapractica"></use></svg><span>Bona Pràctica</span></div>
+<p>Les mides i les adreces que veuràs (<code>sizeof(int)</code> és 4 i un punter ocupa 8) són les dels <strong>nostres sistemes de 64 bits</strong>. El llenguatge C <strong>no fixa</strong> aquestes mides.</p>
+</div>
+<hr>
+<section id="part-a-de-larray-local-a-larray-dinàmic" class="level3">
+<h3 class="anchored" data-anchor-id="part-a-de-larray-local-a-larray-dinàmic">Part A — De l’array local a l’array dinàmic</h3>
+<p>Crea <code>01_local_vs_heap.c</code>. Conté els dos arrays: el local que ja coneixes i el dinàmic.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdlib.h&gt;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> loc<span class="op">[</span><span class="dv">5</span><span class="op">]</span> <span class="op">=</span> <span class="op">{</span><span class="dv">10</span><span class="op">,</span> <span class="dv">20</span><span class="op">,</span> <span class="dv">30</span><span class="op">,</span> <span class="dv">40</span><span class="op">,</span> <span class="dv">50</span><span class="op">};</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> <span class="op">*</span>v <span class="op">=</span> malloc<span class="op">(</span><span class="dv">5</span> <span class="op">*</span> <span class="kw">sizeof</span><span class="op">(</span><span class="dt">int</span><span class="op">));</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>v <span class="op">==</span> NULL<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">5</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        v<span class="op">[</span>i<span class="op">]</span> <span class="op">=</span> <span class="op">(</span>i <span class="op">+</span> <span class="dv">1</span><span class="op">)</span> <span class="op">*</span> <span class="dv">10</span><span class="op">;</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="co">/* aquí afegirem les proves */</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    free<span class="op">(</span>v<span class="op">);</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="definicio udl-component udl-definicio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-definicio"></use></svg><span>Definició</span></div>
+<p><code>malloc(n)</code> reserva <code>n</code> bytes consecutius al <strong>heap</strong> i retorna l’adreça del primer byte, o <code>NULL</code> si no hi ha prou memòria. La memòria reservada <strong>no s’inicialitza</strong>.</p>
+<p><code>free(p)</code> indica que aquesta memòria ja no és necessària i la deixa disponible per a futures reserves.</p>
+</div>
+<p>De moment escriu <code>free(v)</code> i no li donis més importància: a la Part B veurem què fa exactament.</p>
+<section id="a.1-què-continua-sent-igual" class="level4">
+<h4 class="anchored" data-anchor-id="a.1-què-continua-sent-igual">A.1 — Què continua sent igual</h4>
+<p>Substitueix el comentari per aquestes línies:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>printf<span class="op">(</span><span class="st">"</span><span class="sc">%d</span><span class="st"> </span><span class="sc">%d\n</span><span class="st">"</span><span class="op">,</span> loc<span class="op">[</span><span class="dv">2</span><span class="op">],</span> v<span class="op">[</span><span class="dv">2</span><span class="op">]);</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>printf<span class="op">(</span><span class="st">"</span><span class="sc">%d</span><span class="st"> </span><span class="sc">%d\n</span><span class="st">"</span><span class="op">,</span> <span class="op">*(</span>loc <span class="op">+</span> <span class="dv">2</span><span class="op">),</span> <span class="op">*(</span>v <span class="op">+</span> <span class="dv">2</span><span class="op">));</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>printf<span class="op">(</span><span class="st">"</span><span class="sc">%p</span><span class="st"> </span><span class="sc">%p\n</span><span class="st">"</span><span class="op">,</span> <span class="op">(</span><span class="dt">void</span> <span class="op">*)&amp;</span>loc<span class="op">[</span><span class="dv">2</span><span class="op">],</span> <span class="op">(</span><span class="dt">void</span> <span class="op">*)&amp;</span>v<span class="op">[</span><span class="dv">2</span><span class="op">]);</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>printf<span class="op">(</span><span class="st">"</span><span class="sc">%p\n</span><span class="st">"</span><span class="op">,</span> <span class="op">(</span><span class="dt">void</span> <span class="op">*)(</span>v <span class="op">+</span> <span class="dv">2</span><span class="op">));</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>printf<span class="op">(</span><span class="st">"</span><span class="sc">%td\n</span><span class="st">"</span><span class="op">,</span> <span class="op">(</span><span class="dt">char</span> <span class="op">*)&amp;</span>v<span class="op">[</span><span class="dv">1</span><span class="op">]</span> <span class="op">-</span> <span class="op">(</span><span class="dt">char</span> <span class="op">*)&amp;</span>v<span class="op">[</span><span class="dv">0</span><span class="op">]);</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p>Abans d’executar-ho: quins valors esperes en cada línia? Quins dels valors impresos seran iguals entre si?</p>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gcc</span> <span class="at">-Wall</span> <span class="at">-Wextra</span> <span class="at">-g</span> <span class="at">-O0</span> <span class="at">-o</span> 01_local_vs_heap 01_local_vs_heap.c</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./01_local_vs_heap</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<details>
+<summary>
+<b>Pots veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<ul>
+<li>Les dues primeres línies imprimeixen <code>30 30</code>: <code>loc[2]</code> i <code>v[2]</code> valen el mateix, i <code>*(loc + 2)</code> i <code>*(v + 2)</code> també. <strong><code>v[i] == *(v + i)</code> continua sent cert</strong>, exactament com al Pralab 02.</li>
+<li>A la tercera, <code>&amp;loc[2]</code> i <code>&amp;v[2]</code> són adreces <strong>diferents</strong> (són dos arrays diferents). La quarta línia mostra que <code>v + 2</code> i <code>&amp;v[2]</code> <strong>són la mateixa adreça</strong>.</li>
+<li>L’última línia val <code>sizeof(int)</code> (<code>4</code> als nostres sistemes): els elements de <code>v</code> estan un darrere l’altre, tal com vas mesurar al Pralab 01. Els elements del bloc dinàmic són <strong>contigus</strong>.</li>
+</ul>
+</div>
+</details>
+<p>Tot el que vas veure sobre arrays i aritmètica de punters funciona igual amb un bloc dinàmic.</p>
+</section>
+<section id="a.2-què-ha-canviat-la-mida" class="level4">
+<h4 class="anchored" data-anchor-id="a.2-què-ha-canviat-la-mida">A.2 — Què ha canviat: la mida</h4>
+<p>Afegeix:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>printf<span class="op">(</span><span class="st">"sizeof(loc) = </span><span class="sc">%zu\n</span><span class="st">"</span><span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span>loc<span class="op">));</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>printf<span class="op">(</span><span class="st">"sizeof(v)   = </span><span class="sc">%zu\n</span><span class="st">"</span><span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span>v<span class="op">));</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>printf<span class="op">(</span><span class="st">"&amp;loc + 1: </span><span class="sc">%td\n</span><span class="st">"</span><span class="op">,</span> <span class="op">(</span><span class="dt">char</span> <span class="op">*)(&amp;</span>loc <span class="op">+</span> <span class="dv">1</span><span class="op">)</span> <span class="op">-</span> <span class="op">(</span><span class="dt">char</span> <span class="op">*)&amp;</span>loc<span class="op">);</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>printf<span class="op">(</span><span class="st">"&amp;v + 1  : </span><span class="sc">%td\n</span><span class="st">"</span><span class="op">,</span> <span class="op">(</span><span class="dt">char</span> <span class="op">*)(&amp;</span>v <span class="op">+</span> <span class="dv">1</span><span class="op">)</span> <span class="op">-</span> <span class="op">(</span><span class="dt">char</span> <span class="op">*)&amp;</span>v<span class="op">);</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>printf<span class="op">(</span><span class="st">"elements: </span><span class="sc">%zu</span><span class="st"> </span><span class="sc">%zu\n</span><span class="st">"</span><span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span>loc<span class="op">)</span> <span class="op">/</span> <span class="kw">sizeof</span><span class="op">(</span>loc<span class="op">[</span><span class="dv">0</span><span class="op">]),</span> <span class="kw">sizeof</span><span class="op">(</span>v<span class="op">)</span> <span class="op">/</span> <span class="kw">sizeof</span><span class="op">(</span>v<span class="op">[</span><span class="dv">0</span><span class="op">]));</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p>Prediu el que imprimirà cada línia. Recorda el Pralab 02: què eren <code>&amp;v</code> i <code>&amp;v + 1</code> quan <code>v</code> era un array local? Pot ser que el compilador tingui alguna cosa a dir sobre l’última línia: mira els avisos en compilar.</p>
+</div>
+<details>
+<summary>
+<b>Pots veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 36%">
+<col style="width: 36%">
+<col style="width: 15%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Línia</th>
+<th>Expressió equivalent</th>
+<th>Als nostres sistemes</th>
+<th>Per què</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>sizeof(loc)</code></td>
+<td><code>5 * sizeof(int)</code></td>
+<td><code>20</code></td>
+<td>l’array sencer</td>
+</tr>
+<tr class="even">
+<td><code>sizeof(v)</code></td>
+<td><code>sizeof(int *)</code></td>
+<td><code>8</code></td>
+<td>només un <strong>punter</strong></td>
+</tr>
+<tr class="odd">
+<td><code>&amp;loc + 1</code></td>
+<td><code>sizeof(loc)</code></td>
+<td><code>20</code></td>
+<td><code>&amp;loc</code> és un punter a l’array sencer (<code>int (*)[5]</code>)</td>
+</tr>
+<tr class="even">
+<td><code>&amp;v + 1</code></td>
+<td><code>sizeof(int *)</code></td>
+<td><code>8</code></td>
+<td><code>&amp;v</code> és l’adreça d’un <strong>punter</strong> (<code>int **</code>)</td>
+</tr>
+<tr class="odd">
+<td>elements</td>
+<td><code>sizeof(int *) / sizeof(int)</code></td>
+<td><code>5 2</code></td>
+<td>la segona divisió <strong>no</strong> compta elements</td>
+</tr>
+</tbody>
+</table>
+<p><code>gcc</code> avisa: <code>division 'sizeof (int *) / sizeof (int)' does not compute the number of array elements</code>.</p>
+<p><code>v</code> és un <code>int *</code>: només diu “aquí hi ha un <code>int</code>”, no quants n’hi ha darrere. <strong>La mida del bloc no forma part del tipus <code>int *</code></strong>; si la necessites, l’has de conservar explícitament (per exemple, en una variable <code>n</code>).</p>
+</div>
+</details>
+<div class="errorcomu udl-component udl-errorcomu">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-errorcomu"></use></svg><span>Error Comú</span></div>
+<p>Comptar els elements amb <code>sizeof(v) / sizeof(v[0])</code> funciona amb un array local i <strong>falla en silenci</strong> amb un punter: el resultat és <code>sizeof(int *) / sizeof(int)</code> (<code>2</code> als nostres sistemes), no <code>5</code>. Amb memòria dinàmica has de guardar sempre la mida tu mateix.</p>
+</div>
+<p>Observa que <code>&amp;v</code> té tipus <code>int **</code>. <strong>No cal que encara sàpigues utilitzar un <code>int **</code></strong>:</p>
+</section>
+<section id="a.3-dues-adreces-diferents" class="level4">
+<h4 class="anchored" data-anchor-id="a.3-dues-adreces-diferents">A.3 — Dues adreces diferents</h4>
+<p>Afegeix:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>printf<span class="op">(</span><span class="st">"&amp;loc[0] = </span><span class="sc">%p\n</span><span class="st">"</span><span class="op">,</span> <span class="op">(</span><span class="dt">void</span> <span class="op">*)&amp;</span>loc<span class="op">[</span><span class="dv">0</span><span class="op">]);</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>printf<span class="op">(</span><span class="st">"&amp;v      = </span><span class="sc">%p\n</span><span class="st">"</span><span class="op">,</span> <span class="op">(</span><span class="dt">void</span> <span class="op">*)&amp;</span>v<span class="op">);</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>printf<span class="op">(</span><span class="st">" v      = </span><span class="sc">%p\n</span><span class="st">"</span><span class="op">,</span> <span class="op">(</span><span class="dt">void</span> <span class="op">*)</span>v<span class="op">);</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p>Abans d’executar-ho: de les tres adreces, quines dues creus que seran <strong>properes</strong>? Quina creus que serà molt diferent? Què representa cadascuna?</p>
+</div>
+<details>
+<summary>
+<b>Pots veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<p><code>&amp;loc[0]</code> i <code>&amp;v</code> són properes: <code>loc</code> és un array de la pila i <code>v</code> és una <strong>variable local</strong> (un punter), que també viu a la pila. En canvi, <code>v</code> (el <strong>valor</strong> del punter) és molt diferent: és l’adreça del bloc reservat al <strong>heap</strong>.</p>
+<p>Hi ha dues adreces: <code>&amp;v</code> (on viu la variable <code>v</code>) i <code>v</code> (on viu el que <code>v</code> apunta).</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart LR
+    subgraph Pila
+        L["loc[5]&lt;br/&gt;(5 * sizeof(int))"]
+        V["v (punter)&lt;br/&gt;adreça: &amp;v"]
+    end
+    subgraph Heap
+        B["bloc de 5 * sizeof(int) bytes&lt;br/&gt;v[0] ... v[4]&lt;br/&gt;adreça: v"]
+    end
+    V --&gt; B
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<p>Ho vas veure a teoria: <strong>un punter i allò que apunta poden viure en regions diferents.</strong></p>
+</div>
+</details>
+<div class="resultat udl-component udl-resultat">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-resultat"></use></svg><span>Resultat d'Aprenentatge</span></div>
+<p><strong>Què ha canviat i què continua sent igual?</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>Array local <code>int v[5]</code></th>
+<th>Bloc dinàmic <code>int *v = malloc(...)</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>v[i]</code>, <code>*(v + i)</code>, <code>&amp;v[i] == v + i</code></td>
+<td>✔</td>
+<td>✔ (igual)</td>
+</tr>
+<tr class="even">
+<td>Elements contigus (<code>+ sizeof(int)</code>)</td>
+<td>✔</td>
+<td>✔ (igual)</td>
+</tr>
+<tr class="odd">
+<td><code>sizeof(v)</code></td>
+<td><code>5 * sizeof(int)</code> (l’array sencer)</td>
+<td><code>sizeof(int *)</code> (només un punter)</td>
+</tr>
+<tr class="even">
+<td>Tipus de <code>&amp;v</code></td>
+<td><code>int (*)[5]</code></td>
+<td><code>int **</code></td>
+</tr>
+<tr class="odd">
+<td>Mida</td>
+<td>forma part del tipus de l’array</td>
+<td><strong>no</strong> forma part del tipus <code>int *</code>: l’has de conservar tu</td>
+</tr>
+<tr class="even">
+<td>On viu</td>
+<td>pila</td>
+<td><code>v</code> a la pila, els elements al <strong>heap</strong></td>
+</tr>
+<tr class="odd">
+<td>Contingut inicial</td>
+<td>indeterminat</td>
+<td>indeterminat (<code>malloc</code> no inicialitza)</td>
+</tr>
+<tr class="even">
+<td>Quan mor</td>
+<td>en retornar la funció</td>
+<td>quan tu ho decideixes</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="errorcomu udl-component udl-errorcomu">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-errorcomu"></use></svg><span>Error Comú</span></div>
+<p><code>malloc</code> posa la memòria a zero. Fals. Si alguna vegada veus zeros és perquè aquella zona del heap era nova; no és una garantia. Si necessites zeros, <code>calloc(n, sizeof(int))</code> els inicialitza; si no, has d’escriure tu els valors.</p>
+</div>
+<p>L’última fila de la taula és la que fa que tot el que segueix sigui important.</p>
+<hr>
+</section>
+</section>
+<section id="part-b-lifetime-fins-quan-viu-una-dada" class="level3">
+<h3 class="anchored" data-anchor-id="part-b-lifetime-fins-quan-viu-una-dada">Part B — Lifetime: fins quan viu una dada</h3>
+<section id="b.1-què-fa-free" class="level4">
+<h4 class="anchored" data-anchor-id="b.1-què-fa-free">B.1 — Què fa <code>free</code></h4>
+<p>Crea <code>02_free.c</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdlib.h&gt;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> <span class="op">*</span>p <span class="op">=</span> malloc<span class="op">(</span><span class="kw">sizeof</span><span class="op">(</span><span class="dt">int</span><span class="op">));</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>p <span class="op">==</span> NULL<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>p <span class="op">=</span> <span class="dv">42</span><span class="op">;</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"abans de free:   p = </span><span class="sc">%p</span><span class="st">, *p = </span><span class="sc">%d\n</span><span class="st">"</span><span class="op">,</span> <span class="op">(</span><span class="dt">void</span> <span class="op">*)</span>p<span class="op">,</span> <span class="op">*</span>p<span class="op">);</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    free<span class="op">(</span>p<span class="op">);</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"despres de free: p = </span><span class="sc">%p</span><span class="st">, *p = </span><span class="sc">%d\n</span><span class="st">"</span><span class="op">,</span> <span class="op">(</span><span class="dt">void</span> <span class="op">*)</span>p<span class="op">,</span> <span class="op">*</span>p<span class="op">);</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Aquest programa fa una cosa incorrecta a propòsit. <strong>Compila’l, però encara no l’executis:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gcc</span> <span class="at">-Wall</span> <span class="at">-Wextra</span> <span class="at">-g</span> <span class="at">-O0</span> <span class="at">-o</span> 02_free 02_free.c</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<ul>
+<li>Quin avís dona el compilador? Què vol dir?</li>
+<li><code>free(p)</code> modifica la variable <code>p</code>?</li>
+<li>Què podem fer ara amb <code>p</code>? I com arreglaries el programa?</li>
+</ul>
+</div>
+<details>
+<summary>
+<b>Pots veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<ul>
+<li>En versions recents de <code>GCC</code> és possible que aparegui un avís sobre l’ús de <code>p</code> després de <code>free</code>. Tal com <code>pointer 'p' used after 'free' [-Wuse-after-free]</code>. Vol dir que el programa fa servir <code>p</code> després d’haver alliberat el bloc</li>
+<li>Independentment de si el compilador ho detecta, el programa és incorrecte.</li>
+<li><strong>No.</strong> <code>free</code> allibera el bloc; <strong>no canvia la variable <code>p</code></strong> que conté el punter (C passa els arguments per valor: <code>free</code> rep una còpia).</li>
+<li>Després de <code>free</code>, <strong>no has d’utilitzar <code>p</code> per accedir al bloc alliberat</strong>. Si el punter continuarà existint, és habitual assignar-li <code>NULL</code> per deixar explícit que ja no apunta a una reserva vàlida.</li>
+</ul>
+<p>Per arreglar el programa, fes-ho en una <strong>còpia</strong> (<code>02_free_ok.c</code>, així conserves l’original per a l’ampliació): elimina el segon <code>printf</code> i afegeix <code>p = NULL;</code> després del <code>free</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>    free<span class="op">(</span>p<span class="op">);</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    p <span class="op">=</span> NULL<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Ara el compilador ja no avisa: no es fa servir el bloc alliberat.</p>
+</div>
+</details>
+<div class="definicio udl-component udl-definicio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-definicio"></use></svg><span>Definició</span></div>
+<p>Un <strong>punter penjat</strong> (<em>dangling pointer</em>) és un punter que ha quedat apuntant a una memòria que ja no és vàlida. La variable del punter continua existint; allò a què apuntava, no.</p>
+</div>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart TD
+    A["malloc"] --&gt; B["bloc vàlid: p apunta a memòria vàlida"]
+    B --&gt; C["free"]
+    C --&gt; D["el bloc deixa de ser vàlid"]
+    D --&gt; E["la variable p continua existint, però no s'ha de fer servir per accedir al bloc"]
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<p>És el mateix que vas veure a teoria amb la pila: allà la variable moria en retornar la funció; aquí mor el bloc quan cridem <code>free</code>.</p>
+<div class="errorcomu udl-component udl-errorcomu">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-errorcomu"></use></svg><span>Error Comú</span></div>
+<p>“Després de <code>free(p)</code>, <code>p</code> continua apuntant al bloc, així que puc seguir usant-lo.” <strong>No.</strong> El bloc ja no és teu. Encara que el programa “sembli funcionar”, estàs accedint a memòria que ja no et pertany.</p>
+</div>
+</section>
+<section id="b.2-local-o-heap-qui-decideix-quan-mor" class="level4">
+<h4 class="anchored" data-anchor-id="b.2-local-o-heap-qui-decideix-quan-mor">B.2 — Local o heap: qui decideix quan mor?</h4>
+<p>Crea <code>03_vector.c</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdlib.h&gt;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> <span class="op">*</span>crea_vector<span class="op">(</span><span class="dt">int</span> n<span class="op">)</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> <span class="op">*</span>v <span class="op">=</span> malloc<span class="op">(</span>n <span class="op">*</span> <span class="kw">sizeof</span><span class="op">(</span><span class="dt">int</span><span class="op">));</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>v <span class="op">==</span> NULL<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> NULL<span class="op">;</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> n<span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>        v<span class="op">[</span>i<span class="op">]</span> <span class="op">=</span> i <span class="op">+</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> v<span class="op">;</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> <span class="op">*</span>v <span class="op">=</span> crea_vector<span class="op">(</span><span class="dv">5</span><span class="op">);</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>v <span class="op">==</span> NULL<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">5</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>        printf<span class="op">(</span><span class="st">"v[</span><span class="sc">%d</span><span class="st">] = </span><span class="sc">%d\n</span><span class="st">"</span><span class="op">,</span> i<span class="op">,</span> v<span class="op">[</span>i<span class="op">]);</span></span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>    free<span class="op">(</span>v<span class="op">);</span></span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Afegeix ara aquesta funció a l’arxiu (a sobre de <code>main</code>) i torna a compilar:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> <span class="op">*</span>crea_local<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> a<span class="op">[</span><span class="dv">3</span><span class="op">]</span> <span class="op">=</span> <span class="op">{</span><span class="dv">1</span><span class="op">,</span> <span class="dv">2</span><span class="op">,</span> <span class="dv">3</span><span class="op">};</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> a<span class="op">;</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p>Quin avís dona <code>gcc</code>? Per què <code>crea_vector</code> pot retornar el seu array i <code>crea_local</code> no?</p>
+</div>
+<details>
+<summary>
+<b>Pots veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<p><code>crea_local</code> genera <code>function returns address of local variable [-Wreturn-local-addr]</code>: l’array local <strong>mor en retornar la funció</strong>, així que l’adreça retornada apuntaria a memòria que ja no és vàlida. L’array del heap no mor amb la funció: <strong>viu fins que algú crida <code>free</code></strong>.</p>
+</div>
+</details>
+<div class="concepte udl-component udl-concepte">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-concepte"></use></svg><span>Concepte</span></div>
+<p>Qui decideix quan acaba la vida d’una dada?</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>On viu</th>
+<th>Quan acaba</th>
+<th>Qui ho decideix</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Variable local (pila)</td>
+<td>quan retorna la funció</td>
+<td>el llenguatge</td>
+</tr>
+<tr class="even">
+<td>Variable global o <code>static</code></td>
+<td>quan acaba el programa</td>
+<td>el llenguatge</td>
+</tr>
+<tr class="odd">
+<td>Bloc del heap</td>
+<td>quan es crida <code>free</code></td>
+<td><strong>el programador</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</section>
+</section>
+<section id="part-c-ownership-qui-allibera" class="level3">
+<h3 class="anchored" data-anchor-id="part-c-ownership-qui-allibera">Part C — Ownership: qui allibera?</h3>
+<p>Mira de nou <code>03_vector.c</code> (sense <code>crea_local</code>). <code>crea_vector</code> fa el <code>malloc</code> i <code>main</code> fa el <code>free</code>.</p>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<ul>
+<li>Qui fa el <code>malloc</code>? Qui fa el <code>free</code>? Són el mateix fragment de codi?</li>
+<li>Què passaria si <code>main</code> s’oblidés del <code>free(v)</code>?</li>
+<li>Què passaria si <code>crea_vector</code> cridés <code>free(v)</code> just abans de <code>return v</code>?</li>
+</ul>
+</div>
+<details>
+<summary>
+<b>Pots veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<ul>
+<li><code>crea_vector</code> fa el <code>malloc</code> i <code>main</code> fa el <code>free</code>: <strong>no són el mateix fragment de codi</strong>. El bloc sobreviu al retorn de <code>crea_vector</code> precisament perquè el seu <em>lifetime</em> el controla el programador, no la funció.</li>
+<li>Sense <code>free(v)</code> el programa no falla ni mostra res diferent: el bloc <strong>no s’allibera mai</strong>. És una <strong>fuga de memòria</strong> (la detectarem amb Valgrind).</li>
+<li>Si <code>crea_vector</code> fes <code>free(v)</code> abans de retornar, <code>main</code> rebria un <strong>punter penjat</strong>: l’adreça d’un bloc ja alliberat.</li>
+</ul>
+</div>
+</details>
+<div class="definicio udl-component udl-definicio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-definicio"></use></svg><span>Definició</span></div>
+<p>En aquest curs, considerarem <strong>propietari</strong> d’un bloc dinàmic el codi que té la <strong>responsabilitat d’alliberar-lo</strong> amb <code>free</code> quan ja no el necessita. Una mateixa reserva <strong>no s’ha d’alliberar dues vegades</strong>.</p>
+</div>
+<p>L’ownership és un <strong>model de responsabilitat</strong>: no vol dir “qui escriu la línia amb <code>free</code>”, sinó “qui ha de fer que es cridi”. A <code>crea_vector</code> la responsabilitat <strong>passa</strong> al cridant en retornar el bloc.</p>
+<div class="bonapractica udl-component udl-bonapractica">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-bonapractica"></use></svg><span>Bona Pràctica</span></div>
+<p>Documenta sempre qui és el propietari. Per exemple, sobre <code>crea_vector</code>: <code>/* El cridant és el propietari del vector retornat i l'ha d'alliberar amb free(). */</code>. Regla pràctica: <strong>cada reserva té un responsable d’alliberar-la</strong>.</p>
+</div>
+<div class="repte udl-component udl-repte">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-repte"></use></svg><span>Repte</span></div>
+<p><strong>Opcional.</strong> Si tens <code>valgrind</code> instal·lat, executa <code>valgrind ./03_vector</code> i mira <strong>només l’última part</strong> de la sortida: hauria d’aparèixer <code>All heap blocks were freed -- no leaks are possible</code>. Ara treu el <code>free(v)</code>, recompila i torna-hi. Què canvia?</p>
+</div>
+<hr>
+</section>
+<section id="resum" class="level3">
+<h3 class="anchored" data-anchor-id="resum">Resum</h3>
+<div class="resum udl-component udl-resum">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-resum"></use></svg><span>Resum</span></div>
+<ul>
+<li>Un bloc dinàmic es comporta com un array: <code>v[i] == *(v + i)</code> i <code>&amp;v[i] == v + i</code>.</li>
+<li>Però <code>v</code> és només un <strong>punter</strong>: la mida del bloc no forma part del tipus <code>int *</code> i l’has de conservar tu. <code>&amp;v</code> té tipus <code>int **</code>.</li>
+<li>La variable <code>v</code> viu a la pila; el bloc al qual apunta, al heap.</li>
+<li>Un bloc del heap viu fins que algú fa <code>free</code>. <strong>Un punter usat després d’un <code>free</code> és un punter penjat</strong>: no s’ha de fer servir.</li>
+<li>Un bloc té un <strong>propietari</strong>: el codi responsable d’alliberar-lo, una sola vegada.</li>
+</ul>
+</div>
+<div class="reflexio udl-component udl-reflexio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-reflexio"></use></svg><span>Reflexió</span></div>
+<p>Fixa’t que <code>free(p)</code> no ha pogut modificar <code>p</code> per nosaltres: només rep una còpia. I a <code>crea_vector</code> hem hagut de <strong>retornar</strong> el punter per fer-lo arribar al cridant. <strong>Pots escriure una funció <code>void crea(...)</code> que faci que el <code>p</code> del cridant apunti a un bloc nou?</strong> És la pregunta de la propera sessió, i la resposta necessita el <code>int **</code> que ja has vist a <code>&amp;v</code>.</p>
+</div>
+<hr>
+</section>
+<section id="ampliació-opcional" class="level3">
+<h3 class="anchored" data-anchor-id="ampliació-opcional">Ampliació (opcional)</h3>
+<p>Aquests experiments <strong>no formen part del nucli</strong>. Són opcionals: per revisar a casa si no dona temps a classe.</p>
+<section id="e.1-la-pila-és-limitada" class="level4">
+<h4 class="anchored" data-anchor-id="e.1-la-pila-és-limitada">E.1 — La pila és limitada</h4>
+<p>Podries pensar: <strong>si la mida només la sé en executar, per què no faig servir sempre un array local?</strong>. A C existeixen els <strong>VLA</strong> (<em>variable length arrays</em>, C99): <code>int v[n];</code> amb <code>n</code> decidit en execució. Funcionen, però viuen a la pila. Crea <code>04_pila_heap.c</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdlib.h&gt;</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> a_la_pila<span class="op">(</span><span class="dt">int</span> n<span class="op">)</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> v<span class="op">[</span>n<span class="op">];</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"VLA: sizeof(v) = </span><span class="sc">%zu</span><span class="st">, n * sizeof(int) = </span><span class="sc">%zu\n</span><span class="st">"</span><span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span>v<span class="op">),</span> n <span class="op">*</span> <span class="kw">sizeof</span><span class="op">(</span><span class="dt">int</span><span class="op">));</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    v<span class="op">[</span>n <span class="op">-</span> <span class="dv">1</span><span class="op">]</span> <span class="op">=</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"pila: v[n-1] = </span><span class="sc">%d\n</span><span class="st">"</span><span class="op">,</span> v<span class="op">[</span>n <span class="op">-</span> <span class="dv">1</span><span class="op">]);</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> petit <span class="op">=</span> <span class="dv">1000</span><span class="op">;</span></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> gran <span class="op">=</span> <span class="dv">10000000</span><span class="op">;</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>    a_la_pila<span class="op">(</span>petit<span class="op">);</span></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> <span class="op">*</span>h <span class="op">=</span> malloc<span class="op">(</span>gran <span class="op">*</span> <span class="kw">sizeof</span><span class="op">(</span><span class="dt">int</span><span class="op">));</span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>h <span class="op">==</span> NULL<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>        printf<span class="op">(</span><span class="st">"heap: malloc ha fallat</span><span class="sc">\n</span><span class="st">"</span><span class="op">);</span></span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>    h<span class="op">[</span>gran <span class="op">-</span> <span class="dv">1</span><span class="op">]</span> <span class="op">=</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"heap: h[gran-1] = </span><span class="sc">%d\n</span><span class="st">"</span><span class="op">,</span> h<span class="op">[</span>gran <span class="op">-</span> <span class="dv">1</span><span class="op">]);</span></span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>    fflush<span class="op">(</span>stdout<span class="op">);</span></span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>    free<span class="op">(</span>h<span class="op">);</span></span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>    a_la_pila<span class="op">(</span>gran<span class="op">);</span></span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p><code>gran</code> són 10 milions d’enters, uns 40 MB. Abans d’executar-ho: què creus que passarà amb <code>a_la_pila(petit)</code>? I amb <code>a_la_pila(gran)</code>? I al heap? Executa <code>ulimit -s</code> per veure una pista.</p>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gcc</span> <span class="at">-Wall</span> <span class="at">-Wextra</span> <span class="at">-g</span> <span class="at">-O0</span> <span class="at">-o</span> 04_pila_heap 04_pila_heap.c</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./04_pila_heap</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="bu">ulimit</span> <span class="at">-s</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<details>
+<summary>
+<b>Pots veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<p>Amb <code>petit</code> tot va bé, i fins i tot <code>sizeof(v)</code> es calcula <strong>en execució</strong> (<code>4000</code>). Al heap, els 40 MB també van bé. Amb <code>gran</code>, <code>a_la_pila</code> és habitual que acabi amb <code>Segmentation fault</code>. <code>ulimit -s</code> mostra <code>8192</code> (KB): la pila d’un procés té una mida <strong>limitada</strong> (típicament 8 MB), mentre que el heap pot créixer fins on el sistema tingui memòria. (Si al teu sistema <code>ulimit -s</code> mostra <code>unlimited</code>, executa <code>ulimit -s 8192</code> abans de provar-ho.)</p>
+<p>Un VLA té a més les limitacions de la pila: si no hi cap, <strong>no obtens un <code>NULL</code> que puguis comprovar</strong>: el programa cau. I igual que qualsevol array local, <strong>mor quan la funció retorna</strong>: per això no el pots retornar.</p>
+</div>
+</details>
+</section>
+<section id="e.2-observem-un-punter-penjat-comportament-indefinit" class="level4">
+<h4 class="anchored" data-anchor-id="e.2-observem-un-punter-penjat-comportament-indefinit">E.2 — Observem un punter penjat (comportament indefinit)</h4>
+<p>Al B.1 has vist que fer servir un punter després d’un <code>free</code> és incorrecte i que el compilador ho avisa. Ara <strong>l’executem només per observar</strong>: el que veurem és què fa <strong>la teva implementació</strong>, no una garantia del llenguatge.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./02_free</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p>Què val <code>*p</code> després del <code>free</code>? Era el que esperaves?</p>
+</div>
+<p>Crea ara <code>05_reuse.c</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdlib.h&gt;</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> <span class="op">*</span>p <span class="op">=</span> malloc<span class="op">(</span><span class="kw">sizeof</span><span class="op">(</span><span class="dt">int</span><span class="op">));</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>p <span class="op">==</span> NULL<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>p <span class="op">=</span> <span class="dv">42</span><span class="op">;</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>    free<span class="op">(</span>p<span class="op">);</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> <span class="op">*</span>q <span class="op">=</span> malloc<span class="op">(</span><span class="kw">sizeof</span><span class="op">(</span><span class="dt">int</span><span class="op">));</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>q <span class="op">==</span> NULL<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>q <span class="op">=</span> <span class="dv">7</span><span class="op">;</span></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"p = </span><span class="sc">%p</span><span class="st">, q = </span><span class="sc">%p\n</span><span class="st">"</span><span class="op">,</span> <span class="op">(</span><span class="dt">void</span> <span class="op">*)</span>p<span class="op">,</span> <span class="op">(</span><span class="dt">void</span> <span class="op">*)</span>q<span class="op">);</span></span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"*p = </span><span class="sc">%d</span><span class="st">, *q = </span><span class="sc">%d\n</span><span class="st">"</span><span class="op">,</span> <span class="op">*</span>p<span class="op">,</span> <span class="op">*</span>q<span class="op">);</span></span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>    free<span class="op">(</span>q<span class="op">);</span></span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p>Fixa’t que <strong>no toquem <code>p</code></strong> després del <code>free</code>. Creus que <code>q</code> tindrà una adreça diferent de <code>p</code>? Què creus que imprimirà <code>*p</code>?</p>
+</div>
+<details>
+<summary>
+<b>Pots veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<p>En <code>02_free</code>, <code>*p</code> <strong>no val 42</strong>: apareix un valor sense sentit (per exemple <code>1437671713</code>; el concret no es pot predir). L’al·locador ha reutilitzat aquest bloc per guardar les seves pròpies dades.</p>
+<p>En <code>05_reuse</code>, en un sistema típic (<code>glibc</code>), <code>p</code> i <code>q</code> acaben tenint <strong>la mateixa adreça</strong> i <code>*p</code> val <code>7</code>: l’al·locador ha reutilitzat el bloc que acabava de rebre per a la petició següent de la mateixa mida. <code>*p</code> ha canviat sense que hàgim tocat <code>p</code>.</p>
+<p><strong>Res d’això és una garantia de C.</strong> Una altra implementació podria fer una altra cosa. El que il·lustra és el perill: un punter penjat pot acabar apuntant a dades vàlides d’un altre propietari, i el programa “funciona” fins que deixa de fer-ho.</p>
+</div>
+</details>
+</section>
+<section id="e.3-null-després-de-free" class="level4">
+<h4 class="anchored" data-anchor-id="e.3-null-després-de-free">E.3 — <code>NULL</code> després de <code>free</code></h4>
+<p>Crea <code>06_null.c</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdlib.h&gt;</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> <span class="op">*</span>p <span class="op">=</span> malloc<span class="op">(</span><span class="kw">sizeof</span><span class="op">(</span><span class="dt">int</span><span class="op">));</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>p <span class="op">==</span> NULL<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>p <span class="op">=</span> <span class="dv">42</span><span class="op">;</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    free<span class="op">(</span>p<span class="op">);</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>    p <span class="op">=</span> NULL<span class="op">;</span></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"*p = </span><span class="sc">%d\n</span><span class="st">"</span><span class="op">,</span> <span class="op">*</span>p<span class="op">);</span></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p>Què passarà en executar-ho? En què es diferencia de l’error silenciós que has vist a E.2?</p>
+</div>
+<details>
+<summary>
+<b>Pots veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<p>En els nostres sistemes el programa acaba amb <code>Segmentation fault</code>: <code>*p</code> és ara un accés a <code>NULL</code>, que el sistema operatiu atura. A E.2 el mateix tipus d’error passava <strong>sense avisar</strong>.</p>
+<p>Això no és una garantia de C (desreferenciar <code>NULL</code> també és comportament indefinit), però en la pràctica sol fer visible la fallada.</p>
+</div>
+</details>
+<div class="bonapractica udl-component udl-bonapractica">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-bonapractica"></use></svg><span>Bona Pràctica</span></div>
+<p>Si el punter <strong>continuarà existint</strong> i podria tornar-se a fer servir, posar-lo a <code>NULL</code> després del <code>free</code> pot ajudar a detectar-ne usos posteriors incorrectes. Si el punter deixa de tenir rellevància immediatament (per exemple, es fa <code>free(v); return;</code>), no cal. A més, <code>free(NULL)</code> és vàlid i <strong>no fa res</strong>.</p>
+</div>
+
+
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/igualada\.os\.udl\.cat");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../../blocs/01-espai-usuari/pralabs/02_c_mem.html" class="pagination-link" aria-label="Pralab 02: Del `v[i]` al punter">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Pralab 02: Del <code>v[i]</code> al punter</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../../blocs/01-espai-usuari/pralabs/04_c_ptrptr.html" class="pagination-link" aria-label="Pralab 04: Memòria dinàmica (II): Punters a punters">
+        <span class="nav-page-text">Pralab 04: Memòria dinàmica (II): Punters a punters</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Universitat de Lleida · Departament d’Enginyeria Informàtica i Disseny Digital</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>Construït amb Quarto</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
