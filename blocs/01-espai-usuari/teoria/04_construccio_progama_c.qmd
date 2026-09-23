@@ -1,6 +1,6 @@
 ---
 title: "Com es construeix un programa C?"
-subtitle: "Sessió 3 · Fonts · compilació · objectes · llibreries · enllaç · make"
+subtitle: "Fonts · compilació · objectes · llibreries · enllaç · make"
 author: "Jordi Mateo Fornés"
 
 format:
