@@ -48,6 +48,7 @@ website:
               - href: blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.qmd
               - href: blocs/01-espai-usuari/teoria/04_construccio_progama_c.qmd
               - href: blocs/01-espai-usuari/teoria/05_variables_estructures.qmd
+              - href: blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.qmd
             - section: "Pralabs"
               contents: 
               - href: blocs/01-espai-usuari/pralabs/01_c_mem.qmd
