@@ -353,6 +353,314 @@
     ]
   },
   {
+    "objectID": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#objectius",
+    "href": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#objectius",
+    "title": "System calls: del programa C al kernel",
+    "section": "Objectius",
+    "text": "Objectius\n\nObjectius d'Aprenentatge\n\nExplicar per què un programa d’usuari no pot accedir directament als recursos i què és una system call.\nDistingir API C (POSIX/libc) de ABI de syscall.\nIdentificar com la syscall ABI transporta el número, els arguments i el valor de retorn mitjançant registres a x86-64 i ARM64, i saber on consultar la convenció (man 2 syscall).\nExplicar què fa (i què no fa) la instrucció syscall / svc.\nObservar syscalls reals amb strace i gdb.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: del programa C al kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#pregunta-central",
+    "href": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#pregunta-central",
+    "title": "System calls: del programa C al kernel",
+    "section": "Pregunta central",
+    "text": "Pregunta central\n\n\n\n\n\nReflexió\nQuè passa realment quan un programa C necessita un servei del sistema operatiu?",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: del programa C al kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#què-pot-fer-c-sense-demanar-res-al-sistema-operatiu",
+    "href": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#què-pot-fer-c-sense-demanar-res-al-sistema-operatiu",
+    "title": "System calls: del programa C al kernel",
+    "section": "Què pot fer C sense demanar res al sistema operatiu?",
+    "text": "Què pot fer C sense demanar res al sistema operatiu?\nint add(int a, int b)\n{\n    return a + b;\n}\nmain()\n  │\n  └──► add()        ← una crida normal: call / ret\n\nTot passa dins de user space: mateix procés, mateixa pila, mateixos privilegis.\nEl kernel no intervé.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: del programa C al kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#això-no-ho-podem-fer-directament-des-de-user-space",
+    "href": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#això-no-ho-podem-fer-directament-des-de-user-space",
+    "title": "System calls: del programa C al kernel",
+    "section": "Això no ho podem fer directament des de user space",
+    "text": "Això no ho podem fer directament des de user space\nwrite(fd, buffer, size);\n\nReflexió\nQui controla realment el fitxer o el dispositiu? Per què el programa no pot, simplement, escriure al disc?\n\n\nSí podem cridar write() des del nostre programa.\nEl que no podem és accedir directament al dispositiu o al subsistema de fitxers saltant-nos el kernel.\n\n\n\\[\n\\text{programa C} \\xrightarrow{\\text{write()}} \\text{kernel} \\xrightarrow{\\text{sys_write()}} \\text{filesystem / driver} \\xrightarrow{\\text{hardware}} \\text{dispositiu}\n\\]\n\n\nDefinició — System call\nInterfície controlada entre user space i kernel space: els serveis que el kernel ofereix als programes d’usuari.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: del programa C al kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#protecció-de-la-cpu-rings",
+    "href": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#protecció-de-la-cpu-rings",
+    "title": "System calls: del programa C al kernel",
+    "section": "Protecció de la CPU: rings",
+    "text": "Protecció de la CPU: rings\n\n\n\nLa CPU distingeix nivells de privilegi: ring 0 (kernel) i ring 3 (programes) a x86; EL1 i EL0 a ARM64.\nCertes instruccions privilegiades només s’executen al nivell del kernel: accés a dispositius, taules de pàgines, parar la CPU…\nSi un programa d’usuari les intenta executar → excepció i el kernel el pot aturar.\n\n\nConcepte — Conseqüència\nSense el kernel, un procés d’usuari no pot gestionar directament dispositius, fitxers ni la memòria física del sistema.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: del programa C al kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#però-write-és-una-funció-c",
+    "href": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#però-write-és-una-funció-c",
+    "title": "System calls: del programa C al kernel",
+    "section": "Però write() és una funció C?",
+    "text": "Però write() és una funció C?\n\n\nwrite(fd, buffer, size);\n\nReflexió\nSembla una crida a funció. Ho és? I si ho és, per què diem que una syscall no és una crida a funció?\n\n\nSolució\nSí, write() és una funció C: un wrapper de la libc. Són dues coses diferents encadenades.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: del programa C al kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#api-vs-implementació-posix-libc",
+    "href": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#api-vs-implementació-posix-libc",
+    "title": "System calls: del programa C al kernel",
+    "section": "API vs implementació · POSIX ≠ libc",
+    "text": "API vs implementació · POSIX ≠ libc\n\n\n\nDefinició — API\nContracte a nivell de codi font: noms, tipus, semàntica. ssize_t write(int fd, const void *buf, size_t count);\n\n\nDefinició — POSIX\nEspecificació (estàndard) d’una API Unix. Diu què ha d’existir, no com es fa.\n\n\nDefinició — libc\nImplementació de l’API C (i de gran part de POSIX) per a un sistema concret: glibc, musl…\n\n\nConcepte — Punts que confonen\n\nPOSIX ≠ libc ≠ kernel.\nLa mateixa API POSIX pot acabar en syscalls diferents en sistemes diferents.\nprintf, fopen → libc (stdio) · write, open → wrappers de syscall.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: del programa C al kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#primera-demo-strace",
+    "href": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#primera-demo-strace",
+    "title": "System calls: del programa C al kernel",
+    "section": "Primera demo: strace",
+    "text": "Primera demo: strace\n\nExercici\nQuantes syscalls creus que farà el programa hello?",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: del programa C al kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#demo-printf-i-buffering",
+    "href": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#demo-printf-i-buffering",
+    "title": "System calls: del programa C al kernel",
+    "section": "Demo: printf() i buffering",
+    "text": "Demo: printf() i buffering\n\n\n\n\n\nExemple\nMostra que printf() no és una syscall, sinó una funció de la libc que bufferitza la sortida i només arriba al kernel amb write. Amb strace -e trace=write sobre un programa que fa tres printf, si la sortida va al terminal es veuen 3 write de 8 bytes (una per línia), perquè stdout és habitualment line-buffered. Si la redirigim a un fitxer, en surt un de sol de 24 bytes, perquè llavors és habitualment fully buffered, i el buffer es buida al final.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: del programa C al kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#tres-nivells",
+    "href": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#tres-nivells",
+    "title": "System calls: del programa C al kernel",
+    "section": "Tres nivells",
+    "text": "Tres nivells\n\n\nread, write, close… són serveis del kernel exposats a través de la interfície de syscalls.\nEl nom C i la syscall no sempre coincideixen: open() acaba fent openat, fork() acaba fent clone.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: del programa C al kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#una-syscall-té-una-identitat",
+    "href": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#una-syscall-té-una-identitat",
+    "title": "System calls: del programa C al kernel",
+    "section": "Una syscall té una identitat",
+    "text": "Una syscall té una identitat\nNo n’hi ha prou amb dir write(): el kernel ha de saber quina syscall se li demana.\n\nDefinició — Syscall number\nEnter que identifica cada servei del kernel. El programa el posa en un registre abans d’entrar al kernel.\n\n\nEls números formen part de l’ABI d’una arquitectura i no s’han de considerar intercanviables entre arquitectures: write és el 1 a x86-64, el 64 a ARM64 i el 4 a i386.\nFins a 6 arguments, de mida de paraula (32 o 64 bits), també en registres.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: del programa C al kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#api-vs-abi",
+    "href": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#api-vs-abi",
+    "title": "System calls: del programa C al kernel",
+    "section": "API vs ABI",
+    "text": "API vs ABI\n\nConcepte — API\nContracte a nivell de codi font: ssize_t write(int, const void *, size_t)\n\n\nConcepte — ABI\nContracte a nivell de binari: quin registre porta què, quina instrucció entra al kernel, què queda modificat.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: del programa C al kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#x86-64-linux",
+    "href": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#x86-64-linux",
+    "title": "System calls: del programa C al kernel",
+    "section": "x86-64 (Linux)",
+    "text": "x86-64 (Linux)\n\n\n\nInstrucció: syscall\n\n\nConcepte — Diferència C ABI / syscall ABI\n\nABI de funcions C (System V): arguments a RDI, RSI, RDX, RCX, R8, R9.\nABI de syscall: el 4t és R10. Per què?\nPerquè syscall sobreescriu RCX (hi deixa l’adreça de retorn) i R11 (hi deixa RFLAGS).\nPer això, en inline asm s’han de declarar rcx i r11 com a clobbered.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: del programa C al kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#arm64-aarch64",
+    "href": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#arm64-aarch64",
+    "title": "System calls: del programa C al kernel",
+    "section": "ARM64 (AArch64)",
+    "text": "ARM64 (AArch64)\n\n\n\nInstrucció: svc #0 (supervisor call).\n\nConcepte — La interfície depèn de l'arquitectura\nRegistres, instrucció i números canvien. Exemple: el número 56 és clone a x86-64 i openat a ARM64. No cal memoritzar els registres: cal saber que existeixen i on mirar-los (man 2 syscall).\n\n\nEl missatge és només: la interfície i els números depenen de l’arquitectura. Un exemple net és la col·lisió del 56 (x86-64: clone; ARM64: openat). El conjunt de syscalls també difereix: x86-64 conserva syscalls històriques (open=2, pipe=22, fork=57, clone=56) que la taula genèrica que usa l’ABI nativa AArch64 no defineix (només openat=56, pipe2=59, clone=220, clone3=435). Es pot comprovar en 10 segons: grep -E \"__NR_(open|fork|pipe|openat|pipe2|clone) \" /usr/include/asm-generic/unistd.h i el mateix a /usr/include/x86_64-linux-gnu/asm/unistd_64.h. Compte: parlem de l’ABI nativa de 64 bits; l’ABI de compatibilitat ARM de 32 bits sí que té open, fork i pipe. Per això a la diapositiva no fem afirmacions universals.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: del programa C al kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#comparació-labi-és-un-contracte-arquitectònic",
+    "href": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#comparació-labi-és-un-contracte-arquitectònic",
+    "title": "System calls: del programa C al kernel",
+    "section": "Comparació: l’ABI és un contracte arquitectònic",
+    "text": "Comparació: l’ABI és un contracte arquitectònic\n\n\n\n\nman 2 syscall té la taula per a totes les arquitectures.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: del programa C al kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#write-vista-des-de-labi",
+    "href": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#write-vista-des-de-labi",
+    "title": "System calls: del programa C al kernel",
+    "section": "write() vista des de l’ABI",
+    "text": "write() vista des de l’ABI\nwrite(fd, buffer, size);",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: del programa C al kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#demo-2-una-syscall-sense-libc",
+    "href": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#demo-2-una-syscall-sense-libc",
+    "title": "System calls: del programa C al kernel",
+    "section": "Demo 2: una syscall sense libc",
+    "text": "Demo 2: una syscall sense libc\n\n\n\n\n\nExemple — Exemple de syscall sense libc\nAquest exemple és identic a write(1, \"Hello\\n\", 6), però sense passar per la libc. Posa a mà el número de syscall (1) i els arguments als registres RAX, RDI, RSI i RDX, i executa directament la instrucció syscall. Amb strace es veu exactament el mateix write(1, “Hello”, 6) = 6, i això demostra que el kernel no distingeix qui ha preparat els registres, i que l’ABI és un contracte de registres, no de C. La variant syscall(SYS_write, …) fa el mateix amb la funció portable de la libc, sense assemblador.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: del programa C al kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#la-frontera",
+    "href": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#la-frontera",
+    "title": "System calls: del programa C al kernel",
+    "section": "La frontera",
+    "text": "La frontera\n\n\nReflexió\nQuè canvia aquí? No només executem una altra funció: canvia el mode d’execució.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: del programa C al kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#com-shi-entra-de-forma-segura",
+    "href": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#com-shi-entra-de-forma-segura",
+    "title": "System calls: del programa C al kernel",
+    "section": "Com s’hi entra de forma segura?",
+    "text": "Com s’hi entra de forma segura?\n\nReflexió\nNo hi ha cap instrucció passa a mode kernel i salta on vulguis. Llavors, com es fa sense trencar la protecció?\n\n\nLa instrucció syscall / svc canvia el privilegi i salta a una adreça que el programa NO tria.\nAquesta adreça la fixa el kernel en arrencar.\nEl programa només pot demanar entra al kernel i el kernel decideix què s’executa.\n\n\nConcepte — Idea de seguretat\nUn únic punt d’entrada, controlat pel kernel: així no es pot saltar al mig de codi privilegiat.\n\n\nAprofundiment: x86-64 → registre especial MSR LSTAR; ARM64 → taula de vectors (VBAR_EL1), svc genera una excepció síncrona. Correcció respecte l’any passat: es deia que la CPU salta “a la rutina indicada a la IDT”. Això és cert per a int 0x80 i per a excepcions/interrupcions, no per a la instrucció syscall de x86-64.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: del programa C al kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#què-canvia-què-no-canvia",
+    "href": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#què-canvia-què-no-canvia",
+    "title": "System calls: del programa C al kernel",
+    "section": "Què canvia? Què no canvia?",
+    "text": "Què canvia? Què no canvia?\n\n\n\nConcepte — Què canvia\n\nNivell de privilegi (ring 3 → ring 0 / EL0 → EL1).\nPC/RIP: salta a l’entrada fixa del kernel.\nLa pila: el kernel n’usa la seva (a x86-64, ho fa el codi d’entrada; syscall no toca RSP).\nAlguns registres (RCX, R11 a x86-64).\n\n\n\n\nConcepte — Què NO canvia\n\nEl procés: mateix PID, mateix espai d’adreces (mateixa taula de pàgines).\nEl codi que hi ha a la CPU no canvia de procés: no és un canvi de context (context switch).\nLa majoria de registres: es desen i es restauren.\n\n\n\n\nError Comú — Confusió freqüent\nMode switch (user ↔︎ kernel, dins del mateix procés) ≠ context switch (passar a executar un altre procés). Una syscall és el primer, no el segon.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: del programa C al kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#demo-3-veure-la-instrucció-syscall-amb-gdb",
+    "href": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#demo-3-veure-la-instrucció-syscall-amb-gdb",
+    "title": "System calls: del programa C al kernel",
+    "section": "Demo 3: veure la instrucció syscall amb gdb",
+    "text": "Demo 3: veure la instrucció syscall amb gdb\n\n\n\n\n\nExemple\nLa instrucció dissassemble permet localitzar syscall i break ens permet posar un punt d’aturada just abans. Observeu com s’atura just a la instrucció syscall dins de write(), i abans d’executar-la es veu que rax = 1 (el número de write) i que rdi, rsi i rdx porten els arguments. Amb un stepi s’executa aquesta única instrucció: surt Hello per pantalla, rax passa a valer 6 (els bytes escrits) i rcx i r11 han canviat, perquè syscall els trepitja.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: del programa C al kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#resum",
+    "href": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html#resum",
+    "title": "System calls: del programa C al kernel",
+    "section": "Resum",
+    "text": "Resum\n\nResum\n\nUna syscall és el mecanisme controlat perquè un programa d’usuari demani serveis al kernel.\nwrite() és una funció C (wrapper de libc); la transició posterior és el que no és una crida convencional.\nprintf → stdio (libc, amb buffering) → write → kernel; strace ens deixa veure el tram real.\nLa interfície és una ABI: el número, els arguments i el retorn viatgen en registres; syscall (x86-64) o svc #0 (ARM64). Depèn de l’arquitectura: no cal memoritzar-ne els registres, cal saber que existeixen i on consultar-los.\nL’entrada és controlada: privilegi i adreça d’entrada els fixa el kernel.\nMode switch ≠ context switch.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: del programa C al kernel"
+    ]
+  },
+  {
     "objectID": "blocs/01-espai-usuari/teoria/01_rols_funcions.html#un-món-de-sistemes-informàtics",
     "href": "blocs/01-espai-usuari/teoria/01_rols_funcions.html#un-món-de-sistemes-informàtics",
     "title": "Rols i funcions d’un sistema operatiu",
@@ -2590,6 +2898,440 @@
       "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
       "Teoria",
       "Com es construeix un programa C?"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#objectius",
+    "href": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#objectius",
+    "title": "System calls: dins del kernel",
+    "section": "Objectius",
+    "text": "Objectius\n\nObjectius d'Aprenentatge\n\nExplicar què fa el kernel en entrar: kernel stack, registres desats (pt_regs).\nEntendre el mínim d’espai d’adreces virtual i d’excepció necessari per parlar de punters.\nDescriure el dispatcher i la syscall table com a model conceptual.\nJustificar per què no es pot confiar en cap argument de user space, i com ho resol copy_from_user.\nInterpretar un error: -errno al kernel, -1 + errno a la libc.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: dins del kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#pregunta-central",
+    "href": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#pregunta-central",
+    "title": "System calls: dins del kernel",
+    "section": "Pregunta central",
+    "text": "Pregunta central\n\nReflexió\nCom transforma Linux una petició d’un programa d’usuari en una operació segura del kernel?",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: dins del kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#què-fa-el-punt-dentrada",
+    "href": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#què-fa-el-punt-dentrada",
+    "title": "System calls: dins del kernel",
+    "section": "Què fa el punt d’entrada?",
+    "text": "Què fa el punt d’entrada?\n\n\n\n\nLa instrucció syscall / svc fa el mínim: privilegi + salt a l’entrada fixa.\nEl codi d’entrada del kernel fa la resta: canvia de pila i desa l’estat d’usuari.\n\n\nConcepte — Precisió\nUna syscall no és simplement canviar de stack: l’entrada al kernel prepara l’execució sobre la kernel stack i deixa desat tot el que cal per tornar.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: dins del kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#user-stack-i-kernel-stack",
+    "href": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#user-stack-i-kernel-stack",
+    "title": "System calls: dins del kernel",
+    "section": "User stack i kernel stack",
+    "text": "User stack i kernel stack\n\n\n\n\nEl kernel no pot confiar en el SP d’usuari (podria apuntar a qualsevol lloc): usa la seva pila, una per fil/tasca.\nx86-64: syscall no canvia RSP; el codi d’entrada ho fa a mà.\nARM64: cada nivell té el seu registre de pila (SP_EL0 / SP_EL1).",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: dins del kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#què-es-desa-struct-pt_regs",
+    "href": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#què-es-desa-struct-pt_regs",
+    "title": "System calls: dins del kernel",
+    "section": "Què es desa? · struct pt_regs",
+    "text": "Què es desa? · struct pt_regs\n\n\n\n\n\nLinux desa els registres a una estructura struct pt_regs, a la kernel stack.\nEl dispatcher llegeix el número de orig_ax i els arguments dels camps del pt_regs.\nEl resultat s’escriu a regs-&gt;ax; en tornar, es restaura tot.\nCada arquitectura té el seu pt_regs.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: dins del kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#demo-veure-el-número-i-el-pt_regs",
+    "href": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#demo-veure-el-número-i-el-pt_regs",
+    "title": "System calls: dins del kernel",
+    "section": "Demo: veure el número i el pt_regs",
+    "text": "Demo: veure el número i el pt_regs\n\n\n\n\n\n\n\n\nReflexió\nPer què rax = -38 i orig_rax = 1 a l’entrada de la syscall?\n\n\nSolució\nPerquè el kernel deixa -ENOSYS (38) per defecte a ax i conserva el número original a orig_ax; el resultat de la syscall el sobreescriurà. És exactament el regs-&gt;orig_ax / regs-&gt;ax que veurem al dispatcher.\n\n\n\nExemple\nAquesta dema s’atura just a l’entrada de la syscall, i el pt_regs que veu el kernel es veu des de fora: orig_rax = 1 és el número que va posar el programa, i rax = -38 (-ENOSYS) és el valor per defecte que el kernel deixa a ax fins que la syscall hi escrigui el resultat. Un continue més enllà, ja surt Hello i rax = 6, els bytes escrits.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: dins del kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#cada-procés-veu-el-seu-espai-dadreces",
+    "href": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#cada-procés-veu-el-seu-espai-dadreces",
+    "title": "System calls: dins del kernel",
+    "section": "Cada procés veu el seu espai d’adreces",
+    "text": "Cada procés veu el seu espai d’adreces\n\n\n\n\n\nLes adreces que veu el programa són virtuals: la CPU (MMU) les tradueix a memòria física amb l’ajuda del kernel.\nDos processos poden usar la mateixa adreça virtual i veure dades diferents.\nLa part alta és del kernel: un programa d’usuari no pot accedir-hi.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: dins del kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#demo-la-mateixa-adreça-dos-processos",
+    "href": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#demo-la-mateixa-adreça-dos-processos",
+    "title": "System calls: dins del kernel",
+    "section": "Demo: la mateixa adreça, dos processos",
+    "text": "Demo: la mateixa adreça, dos processos\n\n\n\n\n\nExemple\nEs llancen dues còpies d’un programa que desa el seu PID a una variable global. Totes dues imprimeixen el mateix &x=0x40402c però valors diferents, perquè cada procés té el seu espai d’adreces virtual. A /proc/PID/maps es veuen [heap], [stack] i [vdso], i cap tram del kernel: hi és present, però inaccessible des d’user space.\n\n\n\n-no-pie fa que &x sigui idèntic en les dues execucions (en provar-ho: &x=0x404020 a totes dues). Amb PIE + ASLR variaria.\nAmb setarch $(uname -m) -R cat /proc/self/maps (ASLR desactivat) es veuen [heap], [vdso], [stack] a adreces estables.\nPregunta: per què no surt cap adreça del kernel al maps? → perquè maps mostra les adreces que el procés pot usar; el kernel hi és present a l’espai d’adreces però és inaccessible.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: dins del kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#excepcions-la-cpu-no-pot-completar-una-instrucció",
+    "href": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#excepcions-la-cpu-no-pot-completar-una-instrucció",
+    "title": "System calls: dins del kernel",
+    "section": "Excepcions: la CPU no pot completar una instrucció",
+    "text": "Excepcions: la CPU no pot completar una instrucció\n\nDefinició — Excepció\nEsdeveniment síncron generat per la CPU quan una instrucció no es pot completar (o cal avisar el kernel). El control passa al kernel, que decideix què fer.\n\n\n\n\n\n\n\n\n\nTipus\nQuan s’informa\nExemple\n\n\n\n\nFault\nabans de completar la instrucció (es pot reintentar)\npage fault\n\n\nTrap\ndesprés d’executar la instrucció\nbreakpoint\n\n\nAbort\nirrecuperable\ndouble fault",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: dins del kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#page-fault-dues-sortides",
+    "href": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#page-fault-dues-sortides",
+    "title": "System calls: dins del kernel",
+    "section": "Page fault: dues sortides",
+    "text": "Page fault: dues sortides\n\n\n\n\nConcepte — Idea clau\nUn page fault no és necessàriament un error: és un mecanisme normal. El que decideix si és un error és el kernel, segons l’espai d’adreces del procés.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: dins del kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#demo-els-page-faults-són-normals",
+    "href": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#demo-els-page-faults-són-normals",
+    "title": "System calls: dins del kernel",
+    "section": "Demo: els page faults són normals",
+    "text": "Demo: els page faults són normals\n\n\n\n\n\nExemple\nUn malloc de 256 MiB gairebé no dispara cap page fault, perquè només reserva memòria virtual. En tocar un byte de cada pàgina de 4 KiB, el recompte de getrusage puja en 65.535, un per pàgina. Un page fault no és un error sinó el mecanisme normal (demand paging): el kernel assigna la pàgina i reintenta la instrucció.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: dins del kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#com-sap-linux-quina-operació-ha-de-fer",
+    "href": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#com-sap-linux-quina-operació-ha-de-fer",
+    "title": "System calls: dins del kernel",
+    "section": "Com sap Linux quina operació ha de fer?",
+    "text": "Com sap Linux quina operació ha de fer?\n\n\n\n\nReflexió\nQuina funció del kernel s’executa? I si el número no existeix?",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: dins del kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#syscall-table-model-conceptual",
+    "href": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#syscall-table-model-conceptual",
+    "title": "System calls: dins del kernel",
+    "section": "Syscall table (model conceptual)",
+    "text": "Syscall table (model conceptual)\n\n\n\n\n\nConcepte — Això és un model\nLa idea número → funció del kernel és sempre la mateixa. La implementació concreta depèn de l’arquitectura i de la versió del kernel (taula, switch…).\n\n\nLes taules són diferents per arquitectura (a ARM64: read = 63, write = 64, openat = 56).\nUn número fora de rang → -ENOSYS.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: dins del kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#del-número-a-sys_write",
+    "href": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#del-número-a-sys_write",
+    "title": "System calls: dins del kernel",
+    "section": "Del número a sys_write()",
+    "text": "Del número a sys_write()\nSYSCALL_DEFINE3(write, unsigned int, fd,\n                const char __user *, buf, size_t, count)\n\nCada syscall té una funció d’implementació al kernel: sys_read, sys_write, sys_openat…\nEl prefix __user marca el punter com a adreça d’user space (no fiable).\nEls arguments de la implementació vénen dels registres desats (pt_regs).",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: dins del kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#el-camí-complet",
+    "href": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#el-camí-complet",
+    "title": "System calls: dins del kernel",
+    "section": "El camí complet",
+    "text": "El camí complet",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: dins del kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#què-és-buffer-des-del-punt-de-vista-del-kernel",
+    "href": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#què-és-buffer-des-del-punt-de-vista-del-kernel",
+    "title": "System calls: dins del kernel",
+    "section": "Què és buffer des del punt de vista del kernel?",
+    "text": "Què és buffer des del punt de vista del kernel?\nchar buffer[100];\nwrite(fd, buffer, 100);\n\nbuffer és una adreça de user space.\nPerò sys_write() s’executa en kernel space, amb privilegis.\n\n\nReflexió\nPot el kernel confiar en qualsevol punter que li dona el programa?\n\n\nSolució\nNo. Tot el que ve de user space s’ha de considerar incorrecte o maliciós fins que es demostri el contrari.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: dins del kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#quatre-casos",
+    "href": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#quatre-casos",
+    "title": "System calls: dins del kernel",
+    "section": "Quatre casos",
+    "text": "Quatre casos\n\n\n\n\nConcepte — No només es valida el punter\nEs valida el rang [ptr, ptr + size) i els permisos, no només ptr. Amb la mateixa lògica: fd, flags, mides…",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: dins del kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#què-podria-passar",
+    "href": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#què-podria-passar",
+    "title": "System calls: dins del kernel",
+    "section": "Què podria passar?",
+    "text": "Què podria passar?\n\n\nmemcpy(kernel_buffer, user_ptr, size);     \n /* HIPOTÈTIC: cap validació */\n\nConcepte — Model de bug\nSi el kernel tractés un valor controlat per l’usuari com una adreça de memòria privilegiada, sense validar-lo, podria exposar o corrompre dades del kernel.\n\n\nDefinició\n\nExposició (model): el kernel llegeix d’una adreça que no és de l’usuari i ho envia cap a fora (p. ex. a un fitxer).\nCorrupció (model): el kernel escriu en una adreça que no és de l’usuari amb dades que l’usuari controla.\n\n\n\n\n\n\nConcepte — Confused deputy\nEl problema no és només un segfault: el kernel actua amb els seus privilegis en nom d’un programa que no en té.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: dins del kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#copy_from_user-copy_to_user",
+    "href": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#copy_from_user-copy_to_user",
+    "title": "System calls: dins del kernel",
+    "section": "copy_from_user() / copy_to_user()",
+    "text": "copy_from_user() / copy_to_user()\n/* CORRECTE: retorna un valor no nul (-EFAULT) si user_ptr no és vàlid */\nif (copy_from_user(&kernel_buffer, user_ptr, size))\n    return -EFAULT;\n\n/* INCORRECTE: només va bé si user_ptr és vàlid; si no, el kernel falla */\nmemcpy(&kernel_buffer, user_ptr, size);\n\\[\n\\text{USER BUFFER} \\xrightarrow{\\text{copy\\_from\\_user}} \\text{KERNEL BUFFER}\n\\]\n\\[\n\\text{USER BUFFER} \\xleftarrow{\\text{copy\\_to\\_user}} \\text{KERNEL BUFFER}\n\\]\n\nComproven que el rang és d’user space.\nGestionen el fault sense caure: retornen un valor no nul en lloc de fer panic.\nSimilars: get_user(), put_user().",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: dins del kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#demo-la-mateixa-adreça-invàlida-dos-finals",
+    "href": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#demo-la-mateixa-adreça-invàlida-dos-finals",
+    "title": "System calls: dins del kernel",
+    "section": "Demo: la mateixa adreça invàlida, dos finals",
+    "text": "Demo: la mateixa adreça invàlida, dos finals\n\n\n\n\n\nExemple\nUn write amb l’adreça 0x1 i un altre amb una adreça del kernel retornen -1 EFAULT i el programa continua, perquè el kernel valida els punters amb copy_from_user. Un accés directe *p = 'x' amb aquella mateixa adreça acaba en SIGSEGV i el procés mor (exit 139).",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: dins del kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#una-syscall-no-confia-en-lusuari",
+    "href": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#una-syscall-no-confia-en-lusuari",
+    "title": "System calls: dins del kernel",
+    "section": "Una syscall no confia en l’usuari",
+    "text": "Una syscall no confia en l’usuari\nTot el que arriba de user space és potencialment incorrecte:\n\nel número de syscall,\nels arguments,\nels punters,\nles mides (enormes, negatives, amb overflow),\nels descriptors de fitxer (fd tancat, inexistent, d’un altre tipus),\nels flags.\n\n\nBona Pràctica — Principi de disseny\nEl kernel valida-ho-tot a l’entrada i retorna un error concret (-EFAULT, -EBADF, -EINVAL, -ENOSYS…) en lloc de suposar.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: dins del kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#com-sap-el-kernel-qui-ha-fallat",
+    "href": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#com-sap-el-kernel-qui-ha-fallat",
+    "title": "System calls: dins del kernel",
+    "section": "Com sap el kernel qui ha fallat?",
+    "text": "Com sap el kernel qui ha fallat?\n\n\n\n\n\nReflexió\nDins del kernel, un page fault pot ser: (1) un fault legítim (demand paging), (2) un punter invàlid d’usuari, (3) un bug del kernel. Com sap el kernel què és?\n\n\nCas 1: l’adreça és d’user i vàlida per al procés → el kernel la resol.\nCasos 2 i 3: l’adreça d’user és invàlida i la instrucció que falla és del kernel. Són indistingibles per l’adreça.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: dins del kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#la-solució-de-linux-la-taula-dexcepcions",
+    "href": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#la-solució-de-linux-la-taula-dexcepcions",
+    "title": "System calls: dins del kernel",
+    "section": "La solució de Linux: la taula d’excepcions",
+    "text": "La solució de Linux: la taula d’excepcions\n\nDefinició — Taula d'excepcions\nLlista de les instruccions concretes del kernel que poden accedir a memòria d’usuari (les de copy_from_user, get_user…), amb l’adreça on recuperar-se si fallen.\n\n\n\n\nResultat: un accés invàlid a memòria d’usuari es converteix en un -EFAULT i no en un crash del kernel.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: dins del kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#una-syscall-també-retorna-informació",
+    "href": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#una-syscall-també-retorna-informació",
+    "title": "System calls: dins del kernel",
+    "section": "Una syscall també retorna informació",
+    "text": "Una syscall també retorna informació\n\n\n\n\nssize_t n = write(fd, buf, len);\n\nÈxit → nombre de bytes.\nError → -1 i errno amb el motiu.\n\n\nConcepte — Qui fa què?\nEl kernel retorna un valor negatiu (-errno, dins del rang -4095..-1) al registre de retorn. El wrapper de libc el converteix: errno = -ret; return -1;.\n\n\nError Comú — Confusió freqüent\nerrno no és una variable que el kernel retorni: és una variable de la libc (per fil) que omple el wrapper.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: dins del kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#demo-open-que-falla",
+    "href": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#demo-open-que-falla",
+    "title": "System calls: dins del kernel",
+    "section": "Demo: open() que falla",
+    "text": "Demo: open() que falla\n\n\n\n\n\nExemple\nstrace -e trace=openat mostra que open() acaba com a openat(...) = -1 ENOENT: el kernel retorna el codi d’error, i la libc el converteix en -1 més errno, que perror mostra com a No such file or directory. Abans d’aquesta línia surten també els openat del loader (ld.so.cache, libc.so.6), que mostren que el programa ja ha fet syscalls abans del nostre main.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: dins del kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#resum",
+    "href": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#resum",
+    "title": "System calls: dins del kernel",
+    "section": "Resum",
+    "text": "Resum\n\nResum\n\nEl punt d’entrada del kernel desa l’estat d’usuari (pt_regs) i treballa sobre la kernel stack.\nCada procés té el seu espai d’adreces virtual; una excepció (com un page fault) porta el control al kernel, que decideix què fer.\nEl dispatcher usa el número per triar la funció (model: syscall table); la implementació concreta depèn de l’arquitectura i la versió.\nNo hi ha confiança: tots els valors de user space es validen; l’accés a memòria d’usuari es fa amb copy_from_user / copy_to_user.\nLa taula d’excepcions permet recuperar-se d’un accés invàlid sense caure.\nErrors: el kernel retorna -errno; la libc l’exposa com -1 + errno.\n\n\n\\[\n\\text{Usuari} \\xrightarrow{\\text{syscall}} \\text{entrada al kernel} \\xrightarrow{\\text{dispatcher}} \\text{sys\\_xxx} \\xrightarrow{\\text{retorn}} \\text{Usuari}\n\\]",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: dins del kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#annex-a-codi-real-del-dispatcher-x86-64",
+    "href": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#annex-a-codi-real-del-dispatcher-x86-64",
+    "title": "System calls: dins del kernel",
+    "section": "Annex A · Codi real del dispatcher x86-64",
+    "text": "Annex A · Codi real del dispatcher x86-64\n/* Linux 6.1, simplificat (arch/x86/entry/common.c) */\nstatic bool do_syscall_x64(struct pt_regs *regs, int nr)\n{\n    unsigned int unr = nr;              /* negatius → molt grans */\n\n    if (likely(unr &lt; NR_syscalls)) {\n        unr = array_index_nospec(unr, NR_syscalls);\n        regs-&gt;ax = sys_call_table[unr](regs);   /* retorn → RAX */\n        return true;\n    }\n    return false;                        /* → -ENOSYS */\n}\n\nunr &lt; NR_syscalls: valida el número que ve de user space.\narray_index_nospec: evita accessos especulatius fora de la taula (Spectre v1).\nEl resultat es deixa a regs-&gt;ax: serà el RAX que veurà l’usuari en tornar.\n\n\n\nAclariment sobre LKL: la lectura mostra la versió de 32 bits (do_syscall_32_irqs_on, ia32_sys_call_table[nr](regs-&gt;bx, ...)), que és clara pedagògicament però no és el camí d’x86-64, i els arguments avui es passen com un únic struct pt_regs *.\nActualització verificada: un commit de Linus Torvalds (2024, 1e3ad78334a6, “x86/syscall: Don’t force use of indirect calls for system calls”) va substituir la crida indirecta sys_call_table[unr](regs) per x64_sys_call(regs, unr), que és un switch generat, per motius de mitigacions d’execució especulativa; es va portar també a kernels estables, així que el vostre kernel pot tenir qualsevol de les dues formes. La idea (número → funció) és la mateixa.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: dins del kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#annex-b-get_user-i-la-taula-dexcepcions",
+    "href": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#annex-b-get_user-i-la-taula-dexcepcions",
+    "title": "System calls: dins del kernel",
+    "section": "Annex B · get_user i la taula d’excepcions",
+    "text": "Annex B · get_user i la taula d’excepcions",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: dins del kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#annex-c-dues-aproximacions-per-validar",
+    "href": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#annex-c-dues-aproximacions-per-validar",
+    "title": "System calls: dins del kernel",
+    "section": "Annex C · Dues aproximacions per validar",
+    "text": "Annex C · Dues aproximacions per validar\n\nComprovar el punter abans d’usar-lo (cerca a l’espai d’adreces del procés).\nNo comprovar i confiar en el page fault.\n\n\n\n\n\n\n\n\n\nCost\nComprovar punter\nFault handling\n\n\n\n\nAdreça vàlida\ncerca a l’espai d’adreces\nnegligible\n\n\nAdreça invàlida\ncerca a l’espai d’adreces\ncerca a la taula d’excepcions\n\n\n\nLinux tria la 2a (amb la taula d’excepcions)",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: dins del kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#annex-d-vdso-syscalls-sense-entrar-al-kernel",
+    "href": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#annex-d-vdso-syscalls-sense-entrar-al-kernel",
+    "title": "System calls: dins del kernel",
+    "section": "Annex D · vDSO: syscalls sense entrar al kernel",
+    "text": "Annex D · vDSO: syscalls sense entrar al kernel\n\nÀrea de memòria mapejada a user space amb codi generat pel kernel ([vdso] a /proc/PID/maps).\nServeix per a crides que només llegeixen dades que el kernel actualitza (gettimeofday, time, clock_gettime…): no cal canviar de mode.\n\n\nConcepte — Doble finalitat\n\nRendiment: eviten el cost de la transició.\nAbstracció: la libc no ha de saber si la CPU prefereix int 0x80, sysenter o syscall; ho decideix el kernel.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: dins del kernel"
+    ]
+  },
+  {
+    "objectID": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#annex-e-codi-del-kernel",
+    "href": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html#annex-e-codi-del-kernel",
+    "title": "System calls: dins del kernel",
+    "section": "Annex E · Codi del kernel",
+    "text": "Annex E · Codi del kernel\n\nLinux 6.16.4, arch/x86/entry/syscall_64.c\nLinux 6.16.4, arch/x86/include/asm/ptrace.h",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari",
+      "Teoria",
+      "System calls: dins del kernel"
     ]
   },
   {
