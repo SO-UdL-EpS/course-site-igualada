@@ -425,12 +425,3 @@ La instrucció `dissassemble` permet localitzar `syscall` i `break` ens permet p
 - *Mode switch* ≠ *context switch*.
 :::
 :::
-
-
-## Exercicis proposats
-
-::: {.exercici title="Per pensar"}
-1. Executa `strace -c ./hello` i `strace -c ./prog > /dev/null`. Quantes syscalls fa un programa **buit**?
-2. Amb `man 2 syscall`, troba **sense memoritzar-ho** en quin registre viatja el número de syscall i quin és el registre de retorn a ARM64.
-3. Reescriu `my_write` per a `getpid` (número `39` a x86-64, `172` a ARM64). Què canvia respecte a `write`?
-:::
