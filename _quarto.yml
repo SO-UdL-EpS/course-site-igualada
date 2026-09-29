@@ -63,6 +63,13 @@ website:
               - href: blocs/01-espai-usuari/activitats/02_espai_funcions.qmd
               - href: blocs/01-espai-usuari/activitats/03_pokemon.qmd
 
+        - section: "Bloc 2 · Processos"
+          contents:
+            - section: Teoria
+              contents:
+              - href: blocs/02-proc/teoria/01-procs.qmd
+    
+
 
 format:
   udl-course-html:
