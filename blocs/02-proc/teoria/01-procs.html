@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<link href="../../../assets/logo.svg" rel="icon" type="image/svg+xml">
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-html/tabby.min.js"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.10.18">
+
+  <meta name="author" content="Jordi Mateo Fornés">
+  <title>Sistemes Operatius – Processos: concepte, estats i PCB</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="../../../site_libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="../../../site_libs/revealjs/dist/reveal.css">
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="../../../site_libs/revealjs/dist/theme/quarto-f5dc026c75e330951b2ebe3764ecdfcd.css">
+  <link href="../../../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="../../../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="../../../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="../../../site_libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+  <script src="../../../site_libs/quarto-diagram/mermaid.min.js"></script>
+  <script src="../../../site_libs/quarto-diagram/mermaid-init.js"></script>
+  <link href="../../../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/asciinema-player@3.9.0/dist/bundle/asciinema-player.css">
+  <script src="https://cdn.jsdelivr.net/npm/asciinema-player@3.9.0/dist/bundle/asciinema-player.min.js"></script>
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="quarto-title-block center">
+  <h1 class="title">Processos: concepte, estats i PCB</h1>
+  <p class="subtitle">El motor de l’execució: què és un procés, com canvia d’estat i què guarda el nucli</p>
+
+<div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+Jordi Mateo Fornés
+</div>
+</div>
+</div>
+
+</section>
+<section id="objectius" class="slide level2">
+<h2>Objectius</h2>
+<div class="objectius udl-component udl-objectius" title="Què aprendrem avui">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-objectius"></use></svg><span>Objectius d'Aprenentatge — Què aprendrem avui</span></div>
+<ul>
+<li class="fragment">Distingir <strong>programa</strong> i <strong>procés</strong>, i descriure què el compon: <strong>espai d’adreces</strong>, <strong>context de CPU</strong> i <strong>recursos del nucli</strong>.</li>
+<li class="fragment">Explicar què és un <strong>canvi de context</strong>, què el provoca i en què es diferencia d’un canvi de mode.</li>
+<li class="fragment">Aplicar el <strong>model de 5 estats</strong> i traduir-lo als estats reals de Linux (<code>R</code>, <code>S</code>, <code>D</code>, <code>T</code>, <code>Z</code>).</li>
+<li class="fragment">Llegir la <strong>PCB</strong> de Linux (<code>task_struct</code>) i inspeccionar un procés real amb <code>ps</code>, <code>top</code> i <code>/proc</code>.</li>
+<li class="fragment">Situar un procés a l’<strong>arbre</strong>: PID 0/1/2, grups de processos i sessions.</li>
+</ul>
+</div>
+</section>
+<section id="punt-de-partida" class="slide level2">
+<h2>Punt de partida</h2>
+<div class="prerequisits udl-component udl-prerequisits" title="Ho hem vist a les sessions de crides al sistema">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-prerequisits"></use></svg><span>Prerequisits — Ho hem vist a les sessions de crides al sistema</span></div>
+<ul>
+<li class="fragment">El maquinari té (com a mínim) dos modes: <strong>usuari</strong> i <strong>nucli</strong>. El codi d’usuari no pot tocar el maquinari ni la memòria del nucli.</li>
+<li class="fragment">Hi ha tres maneres d’<strong>entrar al nucli</strong>: <strong>crida al sistema</strong> (síncrona), <strong>excepció</strong> (síncrona) i <strong>interrupció</strong> (asíncrona).</li>
+<li class="fragment">En entrar, la CPU <strong>canvia de mode</strong> i salta a un punt fix que el nucli ha configurat.</li>
+</ul>
+</div>
+</section>
+<section id="programa-vs.-procés" class="slide level2">
+<h2>Programa vs.&nbsp;procés</h2>
+<div class="definicio udl-component udl-definicio" title="Procés">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-definicio"></use></svg><span>Definició — Procés</span></div>
+<p>Un <strong>procés</strong> és una <strong>instància d’un programa en execució</strong>: una entitat <em>activa</em> amb el seu propi espai d’adreces, el seu context de CPU i els seus recursos del nucli.</p>
+</div>
+<table class="caption-top">
+<colgroup>
+<col style="width: 21%">
+<col style="width: 39%">
+<col style="width: 39%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;"><strong>Programa</strong></th>
+<th style="text-align: left;"><strong>Procés</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Naturalesa</td>
+<td style="text-align: left;">Passiu: un <strong>fitxer</strong> (p.&nbsp;ex. ELF)</td>
+<td style="text-align: left;">Actiu: existeix <strong>mentre s’executa</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Té</td>
+<td style="text-align: left;">Codi i dades inicials</td>
+<td style="text-align: left;">Espai d’adreces, registres, fitxers oberts, PID…</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Quantitat</td>
+<td style="text-align: left;">1 fitxer</td>
+<td style="text-align: left;"><strong>Molts processos</strong> del mateix programa</td>
+</tr>
+</tbody>
+</table>
+<p>Si 10 usuaris executen <code>vi</code>, hi ha <strong>10 processos</strong>, però el <strong>codi</strong> és el mateix fitxer i el nucli el <strong>comparteix</strong> a memòria.</p>
+</section>
+<section id="demo-un-programa-tres-processos" class="slide level2">
+<h2>Demo · un programa, tres processos</h2>
+<div id="demo-sameexec">
+
+</div>
+<script>
+AsciinemaPlayer.create(
+  'cast/01/sameexe.cast',
+  document.getElementById('demo-sameexec'),
+  {
+    autoPlay: false,
+    loop: false,
+    speed: 0.8,
+    cols: 150,
+    rows: 20
+  }
+);
+</script>
+<div class="exemple udl-component udl-exemple" title="Què cal observar">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exemple"></use></svg><span>Exemple — Què cal observar</span></div>
+<ul>
+<li>Tres processos <code>sleep</code> amb <strong>PID diferents</strong> i el mateix pare.</li>
+<li>El codi (<code>r-xp</code>) és <strong>el mateix fitxer i el mateix inode</strong>: el nucli en comparteix les pàgines.</li>
+</ul>
+</div>
+</section>
+<section id="un-procés-són-tres-coses" class="slide level2">
+<h2>Un procés són tres coses</h2>
+<div style="text-align:center">
+<p><img data-src="figures/01/proces.png" style="width:50.0%"></p>
+</div>
+<div class="concepte udl-component udl-concepte" title="Dues il·lusions">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-concepte"></use></svg><span>Concepte — Dues il·lusions</span></div>
+<p>El nucli ofereix a cada procés (1) la il·lusió de <strong>tenir la CPU per a ell sol</strong> (flux de control propi) i (2) la de <strong>tenir tota la memòria per a ell sol</strong> (espai d’adreces privat).</p>
+</div>
+</section>
+<section id="canvi-de-mode-vs.-canvi-de-context" class="slide level2">
+<h2>Canvi de mode vs.&nbsp;canvi de context</h2>
+<table class="caption-top">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 38%">
+<col style="width: 40%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;"><strong>Canvi de mode</strong></th>
+<th style="text-align: left;"><strong>Canvi de context</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Què canvia</strong></td>
+<td style="text-align: left;">El <strong>nivell de privilegi</strong> (usuari ↔︎ nucli)</td>
+<td style="text-align: left;"><strong>Quina tasca executa</strong> a la CPU</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Qui</strong></td>
+<td style="text-align: left;">mateixa tasca</td>
+<td style="text-align: left;">un altra tasca</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Procés</strong></td>
+<td style="text-align: left;">El <strong>mateix</strong> procés</td>
+<td style="text-align: left;">Un procés <strong>diferent</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Causes</strong></td>
+<td style="text-align: left;">Crida al sistema, excepció, interrupció</td>
+<td style="text-align: left;">Expropiació, bloqueig (E/S), <code>sched_yield</code>, <code>exit</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Es desa</strong></td>
+<td style="text-align: left;">El mínim (PC, SP, indicadors…)</td>
+<td style="text-align: left;">El <strong>context complet</strong> + canvi d’espai d’adreces</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Cost</strong></td>
+<td style="text-align: left;">Baix</td>
+<td style="text-align: left;"><strong>Més alt</strong> (TLB, cachés, planificador)</td>
+</tr>
+</tbody>
+</table>
+<div class="errorcomu udl-component udl-errorcomu" title="No és el mateix">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-errorcomu"></use></svg><span>Error Comú — No és el mateix</span></div>
+<p>Una crida al sistema <strong>no</strong> implica un canvi de context: el procés entra al nucli i <strong>en surt sense perdre la CPU</strong>. Només si la crida <strong>bloqueja</strong> (p.&nbsp;ex. <code>read()</code> d’un disc) el nucli en dóna la CPU a un altre.</p>
+</div>
+</section>
+<section id="què-passa-en-un-canvi-de-context" class="slide level2">
+<h2>Què passa en un canvi de context</h2>
+<div style="text-align:center">
+<div class="cell" data-reveal="true" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<pre class="mermaid mermaid-js">sequenceDiagram
+    participant A as Procés A (mode usuari)
+    participant K as Nucli
+    participant B as Procés B
+
+    A-&gt;&gt;K: interrupció de rellotge (canvi de mode, pila del nucli de A)
+    K-&gt;&gt;K: desa el context de A (registres, PC, SP) a la seva pila del nucli i al task_struct
+    K-&gt;&gt;K: el planificador tria B
+    K-&gt;&gt;K: canvia de pila del nucli i d'espai d'adreces (taula de pàgines de B)
+    K-&gt;&gt;K: restaura el context de B
+    K--&gt;&gt;B: torna a mode usuari (iret / eret): B continua on ho havia deixat
+    Note over A,B: A queda preparat: el seu context espera al task_struct
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="canvis-de-context-voluntaris-i-no-voluntaris" class="slide level2">
+<h2>Canvis de context: voluntaris i no voluntaris</h2>
+<div class="concepte udl-component udl-concepte" title="Dues classes">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-concepte"></use></svg><span>Concepte — Dues classes</span></div>
+<ul>
+<li class="fragment"><strong>Voluntari</strong>: el procés <strong>cedeix</strong> la CPU perquè s’ha de bloquejar (<code>read</code>, <code>sleep</code>, <code>wait</code>…).</li>
+<li class="fragment"><strong>No voluntari</strong>: el nucli li <strong>pren</strong> la CPU (<strong>expropiació</strong>: se li ha acabat el temps o hi ha algú més prioritari).</li>
+</ul>
+</div>
+<div class="exemple fragment udl-component udl-exemple" title="Com comprovar-ho">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exemple"></use></svg><span>Exemple — Com comprovar-ho</span></div>
+<p>Linux ho compta per procés a <code>/proc/PID/status</code>: <code>voluntary_ctxt_switches</code> i <code>nonvoluntary_ctxt_switches</code> :</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> ctxt /proc/<span class="va">$$</span>/status</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="el-model-de-5-estats" class="slide level2">
+<h2>El model de 5 estats</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><img data-src="figures/01/5-estats.png"></p>
+</div><div class="column" style="width:50%;">
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Transició</th>
+<th style="text-align: left;">Qui la provoca</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Preparat → Execució</td>
+<td style="text-align: left;"><strong>Planificador</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Execució → Preparat</td>
+<td style="text-align: left;"><strong>Rellotge</strong> (expropiació)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Execució → Bloquejat</td>
+<td style="text-align: left;"><strong>El procés</strong> (crida bloquejant)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Bloquejat → Preparat</td>
+<td style="text-align: left;"><strong>Maquinari</strong> (interrupció) o un altre procés</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Execució → Acabat</td>
+<td style="text-align: left;"><strong>El procés</strong> (<code>exit</code>) o un senyal</td>
+</tr>
+</tbody>
+</table>
+</div></div>
+<div class="concepte udl-component udl-concepte" title="Regla">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-concepte"></use></svg><span>Concepte — Regla</span></div>
+<p>Només el <strong>planificador</strong> decideix quin procés <em>preparat</em> passa a <em>execució</em>. Un procés <strong>mai</strong> es desbloqueja a si mateix.</p>
+</div>
+</section>
+<section id="els-estats-reals-de-linux" class="slide level2">
+<h2>Els estats reals de Linux</h2>
+<div class="exemple udl-component udl-exemple">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exemple"></use></svg><span>Exemple</span></div>
+<p>Per veure ,és informació sobre els processos poder fer <code>man ps</code> i llegir la secció <strong>PROCESS STATE CODES</strong>.</p>
+</div>
+<table class="caption-top">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 35%">
+<col style="width: 58%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;"><code>ps</code></th>
+<th style="text-align: left;">Nucli</th>
+<th style="text-align: left;">Què significa</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><strong>R</strong></td>
+<td style="text-align: left;"><code>TASK_RUNNING</code></td>
+<td style="text-align: left;"><strong>A la CPU <em>o</em> a la cua d’execució</strong> (executant-se o preparat)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>S</strong></td>
+<td style="text-align: left;"><code>TASK_INTERRUPTIBLE</code></td>
+<td style="text-align: left;">Dorm esperant un esdeveniment; un <strong>senyal el desperta</strong></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>D</strong></td>
+<td style="text-align: left;"><code>TASK_UNINTERRUPTIBLE</code> (i <code>KILLABLE</code>)</td>
+<td style="text-align: left;">Dorm <strong>sense atendre senyals</strong> (típic: E/S)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>T</strong></td>
+<td style="text-align: left;"><code>__TASK_STOPPED</code></td>
+<td style="text-align: left;"><strong>Aturat</strong> per senyal (<code>SIGSTOP</code>, <code>SIGTSTP</code>); <code>SIGCONT</code> el reprèn</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>t</strong></td>
+<td style="text-align: left;"><code>__TASK_TRACED</code></td>
+<td style="text-align: left;">Aturat per un <strong>depurador</strong> (<code>ptrace</code>)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>I</strong></td>
+<td style="text-align: left;"><code>TASK_IDLE</code></td>
+<td style="text-align: left;">Fil del nucli <strong>inactiu</strong></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>Z</strong></td>
+<td style="text-align: left;"><code>EXIT_ZOMBIE</code></td>
+<td style="text-align: left;"><strong>Acabat</strong>, esperant que el pare el reculli</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>X</strong></td>
+<td style="text-align: left;"><code>EXIT_DEAD</code></td>
+<td style="text-align: left;">Mort (no es veu mai)</td>
+</tr>
+</tbody>
+</table>
+<div class="exemple udl-component udl-exemple">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exemple"></use></svg><span>Exemple</span></div>
+<p>Podeu consultar <a href="https://elixir.bootlin.com/linux/v7.2.8/source/include/linux/sched.h#L108">sched.h</a> es representen els estats de les tasques. <strong>TASK_RUNNING</strong> indica que la tasca és runnable: pot executar-se, tant si està esperant que el planificador li assigni la CPU com si s’està executant en aquell moment. En canvi, <strong>TASK_INTERRUPTIBLE</strong> i <strong>TASK_UNINTERRUPTIBLE</strong> representen diferents formes d’espera (dormit).</p>
+</div>
+</section>
+<section id="r-no-vol-dir-executant-se" class="slide level2">
+<h2><code>R</code> no vol dir «executant-se»</h2>
+<div class="concepte udl-component udl-concepte" title="Preparat i Execució, a Linux, són el mateix estat">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-concepte"></use></svg><span>Concepte — Preparat i Execució, a Linux, són el mateix estat</span></div>
+<p>Al camp d’estat del nucli <strong>no hi ha cap valor Running diferent de Ready</strong>: <code>TASK_RUNNING</code> cobreix tots dos. Que un procés estigui <em>a la CPU</em> o <em>a la cua</em> és una <strong>dada del planificador</strong>, no un estat. El model de 5 estats és el bon <strong>model mental</strong>, però <code>ps</code> no distingeix aquests dos estats.</p>
+</div>
+<div class="errorcomu udl-component udl-errorcomu" title="`D` és l'estat que fa por">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-errorcomu"></use></svg><span>Error Comú — `D` és l'estat que fa por</span></div>
+<p>Un procés en <strong><code>D</code></strong> <strong>no respon ni a <code>SIGKILL</code></strong> fins que acabi l’espera (típicament E/S a disc o xarxa: un NFS caigut). Compta també al <em>load average</em>. Si molts processos són en <code>D</code>, el sistema va lent <strong>encara que la CPU estigui lliure</strong>.</p>
+</div>
+</section>
+<section id="un-model-històric-unix-system-v-bach" class="slide level2">
+<h2>Un model històric: UNIX System V (Bach)</h2>
+<div class="errorcomu udl-component udl-errorcomu" title="Model històric: no és Linux">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-errorcomu"></use></svg><span>Error Comú — Model històric: no és Linux</span></div>
+<p>Molts llibres descriuen <strong>9 estats</strong>: <em>executant en mode usuari</em>, <em>executant en mode nucli</em>, <em>preparat en memòria</em>, <em>dormit en memòria</em>, <em>preparat intercanviat</em>, <em>dormit intercanviat</em>, <em>expropiat</em>, <em>creat</em> i <em>zombi</em>.</p>
+</div>
+<table class="caption-top">
+<colgroup>
+<col style="width: 39%">
+<col style="width: 60%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Model</th>
+<th style="text-align: left;">A <strong>Linux</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Swapping</strong> de processos <strong>sencers</strong> (estats intercanviat)</td>
+<td style="text-align: left;">Linux fa <strong>paginació</strong>: intercanvia <strong>pàgines</strong>, no processos</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Nucli no expropiable</strong>: un procés <em>expropiat</em> torna sempre a mode usuari</td>
+<td style="text-align: left;">Un procés pot perdre la CPU <strong>mentre executa codi del nucli</strong> (segons <code>CONFIG_PREEMPT*</code>)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">El <strong>mode</strong> (usuari/nucli) forma part de l’<strong>estat</strong></td>
+<td style="text-align: left;">El mode és <strong>ortogonal</strong> a l’estat del planificador</td>
+</tr>
+</tbody>
+</table>
+<div class="definicio udl-component udl-definicio" title="Ortogonal">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-definicio"></use></svg><span>Definició — Ortogonal</span></div>
+<p>Dos conceptes són <strong>ortogonals</strong> si <strong>no depenen l’un de l’altre</strong>: el mode d’execució (usuari/nucli) és independent de l’estat del planificador (preparat, execució, bloquejat…).</p>
+</div>
+</section>
+<section id="demo-fg-i-bg" class="slide level2">
+<h2>Demo · <code>fg</code> i <code>bg</code></h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div id="demo-ctrlz_ssh_T1">
+
+</div>
+<script>
+AsciinemaPlayer.create(
+  'cast/01/ctrlz_ssh_T1.cast',
+  document.getElementById('demo-ctrlz_ssh_T1'),
+  {
+    autoPlay: false,
+    loop: false,
+    speed: 0.8,
+    cols: 50,
+    rows: 20
+  }
+);
+</script>
+</div><div class="column" style="width:50%;">
+<div id="demo-ctrlz_ssh_T2">
+
+</div>
+<script>
+AsciinemaPlayer.create(
+  'cast/01/ctrlz_ssh_T2.cast',
+  document.getElementById('demo-ctrlz_ssh_T2'),
+  {
+    autoPlay: false,
+    loop: false,
+    speed: 0.8,
+    cols: 50,
+    rows: 20
+  }
+);
+</script>
+</div></div>
+</section>
+<section id="la-pcb-de-linux-task_struct" class="slide level2">
+<h2>La PCB de Linux: <code>task_struct</code></h2>
+<p><strong>PCB</strong>: l’estructura de dades del nucli amb <strong>tot el que sap d’un procés</strong>. A Linux és <code>struct task_struct</code> (<code>include/linux/sched.h</code>).</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 19%">
+<col style="width: 46%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Categoria</th>
+<th style="text-align: left;">Camps (nucli 6.1, seleccionats)</th>
+<th style="text-align: left;">Per a què</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Estat</td>
+<td style="text-align: left;"><code>__state</code>, <code>exit_state</code>, <code>exit_code</code>, <code>exit_signal</code></td>
+<td style="text-align: left;">Estat i com ha acabat</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Identitat i arbre</td>
+<td style="text-align: left;"><code>pid</code>, <code>tgid</code>, <code>real_parent</code>, <code>parent</code>, <code>children</code>, <code>sibling</code>, <code>group_leader</code></td>
+<td style="text-align: left;">Qui és i on és a l’arbre</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Planificació</td>
+<td style="text-align: left;"><code>prio</code>, <code>static_prio</code>, <code>policy</code>, <code>sched_class</code>, <code>se</code>, <code>on_cpu</code></td>
+<td style="text-align: left;">Prioritat i estadístiques</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Memòria</td>
+<td style="text-align: left;"><code>mm</code>, <code>active_mm</code></td>
+<td style="text-align: left;">L’espai d’adreces</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Context de CPU</td>
+<td style="text-align: left;"><code>thread</code> (registres desats), <code>stack</code> (pila del nucli), <code>thread_info</code></td>
+<td style="text-align: left;">Reprendre el procés</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Recursos</td>
+<td style="text-align: left;"><code>files</code>, <code>fs</code>, <code>nsproxy</code>, <code>signal</code>, <code>sighand</code>, <code>cred</code></td>
+<td style="text-align: left;">Fitxers, dir. de treball, <em>namespaces</em>, senyals, credencials</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Nom</td>
+<td style="text-align: left;"><code>comm</code></td>
+<td style="text-align: left;">Nom curt (<code>ps</code> el mostra)</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="pid-tgid-i-tid" class="slide level2">
+<h2>PID, TGID i TID</h2>
+<div class="concepte udl-component udl-concepte" title="PID, TGID i TID">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-concepte"></use></svg><span>Concepte — PID, TGID i TID</span></div>
+<p>Cada <em>task</em> té el seu identificador <strong><code>pid</code></strong> al nucli. El que l’espai d’usuari anomena <strong>PID</strong> és el <strong><code>tgid</code></strong> (l’identificador del <em>grup de fils</em>), i el que anomena <strong>TID</strong> és el <strong><code>pid</code></strong> de la <em>task</em>.</p>
+</div>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Espai d’usuari</th>
+<th style="text-align: left;">Camp del nucli</th>
+<th style="text-align: left;">Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>getpid()</code></td>
+<td style="text-align: left;"><code>tgid</code></td>
+<td style="text-align: left;">Igual per a <strong>tots els fils</strong> d’un procés</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>gettid()</code></td>
+<td style="text-align: left;"><code>pid</code></td>
+<td style="text-align: left;"><strong>Únic per a cada fil</strong></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Fil principal</td>
+<td style="text-align: left;"><code>pid == tgid</code></td>
+<td style="text-align: left;">El fil principal té TID = PID</td>
+</tr>
+</tbody>
+</table>
+<div class="concepte fragment udl-component udl-concepte" title="Fil">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-concepte"></use></svg><span>Concepte — Fil</span></div>
+<p>Un <strong>fil</strong> és una <em>task</em> que comparteix amb les altres l’espai d’adreces i part dels recursos. Cada fil té un <strong>TID</strong> propi, però tots els fils del mateix procés tenen el mateix <strong>TGID</strong>. Un <strong>procés</strong> és un conjunt de fils amb el mateix <strong>TGID</strong>.</p>
+</div>
+</section>
+<section id="demo-fils-tasks-amb-el-mateix-tgid" class="slide level2">
+<h2>Demo · fils = tasks amb el mateix TGID</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource c number-lines code-with-copy"><code class="sourceCode c"><span id="cb2-1"><a aria-label="1"></a><span class="dt">static</span> <span class="dt">void</span> <span class="op">*</span>fil<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>arg<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-2"><a aria-label="2"></a>    printf<span class="op">(</span><span class="st">"fil </span><span class="sc">%ld</span><span class="st">: getpid()=</span><span class="sc">%d</span><span class="st"> gettid()=</span><span class="sc">%ld\n</span><span class="st">"</span><span class="op">,(</span><span class="dt">long</span><span class="op">)</span>arg<span class="op">,</span> getpid<span class="op">(),</span> syscall<span class="op">(</span>SYS_gettid<span class="op">));</span></span>
+<span id="cb2-3"><a aria-label="3"></a>    fflush<span class="op">(</span>stdout<span class="op">);</span>sleep<span class="op">(</span><span class="dv">30</span><span class="op">);</span><span class="cf">return</span> NULL<span class="op">;</span></span>
+<span id="cb2-4"><a aria-label="4"></a><span class="op">}</span></span>
+<span id="cb2-5"><a aria-label="5"></a></span>
+<span id="cb2-6"><a aria-label="6"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-7"><a aria-label="7"></a>    pthread_t t<span class="op">[</span><span class="dv">3</span><span class="op">];</span></span>
+<span id="cb2-8"><a aria-label="8"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">long</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">3</span><span class="op">;</span> i<span class="op">++)</span></span>
+<span id="cb2-9"><a aria-label="9"></a>        <span class="cf">if</span> <span class="op">(</span>pthread_create<span class="op">(&amp;</span>t<span class="op">[</span>i<span class="op">],</span> NULL<span class="op">,</span> fil<span class="op">,</span> <span class="op">(</span><span class="dt">void</span> <span class="op">*)</span>i<span class="op">)</span> <span class="op">!=</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb2-10"><a aria-label="10"></a>            <span class="cf">return</span> EXIT_FAILURE<span class="op">;</span></span>
+<span id="cb2-11"><a aria-label="11"></a>    printf<span class="op">(</span><span class="st">"main:  getpid()=</span><span class="sc">%d</span><span class="st"> gettid()=</span><span class="sc">%ld\n</span><span class="st">"</span><span class="op">,</span> getpid<span class="op">(),</span> syscall<span class="op">(</span>SYS_gettid<span class="op">));</span></span>
+<span id="cb2-12"><a aria-label="12"></a>    fflush<span class="op">(</span>stdout<span class="op">);</span></span>
+<span id="cb2-13"><a aria-label="13"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">3</span><span class="op">;</span> i<span class="op">++)</span></span>
+<span id="cb2-14"><a aria-label="14"></a>        pthread_join<span class="op">(</span>t<span class="op">[</span>i<span class="op">],</span> NULL<span class="op">);</span></span>
+<span id="cb2-15"><a aria-label="15"></a>    <span class="cf">return</span> EXIT_SUCCESS<span class="op">;</span></span>
+<span id="cb2-16"><a aria-label="16"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="demo-fils-tasks-amb-el-mateix-tgid-1" class="slide level2">
+<h2>Demo · fils = tasks amb el mateix TGID</h2>
+<div id="demo-threads">
+
+</div>
+<script>
+AsciinemaPlayer.create(
+  'cast/01/threads.cast',
+  document.getElementById('demo-threads'),
+  {
+    autoPlay: false,
+    loop: false,
+    speed: 0.8,
+    cols: 150,
+    rows: 20
+  }
+);
+</script>
+<div class="exemple udl-component udl-exemple" title="Què cal observar">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exemple"></use></svg><span>Exemple — Què cal observar</span></div>
+<ul>
+<li><strong>Un sol PID</strong>, però <code>NLWP = 4</code>: el fil principal i tres fils més.</li>
+<li>Cada fil té <strong>TID propi</strong> i <code>/proc/PID/task/</code> en llista un per fil.</li>
+</ul>
+</div>
+</section>
+<section id="proc-la-pcb-des-de-lespai-dusuari" class="slide level2">
+<h2><code>/proc</code>: la PCB des de l’espai d’usuari</h2>
+<div class="columns">
+<div class="column" style="width:55%;">
+<p><code>/proc/&lt;pid&gt;/</code> és un <strong>pseudo-sistema de fitxers</strong>: el nucli genera el contingut <strong>en llegir-lo</strong>, a partir de la PCB i altres estructures. No és el «taula de processos» real.</p>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Entrada</th>
+<th style="text-align: left;">Què mostra</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>status</code></td>
+<td style="text-align: left;">Estat, PID, PPID, memòria, canvis de context</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>stat</code></td>
+<td style="text-align: left;">El mateix, en una línia (l’usa <code>ps</code>)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>cmdline</code>, <code>environ</code></td>
+<td style="text-align: left;">Arguments i entorn (separats per <code>\0</code>)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>fd/</code>, <code>cwd</code>, <code>exe</code></td>
+<td style="text-align: left;">Fitxers oberts, directori, executable</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>maps</code></td>
+<td style="text-align: left;">Espai d’adreces</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>task/</code></td>
+<td style="text-align: left;">Un directori per fil</td>
+</tr>
+</tbody>
+</table>
+</div><div class="column" style="width:45%;">
+<div class="bonapractica udl-component udl-bonapractica" title="Llegiu-ho bé">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-bonapractica"></use></svg><span>Bona Pràctica — Llegiu-ho bé</span></div>
+<p><code>less /proc/&lt;pid&gt;/stat</code> és il·legible. Useu <code>cat /proc/&lt;pid&gt;/status</code>, i per a <code>environ</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a aria-hidden="true" tabindex="-1"></a><span class="fu">tr</span> <span class="st">'\0'</span> <span class="st">'\n'</span> <span class="op">&lt;</span> /proc/<span class="va">$$</span>/environ</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>$$</code> és el PID del shell actual.</p>
+</div>
+</div></div>
+</section>
+<section id="demo-procpid" class="slide level2">
+<h2>Demo · <code>/proc/PID</code></h2>
+<div id="demo-procfs">
+
+</div>
+<script>
+AsciinemaPlayer.create(
+  'cast/01/procfs.cast',
+  document.getElementById('demo-procfs'),
+  {
+    autoPlay: false,
+    loop: false,
+    speed: 0.8,
+    cols: 150,
+    rows: 20
+  }
+);
+</script>
+</section>
+<section id="larbre-de-processos-pid-0-1-i-2" class="slide level2">
+<h2>L’arbre de processos: PID 0, 1 i 2</h2>
+<div class="columns">
+<div class="column" style="width:55%;">
+<p><img data-src="figures/01/jera.png"></p>
+</div><div class="column" style="width:45%;">
+<ul>
+<li class="fragment">Els únics processos <strong>sense pare</strong> són el <strong>PID 0</strong> (l’inactiu). <strong>PID 1 i PID 2 són fills seus</strong>, no orfes.</li>
+<li class="fragment">El <strong>PID 1</strong> neix com a <strong>fil del nucli</strong> que fa <strong><code>exec</code></strong> de <code>/sbin/init</code>.</li>
+<li class="fragment"><strong>Init</strong> és el pare de tots els processos <strong>d’usuari</strong> (i adopta els orfes), <strong>no</strong> de tots els processos.</li>
+<li class="fragment">Els <strong>fils del nucli</strong> <code>[kworker/...]</code> són fills del PID 2.</li>
+</ul>
+</div></div>
+</section>
+<section id="demo-larbre-de-processos" class="slide level2">
+<h2>Demo · l’arbre de processos</h2>
+<div id="demo-tree">
+
+</div>
+<script>
+AsciinemaPlayer.create(
+  'cast/01/tree.cast',
+  document.getElementById('demo-tree'),
+  {
+    autoPlay: false,
+    loop: false,
+    speed: 0.8,
+    cols: 150,
+    rows: 20
+  }
+);
+</script>
+</section>
+<section id="grups-de-processos-i-sessions" class="slide level2">
+<h2>Grups de processos i sessions</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><img data-src="figures/01/grups.png"></p>
+</div><div class="column" style="width:50%;">
+<ul>
+<li class="fragment">Un <strong>grup de processos</strong> (PGID) agrupa processos relacionats; una ordre com <code>a | b | c</code> és <strong>un grup</strong>.</li>
+<li class="fragment">Una <strong>sessió</strong> (SID) agrupa grups i està lligada a un <strong>terminal de control</strong>.</li>
+<li class="fragment">Els senyals del terminal (<code>^C</code>, <code>^Z</code>) van al <strong>grup en primer pla</strong>.</li>
+<li class="fragment">Es pot enviar un senyal a tot un grup: <code>kill -TERM -- -&lt;PGID&gt;</code>.</li>
+</ul>
+</div></div>
+</section>
+<section id="demo-grups-de-processos-i-sessions" class="slide level2">
+<h2>Demo · grups de processos i sessions</h2>
+<div id="demo-groups">
+
+</div>
+<script>
+AsciinemaPlayer.create(
+  'cast/01/groups.cast',
+  document.getElementById('demo-groups'),
+  {
+    autoPlay: false,
+    loop: false,
+    speed: 0.8,
+    cols: 150,
+    rows: 20
+  }
+);
+</script>
+</section>
+<section id="observar-processos-ps-i-top" class="slide level2">
+<h2>Observar processos: <code>ps</code> i <code>top</code></h2>
+<div class="columns">
+<div class="column" style="width:52%;">
+<div class="terminal">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a aria-hidden="true" tabindex="-1"></a><span class="fu">ps</span>                     <span class="co"># els del teu usuari i terminal</span></span>
+<span id="cb4-2"><a aria-hidden="true" tabindex="-1"></a><span class="fu">ps</span> <span class="at">-e</span>                  <span class="co"># tots els processos</span></span>
+<span id="cb4-3"><a aria-hidden="true" tabindex="-1"></a><span class="fu">ps</span> <span class="at">-ef</span> <span class="at">--forest</span>        <span class="co"># arbre amb PPID</span></span>
+<span id="cb4-4"><a aria-hidden="true" tabindex="-1"></a><span class="fu">ps</span> <span class="at">-o</span> pid,ppid,pgid,sid,tty,stat,wchan:20,cmd</span>
+<span id="cb4-5"><a aria-hidden="true" tabindex="-1"></a><span class="fu">ps</span> <span class="at">-L</span> <span class="at">-p</span> <span class="op">&lt;</span>pid<span class="op">&gt;</span>         <span class="co"># els fils d'un procés</span></span>
+<span id="cb4-6"><a aria-hidden="true" tabindex="-1"></a><span class="fu">pstree</span> <span class="at">-p</span> <span class="at">-s</span> <span class="va">$$</span>        <span class="co"># de l'arrel al meu shell</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="concepte udl-component udl-concepte">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-concepte"></use></svg><span>Concepte</span></div>
+<p><strong><code>ps</code> sense opcions</strong> mostra els processos amb el <strong>mateix usuari efectiu i el mateix terminal de control</strong> que l’ordre, no «els de la sessió».</p>
+</div>
+</div><div class="column" style="width:48%;">
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Columna (<code>ps -l</code>)</th>
+<th style="text-align: left;">Significat</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>S</code></td>
+<td style="text-align: left;">Estat (<code>R S D T Z</code>)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>PPID</code></td>
+<td style="text-align: left;">PID del pare</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>C</code></td>
+<td style="text-align: left;">Ús de CPU (%)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>PRI</code>, <code>NI</code></td>
+<td style="text-align: left;">Prioritat i <em>nice</em></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>SZ</code></td>
+<td style="text-align: left;">Mida en <strong>pàgines</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>WCHAN</code></td>
+<td style="text-align: left;">Funció del nucli on <strong>dorm</strong></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>TIME</code></td>
+<td style="text-align: left;">CPU <strong>acumulada</strong></td>
+</tr>
+</tbody>
+</table>
+</div></div>
+<div class="concepte udl-component udl-concepte">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-concepte"></use></svg><span>Concepte</span></div>
+<ul>
+<li class="fragment"><strong>Load average</strong> (1, 5, 15 min): mitjana de tasks en <strong><code>R</code> + <code>D</code></strong>.</li>
+<li class="fragment">Un valor alt amb la CPU lliure vol dir molts processos en <strong><code>D</code></strong>.</li>
+</ul>
+</div>
+</section>
+<section id="demo-ps-com-a-eina-dinspecció-de-processos" class="slide level2">
+<h2>Demo · <code>ps</code> com a eina d’inspecció de processos</h2>
+<div id="demo-ps">
+
+</div>
+<script>
+AsciinemaPlayer.create(
+  'cast/01/ps_guiat.cast',
+  document.getElementById('demo-ps'),
+  {
+    autoPlay: false,
+    loop: false,
+    speed: 0.8,
+    cols: 150,
+    rows: 20
+  }
+);
+</script>
+</section>
+<section id="resum" class="slide level2">
+<h2>Resum</h2>
+<div class="resum udl-component udl-resum">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-resum"></use></svg><span>Resum</span></div>
+<ul>
+<li class="fragment">Un <strong>procés</strong> és un programa <strong>en execució</strong>: espai d’adreces, context de CPU i recursos del nucli.</li>
+<li class="fragment">El nucli <strong>canvia de context</strong> (per bloqueig o expropiació) per repartir la CPU: no és el mateix que un canvi de mode.</li>
+<li class="fragment">El model de <strong>5 estats</strong> s’ha de traduir a Linux: <code>R</code> cobreix <em>preparat</em> i <em>execució</em>; <code>D</code> pot no respondre immediatament als senyals mentre està en aquesta espera.</li>
+<li class="fragment">La <strong>PCB</strong> (<code>task_struct</code>) és el que <code>fork()</code>/<code>clone()</code> copia o comparteix: la clau de la sessió següent.</li>
+<li class="fragment">L’arbre té arrel al <strong>PID 0</strong>; <strong>init</strong> és avantpassat dels processos <strong>d’usuari</strong>.</li>
+</ul>
+</div>
+</section>
+<section id="extra-strace" class="slide level2">
+<h2>Extra · <code>strace</code></h2>
+<div id="demo-strace_ssh">
+
+</div>
+<script>
+AsciinemaPlayer.create(
+  'cast/01/strace_ssh.cast',
+  document.getElementById('demo-strace_ssh'),
+  {
+    autoPlay: false,
+    loop: false,
+    speed: 0.8,
+    cols: 150,
+    rows: 20
+  }
+);
+</script>
+
+
+</section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+<p>Sistemes Operatius (SO) &nbsp; <a href="../../../index.html" class="home-link" aria-label="Inici"><svg class="home-icon" viewbox="0 0 120 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 52 C27 43 39 31 60 12 C78 30 93 42 108 51" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"></path><path d="M25 48 C25 64 25 76 24 87 C35 84 45 85 53 87 M95 48 C95 64 95 76 97 87 C87 84 77 85 68 87" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M51 87V70 C51 64 55 60 60 60 C65 60 69 64 69 70V87Z" fill="currentColor"></path><path d="M82 29V17 C82 14 84 13 87 13H94 C96 13 97 15 96 17 C94 20 93 24 94 32Z" fill="currentColor"></path></svg></a></p>
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="../../../site_libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="../../../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="../../../site_libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="../../../site_libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="../../../site_libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="../../../site_libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="../../../site_libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="../../../site_libs/revealjs/plugin/search/search.js"></script>
+  <script src="../../../site_libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="../../../site_libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'fade',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1600,
+
+        height: 900,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 8.0e-2,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+          const outerScaffold = trigger.parentElement.cloneNode(true);
+          const codeEl = outerScaffold.querySelector('code');
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp("https:\/\/igualada\.os\.udl\.cat");
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>
