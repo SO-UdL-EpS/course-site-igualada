@@ -1879,6 +1879,244 @@
     ]
   },
   {
+    "objectID": "blocs/02-proc/teoria/02-create.html#mecanisme-de-creació-fork",
+    "href": "blocs/02-proc/teoria/02-create.html#mecanisme-de-creació-fork",
+    "title": "Processos: Creació",
+    "section": "Mecanisme de Creació fork()",
+    "text": "Mecanisme de Creació fork()\n\n\nfork() crea una còpia exacta del procés actual (el pare). Aquesta còpia esdevé el procés fill i s’executa independentment i simultàniament.\n#include &lt;sys/types.h&gt; # pid_t\n#include &lt;unistd.h&gt;    # fork()\nint main() {\n    pid_t pid = fork();\n    exit(0);\n}\n\n\n\n\n\n\n\nEspai de Memòria\n\n\nEls processos pare (A) i fill (B) no comparteixen espai de memòria. Cada procés té el seu propi espai d’adreces virtuals. No obstant això, el contingut inicial de la memòria del procés pare es copia a l’espai d’adreces del fill.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#jerarquia-de-processos-fork",
+    "href": "blocs/02-proc/teoria/02-create.html#jerarquia-de-processos-fork",
+    "title": "Processos: Creació",
+    "section": "Jerarquia de Processos · fork()",
+    "text": "Jerarquia de Processos · fork()\nex1.c\n#include &lt;stdlib.h&gt;\n#include &lt;unistd.h&gt;\n#include &lt;sys/types.h&gt;\nint main() {\n    pid_t pid;\n    pid = fork();\n    sleep(20);\n    exit(0);\n}\n\nTerminal A\nwatch -n 1 \"ps -ef | grep ex1\"\n\nTerminal B\necho $$ && gcc ex1.c -o ex1 && ./ex1",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#execució-independentfork",
+    "href": "blocs/02-proc/teoria/02-create.html#execució-independentfork",
+    "title": "Processos: Creació",
+    "section": "Execució Independent:fork()",
+    "text": "Execució Independent:fork()\n\n\n\n\n\n\n\n\n\nValors de retorn: fork()\n\n\n\nSi fork() té èxit:\n\nRetorna un valor \\(&gt;0\\) al procés pare (el PID del procés fill).\nRetorna 0 al procés fill.\n\n\n\n\n\n\n\n\n\n\n\n\n\nConsideracions\n\n\n\nSi fork() falla en el procés pare, retorna un valor \\(&lt;0\\) i el codi d’error es guarda a la variable errno.\nSi fork() falla, no es crea cap procés fill.\n\n\n\n\n\n\n\n\n\n\n\n\nObservacions\n\n\n\nLa instrucció exit(0) s’executa tant pel procés pare com pel fill.\nCada procés executa el seu propi printf de manera independent.\n\n\n\n\n\n\nex2.c\n#include &lt;stdio.h&gt;\n#include &lt;unistd.h&gt;\n#include &lt;errno.h&gt;\nint main() {\n    pid_t pid = fork();\n    if (pid == 0) {\n        printf(\"Hello, I am the child.\\n\");\n    } else if (pid &gt; 0) {\n        printf(\"Hello I am the father.\\n\");\n    } else {\n        perror(\"Error creating process\");\n    }\n    exit(0);\n}\n\nExecució\ngcc ex2.c -o ex2 && ./ex2",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#registres-i-fork",
+    "href": "blocs/02-proc/teoria/02-create.html#registres-i-fork",
+    "title": "Processos: Creació",
+    "section": "Registres i fork()",
+    "text": "Registres i fork()\n\n\n\n\n\n\n\nsequenceDiagram\n    participant P as Pare\n    participant K as Kernel\n    participant C as Fill\n\n    Note over P: Estat abans de fork()&lt;br&gt;RAX = ?, PC = adreça_crida_fork\n    P-&gt;&gt;K: `fork()`\n    activate K\n    K--&gt;&gt;P: Retorn al Pare:&lt;br&gt;RAX = Child PID &lt;br&gt;PC = adreça_següent_instrucció\n    K--&gt;&gt;C: Retorn al Fill:&lt;br&gt;RAX = 0&lt;br&gt;PC = adreça_següent_instrucció\n    deactivate K\n\n    par Execució paral·lela des del mateix punt\n        P--&gt;&gt;P: Pare: Continua l'execució.(`if (RAX &gt; 0)`)\n        C--&gt;&gt;C: Fill: Continua l'execució.(`if (RAX == 0)`)\n    end\n\n    Note over P,C: Ambdós processos s'executen de manera independent\n\n\n\n\n\n\n\n\n\n\n\n\nsequenceDiagram\n    participant P as Pare\n    participant K as Kernel\n\n    Note over P: Estat abans de fork()&lt;br&gt;RAX = ?, PC = adreça_crida_fork\n    P-&gt;&gt;K: `fork()`\n    activate K\n   \n    alt Error a `fork()`\n        P--xK: Retorna al pare:&lt;br&gt;RAX = -1\n        Note over P: `errno` s'estableix.\n    end\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nObservació\n\n\nA l’arquitectura x86, el registre RAX s’utilitza per emmagatzemar el valor de retorn de la crida al sistema fork(). En altres arquitectures, s’utilitzen registres equivalents (sovint R0 o X0).",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#gestió-derrors-fork",
+    "href": "blocs/02-proc/teoria/02-create.html#gestió-derrors-fork",
+    "title": "Processos: Creació",
+    "section": "Gestió d’errors: fork()",
+    "text": "Gestió d’errors: fork()\n\n\n\n\n\n\n\n\nError\nDescripció\nRaons\n\n\n\n\nEAGAIN\nS’han assolit els límits del sistema.\n- Límits de processos (RLIMIT_NPROC)- Límits de fils (threads-max)- Esgotament dels PIDs disponibles (pid_max)- Límits de cgroup\n\n\nENOMEM\nMemòria del Kernel insuficient.\n- Escassetat de RAM o Swap- Problemes amb els espais de noms PID\n\n\nENOSYS\nfork() no és compatible.\n- Maquinari sense unitat de gestió de memòria (MMU)- SO no compatible amb fork()\n\n\nERESTARTNOINTR\nCrida interrompuda i reiniciada.\nIntern al Kernel, no és un error vist directament per l’aplicació.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#forkbomb",
+    "href": "blocs/02-proc/teoria/02-create.html#forkbomb",
+    "title": "Processos: Creació",
+    "section": "Forkbomb",
+    "text": "Forkbomb\n\n\n\n\n\n\n\n\n\nQuè és una Forkbomb?\n\n\nA forkbomb és un atac de denegació de servei que crea ràpidament un nombre massiu de processos, sobrecarregant els recursos del sistema i fent-lo inoperable.\nint main() {\n    while (1) {\n        fork();\n    }\n\n\n\n\n\n\n\n\n\n\n\nMecanismes de Protecció\n\n\nEl nucli implementa dos mecanismes per prevenir les forkbombs:\n\nLímits de processos per usuari: Cada usuari té un límit configurable sobre el nombre de processos que pot crear, establert per ulimit -u.\nLímit global de processos: El sistema té un límit global sobre el nombre total de processos que pot crear, configurat per pid_max (típicament 32768).\n\n\n\n\n\n\n\n\n\n\n\nsequenceDiagram\n    participant P as Procés Forkbomb \n    participant K as Nucli (Kernel)\n    \n    P-&gt;&gt;K: fork() (1r intent)\n    activate K\n    K--&gt;&gt;P: Retorna PID del fill1\n    deactivate K\n    \n    par Creació Exponencial\n        P-&gt;&gt;K: fork() (2n intent)\n        activate K\n        K--&gt;&gt;P: Retorna PID del fill2\n        deactivate K\n        \n        fork1-&gt;&gt;K: fork() (1r fill)\n        activate K\n        K--&gt;&gt;fork1: Retorna PID del fill3\n        deactivate K\n    end\n    \n    Note over K: Processos creats: 4\n    \n    loop Fase de Saturació\n        P/fills-&gt;&gt;K: fork() (Nou intent)\n        activate K\n        alt Abans del límit\n            K--&gt;&gt;P/fills: Retorna nou PID\n        else Després del límit\n            K--&gt;&gt;P/fills: Retorna -1 (EAGAIN)\n        end\n        deactivate K\n    end\n    \n    Note over K: Estat Final:&lt;br&gt;- Límit de processos assolit&lt;br&gt;- CPU al 100%&lt;br&gt;- Nous forks bloquejats.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#gestió-de-memòria-fork",
+    "href": "blocs/02-proc/teoria/02-create.html#gestió-de-memòria-fork",
+    "title": "Processos: Creació",
+    "section": "Gestió de Memòria · fork()",
+    "text": "Gestió de Memòria · fork()\n\n\n\n\n\n\n\n\n\n\n\nObservacions\n\n\n\nEn el moment de fork() \\(\\rightarrow\\) El pare i el fill comparteixen el mateix espai d’adreces físic.\nCada procés té el seu propi espai d’adreces virtual, que tradueix a l’espai d’adreces físic compartit.\n\n\n\n\n\n\n\n\n\n\n\n\nDuplicats idèntics\n\n\nInicialment, el pare i el fill són duplicats idèntics. A partir d’aquest moment, cada procés té el seu propi espai d’adreces virtual, i qualsevol modificació en un no afecta l’altre.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#duplicació-rightarrow-independència",
+    "href": "blocs/02-proc/teoria/02-create.html#duplicació-rightarrow-independència",
+    "title": "Processos: Creació",
+    "section": "Duplicació \\(\\rightarrow\\) Independència",
+    "text": "Duplicació \\(\\rightarrow\\) Independència\n\n\nstatic int i = 11; //.data\nint main() {\n    int j= 22; // Stack\n    int *z = malloc(sizeof(int)); // Heap\n\n    pid_t pid;\n    switch (pid=fork())\n    {\n    case 0:\n        i *= 3; \n        j *= 3;\n        *z=44;\n        break;\n    default:\n        sleep(3);\n        *z=55;\n        break;\n    }\n \n    printf(\"PID=%ld %s data=%d stack=%d heap=%d\\n\", \n        (long) getpid(), \n        (pid == 0) ? \"(child) \" : \"(parent)\",i,j,*z);\n    free(z);\n    exit(0);\n}\n\n\n\n\n\n\nsequenceDiagram\n    participant P as Pare\n    participant OS as Kernel\n    participant C as Fill\n\n    Note over P: i=11, j=22, z=NULL\n    P-&gt;&gt;OS: `fork()`\n\n    par\n        C-&gt;&gt;OS: i *= 3 (.data) [i es converteix en 33]\n        activate OS\n        OS--&gt;&gt;C: Duplica Pàgina, Actualitza VMA\n        deactivate OS\n\n        C-&gt;&gt;OS: j *= 3 (stack) [j es converteix en 66]\n        activate OS\n        OS--&gt;&gt;C: Duplica Pàgina, Actualitza VMA\n        deactivate OS\n\n        C-&gt;&gt;OS: *z = 44 (heap) [z apunta a 44]\n        activate OS\n        OS--&gt;&gt;C: Duplica Pàgina, Actualitza VMA\n        deactivate OS\n    end\n\n    P-&gt;&gt;OS: *z = 55 (heap) [z apunta a 55]\n    activate OS\n    OS--&gt;&gt;P: Duplica Pàgina, Actualitza VMA\n    deactivate OS\n\n    C-&gt;&gt;C: Prints: data=33 stack=66 heap=44\n    P-&gt;&gt;P: Prints: data=11 stack=22 heap=55",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#copy-on-write-cow",
+    "href": "blocs/02-proc/teoria/02-create.html#copy-on-write-cow",
+    "title": "Processos: Creació",
+    "section": "Copy-On-Write (CoW)",
+    "text": "Copy-On-Write (CoW)\n\n\n\n\n\n\n\nsequenceDiagram\n    participant P as Pare\n    participant M as Memòria\n    participant C as Fill\n\n    P-&gt;&gt;C: Crea Procés Fill\n    M-&gt;&gt;C: Comparteix Pàgina X\n\n\n    rect rgba(255, 200, 200, 0.2)\n    Note over P,C: Post-fork - Operació escriptura\n    P-&gt;&gt;M: Modifica Pàgina X\n    M-&gt;&gt;P: Crea còpia privada X' (RW)\n    M-&gt;&gt;C: Manté original X (RO)\n\n    end\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nCom funciona?\n\n\nQuan fork() crea un nou procés, el pare i el fill inicialment comparteixen les mateixes pàgines de memòria. Aquestes es marquen com a només lectura per a ambdós processos.\n\nCrea una còpia privada d’aquella pàgina per al procés que escriu.\nAssigna la nova pàgina amb permisos d’escriptura.\nManté la transparència per a l’aplicació.\n\nAquest mecanisme optimitza tant el temps com la memòria, ja que només es copia la informació modificada.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#indeterminisme-fork",
+    "href": "blocs/02-proc/teoria/02-create.html#indeterminisme-fork",
+    "title": "Processos: Creació",
+    "section": "Indeterminisme fork()",
+    "text": "Indeterminisme fork()\n\n\nint main() {\n  pid_t pid;\n  if ((pid = fork()) &lt; 0) {\n    exit(-1);\n  } else if (pid == 0) {  \n    printf(\"My name is Rhaenyra\")\n  } else {\n    printf(\"My name is King Viserys\");\n  }\n  exit(0);\n}\n\n\n\n\n\n\n\n\n\n\nObservacions\n\n\n\nLa execució del programa és no determinista.\nEl procés pare i el fill poden executar-se en qualsevol ordre.\nL’planificador del sistema operatiu decideix quin procés s’executa en un moment donat.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#wait",
+    "href": "blocs/02-proc/teoria/02-create.html#wait",
+    "title": "Processos: Creació",
+    "section": "wait()",
+    "text": "wait()\n\n\n\n\n\n\n\n\n\nwait()\n\n\nLa crida al sistema wait() permet que un procés pare bloquegi la seva execució fins que un dels seus processos fills canviï d’estat (normalment, quan finalitza). També recupera informació sobre el fill que ha canviat d’estat.\n#include &lt;sys/types.h&gt;\n#include &lt;sys/wait.h&gt;\npid_t wait(int *_Nullable wstatus);\n\n\n\n\n\n\n\n\n\n\n\nPropietats\n\n\n\nRetorna el PID del procés fill que ha canviat d’estat, o -1 en cas d’error.\nSi wstatus no és NULL, l’estat de sortida del fill s’hi emmagatzema.\n\n\n\n\n\n\n\n\n\n\n\n\nSIGCHLD\n\n\nEl senyal SIGCHLD s’envia al procés pare quan un fill canvia d’estat.\n\n\n\n\n\n\n\n\n\n\nsequenceDiagram\n    participant P as Pare\n    participant K as Kernel\n    participant C as Fill\n    P-&gt;&gt;K: fork()\n    K--&gt;&gt;C: Crea Procés Fill\n    activate C\n    K--&gt;&gt;P: Retorna PID del Fill\n    C-&gt;&gt;C: Execució del Fill\n    P-&gt;&gt;K: wait()\n    K-&gt;&gt;K: Bloqueja pare fins que el fill canviï d'estat\n    C-&gt;&gt;K: exit(42)\n    deactivate C\n    K-&gt;&gt;K: PCB retingut \n    K--&gt;&gt;P: notificació SIGCHLD\n    P-&gt;&gt;K: Llegeix estat del Fill Reads\n    K-&gt;&gt;K: Allibera PCB fill\n    K--&gt;&gt;P: Retorna estat (42)",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#example-wait",
+    "href": "blocs/02-proc/teoria/02-create.html#example-wait",
+    "title": "Processos: Creació",
+    "section": "Example: wait()",
+    "text": "Example: wait()\n\n\nint main() {\n    pid_t pid;\n    if ((pid = fork()) &lt; 0) {\n        exit(-1);\n    } else if (pid == 0) {  \n        printf(\"My name is Rhaenyra\")\n    } else {\n        wait(NULL);\n        printf(\"My name is King Viserys\");\n        }\n    exit(0);\n}\n\n\n\n\n\n\n\nObservacions\n\n\n\nEl procés pare utilitza wait() per esperar que el seu fill finalitzi abans de continuar. Això assegura que la sortida serà sempre My name is King Viserys després de My name is Rhaenyra.\nNo garanteix que el fill s’executi primer. Només assegura que el fill acabi abans que el pare reprengui la seva execució.\nwait() és per a un pare que espera un fill. Un fill no pot utilitzar-lo per esperar el seu pare.\nAltres mecanismes, com pause() i senyals, són necessaris per a diferents escenaris de sincronització.\n\n\n\n\n\n\n\n\n\n\n\nsequenceDiagram\n    participant P as Pare (PID X)\n    participant K as Kernel\n    participant C as Fill (PID Y)\n    \n    P-&gt;&gt;K: fork()\n    K--&gt;&gt;C: Crea Procés\n    K--&gt;&gt;P: Retorna PID Y\n    K--&gt;&gt;C: Returns 0\n    \n    P-&gt;&gt;K: wait()\n    Note right of P: Estat: WAITING\n    K-&gt;&gt;K: Planificador: continua Fill\n    \n    activate C\n    C-&gt;&gt;C: printf(\"My name is Rhaenyra\")\n    C-&gt;&gt;K: exit(0)\n    deactivate C\n    \n    K--&gt;&gt;P: SIGCHLD + status (0)\n    Note right of P: Estat: RUNNING\n    P-&gt;&gt;P: printf(\"My name is King Viserys\")\n    P-&gt;&gt;K: exit(0)",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#waitpid",
+    "href": "blocs/02-proc/teoria/02-create.html#waitpid",
+    "title": "Processos: Creació",
+    "section": "waitpid()",
+    "text": "waitpid()\n\n\n\n\n\n\n\n\n\nwaitpid()\n\n\nPermet que un procés pare esperi de manera selectiva que un procés fill específic canviï d’estat. També proporciona més control sobre el comportament de l’espera mitjançant opcions addicionals.\npid_t waitpid(pid_t pid, int *_Nullable wstatus, int options);\n\n\n\n\n\n\n\n\n\n\n\nOptions\n\n\n\nWNOHANG: No bloquejar si cap procés fill ha canviat d’estat. Això significa que la crida retorna immediatament.\nWUNTRACED: També retorna per processos fills que han estat aturats (per exemple, per un senyal).\nWCONTINUED: També retorna per processos fills que han estat reprès després d’haver estat aturat (disponible des de Linux 2.6.10).\n\n\n\n\n\n\n\n\n\n\n\n\n\nValors de pid\n\n\n\n\\(\\lt -1\\): Espera qualsevol procés fill el PID del qual sigui igual al valor absolut de pid.\n\\(= -1\\): Espera qualsevol procés fill.\n\\(= 0\\): Espera qualsevol procés fill el PID del qual sigui igual al del procés que crida (el pare).\n\\(\\gt 0\\): Espera el procés fill específic identificat per aquest valor de pid.\n\n\n\n\n\n\n\n\n\n\n\n\nObservació\n\n\nwait(NULL) és equivalent a waitpid(-1, NULL, 0)",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#example-waitpid",
+    "href": "blocs/02-proc/teoria/02-create.html#example-waitpid",
+    "title": "Processos: Creació",
+    "section": "Example: waitpid()",
+    "text": "Example: waitpid()\n\n\nint main() {\n    printf(\"Dracarys!\\n\");\n    pid_t drogon = fork();\n    if (drogon == 0) { \n        sleep(1);  \n        printf(\"Fire and blood in KL!\\n\");\n        exit(0); \n    }\n    pid_t rhaegal = fork();\n    if (rhaegal == 0) {\n        sleep(3); \n        printf(\"Flying over Saltspear\\n\");\n        exit(0);\n    }\n    waitpid(rhaegal, NULL, 0);\n    printf(\"Rhaegal has returned\\n\");\n    waitpid(drogon, NULL, 0);\n    printf(\"Drogon has returned\\n\");\n    exit(0);\n}\n\n\n\n\n\n\nsequenceDiagram\n    participant D as Daenerys\n    participant K as Kernel\n    participant D1 as Drogon\n    participant D2 as Rhaegal\n  \n    Note over D: dracarys!\n    D-&gt;&gt;K: fork() (Drogon)\n    activate D1\n    D-&gt;&gt;K: fork() (Rhaegal)\n    activate D2\n\n    Note over D1: sleep(1)\n    D1-&gt;&gt;D1: printf(\"Fire and blood in KL!\")\n    D1-&gt;&gt;K: exit(0)\n    deactivate D1\n\n    Note over D2: sleep(3)\n    D2-&gt;&gt;D2: printf(\"Flying over Saltspear\")\n    D2-&gt;&gt;K: exit(0)\n    deactivate D2\n\n    D-&gt;&gt;K: waitpid(Rhaegal)\n    K--&gt;&gt;D: Returns Rhaegal's PID (Rhaegal finished)\n    D-&gt;&gt;D: printf(\"Rhaegal has returned\")\n    \n    D-&gt;&gt;K: waitpid(Drogon)\n    K--&gt;&gt;D: Returns Drogon's PID (Drogon finished)\n    D-&gt;&gt;D: printf(\"Drogon has returned\")\n\n    D-&gt;&gt;K: exit(0)",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#waitwaitpid-macros",
+    "href": "blocs/02-proc/teoria/02-create.html#waitwaitpid-macros",
+    "title": "Processos: Creació",
+    "section": "wait()/waitpid(): Macros",
+    "text": "wait()/waitpid(): Macros\nEl paràmetre status de wait() o waitpid() és un enter (int) que conté informació codificada sobre com ha finalitzat (o ha canviat d’estat) el procés fill.\nPer a X86:\n\n\n\n\n\n\n\n\nBits\nCamp\nDescripció\n\n\n\n\n0-6\nCodi de Senyal\nEl número del senyal que ha causat la terminació del fill, si n’hi ha. (WTERMSIG(status)).\n\n\n7\nIndicador de Core Dump\nIndicador si s’ha generat un core dump. (WCOREDUMP(status)).\n\n\n8-15\nExit\nEl valor de retorn de l’exit() del fill. (WEXITSTATUS(status))\n\n\n16-31\n-\nGeneralment no utilitzat o reservat.\n\n\n\n\n\n\n\n\n\n\nQuè passa amb exit(256)?\n\n\nEl número 256 es converteix en un codi de sortida de 0 perquè els codis de sortida solen estar limitats a 8 bits (0-255). Això es deu al fet que el sistema operatiu només utilitza els 8 bits menys significatius per al codi de sortida. Per tant, WEXITSTATUS(status) retornarà 0.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#waitwaitpid-status-macros",
+    "href": "blocs/02-proc/teoria/02-create.html#waitwaitpid-status-macros",
+    "title": "Processos: Creació",
+    "section": "wait()/waitpid(): Status Macros",
+    "text": "wait()/waitpid(): Status Macros\n\nWIFEXITED(status): Retorna cert (no zero) si el procés fill ha finalitzat normalment mitjançant exit().\nWEXITSTATUS(status): Retorna el codi de sortida del fill. Només vàlid si WIFEXITED(status) és cert.\nWIFSIGNALED(status): Retorna cert si el canvi d’estat del fill ha estat causat per un senyal.\nWTERMSIG(status): Retorna el número del senyal que ha causat la terminació del procés fill. Només vàlid si WIFSIGNALED(status) és cert.\nWCOREDUMP(status): Retorna cert si el fill ha terminat i ha generat un core dump. Només vàlid si WIFSIGNALED(status) és cert. (La disponibilitat pot variar).\nWIFSTOPPED(status): Retorna cert si el fill ha estat suspès (aturat) per un senyal. Per detectar això, waitpid() ha de ser cridat amb l’opció WUNTRACED.\nWSTOPSIG(status): Retorna el número del senyal que ha aturat el fill. Només vàlid si WIFSTOPPED(status) és cert.\nWIFCONTINUED(status): Retorna cert si un fill que havia estat aturat ha estat reactivat (amb SIGCONT). Requereix l’opció WCONTINUED en waitpid() (Linux kernel 2.6 i posteriors).",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#exemple-waitpid-macros",
+    "href": "blocs/02-proc/teoria/02-create.html#exemple-waitpid-macros",
+    "title": "Processos: Creació",
+    "section": "Exemple: waitpid() & Macros",
+    "text": "Exemple: waitpid() & Macros\n\n\nint main(int argc, char *argv[]){\npid_t pid, w; int status; \npid = fork();\nif (pid == 0) { \n    if (argc == 1) pause(); \n    exit(atoi(argv[1]));\n} else {                    \n  do {\n    w = waitpid(pid, &status, WUNTRACED | WCONTINUED);\n    if (w == -1) { perror(\"waitpid\"); exit(EXIT_FAILURE);}\n    if (WIFEXITED(status)) {\n      printf(\"ex8: child %d exited, status=%d\\n\", \n        w, WEXITSTATUS(status))\n    } else if (WIFSIGNALED(status)) {\n      printf(\"ex8: child %d killed by signal %d\\n\", \n        w, WTERMSIG(status));    \n    } else if (WIFSTOPPED(status)) {\n      printf(\"ex8: child %d stopped by signal %d\\n\", \n        w, WSTOPSIG(status));\n    } else if (WIFCONTINUED(status)) {\n      printf(\"ex8: child %d continued\\n\", w);\n  } while (!WIFEXITED(status) && !WIFSIGNALED(status));\n}\n\n\n\n\n\n\n\n\n\nPregunta?\n\n\nQuin serà el resultat després d’executar ./ex8 42?",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
     "objectID": "index.html",
     "href": "index.html",
     "title": "Sistemes Operatius",
@@ -2268,6 +2506,20 @@
       "Bloc 2 · Processos",
       "Teoria",
       "Processos: concepte, estats i PCB"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/activitats/02-create.html",
+    "href": "blocs/02-proc/activitats/02-create.html",
+    "title": "Creació amb fork i wait",
+    "section": "",
+    "text": "Quants processos es creen en executar el següent codi i quina és la seqüència d’esdeveniments?\nfork();\nif (wait(st)&gt;0)\n    fork();\nexit();\nQuantes vegades wait(st) retorna -1?\nid = fork();\nwait(st); //1\nif (id==0)\n    fork();\nwait(st); //2\nexit();\nQuantes vegades wait(st) retorna -1?\nid = fork();\nwait(st); //1\nif (id!=0)\n    fork();\nwait(st); //2\nexit();\nAnalitza el següent codi i respon les preguntes:\nint main(void) {\n    int a = 1;\n    pid_t fork_ret = fork();\n    if (fork_ret &gt; 0) {\n        a++;\n        fprintf(stdout, \"Parent: int a is %d at %p\\n\", a, &a);\n        } else if (fork_ret == 0) { a++;}\n        fprintf(stdout, \"Child: int a is %d at %p\\n\", a, &a);\n    return 0;\n}\n\nQuin és el valor de a en el procés pare i en el procés fill?\nS’imprimirà la mateixa adreça de memòria per a a en el procés pare i en el procés fill?\nS’imprimirà a la mateixa sortida estàndard (STDOUT) en el procés pare i en el procés fill?\n\nAnalitza el següent codi i justifica quin serà el resultat de la seva execució:\nint main(void) {\n    int* stuff = malloc(sizeof(int));\n    *stuff = 5;\n    pid_t fork_ret = fork();\n    printf(\"The last digit of pi is %d\\n\", *stuff);\n    if (fork_ret == 0)\n        *stuff = 6;\n    return 0;\n}\nQuina és la sortida del següent codi?\nint main()\n{\n    switch(fork()){\n        case 0: printf(\"A\");\n                switch(fork()){\n                    case 0: printf(\"B\");exit(0);\n                    default: switch(fork()){\n                        case 0: printf(\"C\");exit(0);\n                        default: wait(&st);wait(&st);exit(0);\n                    }            \n                wait(&st);\n                }\n        default: wait(&st); exit(0);\n    }\n}\nIndiqueu quin és el resultat de l’execució del següent codi. Nombre de processos creats, parantiu, informació de stdout, procés zombi, etc.\n#define N 10\nint main()\n{\n    int pid = getpid();\n    for (int x=0; x&lt;N x++)\n    {\n        switch(fork())\n        {\n            case 0:\n                if ( (pid%2) == 0 )\n                    printf(\"Pid Fill: %d\\n\", getpid());\n                    exit(0); //3\n                break;\n\n            default:\n                if ( (pid%2) !== 0 )\n                    exit(0); //2\n                break;\n        }\n    }\n    wait(NULL);\n    exit(0); //1\n}",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Activitats",
+      "Creació amb `fork` i `wait`"
     ]
   },
   {
