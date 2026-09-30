@@ -68,6 +68,10 @@ website:
             - section: Teoria
               contents:
               - href: blocs/02-proc/teoria/01-procs.qmd
+              - href: blocs/02-proc/teoria/02-create.qmd
+            - section: "Activitats"
+              contents:
+              - href: blocs/02-proc/activitats/02-create.qmd
     
 
 

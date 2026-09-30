@@ -1,0 +1,121 @@
+---
+title: Creació amb `fork` i `wait`
+description: Creació de processos en C
+lang: ca
+---
+
+1. Quants processos es creen en executar el següent codi i quina és la seqüència d'esdeveniments? 
+
+    ```c
+    fork();
+    if (wait(st)>0)
+        fork();
+    exit();
+    ```
+
+2. Quantes vegades `wait(st)` retorna -1?
+
+    ```c    
+    id = fork();
+    wait(st); //1
+    if (id==0)
+        fork();
+    wait(st); //2
+    exit();
+    ```
+
+3. Quantes vegades `wait(st)` retorna -1?
+
+
+    ```c
+    id = fork();
+    wait(st); //1
+    if (id!=0)
+        fork();
+    wait(st); //2
+    exit();
+    ```
+
+5. Analitza el següent codi i respon les preguntes:
+
+    ```c
+    int main(void) {
+        int a = 1;
+        pid_t fork_ret = fork();
+        if (fork_ret > 0) {
+            a++;
+            fprintf(stdout, "Parent: int a is %d at %p\n", a, &a);
+            } else if (fork_ret == 0) { a++;}
+            fprintf(stdout, "Child: int a is %d at %p\n", a, &a);
+        return 0;
+    }
+    ```
+
+    - Quin és el valor de `a` en el procés pare i en el procés fill?
+    - S'imprimirà la mateixa adreça de memòria per a `a` en el procés pare i en el procés fill?
+    - S'imprimirà a la mateixa sortida estàndard (STDOUT) en el procés pare i en el procés fill?
+
+
+6. Analitza el següent codi i justifica quin serà el resultat de la seva execució:
+
+    ```c
+    int main(void) {
+        int* stuff = malloc(sizeof(int));
+        *stuff = 5;
+        pid_t fork_ret = fork();
+        printf("The last digit of pi is %d\n", *stuff);
+        if (fork_ret == 0)
+            *stuff = 6;
+        return 0;
+    }
+    ```
+
+7. Quina és la sortida del següent codi?
+
+    ```c
+    int main()
+    {
+        switch(fork()){
+            case 0: printf("A");
+                    switch(fork()){
+                        case 0: printf("B");exit(0);
+                        default: switch(fork()){
+                            case 0: printf("C");exit(0);
+                            default: wait(&st);wait(&st);exit(0);
+                        }            
+                    wait(&st);
+                    }
+            default: wait(&st); exit(0);
+        }
+    }
+    ```
+
+8. Indiqueu quin és el resultat de l'execució del següent codi. Nombre de processos creats, parantiu, informació de stdout, procés zombi, etc.
+
+    ```c
+    #define N 10
+    int main()
+    {
+        int pid = getpid();
+        for (int x=0; x<N x++)
+        {
+            switch(fork())
+            {
+                case 0:
+                    if ( (pid%2) == 0 )
+                        printf("Pid Fill: %d\n", getpid());
+                        exit(0); //3
+                    break;
+            
+                default:
+                    if ( (pid%2) !== 0 )
+                        exit(0); //2
+                    break;
+            }
+        }
+        wait(NULL);
+        exit(0); //1
+    }
+    ```
+
+    
