@@ -728,3 +728,308 @@ Quin serà el resultat després d'executar `./ex8 42`?
 :::
 ::::
 ::::::
+
+## Estat Zombie
+
+::: {.callout-note title="TASK_ZOMBIE"}
+Després d'executar `exit()`, un procés no s'elimina immediatament. En lloc d'això, entra en l'estat **zombie** fins que el seu procés pare processa la notificació `SIGCHLD` o crida a `wait()` o `waitpid()`. Si el pare no ho fa, el fill roman en aquest estat indefinidament.
+:::
+
+::::: columns
+::: {.column width="50%"}
+``` {.c code-line-numbers="false"}
+// kernel/exit.c
+void do_exit(long code) {
+    struct task_struct *tsk = current;
+    tsk->exit_code = code;          
+    exit_files(tsk);               
+    exit_mm(tsk);                 
+    exit_notify(tsk, group_dead);   
+}
+```
+:::
+
+::: {.column width="50%"}
+``` {.c code-line-numbers="false"}
+// kernel/exit.c
+static void exit_notify(struct task_struct *tsk, 
+    int group_dead) {
+    tsk->exit_state = EXIT_ZOMBIE;  
+    if (group_dead)
+        tsk->exit_state |= EXIT_DEAD;
+    tsk->exit_signal : SIGCHLD;
+    do_notify_parent(tsk, sig);
+}
+```
+:::
+:::::
+
+## Orfes (I)
+
+Un procés fill esdevé un **orfe** si el seu pare mor abans que ell. En aquest cas, el nucli reassigna el fill al procés `init` (PID 1), que és responsable de netejar els processos orfes.
+
+```{mermaid}
+%%| echo: false
+sequenceDiagram
+    participant Pare
+    participant Kernel
+    participant Fill
+    participant Init
+    
+    Parent->>Kernel: exit() // Mor el pare
+    Kernel->>Kernel: find_zombie_children()
+    Note right of Child: Orfe, fill sense pare
+    Kernel->>Child: reparent_to_init()
+    loop Cada 0.5s
+        Init->>Kernel: wait()
+        Kernel->>Init: Retorna estat
+        Kernel->>Child: release_task()
+    end
+```
+
+## Orfes i Zombies
+
+| Escenari | Mecanisme del Nucli | Temps | Consequències |
+|------------------|------------------|------------------|------------------|
+| **Pare Actiu** | Reté `task_struct` fins a `wait()` | Indefinit | \- Consumeix entrada a la taula de processos<br>- PID es manté ocupat |
+| **Pare Mort** | `reparent_to_init()` (PPID←1) | $\le 1$ ms | \- Init neteja en segon pla (`init` periodicament crida `wait()`) <br>- Alliberació asíncrona |
+| **Reinici del Sistema** | `kill(pid, SIGKILL)` | 0 | \- Alliberació forçada (via `do_exit()` global) <br>- Sense garantia d'estat |
+| **Pare ignora SIGCHLD** | Zombie persistent | $\infty$ | \- Requereix intervenció manual |
+
+## Example: Factoria de Zombies
+
+::::: columns
+::: {.column width="50%"}
+#### zombie.c
+
+``` {.c code-line-numbers="false"}
+int main() {
+pid_t pid; int i;
+for (i = 0; ; i++) {
+    pid = fork();
+    if (pid > 0) {
+        printf("Zombie #%d born:\n",i + 1); 
+        sleep(1);
+    } else {
+        printf("*drool* Boooo! Arrgghh! *slobber*\n");
+        exit(0);
+    }
+}
+return 0;
+}
+```
+:::
+
+::: {.column width="40%"}
+#### Terminal 1
+
+``` bash
+$ gcc zombie.c -o zombie
+$ ./zombie
+Zombie #1 born:
+Zombie #2 born:
+Zombie #3 born:
+...
+```
+
+------------------------------------------------------------------------
+
+#### Terminal 2
+
+``` bash
+$ watch -n 1 "ps u -C zombie"
+```
+:::
+:::::
+
+::: aside
+Inspired by <https://www.refining-linux.org/archives/7-Dr.-Frankenlinux-or-how-to-create-zombie-processes.html>
+:::
+
+## Transformació: `exec()`
+
+:::::::: columns
+:::::: {.column width="65%"}
+::: {.callout-note title="Processos Independents?"}
+Tots els processos (excepte PID 1) tenen un pare i es creen amb `clone()`. Però com poden `bash` i `ls` ser programes separats?
+:::
+
+::: {.callout-note title="Syscall `exec()`"}
+Permet **transformar un procés fill en un nou programa**. La família de funcions `exec` substitueix l'espai d'adreces del procés actual amb un nou programa carregat des d'un fitxer executable (*normalment en format ELF*).
+:::
+
+| Component | Abans de `exec()` | Després de `exec()` |
+|------------------|----------------------|--------------------------------|
+| Espai d'Adreces | Mapeig original | Nou mapeig **ELF** |
+| Taula de Fitxers | Heretat | Heretat (excepte `FD_CLOEXEC`) |
+| Registres CPU | Context original | **EIP**=punt d'entrada, **ESP**=pila |
+| Senyals | Handlers personalitzats | Tots restablerts a `SIG_DFL` |
+| Memòria Compartida | `MAP_SHARED` preservada | `MAP_PRIVATE` eliminada |
+
+::::::
+
+::: {.column width="35%"}
+```{mermaid}
+%%| echo: false
+sequenceDiagram
+    participant P as Original
+    participant K as Kernel
+    participant N as Nou
+
+    P->>K: execve("/bin/ls", ["ls","-l"], envp)
+    activate K
+
+    K->>K: Valida ELF (e_ident, permissions)
+    K->>K: flush_old_exec()
+    K->>K: free_pgtables()
+    K->>K: load_elf_binary()
+
+    Note over P,N: El PID no canvia: és el mateix procés a nivell de nucli
+
+    Note over K,N: Crear Nou Context
+    K->>N: Map .text (RX)
+    K->>N: Map .data/.bss (RW)
+    K->>N: setup_arg_pages(argv, envp) ⟶ stack
+    K->>N: setup_brk() ⟶ heap
+    K->>N: start_thread(entry_point) <br> PC/IP ← entry point of the ELF binary
+
+    deactivate K
+
+    Note over N: Nova execució de codi
+    N-->>K: Syscalls Futures
+    K-->>N: Returna
+
+    Note right of P: Els espai d'adreces original <br> s'ha destruït <br> `task_struct` és el mateix <br> però amb el nou codi carregat
+```
+:::
+::::::::
+
+## Familia `exec()`
+
+::::::::: columns
+::::: {.column width="40%"}
+![](figures/02/env.png)
+
+:::: {.callout-note title="Valors de retorn"}
+::: nonincremental
+-   Mai retorna en cas d'èxit (*substitueix completament el procés*).
+-   Retorna -1 només en cas d'error (*s'estableix `errno`*).
+:::
+::::
+:::::
+
+::::: {.column width="60%"}
+``` {.c code-line-numbers="false"}
+#include <unistd.h>
+// Variants with argument list (variable arguments)
+int execl(const char *path, const char *arg0, ..., NULL);                
+int execlp(const char *file, const char *arg0, ..., NULL);                  
+int execle(const char *path, const char *arg0, ..., NULL, 
+    char *const envp[]);
+```
+
+------------------------------------------------------------------------
+
+``` {.c code-line-numbers="false"}
+#include <unistd.h>
+// Variants with argument vector (array)
+int execv(const char *path, char *const argv[]);                         
+int execvp(const char *file, char *const argv[]);                       
+int execve(const char *path, char *const argv[],
+    char *const envp[]);             
+```
+
+:::: callout
+::: nonincremental
+-   `execve()` és la crida al sistema bàsica (*les altres són embolcalls de glibc*).
+-   Gestiona correctament SUID/SGID.
+:::
+::::
+:::::
+:::::::::
+
+## Exemple: `ls -la`
+
+::::: columns
+::: {.column width="50%"}
+``` {.c code-line-numbers="false"}
+int main() {
+    pid_t pid = fork();
+    if (pid == -1) { 
+        perror("fork");
+        exit(-1);
+    } else if (pid == 0) { 
+        char *args[] = {"ls", "-la", NULL};
+        execv("/bin/ls", args);
+        perror("execv fallat"); 
+        exit(-1);
+    } else { 
+        int status;
+        pid_t w = waitpid(pid, 
+            &status, WUNTRACED);
+    } exit(0);
+}
+```
+
+------------------------------------------------------------------------
+
+``` {.bash code-line-numbers="false"}
+gcc ex7.c -o ex7
+./ex7
+total 24
+drwxr-xr-x  2 user user 4096 Feb 20 10:00 .
+drwxr-xr-x 10 user user 4096 Feb 20 09:58 .. 
+-rwxr-xr-x 1 user user 70512 Feb 20 14:57 ex7
+-rw-r--r-- 1 user user   107 Feb 20 13:23 ex7.c
+```
+:::
+
+::: {.column width="50%"}
+```{mermaid}
+%%| echo: false
+sequenceDiagram
+    box rgb(240,240,240) Parent Process
+    participant P
+    end
+    
+    box rgb(240,240,240) Kernel
+    participant K
+    end
+    
+    box rgb(240,240,240) Child Process
+    participant F
+    end
+
+    P->>K: Calls `fork()`
+    activate K
+    K-->>F: Crea una nova còpia del procés (Fill, PID Y)<br> amb memòria idèntica (CoW)
+    K-->>P: Retorna PID Y al Pare
+    deactivate K
+    
+    par Execució Concurrent
+        F->>K: Crida `execv("/bin/ls", ["ls","-la"], NULL)`
+        
+        activate K
+        K->>K: Valida `/bin/ls` (permissos, format)
+        K->>K: Esborra tota la memòria del Fill (F)**
+        K->>K: Carrega `ls` a la memòria del Fill**<br>  (codi, dades, nova pila)
+        K->>K: Reconfigura els registres de la CPU i el PC/IP<br>  al punt d'entrada de `ls`
+        deactivate K
+
+        activate F
+        F->>F: Executa el programa `/bin/ls -la`<br>Genera la llista a `stdout`.
+        F->>K: `exit(0)` (Finalitza `/bin/ls`)
+        deactivate F
+        
+        activate P
+        P->>K: `waitpid(PID Y, &status, WUNTRACED)`
+        deactivate P
+    end
+
+    K-->>P: Notifica al Pare que el fill (ara `ls`) ha acabat.
+    activate P
+    P->>K: `exit(0)` (Finalitza el Pare)
+    deactivate P
+```
+:::
+:::::
