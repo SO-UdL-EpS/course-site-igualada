@@ -2117,6 +2117,104 @@
     ]
   },
   {
+    "objectID": "blocs/02-proc/teoria/02-create.html#estat-zombie",
+    "href": "blocs/02-proc/teoria/02-create.html#estat-zombie",
+    "title": "Processos: Creació",
+    "section": "Estat Zombie",
+    "text": "Estat Zombie\n\n\n\n\n\n\n\nTASK_ZOMBIE\n\n\nDesprés d’executar exit(), un procés no s’elimina immediatament. En lloc d’això, entra en l’estat zombie fins que el seu procés pare processa la notificació SIGCHLD o crida a wait() o waitpid(). Si el pare no ho fa, el fill roman en aquest estat indefinidament.\n\n\n\n\n\n\n// kernel/exit.c\nvoid do_exit(long code) {\n    struct task_struct *tsk = current;\n    tsk-&gt;exit_code = code;          \n    exit_files(tsk);               \n    exit_mm(tsk);                 \n    exit_notify(tsk, group_dead);   \n}\n\n// kernel/exit.c\nstatic void exit_notify(struct task_struct *tsk, \n    int group_dead) {\n    tsk-&gt;exit_state = EXIT_ZOMBIE;  \n    if (group_dead)\n        tsk-&gt;exit_state |= EXIT_DEAD;\n    tsk-&gt;exit_signal : SIGCHLD;\n    do_notify_parent(tsk, sig);\n}",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#orfes-i",
+    "href": "blocs/02-proc/teoria/02-create.html#orfes-i",
+    "title": "Processos: Creació",
+    "section": "Orfes (I)",
+    "text": "Orfes (I)\nUn procés fill esdevé un orfe si el seu pare mor abans que ell. En aquest cas, el nucli reassigna el fill al procés init (PID 1), que és responsable de netejar els processos orfes.\n\n\n\n\n\nsequenceDiagram\n    participant Pare\n    participant Kernel\n    participant Fill\n    participant Init\n    \n    Parent-&gt;&gt;Kernel: exit() // Mor el pare\n    Kernel-&gt;&gt;Kernel: find_zombie_children()\n    Note right of Child: Orfe, fill sense pare\n    Kernel-&gt;&gt;Child: reparent_to_init()\n    loop Cada 0.5s\n        Init-&gt;&gt;Kernel: wait()\n        Kernel-&gt;&gt;Init: Retorna estat\n        Kernel-&gt;&gt;Child: release_task()\n    end",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#orfes-i-zombies",
+    "href": "blocs/02-proc/teoria/02-create.html#orfes-i-zombies",
+    "title": "Processos: Creació",
+    "section": "Orfes i Zombies",
+    "text": "Orfes i Zombies\n\n\n\n\n\n\n\n\n\nEscenari\nMecanisme del Nucli\nTemps\nConsequències\n\n\n\n\nPare Actiu\nReté task_struct fins a wait()\nIndefinit\n- Consumeix entrada a la taula de processos- PID es manté ocupat\n\n\nPare Mort\nreparent_to_init() (PPID←1)\n\\(\\le 1\\) ms\n- Init neteja en segon pla (init periodicament crida wait()) - Alliberació asíncrona\n\n\nReinici del Sistema\nkill(pid, SIGKILL)\n0\n- Alliberació forçada (via do_exit() global) - Sense garantia d’estat\n\n\nPare ignora SIGCHLD\nZombie persistent\n\\(\\infty\\)\n- Requereix intervenció manual",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#example-factoria-de-zombies",
+    "href": "blocs/02-proc/teoria/02-create.html#example-factoria-de-zombies",
+    "title": "Processos: Creació",
+    "section": "Example: Factoria de Zombies",
+    "text": "Example: Factoria de Zombies\n\n\nzombie.c\nint main() {\npid_t pid; int i;\nfor (i = 0; ; i++) {\n    pid = fork();\n    if (pid &gt; 0) {\n        printf(\"Zombie #%d born:\\n\",i + 1); \n        sleep(1);\n    } else {\n        printf(\"*drool* Boooo! Arrgghh! *slobber*\\n\");\n        exit(0);\n    }\n}\nreturn 0;\n}\n\nTerminal 1\n$ gcc zombie.c -o zombie\n$ ./zombie\nZombie #1 born:\nZombie #2 born:\nZombie #3 born:\n...\n\nTerminal 2\n$ watch -n 1 \"ps u -C zombie\"\n\n\n\nInspired by https://www.refining-linux.org/archives/7-Dr.-Frankenlinux-or-how-to-create-zombie-processes.html",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#transformació-exec",
+    "href": "blocs/02-proc/teoria/02-create.html#transformació-exec",
+    "title": "Processos: Creació",
+    "section": "Transformació: exec()",
+    "text": "Transformació: exec()\n\n\n\n\n\n\n\n\n\nProcessos Independents?\n\n\nTots els processos (excepte PID 1) tenen un pare i es creen amb clone(). Però com poden bash i ls ser programes separats?\n\n\n\n\n\n\n\n\n\n\n\nSyscall exec()\n\n\nPermet transformar un procés fill en un nou programa. La família de funcions exec substitueix l’espai d’adreces del procés actual amb un nou programa carregat des d’un fitxer executable (normalment en format ELF).\n\n\n\n\n\n\n\n\n\n\n\n\nComponent\nAbans de exec()\nDesprés de exec()\n\n\n\n\nEspai d’Adreces\nMapeig original\nNou mapeig ELF\n\n\nTaula de Fitxers\nHeretat\nHeretat (excepte FD_CLOEXEC)\n\n\nRegistres CPU\nContext original\nEIP=punt d’entrada, ESP=pila\n\n\nSenyals\nHandlers personalitzats\nTots restablerts a SIG_DFL\n\n\nMemòria Compartida\nMAP_SHARED preservada\nMAP_PRIVATE eliminada\n\n\n\n\n\n\n\n\n\nsequenceDiagram\n    participant P as Original\n    participant K as Kernel\n    participant N as Nou\n\n    P-&gt;&gt;K: execve(\"/bin/ls\", [\"ls\",\"-l\"], envp)\n    activate K\n\n    K-&gt;&gt;K: Valida ELF (e_ident, permissions)\n    K-&gt;&gt;K: flush_old_exec()\n    K-&gt;&gt;K: free_pgtables()\n    K-&gt;&gt;K: load_elf_binary()\n\n    Note over P,N: El PID no canvia: és el mateix procés a nivell de nucli\n\n    Note over K,N: Crear Nou Context\n    K-&gt;&gt;N: Map .text (RX)\n    K-&gt;&gt;N: Map .data/.bss (RW)\n    K-&gt;&gt;N: setup_arg_pages(argv, envp) ⟶ stack\n    K-&gt;&gt;N: setup_brk() ⟶ heap\n    K-&gt;&gt;N: start_thread(entry_point) &lt;br&gt; PC/IP ← entry point of the ELF binary\n\n    deactivate K\n\n    Note over N: Nova execució de codi\n    N--&gt;&gt;K: Syscalls Futures\n    K--&gt;&gt;N: Returna\n\n    Note right of P: Els espai d'adreces original &lt;br&gt; s'ha destruït &lt;br&gt; `task_struct` és el mateix &lt;br&gt; però amb el nou codi carregat",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#familia-exec",
+    "href": "blocs/02-proc/teoria/02-create.html#familia-exec",
+    "title": "Processos: Creació",
+    "section": "Familia exec()",
+    "text": "Familia exec()\n\n\n\n\n\n\n\n\n\n\nValors de retorn\n\n\n\nMai retorna en cas d’èxit (substitueix completament el procés).\nRetorna -1 només en cas d’error (s’estableix errno).\n\n\n\n\n\n\n#include &lt;unistd.h&gt;\n// Variants with argument list (variable arguments)\nint execl(const char *path, const char *arg0, ..., NULL);                \nint execlp(const char *file, const char *arg0, ..., NULL);                  \nint execle(const char *path, const char *arg0, ..., NULL, \n    char *const envp[]);\n\n#include &lt;unistd.h&gt;\n// Variants with argument vector (array)\nint execv(const char *path, char *const argv[]);                         \nint execvp(const char *file, char *const argv[]);                       \nint execve(const char *path, char *const argv[],\n    char *const envp[]);             \n\n\n\n\nexecve() és la crida al sistema bàsica (les altres són embolcalls de glibc).\nGestiona correctament SUID/SGID.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#exemple-ls--la",
+    "href": "blocs/02-proc/teoria/02-create.html#exemple-ls--la",
+    "title": "Processos: Creació",
+    "section": "Exemple: ls -la",
+    "text": "Exemple: ls -la\n\n\nint main() {\n    pid_t pid = fork();\n    if (pid == -1) { \n        perror(\"fork\");\n        exit(-1);\n    } else if (pid == 0) { \n        char *args[] = {\"ls\", \"-la\", NULL};\n        execv(\"/bin/ls\", args);\n        perror(\"execv fallat\"); \n        exit(-1);\n    } else { \n        int status;\n        pid_t w = waitpid(pid, \n            &status, WUNTRACED);\n    } exit(0);\n}\n\ngcc ex7.c -o ex7\n./ex7\ntotal 24\ndrwxr-xr-x  2 user user 4096 Feb 20 10:00 .\ndrwxr-xr-x 10 user user 4096 Feb 20 09:58 .. \n-rwxr-xr-x 1 user user 70512 Feb 20 14:57 ex7\n-rw-r--r-- 1 user user   107 Feb 20 13:23 ex7.c\n\n\n\n\n\n\nsequenceDiagram\n    box rgb(240,240,240) Parent Process\n    participant P\n    end\n    \n    box rgb(240,240,240) Kernel\n    participant K\n    end\n    \n    box rgb(240,240,240) Child Process\n    participant F\n    end\n\n    P-&gt;&gt;K: Calls `fork()`\n    activate K\n    K--&gt;&gt;F: Crea una nova còpia del procés (Fill, PID Y)&lt;br&gt; amb memòria idèntica (CoW)\n    K--&gt;&gt;P: Retorna PID Y al Pare\n    deactivate K\n    \n    par Execució Concurrent\n        F-&gt;&gt;K: Crida `execv(\"/bin/ls\", [\"ls\",\"-la\"], NULL)`\n        \n        activate K\n        K-&gt;&gt;K: Valida `/bin/ls` (permissos, format)\n        K-&gt;&gt;K: Esborra tota la memòria del Fill (F)**\n        K-&gt;&gt;K: Carrega `ls` a la memòria del Fill**&lt;br&gt;  (codi, dades, nova pila)\n        K-&gt;&gt;K: Reconfigura els registres de la CPU i el PC/IP&lt;br&gt;  al punt d'entrada de `ls`\n        deactivate K\n\n        activate F\n        F-&gt;&gt;F: Executa el programa `/bin/ls -la`&lt;br&gt;Genera la llista a `stdout`.\n        F-&gt;&gt;K: `exit(0)` (Finalitza `/bin/ls`)\n        deactivate F\n        \n        activate P\n        P-&gt;&gt;K: `waitpid(PID Y, &status, WUNTRACED)`\n        deactivate P\n    end\n\n    K--&gt;&gt;P: Notifica al Pare que el fill (ara `ls`) ha acabat.\n    activate P\n    P-&gt;&gt;K: `exit(0)` (Finalitza el Pare)\n    deactivate P",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
     "objectID": "index.html",
     "href": "index.html",
     "title": "Sistemes Operatius",

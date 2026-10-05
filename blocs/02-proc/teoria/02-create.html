@@ -1180,6 +1180,407 @@ Jordi Mateo Fornés
 </div>
 </div>
 </div></div>
+</section>
+<section id="estat-zombie" class="slide level2">
+<h2>Estat Zombie</h2>
+<div title="TASK_ZOMBIE">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>TASK_ZOMBIE</strong></p>
+</div>
+<div class="callout-content">
+<p>Després d’executar <code>exit()</code>, un procés no s’elimina immediatament. En lloc d’això, entra en l’estat <strong>zombie</strong> fins que el seu procés pare processa la notificació <code>SIGCHLD</code> o crida a <code>wait()</code> o <code>waitpid()</code>. Si el pare no ho fa, el fill roman en aquest estat indefinidament.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb21-1"><a aria-hidden="true" tabindex="-1"></a><span class="co">// kernel/exit.c</span></span>
+<span id="cb21-2"><a aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> do_exit<span class="op">(</span><span class="dt">long</span> code<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb21-3"><a aria-hidden="true" tabindex="-1"></a>    <span class="kw">struct</span> task_struct <span class="op">*</span>tsk <span class="op">=</span> current<span class="op">;</span></span>
+<span id="cb21-4"><a aria-hidden="true" tabindex="-1"></a>    tsk<span class="op">-&gt;</span>exit_code <span class="op">=</span> code<span class="op">;</span>          </span>
+<span id="cb21-5"><a aria-hidden="true" tabindex="-1"></a>    exit_files<span class="op">(</span>tsk<span class="op">);</span>               </span>
+<span id="cb21-6"><a aria-hidden="true" tabindex="-1"></a>    exit_mm<span class="op">(</span>tsk<span class="op">);</span>                 </span>
+<span id="cb21-7"><a aria-hidden="true" tabindex="-1"></a>    exit_notify<span class="op">(</span>tsk<span class="op">,</span> group_dead<span class="op">);</span>   </span>
+<span id="cb21-8"><a aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div><div class="column" style="width:50%;">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb22-1"><a aria-hidden="true" tabindex="-1"></a><span class="co">// kernel/exit.c</span></span>
+<span id="cb22-2"><a aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span> exit_notify<span class="op">(</span><span class="kw">struct</span> task_struct <span class="op">*</span>tsk<span class="op">,</span> </span>
+<span id="cb22-3"><a aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> group_dead<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb22-4"><a aria-hidden="true" tabindex="-1"></a>    tsk<span class="op">-&gt;</span>exit_state <span class="op">=</span> EXIT_ZOMBIE<span class="op">;</span>  </span>
+<span id="cb22-5"><a aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>group_dead<span class="op">)</span></span>
+<span id="cb22-6"><a aria-hidden="true" tabindex="-1"></a>        tsk<span class="op">-&gt;</span>exit_state <span class="op">|=</span> EXIT_DEAD<span class="op">;</span></span>
+<span id="cb22-7"><a aria-hidden="true" tabindex="-1"></a>    tsk<span class="op">-&gt;</span>exit_signal <span class="op">:</span> SIGCHLD<span class="op">;</span></span>
+<span id="cb22-8"><a aria-hidden="true" tabindex="-1"></a>    do_notify_parent<span class="op">(</span>tsk<span class="op">,</span> sig<span class="op">);</span></span>
+<span id="cb22-9"><a aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div></div>
+</section>
+<section id="orfes-i" class="slide level2">
+<h2>Orfes (I)</h2>
+<p>Un procés fill esdevé un <strong>orfe</strong> si el seu pare mor abans que ell. En aquest cas, el nucli reassigna el fill al procés <code>init</code> (PID 1), que és responsable de netejar els processos orfes.</p>
+<div class="cell" data-reveal="true" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<pre class="mermaid mermaid-js">sequenceDiagram
+    participant Pare
+    participant Kernel
+    participant Fill
+    participant Init
+    
+    Parent-&gt;&gt;Kernel: exit() // Mor el pare
+    Kernel-&gt;&gt;Kernel: find_zombie_children()
+    Note right of Child: Orfe, fill sense pare
+    Kernel-&gt;&gt;Child: reparent_to_init()
+    loop Cada 0.5s
+        Init-&gt;&gt;Kernel: wait()
+        Kernel-&gt;&gt;Init: Retorna estat
+        Kernel-&gt;&gt;Child: release_task()
+    end
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+<section id="orfes-i-zombies" class="slide level2">
+<h2>Orfes i Zombies</h2>
+<table class="caption-top">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Escenari</th>
+<th>Mecanisme del Nucli</th>
+<th>Temps</th>
+<th>Consequències</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Pare Actiu</strong></td>
+<td>Reté <code>task_struct</code> fins a <code>wait()</code></td>
+<td>Indefinit</td>
+<td>- Consumeix entrada a la taula de processos<br>- PID es manté ocupat</td>
+</tr>
+<tr class="even">
+<td><strong>Pare Mort</strong></td>
+<td><code>reparent_to_init()</code> (PPID←1)</td>
+<td><span class="math inline">\(\le 1\)</span> ms</td>
+<td>- Init neteja en segon pla (<code>init</code> periodicament crida <code>wait()</code>) <br>- Alliberació asíncrona</td>
+</tr>
+<tr class="odd">
+<td><strong>Reinici del Sistema</strong></td>
+<td><code>kill(pid, SIGKILL)</code></td>
+<td>0</td>
+<td>- Alliberació forçada (via <code>do_exit()</code> global) <br>- Sense garantia d’estat</td>
+</tr>
+<tr class="even">
+<td><strong>Pare ignora SIGCHLD</strong></td>
+<td>Zombie persistent</td>
+<td><span class="math inline">\(\infty\)</span></td>
+<td>- Requereix intervenció manual</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="example-factoria-de-zombies" class="slide level2">
+<h2>Example: Factoria de Zombies</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<h4 id="zombie.c">zombie.c</h4>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb23-1"><a aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb23-2"><a aria-hidden="true" tabindex="-1"></a>pid_t pid<span class="op">;</span> <span class="dt">int</span> i<span class="op">;</span></span>
+<span id="cb23-3"><a aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="op">(</span>i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> <span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb23-4"><a aria-hidden="true" tabindex="-1"></a>    pid <span class="op">=</span> fork<span class="op">();</span></span>
+<span id="cb23-5"><a aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>pid <span class="op">&gt;</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb23-6"><a aria-hidden="true" tabindex="-1"></a>        printf<span class="op">(</span><span class="st">"Zombie #</span><span class="sc">%d</span><span class="st"> born:</span><span class="sc">\n</span><span class="st">"</span><span class="op">,</span>i <span class="op">+</span> <span class="dv">1</span><span class="op">);</span> </span>
+<span id="cb23-7"><a aria-hidden="true" tabindex="-1"></a>        sleep<span class="op">(</span><span class="dv">1</span><span class="op">);</span></span>
+<span id="cb23-8"><a aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb23-9"><a aria-hidden="true" tabindex="-1"></a>        printf<span class="op">(</span><span class="st">"*drool* Boooo! Arrgghh! *slobber*</span><span class="sc">\n</span><span class="st">"</span><span class="op">);</span></span>
+<span id="cb23-10"><a aria-hidden="true" tabindex="-1"></a>        exit<span class="op">(</span><span class="dv">0</span><span class="op">);</span></span>
+<span id="cb23-11"><a aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb23-12"><a aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb23-13"><a aria-hidden="true" tabindex="-1"></a><span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb23-14"><a aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div><div class="column" style="width:40%;">
+<h4 id="terminal-1">Terminal 1</h4>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb24-1"><a aria-label="1"></a><span class="ex">$</span> gcc zombie.c <span class="at">-o</span> zombie</span>
+<span id="cb24-2"><a aria-label="2"></a><span class="ex">$</span> ./zombie</span>
+<span id="cb24-3"><a aria-label="3"></a><span class="ex">Zombie</span> <span class="co">#1 born:</span></span>
+<span id="cb24-4"><a aria-label="4"></a><span class="ex">Zombie</span> <span class="co">#2 born:</span></span>
+<span id="cb24-5"><a aria-label="5"></a><span class="ex">Zombie</span> <span class="co">#3 born:</span></span>
+<span id="cb24-6"><a aria-label="6"></a><span class="ex">...</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<hr>
+<h4 id="terminal-2">Terminal 2</h4>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb25-1"><a aria-label="1"></a><span class="ex">$</span> watch <span class="at">-n</span> 1 <span class="st">"ps u -C zombie"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div></div>
+
+<aside><div>
+<p>Inspired by <a href="https://www.refining-linux.org/archives/7-Dr.-Frankenlinux-or-how-to-create-zombie-processes.html" class="uri">https://www.refining-linux.org/archives/7-Dr.-Frankenlinux-or-how-to-create-zombie-processes.html</a></p>
+</div></aside></section>
+<section id="transformació-exec" class="slide level2">
+<h2>Transformació: <code>exec()</code></h2>
+<div class="columns">
+<div class="column" style="width:65%;">
+<div title="Processos Independents?">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Processos Independents?</strong></p>
+</div>
+<div class="callout-content">
+<p>Tots els processos (excepte PID 1) tenen un pare i es creen amb <code>clone()</code>. Però com poden <code>bash</code> i <code>ls</code> ser programes separats?</p>
+</div>
+</div>
+</div>
+</div>
+<div title="Syscall `exec()`">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Syscall <code>exec()</code></strong></p>
+</div>
+<div class="callout-content">
+<p>Permet <strong>transformar un procés fill en un nou programa</strong>. La família de funcions <code>exec</code> substitueix l’espai d’adreces del procés actual amb un nou programa carregat des d’un fitxer executable (<em>normalment en format ELF</em>).</p>
+</div>
+</div>
+</div>
+</div>
+<table class="caption-top">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 30%">
+<col style="width: 44%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Component</th>
+<th>Abans de <code>exec()</code></th>
+<th>Després de <code>exec()</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Espai d’Adreces</td>
+<td>Mapeig original</td>
+<td>Nou mapeig <strong>ELF</strong></td>
+</tr>
+<tr class="even">
+<td>Taula de Fitxers</td>
+<td>Heretat</td>
+<td>Heretat (excepte <code>FD_CLOEXEC</code>)</td>
+</tr>
+<tr class="odd">
+<td>Registres CPU</td>
+<td>Context original</td>
+<td><strong>EIP</strong>=punt d’entrada, <strong>ESP</strong>=pila</td>
+</tr>
+<tr class="even">
+<td>Senyals</td>
+<td>Handlers personalitzats</td>
+<td>Tots restablerts a <code>SIG_DFL</code></td>
+</tr>
+<tr class="odd">
+<td>Memòria Compartida</td>
+<td><code>MAP_SHARED</code> preservada</td>
+<td><code>MAP_PRIVATE</code> eliminada</td>
+</tr>
+</tbody>
+</table>
+</div><div class="column" style="width:35%;">
+<div class="cell" data-reveal="true" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<pre class="mermaid mermaid-js">sequenceDiagram
+    participant P as Original
+    participant K as Kernel
+    participant N as Nou
+
+    P-&gt;&gt;K: execve("/bin/ls", ["ls","-l"], envp)
+    activate K
+
+    K-&gt;&gt;K: Valida ELF (e_ident, permissions)
+    K-&gt;&gt;K: flush_old_exec()
+    K-&gt;&gt;K: free_pgtables()
+    K-&gt;&gt;K: load_elf_binary()
+
+    Note over P,N: El PID no canvia: és el mateix procés a nivell de nucli
+
+    Note over K,N: Crear Nou Context
+    K-&gt;&gt;N: Map .text (RX)
+    K-&gt;&gt;N: Map .data/.bss (RW)
+    K-&gt;&gt;N: setup_arg_pages(argv, envp) ⟶ stack
+    K-&gt;&gt;N: setup_brk() ⟶ heap
+    K-&gt;&gt;N: start_thread(entry_point) &lt;br&gt; PC/IP ← entry point of the ELF binary
+
+    deactivate K
+
+    Note over N: Nova execució de codi
+    N--&gt;&gt;K: Syscalls Futures
+    K--&gt;&gt;N: Returna
+
+    Note right of P: Els espai d'adreces original &lt;br&gt; s'ha destruït &lt;br&gt; `task_struct` és el mateix &lt;br&gt; però amb el nou codi carregat
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="familia-exec" class="slide level2">
+<h2>Familia <code>exec()</code></h2>
+<div class="columns">
+<div class="column" style="width:40%;">
+<p><img data-src="figures/02/env.png"></p>
+<div title="Valors de retorn">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Valors de retorn</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li>Mai retorna en cas d’èxit (<em>substitueix completament el procés</em>).</li>
+<li>Retorna -1 només en cas d’error (<em>s’estableix <code>errno</code></em>).</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:60%;">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb26-1"><a aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;unistd.h&gt;</span></span>
+<span id="cb26-2"><a aria-hidden="true" tabindex="-1"></a><span class="co">// Variants with argument list (variable arguments)</span></span>
+<span id="cb26-3"><a aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> execl<span class="op">(</span><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>path<span class="op">,</span> <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>arg0<span class="op">,</span> <span class="op">...,</span> NULL<span class="op">);</span>                </span>
+<span id="cb26-4"><a aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> execlp<span class="op">(</span><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>file<span class="op">,</span> <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>arg0<span class="op">,</span> <span class="op">...,</span> NULL<span class="op">);</span>                  </span>
+<span id="cb26-5"><a aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> execle<span class="op">(</span><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>path<span class="op">,</span> <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>arg0<span class="op">,</span> <span class="op">...,</span> NULL<span class="op">,</span> </span>
+<span id="cb26-6"><a aria-hidden="true" tabindex="-1"></a>    <span class="dt">char</span> <span class="op">*</span><span class="dt">const</span> envp<span class="op">[]);</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<hr>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb27-1"><a aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;unistd.h&gt;</span></span>
+<span id="cb27-2"><a aria-hidden="true" tabindex="-1"></a><span class="co">// Variants with argument vector (array)</span></span>
+<span id="cb27-3"><a aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> execv<span class="op">(</span><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>path<span class="op">,</span> <span class="dt">char</span> <span class="op">*</span><span class="dt">const</span> argv<span class="op">[]);</span>                         </span>
+<span id="cb27-4"><a aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> execvp<span class="op">(</span><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>file<span class="op">,</span> <span class="dt">char</span> <span class="op">*</span><span class="dt">const</span> argv<span class="op">[]);</span>                       </span>
+<span id="cb27-5"><a aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> execve<span class="op">(</span><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>path<span class="op">,</span> <span class="dt">char</span> <span class="op">*</span><span class="dt">const</span> argv<span class="op">[],</span></span>
+<span id="cb27-6"><a aria-hidden="true" tabindex="-1"></a>    <span class="dt">char</span> <span class="op">*</span><span class="dt">const</span> envp<span class="op">[]);</span>             </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-none no-icon callout-style-simple">
+<div class="callout-body">
+<div class="callout-content">
+<ul>
+<li><code>execve()</code> és la crida al sistema bàsica (<em>les altres són embolcalls de glibc</em>).</li>
+<li>Gestiona correctament SUID/SGID.</li>
+</ul>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="exemple-ls--la" class="slide level2">
+<h2>Exemple: <code>ls -la</code></h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb28-1"><a aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb28-2"><a aria-hidden="true" tabindex="-1"></a>    pid_t pid <span class="op">=</span> fork<span class="op">();</span></span>
+<span id="cb28-3"><a aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>pid <span class="op">==</span> <span class="op">-</span><span class="dv">1</span><span class="op">)</span> <span class="op">{</span> </span>
+<span id="cb28-4"><a aria-hidden="true" tabindex="-1"></a>        perror<span class="op">(</span><span class="st">"fork"</span><span class="op">);</span></span>
+<span id="cb28-5"><a aria-hidden="true" tabindex="-1"></a>        exit<span class="op">(-</span><span class="dv">1</span><span class="op">);</span></span>
+<span id="cb28-6"><a aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span> <span class="cf">else</span> <span class="cf">if</span> <span class="op">(</span>pid <span class="op">==</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span> </span>
+<span id="cb28-7"><a aria-hidden="true" tabindex="-1"></a>        <span class="dt">char</span> <span class="op">*</span>args<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span><span class="st">"ls"</span><span class="op">,</span> <span class="st">"-la"</span><span class="op">,</span> NULL<span class="op">};</span></span>
+<span id="cb28-8"><a aria-hidden="true" tabindex="-1"></a>        execv<span class="op">(</span><span class="st">"/bin/ls"</span><span class="op">,</span> args<span class="op">);</span></span>
+<span id="cb28-9"><a aria-hidden="true" tabindex="-1"></a>        perror<span class="op">(</span><span class="st">"execv fallat"</span><span class="op">);</span> </span>
+<span id="cb28-10"><a aria-hidden="true" tabindex="-1"></a>        exit<span class="op">(-</span><span class="dv">1</span><span class="op">);</span></span>
+<span id="cb28-11"><a aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span> </span>
+<span id="cb28-12"><a aria-hidden="true" tabindex="-1"></a>        <span class="dt">int</span> status<span class="op">;</span></span>
+<span id="cb28-13"><a aria-hidden="true" tabindex="-1"></a>        pid_t w <span class="op">=</span> waitpid<span class="op">(</span>pid<span class="op">,</span> </span>
+<span id="cb28-14"><a aria-hidden="true" tabindex="-1"></a>            <span class="op">&amp;</span>status<span class="op">,</span> WUNTRACED<span class="op">);</span></span>
+<span id="cb28-15"><a aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span> exit<span class="op">(</span><span class="dv">0</span><span class="op">);</span></span>
+<span id="cb28-16"><a aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<hr>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb29-1"><a aria-hidden="true" tabindex="-1"></a><span class="fu">gcc</span> ex7.c <span class="at">-o</span> ex7</span>
+<span id="cb29-2"><a aria-hidden="true" tabindex="-1"></a><span class="ex">./ex7</span></span>
+<span id="cb29-3"><a aria-hidden="true" tabindex="-1"></a><span class="ex">total</span> 24</span>
+<span id="cb29-4"><a aria-hidden="true" tabindex="-1"></a><span class="ex">drwxr-xr-x</span>  2 user user 4096 Feb 20 10:00 .</span>
+<span id="cb29-5"><a aria-hidden="true" tabindex="-1"></a><span class="ex">drwxr-xr-x</span> 10 user user 4096 Feb 20 09:58 .. </span>
+<span id="cb29-6"><a aria-hidden="true" tabindex="-1"></a><span class="ex">-rwxr-xr-x</span> 1 user user 70512 Feb 20 14:57 ex7</span>
+<span id="cb29-7"><a aria-hidden="true" tabindex="-1"></a><span class="ex">-rw-r--r--</span> 1 user user   107 Feb 20 13:23 ex7.c</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div><div class="column" style="width:50%;">
+<div class="cell" data-reveal="true" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<pre class="mermaid mermaid-js">sequenceDiagram
+    box rgb(240,240,240) Parent Process
+    participant P
+    end
+    
+    box rgb(240,240,240) Kernel
+    participant K
+    end
+    
+    box rgb(240,240,240) Child Process
+    participant F
+    end
+
+    P-&gt;&gt;K: Calls `fork()`
+    activate K
+    K--&gt;&gt;F: Crea una nova còpia del procés (Fill, PID Y)&lt;br&gt; amb memòria idèntica (CoW)
+    K--&gt;&gt;P: Retorna PID Y al Pare
+    deactivate K
+    
+    par Execució Concurrent
+        F-&gt;&gt;K: Crida `execv("/bin/ls", ["ls","-la"], NULL)`
+        
+        activate K
+        K-&gt;&gt;K: Valida `/bin/ls` (permissos, format)
+        K-&gt;&gt;K: Esborra tota la memòria del Fill (F)**
+        K-&gt;&gt;K: Carrega `ls` a la memòria del Fill**&lt;br&gt;  (codi, dades, nova pila)
+        K-&gt;&gt;K: Reconfigura els registres de la CPU i el PC/IP&lt;br&gt;  al punt d'entrada de `ls`
+        deactivate K
+
+        activate F
+        F-&gt;&gt;F: Executa el programa `/bin/ls -la`&lt;br&gt;Genera la llista a `stdout`.
+        F-&gt;&gt;K: `exit(0)` (Finalitza `/bin/ls`)
+        deactivate F
+        
+        activate P
+        P-&gt;&gt;K: `waitpid(PID Y, &amp;status, WUNTRACED)`
+        deactivate P
+    end
+
+    K--&gt;&gt;P: Notifica al Pare que el fill (ara `ls`) ha acabat.
+    activate P
+    P-&gt;&gt;K: `exit(0)` (Finalitza el Pare)
+    deactivate P
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</div></div>
 
 
 </section>
