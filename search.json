@@ -1879,354 +1879,354 @@
     ]
   },
   {
-    "objectID": "blocs/02-proc/teoria/02-create.html#mecanisme-de-creació-fork",
-    "href": "blocs/02-proc/teoria/02-create.html#mecanisme-de-creació-fork",
-    "title": "Processos: Creació",
-    "section": "Mecanisme de Creació fork()",
-    "text": "Mecanisme de Creació fork()\n\n\nfork() crea una còpia exacta del procés actual (el pare). Aquesta còpia esdevé el procés fill i s’executa independentment i simultàniament.\n#include &lt;sys/types.h&gt; # pid_t\n#include &lt;unistd.h&gt;    # fork()\nint main() {\n    pid_t pid = fork();\n    exit(0);\n}\n\n\n\n\n\n\n\nEspai de Memòria\n\n\nEls processos pare (A) i fill (B) no comparteixen espai de memòria. Cada procés té el seu propi espai d’adreces virtuals. No obstant això, el contingut inicial de la memòria del procés pare es copia a l’espai d’adreces del fill.",
+    "objectID": "blocs/02-proc/teoria/03-signals.html#què-són-els-senyals",
+    "href": "blocs/02-proc/teoria/03-signals.html#què-són-els-senyals",
+    "title": "Processos: Senyals",
+    "section": "Què són els senyals?",
+    "text": "Què són els senyals?\nUn senyal és una notificació asíncrona enviada pel nucli a un procés per informar d’un esdeveniment (com una excepció o acció de l’usuari).\nint x = 0;\nint y = 5 / x;\n\nEl procés A s’executa en mode usuari.\nEs produeix una excepció (divisió per zero).\nEl nucli detecta l’error i envia al procés un senyal SIGFPE.\nEl procés pot tenir una rutina de tractament o seguir l’acció per defecte (acabar).\nEl procés A es finalitza, degut al Gestor de senyals.",
     "crumbs": [
       "Inici",
       "Blocs",
       "Bloc 2 · Processos",
       "Teoria",
-      "Processos: Creació"
+      "Processos: Senyals"
     ]
   },
   {
-    "objectID": "blocs/02-proc/teoria/02-create.html#jerarquia-de-processos-fork",
-    "href": "blocs/02-proc/teoria/02-create.html#jerarquia-de-processos-fork",
-    "title": "Processos: Creació",
-    "section": "Jerarquia de Processos · fork()",
-    "text": "Jerarquia de Processos · fork()\nex1.c\n#include &lt;stdlib.h&gt;\n#include &lt;unistd.h&gt;\n#include &lt;sys/types.h&gt;\nint main() {\n    pid_t pid;\n    pid = fork();\n    sleep(20);\n    exit(0);\n}\n\nTerminal A\nwatch -n 1 \"ps -ef | grep ex1\"\n\nTerminal B\necho $$ && gcc ex1.c -o ex1 && ./ex1",
+    "objectID": "blocs/02-proc/teoria/03-signals.html#flux-dels-esdeveniments",
+    "href": "blocs/02-proc/teoria/03-signals.html#flux-dels-esdeveniments",
+    "title": "Processos: Senyals",
+    "section": "Flux dels esdeveniments",
+    "text": "Flux dels esdeveniments\n\n\n\n\n\nsequenceDiagram \n    participant K as Nucli\n    participant A as Procés A\n    A-&gt;&gt;K: Excepció (divisió per zero)\n    K-&gt;&gt;A: Envia senyal SIGFPE al procés A\n    A-&gt;&gt;A: Té rutina de gestió de senyal?\n    alt Sí\n        A-&gt;&gt;A: Executa rutina de gestió de senyal\n    else No\n        A-&gt;&gt;K: Acció per defecte (finalitza procés)\n    end",
     "crumbs": [
       "Inici",
       "Blocs",
       "Bloc 2 · Processos",
       "Teoria",
-      "Processos: Creació"
+      "Processos: Senyals"
     ]
   },
   {
-    "objectID": "blocs/02-proc/teoria/02-create.html#execució-independentfork",
-    "href": "blocs/02-proc/teoria/02-create.html#execució-independentfork",
-    "title": "Processos: Creació",
-    "section": "Execució Independent:fork()",
-    "text": "Execució Independent:fork()\n\n\n\n\n\n\n\n\n\nValors de retorn: fork()\n\n\n\nSi fork() té èxit:\n\nRetorna un valor \\(&gt;0\\) al procés pare (el PID del procés fill).\nRetorna 0 al procés fill.\n\n\n\n\n\n\n\n\n\n\n\n\n\nConsideracions\n\n\n\nSi fork() falla en el procés pare, retorna un valor \\(&lt;0\\) i el codi d’error es guarda a la variable errno.\nSi fork() falla, no es crea cap procés fill.\n\n\n\n\n\n\n\n\n\n\n\n\nObservacions\n\n\n\nLa instrucció exit(0) s’executa tant pel procés pare com pel fill.\nCada procés executa el seu propi printf de manera independent.\n\n\n\n\n\n\nex2.c\n#include &lt;stdio.h&gt;\n#include &lt;unistd.h&gt;\n#include &lt;errno.h&gt;\nint main() {\n    pid_t pid = fork();\n    if (pid == 0) {\n        printf(\"Hello, I am the child.\\n\");\n    } else if (pid &gt; 0) {\n        printf(\"Hello I am the father.\\n\");\n    } else {\n        perror(\"Error creating process\");\n    }\n    exit(0);\n}\n\nExecució\ngcc ex2.c -o ex2 && ./ex2",
+    "objectID": "blocs/02-proc/teoria/03-signals.html#tipus-desdeveniments",
+    "href": "blocs/02-proc/teoria/03-signals.html#tipus-desdeveniments",
+    "title": "Processos: Senyals",
+    "section": "Tipus d’esdeveniments",
+    "text": "Tipus d’esdeveniments\nEls esdeveniments que generen senyals poden provenir de maquinari o programari.\n\n\n\n\n\n\n\n\n\n\nTipus\nOrigen\nGestió\nExemple\nDestinació\n\n\n\n\nInterrupció HW\nDispositiu extern\nGestor d’interrupcions\nTick del temporitzador\nNucli\n\n\nExcepció SW\nInstrucció errònia\nNucli → envia senyal\nDivisió per zero → SIGFPE\nProcés causant\n\n\nSenyal\nUsuari, procés o nucli\nkill(), signal()\nkill(pid, SIGTERM)\nProcés destinatari",
     "crumbs": [
       "Inici",
       "Blocs",
       "Bloc 2 · Processos",
       "Teoria",
-      "Processos: Creació"
+      "Processos: Senyals"
     ]
   },
   {
-    "objectID": "blocs/02-proc/teoria/02-create.html#registres-i-fork",
-    "href": "blocs/02-proc/teoria/02-create.html#registres-i-fork",
-    "title": "Processos: Creació",
-    "section": "Registres i fork()",
-    "text": "Registres i fork()\n\n\n\n\n\n\n\nsequenceDiagram\n    participant P as Pare\n    participant K as Kernel\n    participant C as Fill\n\n    Note over P: Estat abans de fork()&lt;br&gt;RAX = ?, PC = adreça_crida_fork\n    P-&gt;&gt;K: `fork()`\n    activate K\n    K--&gt;&gt;P: Retorn al Pare:&lt;br&gt;RAX = Child PID &lt;br&gt;PC = adreça_següent_instrucció\n    K--&gt;&gt;C: Retorn al Fill:&lt;br&gt;RAX = 0&lt;br&gt;PC = adreça_següent_instrucció\n    deactivate K\n\n    par Execució paral·lela des del mateix punt\n        P--&gt;&gt;P: Pare: Continua l'execució.(`if (RAX &gt; 0)`)\n        C--&gt;&gt;C: Fill: Continua l'execució.(`if (RAX == 0)`)\n    end\n\n    Note over P,C: Ambdós processos s'executen de manera independent\n\n\n\n\n\n\n\n\n\n\n\n\nsequenceDiagram\n    participant P as Pare\n    participant K as Kernel\n\n    Note over P: Estat abans de fork()&lt;br&gt;RAX = ?, PC = adreça_crida_fork\n    P-&gt;&gt;K: `fork()`\n    activate K\n   \n    alt Error a `fork()`\n        P--xK: Retorna al pare:&lt;br&gt;RAX = -1\n        Note over P: `errno` s'estableix.\n    end\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nObservació\n\n\nA l’arquitectura x86, el registre RAX s’utilitza per emmagatzemar el valor de retorn de la crida al sistema fork(). En altres arquitectures, s’utilitzen registres equivalents (sovint R0 o X0).",
+    "objectID": "blocs/02-proc/teoria/03-signals.html#exemple-pràctic",
+    "href": "blocs/02-proc/teoria/03-signals.html#exemple-pràctic",
+    "title": "Processos: Senyals",
+    "section": "Exemple pràctic",
+    "text": "Exemple pràctic\nQuants senyals estem enviant? Quines? Quina acció fa el procés quan rep els senyals?\n\n\nyes &gt; /dev/null\nctrl+z\nbg\nctrl+c\n\n\n\n\n\n\nCombinació\nSenyal\nEfecte per defecte\nEstat\n\n\n\n\nCtrl+C\nSIGINT\nTerminar procés\nMort\n\n\nCtrl+Z\nSIGTSTP\nAturar procés\nStopped\n\n\nbg\nSIGCONT\nReprendre en segon pla\nRunning\n\n\nfg\nSIGCONT\nReprendre en primer pla\nRunning\n\n\n\n\n\nQuants senyals estem enviant? 3\nQuines? SIGTSTP, SIGINT, SIGCONT\nQuina acció fa el procés quan rep les senyals? Aturar l’execució en primer pla i portar el procés a segon pla. Arrancar l’execució en segon pla. Acabar el procés.",
     "crumbs": [
       "Inici",
       "Blocs",
       "Bloc 2 · Processos",
       "Teoria",
-      "Processos: Creació"
+      "Processos: Senyals"
     ]
   },
   {
-    "objectID": "blocs/02-proc/teoria/02-create.html#gestió-derrors-fork",
-    "href": "blocs/02-proc/teoria/02-create.html#gestió-derrors-fork",
-    "title": "Processos: Creació",
-    "section": "Gestió d’errors: fork()",
-    "text": "Gestió d’errors: fork()\n\n\n\n\n\n\n\n\nError\nDescripció\nRaons\n\n\n\n\nEAGAIN\nS’han assolit els límits del sistema.\n- Límits de processos (RLIMIT_NPROC)- Límits de fils (threads-max)- Esgotament dels PIDs disponibles (pid_max)- Límits de cgroup\n\n\nENOMEM\nMemòria del Kernel insuficient.\n- Escassetat de RAM o Swap- Problemes amb els espais de noms PID\n\n\nENOSYS\nfork() no és compatible.\n- Maquinari sense unitat de gestió de memòria (MMU)- SO no compatible amb fork()\n\n\nERESTARTNOINTR\nCrida interrompuda i reiniciada.\nIntern al Kernel, no és un error vist directament per l’aplicació.",
+    "objectID": "blocs/02-proc/teoria/03-signals.html#exemple-pràctic-pas-a-pas",
+    "href": "blocs/02-proc/teoria/03-signals.html#exemple-pràctic-pas-a-pas",
+    "title": "Processos: Senyals",
+    "section": "Exemple pràctic: Pas a Pas",
+    "text": "Exemple pràctic: Pas a Pas\n\nLa comanda yes&gt;/dev/null crearà un procés A i s’executa al primer pla, quan un usuari pitjà el ctrl-z, el kernel automàticament envia un senyal SIGSTOP al procés A, que modifica el seu estat d’execució a parat i també marxa del primer pla al segon pla.\nDesprés amb la comanda bg, el kernel tramet al procés el senyal SIGCONT i continua la seva execució en segon pla quan la rep. Una altra manera equivalent per realitzar aquest procés és yes&gt;/dev/null & on & ens envia l’ordre directament en execució al background.\nObserveu també com de forma similar la comanda fg; en aquest cas el kernel tramet SIGCONT i el procés quan rep SIGCONT; torna a executar-se al primer pla. Noteu que amb ctrl-c tenim un comportament similar; i el procés en primer pla és acabat en rebre el senyal SIGINT (ctrl+c).",
     "crumbs": [
       "Inici",
       "Blocs",
       "Bloc 2 · Processos",
       "Teoria",
-      "Processos: Creació"
+      "Processos: Senyals"
     ]
   },
   {
-    "objectID": "blocs/02-proc/teoria/02-create.html#forkbomb",
-    "href": "blocs/02-proc/teoria/02-create.html#forkbomb",
-    "title": "Processos: Creació",
-    "section": "Forkbomb",
-    "text": "Forkbomb\n\n\n\n\n\n\n\n\n\nQuè és una Forkbomb?\n\n\nA forkbomb és un atac de denegació de servei que crea ràpidament un nombre massiu de processos, sobrecarregant els recursos del sistema i fent-lo inoperable.\nint main() {\n    while (1) {\n        fork();\n    }\n\n\n\n\n\n\n\n\n\n\n\nMecanismes de Protecció\n\n\nEl nucli implementa dos mecanismes per prevenir les forkbombs:\n\nLímits de processos per usuari: Cada usuari té un límit configurable sobre el nombre de processos que pot crear, establert per ulimit -u.\nLímit global de processos: El sistema té un límit global sobre el nombre total de processos que pot crear, configurat per pid_max (típicament 32768).\n\n\n\n\n\n\n\n\n\n\n\nsequenceDiagram\n    participant P as Procés Forkbomb \n    participant K as Nucli (Kernel)\n    \n    P-&gt;&gt;K: fork() (1r intent)\n    activate K\n    K--&gt;&gt;P: Retorna PID del fill1\n    deactivate K\n    \n    par Creació Exponencial\n        P-&gt;&gt;K: fork() (2n intent)\n        activate K\n        K--&gt;&gt;P: Retorna PID del fill2\n        deactivate K\n        \n        fork1-&gt;&gt;K: fork() (1r fill)\n        activate K\n        K--&gt;&gt;fork1: Retorna PID del fill3\n        deactivate K\n    end\n    \n    Note over K: Processos creats: 4\n    \n    loop Fase de Saturació\n        P/fills-&gt;&gt;K: fork() (Nou intent)\n        activate K\n        alt Abans del límit\n            K--&gt;&gt;P/fills: Retorna nou PID\n        else Després del límit\n            K--&gt;&gt;P/fills: Retorna -1 (EAGAIN)\n        end\n        deactivate K\n    end\n    \n    Note over K: Estat Final:&lt;br&gt;- Límit de processos assolit&lt;br&gt;- CPU al 100%&lt;br&gt;- Nous forks bloquejats.",
+    "objectID": "blocs/02-proc/teoria/03-signals.html#diagrama-de-canvis-destat",
+    "href": "blocs/02-proc/teoria/03-signals.html#diagrama-de-canvis-destat",
+    "title": "Processos: Senyals",
+    "section": "Diagrama de canvis d’estat",
+    "text": "Diagrama de canvis d’estat",
     "crumbs": [
       "Inici",
       "Blocs",
       "Bloc 2 · Processos",
       "Teoria",
-      "Processos: Creació"
+      "Processos: Senyals"
     ]
   },
   {
-    "objectID": "blocs/02-proc/teoria/02-create.html#gestió-de-memòria-fork",
-    "href": "blocs/02-proc/teoria/02-create.html#gestió-de-memòria-fork",
-    "title": "Processos: Creació",
-    "section": "Gestió de Memòria · fork()",
-    "text": "Gestió de Memòria · fork()\n\n\n\n\n\n\n\n\n\n\n\nObservacions\n\n\n\nEn el moment de fork() \\(\\rightarrow\\) El pare i el fill comparteixen el mateix espai d’adreces físic.\nCada procés té el seu propi espai d’adreces virtual, que tradueix a l’espai d’adreces físic compartit.\n\n\n\n\n\n\n\n\n\n\n\n\nDuplicats idèntics\n\n\nInicialment, el pare i el fill són duplicats idèntics. A partir d’aquest moment, cada procés té el seu propi espai d’adreces virtual, i qualsevol modificació en un no afecta l’altre.",
+    "objectID": "blocs/02-proc/teoria/03-signals.html#esdeveniments-síncrons-i-asíncrons",
+    "href": "blocs/02-proc/teoria/03-signals.html#esdeveniments-síncrons-i-asíncrons",
+    "title": "Processos: Senyals",
+    "section": "Esdeveniments síncrons i asíncrons",
+    "text": "Esdeveniments síncrons i asíncrons\n\n\n\n\n\n\n\n\nTipus d’esdeveniment\nExemple\nSincronia\n\n\n\n\nExcepció (SIGFPE)\nDivisió per zero\nSíncron amb l’execució\n\n\nSenyal extern (SIGINT)\nCtrl+C\nAsíncron (pot arribar en qualsevol moment)\n\n\n\n\nUn esdeveniment és síncron quan està relacionat amb l’execució del procés, per exemple una excepció com la divisió per zero o un error de segmentació. En aquest cas el procés que ha causat l’esdeveniment és el mateix que rep el senyal.\nUn esdeveniment és asíncron quan no està relacionat amb l’execució del procés, per exemple una interrupció de maquinari o una acció de l’usuari com un ctrl+c. En aquest cas el procés que ha causat l’esdeveniment és diferent del procés que rep el senyal.",
     "crumbs": [
       "Inici",
       "Blocs",
       "Bloc 2 · Processos",
       "Teoria",
-      "Processos: Creació"
+      "Processos: Senyals"
     ]
   },
   {
-    "objectID": "blocs/02-proc/teoria/02-create.html#duplicació-rightarrow-independència",
-    "href": "blocs/02-proc/teoria/02-create.html#duplicació-rightarrow-independència",
-    "title": "Processos: Creació",
-    "section": "Duplicació \\(\\rightarrow\\) Independència",
-    "text": "Duplicació \\(\\rightarrow\\) Independència\n\n\nstatic int i = 11; //.data\nint main() {\n    int j= 22; // Stack\n    int *z = malloc(sizeof(int)); // Heap\n\n    pid_t pid;\n    switch (pid=fork())\n    {\n    case 0:\n        i *= 3; \n        j *= 3;\n        *z=44;\n        break;\n    default:\n        sleep(3);\n        *z=55;\n        break;\n    }\n \n    printf(\"PID=%ld %s data=%d stack=%d heap=%d\\n\", \n        (long) getpid(), \n        (pid == 0) ? \"(child) \" : \"(parent)\",i,j,*z);\n    free(z);\n    exit(0);\n}\n\n\n\n\n\n\nsequenceDiagram\n    participant P as Pare\n    participant OS as Kernel\n    participant C as Fill\n\n    Note over P: i=11, j=22, z=NULL\n    P-&gt;&gt;OS: `fork()`\n\n    par\n        C-&gt;&gt;OS: i *= 3 (.data) [i es converteix en 33]\n        activate OS\n        OS--&gt;&gt;C: Duplica Pàgina, Actualitza VMA\n        deactivate OS\n\n        C-&gt;&gt;OS: j *= 3 (stack) [j es converteix en 66]\n        activate OS\n        OS--&gt;&gt;C: Duplica Pàgina, Actualitza VMA\n        deactivate OS\n\n        C-&gt;&gt;OS: *z = 44 (heap) [z apunta a 44]\n        activate OS\n        OS--&gt;&gt;C: Duplica Pàgina, Actualitza VMA\n        deactivate OS\n    end\n\n    P-&gt;&gt;OS: *z = 55 (heap) [z apunta a 55]\n    activate OS\n    OS--&gt;&gt;P: Duplica Pàgina, Actualitza VMA\n    deactivate OS\n\n    C-&gt;&gt;C: Prints: data=33 stack=66 heap=44\n    P-&gt;&gt;P: Prints: data=11 stack=22 heap=55",
+    "objectID": "blocs/02-proc/teoria/03-signals.html#esquema-general",
+    "href": "blocs/02-proc/teoria/03-signals.html#esquema-general",
+    "title": "Processos: Senyals",
+    "section": "Esquema general",
+    "text": "Esquema general",
     "crumbs": [
       "Inici",
       "Blocs",
       "Bloc 2 · Processos",
       "Teoria",
-      "Processos: Creació"
+      "Processos: Senyals"
     ]
   },
   {
-    "objectID": "blocs/02-proc/teoria/02-create.html#copy-on-write-cow",
-    "href": "blocs/02-proc/teoria/02-create.html#copy-on-write-cow",
-    "title": "Processos: Creació",
-    "section": "Copy-On-Write (CoW)",
-    "text": "Copy-On-Write (CoW)\n\n\n\n\n\n\n\nsequenceDiagram\n    participant P as Pare\n    participant M as Memòria\n    participant C as Fill\n\n    P-&gt;&gt;C: Crea Procés Fill\n    M-&gt;&gt;C: Comparteix Pàgina X\n\n\n    rect rgba(255, 200, 200, 0.2)\n    Note over P,C: Post-fork - Operació escriptura\n    P-&gt;&gt;M: Modifica Pàgina X\n    M-&gt;&gt;P: Crea còpia privada X' (RW)\n    M-&gt;&gt;C: Manté original X (RO)\n\n    end\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nCom funciona?\n\n\nQuan fork() crea un nou procés, el pare i el fill inicialment comparteixen les mateixes pàgines de memòria. Aquestes es marquen com a només lectura per a ambdós processos.\n\nCrea una còpia privada d’aquella pàgina per al procés que escriu.\nAssigna la nova pàgina amb permisos d’escriptura.\nManté la transparència per a l’aplicació.\n\nAquest mecanisme optimitza tant el temps com la memòria, ja que només es copia la informació modificada.",
+    "objectID": "blocs/02-proc/teoria/03-signals.html#rutines-de-tractament-de-senyals",
+    "href": "blocs/02-proc/teoria/03-signals.html#rutines-de-tractament-de-senyals",
+    "title": "Processos: Senyals",
+    "section": "Rutines de Tractament de senyals",
+    "text": "Rutines de Tractament de senyals\nQuan el procés rebi el senyal signum executarà gestor, que pot ser una funció o SIG_DFL, acció per defecte, o SIG_IGN per ignorar el senyal.\n#include &lt;signal.h&gt; \ntypedef void (*sighandler_t)(int);\nsighandler_t signal(int signum, sighandler_t gestor);\nValors de retorn\n\nEn cas d’èxit retorna un punter a la anterior funció gestora del senyal.\nEn cas d’error, retorna SIG_ERR.",
     "crumbs": [
       "Inici",
       "Blocs",
       "Bloc 2 · Processos",
       "Teoria",
-      "Processos: Creació"
+      "Processos: Senyals"
     ]
   },
   {
-    "objectID": "blocs/02-proc/teoria/02-create.html#indeterminisme-fork",
-    "href": "blocs/02-proc/teoria/02-create.html#indeterminisme-fork",
-    "title": "Processos: Creació",
-    "section": "Indeterminisme fork()",
-    "text": "Indeterminisme fork()\n\n\nint main() {\n  pid_t pid;\n  if ((pid = fork()) &lt; 0) {\n    exit(-1);\n  } else if (pid == 0) {  \n    printf(\"My name is Rhaenyra\")\n  } else {\n    printf(\"My name is King Viserys\");\n  }\n  exit(0);\n}\n\n\n\n\n\n\n\n\n\n\nObservacions\n\n\n\nLa execució del programa és no determinista.\nEl procés pare i el fill poden executar-se en qualsevol ordre.\nL’planificador del sistema operatiu decideix quin procés s’executa en un moment donat.",
+    "objectID": "blocs/02-proc/teoria/03-signals.html#pause",
+    "href": "blocs/02-proc/teoria/03-signals.html#pause",
+    "title": "Processos: Senyals",
+    "section": "pause()",
+    "text": "pause()\nLa crida a sistema pause() s’utilitza per posar en espera un procés fins que rep un senyal.\n#include &lt;unistd.h&gt; \nint pause(void);\n\nSempré retorna -1.\nEs bloqueja fins que el procés rep un senyal (qualsevol).",
     "crumbs": [
       "Inici",
       "Blocs",
       "Bloc 2 · Processos",
       "Teoria",
-      "Processos: Creació"
+      "Processos: Senyals"
     ]
   },
   {
-    "objectID": "blocs/02-proc/teoria/02-create.html#wait",
-    "href": "blocs/02-proc/teoria/02-create.html#wait",
-    "title": "Processos: Creació",
-    "section": "wait()",
-    "text": "wait()\n\n\n\n\n\n\n\n\n\nwait()\n\n\nLa crida al sistema wait() permet que un procés pare bloquegi la seva execució fins que un dels seus processos fills canviï d’estat (normalment, quan finalitza). També recupera informació sobre el fill que ha canviat d’estat.\n#include &lt;sys/types.h&gt;\n#include &lt;sys/wait.h&gt;\npid_t wait(int *_Nullable wstatus);\n\n\n\n\n\n\n\n\n\n\n\nPropietats\n\n\n\nRetorna el PID del procés fill que ha canviat d’estat, o -1 en cas d’error.\nSi wstatus no és NULL, l’estat de sortida del fill s’hi emmagatzema.\n\n\n\n\n\n\n\n\n\n\n\n\nSIGCHLD\n\n\nEl senyal SIGCHLD s’envia al procés pare quan un fill canvia d’estat.\n\n\n\n\n\n\n\n\n\n\nsequenceDiagram\n    participant P as Pare\n    participant K as Kernel\n    participant C as Fill\n    P-&gt;&gt;K: fork()\n    K--&gt;&gt;C: Crea Procés Fill\n    activate C\n    K--&gt;&gt;P: Retorna PID del Fill\n    C-&gt;&gt;C: Execució del Fill\n    P-&gt;&gt;K: wait()\n    K-&gt;&gt;K: Bloqueja pare fins que el fill canviï d'estat\n    C-&gt;&gt;K: exit(42)\n    deactivate C\n    K-&gt;&gt;K: PCB retingut \n    K--&gt;&gt;P: notificació SIGCHLD\n    P-&gt;&gt;K: Llegeix estat del Fill Reads\n    K-&gt;&gt;K: Allibera PCB fill\n    K--&gt;&gt;P: Retorna estat (42)",
+    "objectID": "blocs/02-proc/teoria/03-signals.html#gestió-interna-de-senyals-kernel",
+    "href": "blocs/02-proc/teoria/03-signals.html#gestió-interna-de-senyals-kernel",
+    "title": "Processos: Senyals",
+    "section": "Gestió interna de senyals (Kernel)",
+    "text": "Gestió interna de senyals (Kernel)\n\n\n\n\n\nsequenceDiagram\n    participant U as CPU · Mode Usuari\n    participant K as Nucli\n    participant P as PCB del Procés\n\n    U-&gt;&gt;K: Interrupció / Excepció / Syscall\n    K-&gt;&gt;P: Marca senyal SIGINT com a pendent · signal_pending |= SIGINT\n    K-&gt;&gt;P: Actualitza cua de senyals i màscara\n    K-&gt;&gt;U: Retorna del mode nucli → mode usuari\n    U-&gt;&gt;P: Comprova senyals pendents · signal_pending & ~signal_mask\n    alt Senyal amb handler\n        U-&gt;&gt;P: Executa rutina del senyal user handler\n    else Acció per defecte\n        U-&gt;&gt;K: Finalitza procés (SIG_DFL)\n    end",
     "crumbs": [
       "Inici",
       "Blocs",
       "Bloc 2 · Processos",
       "Teoria",
-      "Processos: Creació"
+      "Processos: Senyals"
     ]
   },
   {
-    "objectID": "blocs/02-proc/teoria/02-create.html#example-wait",
-    "href": "blocs/02-proc/teoria/02-create.html#example-wait",
-    "title": "Processos: Creació",
-    "section": "Example: wait()",
-    "text": "Example: wait()\n\n\nint main() {\n    pid_t pid;\n    if ((pid = fork()) &lt; 0) {\n        exit(-1);\n    } else if (pid == 0) {  \n        printf(\"My name is Rhaenyra\")\n    } else {\n        wait(NULL);\n        printf(\"My name is King Viserys\");\n        }\n    exit(0);\n}\n\n\n\n\n\n\n\nObservacions\n\n\n\nEl procés pare utilitza wait() per esperar que el seu fill finalitzi abans de continuar. Això assegura que la sortida serà sempre My name is King Viserys després de My name is Rhaenyra.\nNo garanteix que el fill s’executi primer. Només assegura que el fill acabi abans que el pare reprengui la seva execució.\nwait() és per a un pare que espera un fill. Un fill no pot utilitzar-lo per esperar el seu pare.\nAltres mecanismes, com pause() i senyals, són necessaris per a diferents escenaris de sincronització.\n\n\n\n\n\n\n\n\n\n\n\nsequenceDiagram\n    participant P as Pare (PID X)\n    participant K as Kernel\n    participant C as Fill (PID Y)\n    \n    P-&gt;&gt;K: fork()\n    K--&gt;&gt;C: Crea Procés\n    K--&gt;&gt;P: Retorna PID Y\n    K--&gt;&gt;C: Returns 0\n    \n    P-&gt;&gt;K: wait()\n    Note right of P: Estat: WAITING\n    K-&gt;&gt;K: Planificador: continua Fill\n    \n    activate C\n    C-&gt;&gt;C: printf(\"My name is Rhaenyra\")\n    C-&gt;&gt;K: exit(0)\n    deactivate C\n    \n    K--&gt;&gt;P: SIGCHLD + status (0)\n    Note right of P: Estat: RUNNING\n    P-&gt;&gt;P: printf(\"My name is King Viserys\")\n    P-&gt;&gt;K: exit(0)",
+    "objectID": "blocs/02-proc/teoria/03-signals.html#crides-a-sistema",
+    "href": "blocs/02-proc/teoria/03-signals.html#crides-a-sistema",
+    "title": "Processos: Senyals",
+    "section": "Crides a sistema",
+    "text": "Crides a sistema\n\n\n\n\n\n\n\n\nCrida\nFunció\nAcció sobre el PCB\n\n\n\n\nsigprocmask(int how, const sigset_t *set, sigset_t *oldset)\nBloqueja o desbloqueja senyals.\nModifica signal_mask.\n\n\nsigpending(sigset_t *set)\nConsulta els senyals pendents.\nLlegeix signal_pending.\n\n\nsigaction(int signum, const struct sigaction *act, struct sigaction *oldact)\nDefineix un manejador per un senyal concret.\nModifica handlers[].\n\n\nsigqueue(pid_t pid, int sig, const union sigval value)\nEnvia un senyal amb una dada associada.\nAfegeix entrada a queue.\n\n\nalarm(unsigned int sec)\nPrograma l’enviament de SIGALRM.\nConfigura alarm_timer.",
     "crumbs": [
       "Inici",
       "Blocs",
       "Bloc 2 · Processos",
       "Teoria",
-      "Processos: Creació"
+      "Processos: Senyals"
     ]
   },
   {
-    "objectID": "blocs/02-proc/teoria/02-create.html#waitpid",
-    "href": "blocs/02-proc/teoria/02-create.html#waitpid",
-    "title": "Processos: Creació",
-    "section": "waitpid()",
-    "text": "waitpid()\n\n\n\n\n\n\n\n\n\nwaitpid()\n\n\nPermet que un procés pare esperi de manera selectiva que un procés fill específic canviï d’estat. També proporciona més control sobre el comportament de l’espera mitjançant opcions addicionals.\npid_t waitpid(pid_t pid, int *_Nullable wstatus, int options);\n\n\n\n\n\n\n\n\n\n\n\nOptions\n\n\n\nWNOHANG: No bloquejar si cap procés fill ha canviat d’estat. Això significa que la crida retorna immediatament.\nWUNTRACED: També retorna per processos fills que han estat aturats (per exemple, per un senyal).\nWCONTINUED: També retorna per processos fills que han estat reprès després d’haver estat aturat (disponible des de Linux 2.6.10).\n\n\n\n\n\n\n\n\n\n\n\n\n\nValors de pid\n\n\n\n\\(\\lt -1\\): Espera qualsevol procés fill el PID del qual sigui igual al valor absolut de pid.\n\\(= -1\\): Espera qualsevol procés fill.\n\\(= 0\\): Espera qualsevol procés fill el PID del qual sigui igual al del procés que crida (el pare).\n\\(\\gt 0\\): Espera el procés fill específic identificat per aquest valor de pid.\n\n\n\n\n\n\n\n\n\n\n\n\nObservació\n\n\nwait(NULL) és equivalent a waitpid(-1, NULL, 0)",
+    "objectID": "blocs/02-proc/teoria/03-signals.html#gestió-de-senyals-en-c",
+    "href": "blocs/02-proc/teoria/03-signals.html#gestió-de-senyals-en-c",
+    "title": "Processos: Senyals",
+    "section": "Gestió de senyals en C",
+    "text": "Gestió de senyals en C\n#include &lt;signal.h&gt;\n#include &lt;stdio.h&gt;\n#include &lt;unistd.h&gt;\n\nvoid handler(int sig) {\n    printf(\"Rebut senyal %d\\n\", sig);\n}\n\nint main() {\n    signal(SIGINT, handler);\n    while (1) pause();\n}\n\nAquesta és la sintaxis tradicional per incloure la gestió de senyals en C.",
     "crumbs": [
       "Inici",
       "Blocs",
       "Bloc 2 · Processos",
       "Teoria",
-      "Processos: Creació"
+      "Processos: Senyals"
     ]
   },
   {
-    "objectID": "blocs/02-proc/teoria/02-create.html#example-waitpid",
-    "href": "blocs/02-proc/teoria/02-create.html#example-waitpid",
-    "title": "Processos: Creació",
-    "section": "Example: waitpid()",
-    "text": "Example: waitpid()\n\n\nint main() {\n    printf(\"Dracarys!\\n\");\n    pid_t drogon = fork();\n    if (drogon == 0) { \n        sleep(1);  \n        printf(\"Fire and blood in KL!\\n\");\n        exit(0); \n    }\n    pid_t rhaegal = fork();\n    if (rhaegal == 0) {\n        sleep(3); \n        printf(\"Flying over Saltspear\\n\");\n        exit(0);\n    }\n    waitpid(rhaegal, NULL, 0);\n    printf(\"Rhaegal has returned\\n\");\n    waitpid(drogon, NULL, 0);\n    printf(\"Drogon has returned\\n\");\n    exit(0);\n}\n\n\n\n\n\n\nsequenceDiagram\n    participant D as Daenerys\n    participant K as Kernel\n    participant D1 as Drogon\n    participant D2 as Rhaegal\n  \n    Note over D: dracarys!\n    D-&gt;&gt;K: fork() (Drogon)\n    activate D1\n    D-&gt;&gt;K: fork() (Rhaegal)\n    activate D2\n\n    Note over D1: sleep(1)\n    D1-&gt;&gt;D1: printf(\"Fire and blood in KL!\")\n    D1-&gt;&gt;K: exit(0)\n    deactivate D1\n\n    Note over D2: sleep(3)\n    D2-&gt;&gt;D2: printf(\"Flying over Saltspear\")\n    D2-&gt;&gt;K: exit(0)\n    deactivate D2\n\n    D-&gt;&gt;K: waitpid(Rhaegal)\n    K--&gt;&gt;D: Returns Rhaegal's PID (Rhaegal finished)\n    D-&gt;&gt;D: printf(\"Rhaegal has returned\")\n    \n    D-&gt;&gt;K: waitpid(Drogon)\n    K--&gt;&gt;D: Returns Drogon's PID (Drogon finished)\n    D-&gt;&gt;D: printf(\"Drogon has returned\")\n\n    D-&gt;&gt;K: exit(0)",
+    "objectID": "blocs/02-proc/teoria/03-signals.html#sigaction",
+    "href": "blocs/02-proc/teoria/03-signals.html#sigaction",
+    "title": "Processos: Senyals",
+    "section": "sigaction",
+    "text": "sigaction\n#include &lt;signal.h&gt;\n#include &lt;stdio.h&gt;\n#include &lt;unistd.h&gt;\n\nvoid handler(int sig) {\n    write(1, \"SIGINT rebut\\n\", 13);\n}\n\nint main(void) {\n    struct sigaction sa;\n    sa.sa_handler = handler;\n    sigemptyset(&sa.sa_mask);\n    sa.sa_flags = 0;\n\n    sigaction(SIGINT, &sa, NULL);\n\n    while (1) pause();\n}\n\nAquesta és més moderna i segura.",
     "crumbs": [
       "Inici",
       "Blocs",
       "Bloc 2 · Processos",
       "Teoria",
-      "Processos: Creació"
+      "Processos: Senyals"
     ]
   },
   {
-    "objectID": "blocs/02-proc/teoria/02-create.html#waitwaitpid-macros",
-    "href": "blocs/02-proc/teoria/02-create.html#waitwaitpid-macros",
-    "title": "Processos: Creació",
-    "section": "wait()/waitpid(): Macros",
-    "text": "wait()/waitpid(): Macros\nEl paràmetre status de wait() o waitpid() és un enter (int) que conté informació codificada sobre com ha finalitzat (o ha canviat d’estat) el procés fill.\nPer a X86:\n\n\n\n\n\n\n\n\nBits\nCamp\nDescripció\n\n\n\n\n0-6\nCodi de Senyal\nEl número del senyal que ha causat la terminació del fill, si n’hi ha. (WTERMSIG(status)).\n\n\n7\nIndicador de Core Dump\nIndicador si s’ha generat un core dump. (WCOREDUMP(status)).\n\n\n8-15\nExit\nEl valor de retorn de l’exit() del fill. (WEXITSTATUS(status))\n\n\n16-31\n-\nGeneralment no utilitzat o reservat.\n\n\n\n\n\n\n\n\n\n\nQuè passa amb exit(256)?\n\n\nEl número 256 es converteix en un codi de sortida de 0 perquè els codis de sortida solen estar limitats a 8 bits (0-255). Això es deu al fet que el sistema operatiu només utilitza els 8 bits menys significatius per al codi de sortida. Per tant, WEXITSTATUS(status) retornarà 0.",
+    "objectID": "blocs/02-proc/teoria/03-signals.html#accions-per-defecte",
+    "href": "blocs/02-proc/teoria/03-signals.html#accions-per-defecte",
+    "title": "Processos: Senyals",
+    "section": "Accions per defecte",
+    "text": "Accions per defecte\nCada senyal té una acció per defecte. Algunes possibles accions són:\n\nIgnorar el senyal (SIG_IGN).\nFinalitzar el procés (abnormal termination).\nFinalitzar el procés i generar un core dump (abnormal termination with core dump).\nAturar el procés (aturar el procés).\nReprendre el procés (continuar el procés).",
     "crumbs": [
       "Inici",
       "Blocs",
       "Bloc 2 · Processos",
       "Teoria",
-      "Processos: Creació"
+      "Processos: Senyals"
     ]
   },
   {
-    "objectID": "blocs/02-proc/teoria/02-create.html#waitwaitpid-status-macros",
-    "href": "blocs/02-proc/teoria/02-create.html#waitwaitpid-status-macros",
-    "title": "Processos: Creació",
-    "section": "wait()/waitpid(): Status Macros",
-    "text": "wait()/waitpid(): Status Macros\n\nWIFEXITED(status): Retorna cert (no zero) si el procés fill ha finalitzat normalment mitjançant exit().\nWEXITSTATUS(status): Retorna el codi de sortida del fill. Només vàlid si WIFEXITED(status) és cert.\nWIFSIGNALED(status): Retorna cert si el canvi d’estat del fill ha estat causat per un senyal.\nWTERMSIG(status): Retorna el número del senyal que ha causat la terminació del procés fill. Només vàlid si WIFSIGNALED(status) és cert.\nWCOREDUMP(status): Retorna cert si el fill ha terminat i ha generat un core dump. Només vàlid si WIFSIGNALED(status) és cert. (La disponibilitat pot variar).\nWIFSTOPPED(status): Retorna cert si el fill ha estat suspès (aturat) per un senyal. Per detectar això, waitpid() ha de ser cridat amb l’opció WUNTRACED.\nWSTOPSIG(status): Retorna el número del senyal que ha aturat el fill. Només vàlid si WIFSTOPPED(status) és cert.\nWIFCONTINUED(status): Retorna cert si un fill que havia estat aturat ha estat reactivat (amb SIGCONT). Requereix l’opció WCONTINUED en waitpid() (Linux kernel 2.6 i posteriors).",
+    "objectID": "blocs/02-proc/teoria/03-signals.html#senyals-que-no-es-poden-capturar",
+    "href": "blocs/02-proc/teoria/03-signals.html#senyals-que-no-es-poden-capturar",
+    "title": "Processos: Senyals",
+    "section": "Senyals que no es poden capturar",
+    "text": "Senyals que no es poden capturar\nEls senyals SIGKILL i SIGSTOP no poden ser capturats ni ignorats. Per tant, no podreu modificar el comportament per defecte per raons òbvies de seguretat. Això garanteix que el nucli i l’usuari sempre puguin aturar o matar un procés mal comportat.\n\nSIGKILL: Finalitza el procés immediatament. kill -SIGKILL pid\nSIGSTOP: Atura el procés immediatament. kill -SIGSTOP pid",
     "crumbs": [
       "Inici",
       "Blocs",
       "Bloc 2 · Processos",
       "Teoria",
-      "Processos: Creació"
+      "Processos: Senyals"
     ]
   },
   {
-    "objectID": "blocs/02-proc/teoria/02-create.html#exemple-waitpid-macros",
-    "href": "blocs/02-proc/teoria/02-create.html#exemple-waitpid-macros",
-    "title": "Processos: Creació",
-    "section": "Exemple: waitpid() & Macros",
-    "text": "Exemple: waitpid() & Macros\n\n\nint main(int argc, char *argv[]){\npid_t pid, w; int status; \npid = fork();\nif (pid == 0) { \n    if (argc == 1) pause(); \n    exit(atoi(argv[1]));\n} else {                    \n  do {\n    w = waitpid(pid, &status, WUNTRACED | WCONTINUED);\n    if (w == -1) { perror(\"waitpid\"); exit(EXIT_FAILURE);}\n    if (WIFEXITED(status)) {\n      printf(\"ex8: child %d exited, status=%d\\n\", \n        w, WEXITSTATUS(status))\n    } else if (WIFSIGNALED(status)) {\n      printf(\"ex8: child %d killed by signal %d\\n\", \n        w, WTERMSIG(status));    \n    } else if (WIFSTOPPED(status)) {\n      printf(\"ex8: child %d stopped by signal %d\\n\", \n        w, WSTOPSIG(status));\n    } else if (WIFCONTINUED(status)) {\n      printf(\"ex8: child %d continued\\n\", w);\n  } while (!WIFEXITED(status) && !WIFSIGNALED(status));\n}\n\n\n\n\n\n\n\n\n\nPregunta?\n\n\nQuin serà el resultat després d’executar ./ex8 42?",
+    "objectID": "blocs/02-proc/teoria/03-signals.html#enviament-de-senyals",
+    "href": "blocs/02-proc/teoria/03-signals.html#enviament-de-senyals",
+    "title": "Processos: Senyals",
+    "section": "Enviament de senyals",
+    "text": "Enviament de senyals\nPer enviar senyals a altres processos s’utilitza la crida a sistema kill().\n#include &lt;signal.h&gt;\nint kill(pid_t pid, int sig);\nEnvia el senyal sig al/s procés/ssos segons pid:\n\npid &gt; 0 : S’envia al procés receptor.\npid = 0 : S’envia als processos del mateix grup que l’emissor.\npid = -1 : S’envia a tots els processos als quals el procés té permís per enviar senyals.\npid &lt; -1 : S’envia a tots els processos l’id del grup que coincideixi amb el valor absolut de pid.\n\n\nValors de retorn\n\nEn cas d’èxit, s’ha enviat com a mínim un senyal, es retorna zero.\nEn cas d’error, retorna SIG_ERR",
     "crumbs": [
       "Inici",
       "Blocs",
       "Bloc 2 · Processos",
       "Teoria",
-      "Processos: Creació"
+      "Processos: Senyals"
     ]
   },
   {
-    "objectID": "blocs/02-proc/teoria/02-create.html#estat-zombie",
-    "href": "blocs/02-proc/teoria/02-create.html#estat-zombie",
-    "title": "Processos: Creació",
-    "section": "Estat Zombie",
-    "text": "Estat Zombie\n\n\n\n\n\n\n\nTASK_ZOMBIE\n\n\nDesprés d’executar exit(), un procés no s’elimina immediatament. En lloc d’això, entra en l’estat zombie fins que el seu procés pare processa la notificació SIGCHLD o crida a wait() o waitpid(). Si el pare no ho fa, el fill roman en aquest estat indefinidament.\n\n\n\n\n\n\n// kernel/exit.c\nvoid do_exit(long code) {\n    struct task_struct *tsk = current;\n    tsk-&gt;exit_code = code;          \n    exit_files(tsk);               \n    exit_mm(tsk);                 \n    exit_notify(tsk, group_dead);   \n}\n\n// kernel/exit.c\nstatic void exit_notify(struct task_struct *tsk, \n    int group_dead) {\n    tsk-&gt;exit_state = EXIT_ZOMBIE;  \n    if (group_dead)\n        tsk-&gt;exit_state |= EXIT_DEAD;\n    tsk-&gt;exit_signal : SIGCHLD;\n    do_notify_parent(tsk, sig);\n}",
+    "objectID": "blocs/02-proc/teoria/03-signals.html#cas-pràctic-problema-típic",
+    "href": "blocs/02-proc/teoria/03-signals.html#cas-pràctic-problema-típic",
+    "title": "Processos: Senyals",
+    "section": "Cas pràctic: Problema típic",
+    "text": "Cas pràctic: Problema típic\nint main(void) {\n   FILE *f = fopen(\"temp.txt\", \"w\");\n   fprintf(f, \"Hola\\n\");\n   fclose(f);\n   remove(\"temp.txt\");\n}\n\nSi el procés s’executa sense interrupcions, el fitxer temporal temp.txt es crea, s’escriu “Hola”, es tanca i s’elimina correctament.\nSi el procés rep un SIGINT (Ctrl+C) abans de tancar el fitxer, el fitxer temporal temp.txt no es tancarà correctament o no s’eliminarà. Això pot provocar pèrdua de dades o corrupció del fitxer.",
     "crumbs": [
       "Inici",
       "Blocs",
       "Bloc 2 · Processos",
       "Teoria",
-      "Processos: Creació"
+      "Processos: Senyals"
     ]
   },
   {
-    "objectID": "blocs/02-proc/teoria/02-create.html#orfes-i",
-    "href": "blocs/02-proc/teoria/02-create.html#orfes-i",
-    "title": "Processos: Creació",
-    "section": "Orfes (I)",
-    "text": "Orfes (I)\nUn procés fill esdevé un orfe si el seu pare mor abans que ell. En aquest cas, el nucli reassigna el fill al procés init (PID 1), que és responsable de netejar els processos orfes.\n\n\n\n\n\nsequenceDiagram\n    participant Pare\n    participant Kernel\n    participant Fill\n    participant Init\n    \n    Parent-&gt;&gt;Kernel: exit() // Mor el pare\n    Kernel-&gt;&gt;Kernel: find_zombie_children()\n    Note right of Child: Orfe, fill sense pare\n    Kernel-&gt;&gt;Child: reparent_to_init()\n    loop Cada 0.5s\n        Init-&gt;&gt;Kernel: wait()\n        Kernel-&gt;&gt;Init: Retorna estat\n        Kernel-&gt;&gt;Child: release_task()\n    end",
+    "objectID": "blocs/02-proc/teoria/03-signals.html#solució-amb-gestió-de-senyals",
+    "href": "blocs/02-proc/teoria/03-signals.html#solució-amb-gestió-de-senyals",
+    "title": "Processos: Senyals",
+    "section": "Solució amb gestió de senyals",
+    "text": "Solució amb gestió de senyals\n#include &lt;signal.h&gt;\n#include &lt;stdio.h&gt;\n#include &lt;stdlib.h&gt;\n\nFILE *f;\nvoid cleanup(int sig) {\n    fclose(f);\n    remove(\"temp.txt\");\n    exit(1);\n}\n\nint main(void) {\n    struct sigaction sa = {.sa_handler = cleanup};\n    sigaction(SIGINT, &sa, NULL);\n    f = fopen(\"temp.txt\", \"w\");\n    pause();\n}",
     "crumbs": [
       "Inici",
       "Blocs",
       "Bloc 2 · Processos",
       "Teoria",
-      "Processos: Creació"
+      "Processos: Senyals"
     ]
   },
   {
-    "objectID": "blocs/02-proc/teoria/02-create.html#orfes-i-zombies",
-    "href": "blocs/02-proc/teoria/02-create.html#orfes-i-zombies",
-    "title": "Processos: Creació",
-    "section": "Orfes i Zombies",
-    "text": "Orfes i Zombies\n\n\n\n\n\n\n\n\n\nEscenari\nMecanisme del Nucli\nTemps\nConsequències\n\n\n\n\nPare Actiu\nReté task_struct fins a wait()\nIndefinit\n- Consumeix entrada a la taula de processos- PID es manté ocupat\n\n\nPare Mort\nreparent_to_init() (PPID←1)\n\\(\\le 1\\) ms\n- Init neteja en segon pla (init periodicament crida wait()) - Alliberació asíncrona\n\n\nReinici del Sistema\nkill(pid, SIGKILL)\n0\n- Alliberació forçada (via do_exit() global) - Sense garantia d’estat\n\n\nPare ignora SIGCHLD\nZombie persistent\n\\(\\infty\\)\n- Requereix intervenció manual",
+    "objectID": "blocs/02-proc/teoria/03-signals.html#cas-pràctic-error-típic",
+    "href": "blocs/02-proc/teoria/03-signals.html#cas-pràctic-error-típic",
+    "title": "Processos: Senyals",
+    "section": "Cas pràctic: Error típic",
+    "text": "Cas pràctic: Error típic\nLes rutines de senyals s’executen de forma asíncrona: únicament han de fer operacions async-signal-safe, és a dir, mai es poden cridar funcions com malloc(), printf(), etc.\nvoid handler(int sig) {\n    // Error típic: malloc() no és async-signal-safe\n    char *buf = malloc(100);  \n    write(1, \"SIGINT rebut\\n\", 13);  // write() és segura dins del handler\n    free(buf);\n}\nUna funció és async-signal-safe si no provoca comportament indefinit o corrupció de memòria.Només es poden cridar funcions que no depenguin de recursos globals compartits que puguin estar en un estat inconsistent. En aquest cas, malloc() i free() no són segures perquè poden modificar l’estat intern del gestor de memòria, acabant en corrupció de memòria heap.",
     "crumbs": [
       "Inici",
       "Blocs",
       "Bloc 2 · Processos",
       "Teoria",
-      "Processos: Creació"
+      "Processos: Senyals"
     ]
   },
   {
-    "objectID": "blocs/02-proc/teoria/02-create.html#example-factoria-de-zombies",
-    "href": "blocs/02-proc/teoria/02-create.html#example-factoria-de-zombies",
-    "title": "Processos: Creació",
-    "section": "Example: Factoria de Zombies",
-    "text": "Example: Factoria de Zombies\n\n\nzombie.c\nint main() {\npid_t pid; int i;\nfor (i = 0; ; i++) {\n    pid = fork();\n    if (pid &gt; 0) {\n        printf(\"Zombie #%d born:\\n\",i + 1); \n        sleep(1);\n    } else {\n        printf(\"*drool* Boooo! Arrgghh! *slobber*\\n\");\n        exit(0);\n    }\n}\nreturn 0;\n}\n\nTerminal 1\n$ gcc zombie.c -o zombie\n$ ./zombie\nZombie #1 born:\nZombie #2 born:\nZombie #3 born:\n...\n\nTerminal 2\n$ watch -n 1 \"ps u -C zombie\"\n\n\n\nInspired by https://www.refining-linux.org/archives/7-Dr.-Frankenlinux-or-how-to-create-zombie-processes.html",
+    "objectID": "blocs/02-proc/teoria/03-signals.html#taula-resum-de-senyals",
+    "href": "blocs/02-proc/teoria/03-signals.html#taula-resum-de-senyals",
+    "title": "Processos: Senyals",
+    "section": "Taula resum de senyals",
+    "text": "Taula resum de senyals\n\n\n\nSenyal\nID\nDescripció\nAcció per defecte\n\n\n\n\nSIGABRT\n6\nAbort\nTerminació\n\n\nSIGALRM\n14\nTemporitzador\nTerminació\n\n\nSIGCONT\n25\nReprendre\nContinuar\n\n\nSIGFPE\n8\nError aritmètic\nTerminació\n\n\nSIGKILL\n9\nFinalització forçada\nNo capturable\n\n\nSIGINT\n2\nInterrupció usuari (Ctrl+C)\nTerminació\n\n\nSIGUSR1\n16\nSenyal definit per l’usuari\nTerminació",
     "crumbs": [
       "Inici",
       "Blocs",
       "Bloc 2 · Processos",
       "Teoria",
-      "Processos: Creació"
+      "Processos: Senyals"
     ]
   },
   {
-    "objectID": "blocs/02-proc/teoria/02-create.html#transformació-exec",
-    "href": "blocs/02-proc/teoria/02-create.html#transformació-exec",
-    "title": "Processos: Creació",
-    "section": "Transformació: exec()",
-    "text": "Transformació: exec()\n\n\n\n\n\n\n\n\n\nProcessos Independents?\n\n\nTots els processos (excepte PID 1) tenen un pare i es creen amb clone(). Però com poden bash i ls ser programes separats?\n\n\n\n\n\n\n\n\n\n\n\nSyscall exec()\n\n\nPermet transformar un procés fill en un nou programa. La família de funcions exec substitueix l’espai d’adreces del procés actual amb un nou programa carregat des d’un fitxer executable (normalment en format ELF).\n\n\n\n\n\n\n\n\n\n\n\n\nComponent\nAbans de exec()\nDesprés de exec()\n\n\n\n\nEspai d’Adreces\nMapeig original\nNou mapeig ELF\n\n\nTaula de Fitxers\nHeretat\nHeretat (excepte FD_CLOEXEC)\n\n\nRegistres CPU\nContext original\nEIP=punt d’entrada, ESP=pila\n\n\nSenyals\nHandlers personalitzats\nTots restablerts a SIG_DFL\n\n\nMemòria Compartida\nMAP_SHARED preservada\nMAP_PRIVATE eliminada\n\n\n\n\n\n\n\n\n\nsequenceDiagram\n    participant P as Original\n    participant K as Kernel\n    participant N as Nou\n\n    P-&gt;&gt;K: execve(\"/bin/ls\", [\"ls\",\"-l\"], envp)\n    activate K\n\n    K-&gt;&gt;K: Valida ELF (e_ident, permissions)\n    K-&gt;&gt;K: flush_old_exec()\n    K-&gt;&gt;K: free_pgtables()\n    K-&gt;&gt;K: load_elf_binary()\n\n    Note over P,N: El PID no canvia: és el mateix procés a nivell de nucli\n\n    Note over K,N: Crear Nou Context\n    K-&gt;&gt;N: Map .text (RX)\n    K-&gt;&gt;N: Map .data/.bss (RW)\n    K-&gt;&gt;N: setup_arg_pages(argv, envp) ⟶ stack\n    K-&gt;&gt;N: setup_brk() ⟶ heap\n    K-&gt;&gt;N: start_thread(entry_point) &lt;br&gt; PC/IP ← entry point of the ELF binary\n\n    deactivate K\n\n    Note over N: Nova execució de codi\n    N--&gt;&gt;K: Syscalls Futures\n    K--&gt;&gt;N: Returna\n\n    Note right of P: Els espai d'adreces original &lt;br&gt; s'ha destruït &lt;br&gt; `task_struct` és el mateix &lt;br&gt; però amb el nou codi carregat",
+    "objectID": "blocs/02-proc/teoria/03-signals.html#timers-al-nucli",
+    "href": "blocs/02-proc/teoria/03-signals.html#timers-al-nucli",
+    "title": "Processos: Senyals",
+    "section": "Timers al nucli",
+    "text": "Timers al nucli\nEl nucli manté un repositor de timers (estructures internes, sovint per PCB o grup de processos) que compta el temps restant per a cada procés o alarm.\n\n\n\n\n\n\nsequenceDiagram\n    participant Kernel\n    participant Procés\n\n    Kernel-&gt;&gt;Kernel: Compta temps timers\n    alt Timer expira\n        Kernel-&gt;&gt;Procés: Envia SIGALRM\n    end\n\n\n\n\n\n\n\nQuan expira un timer, el nucli genera un senyal SIGALRM i el posa a la cua de senyals del procés destinatari.",
     "crumbs": [
       "Inici",
       "Blocs",
       "Bloc 2 · Processos",
       "Teoria",
-      "Processos: Creació"
+      "Processos: Senyals"
     ]
   },
   {
-    "objectID": "blocs/02-proc/teoria/02-create.html#familia-exec",
-    "href": "blocs/02-proc/teoria/02-create.html#familia-exec",
-    "title": "Processos: Creació",
-    "section": "Familia exec()",
-    "text": "Familia exec()\n\n\n\n\n\n\n\n\n\n\nValors de retorn\n\n\n\nMai retorna en cas d’èxit (substitueix completament el procés).\nRetorna -1 només en cas d’error (s’estableix errno).\n\n\n\n\n\n\n#include &lt;unistd.h&gt;\n// Variants with argument list (variable arguments)\nint execl(const char *path, const char *arg0, ..., NULL);                \nint execlp(const char *file, const char *arg0, ..., NULL);                  \nint execle(const char *path, const char *arg0, ..., NULL, \n    char *const envp[]);\n\n#include &lt;unistd.h&gt;\n// Variants with argument vector (array)\nint execv(const char *path, char *const argv[]);                         \nint execvp(const char *file, char *const argv[]);                       \nint execve(const char *path, char *const argv[],\n    char *const envp[]);             \n\n\n\n\nexecve() és la crida al sistema bàsica (les altres són embolcalls de glibc).\nGestiona correctament SUID/SGID.",
+    "objectID": "blocs/02-proc/teoria/03-signals.html#alarm-i-pcb-process-control-block",
+    "href": "blocs/02-proc/teoria/03-signals.html#alarm-i-pcb-process-control-block",
+    "title": "Processos: Senyals",
+    "section": "Alarm() i PCB (Process Control Block)",
+    "text": "Alarm() i PCB (Process Control Block)\nQuan un procés crida alarm(sec), el kernel:\n\nGuarda el temps restant al PCB del procés (pcb-&gt;alarm_timer).\nPrograma el timer al scheduler o al timer interrupt handler.\nQuan el temps expira, el kernel envia SIGALRM al procés.",
     "crumbs": [
       "Inici",
       "Blocs",
       "Bloc 2 · Processos",
       "Teoria",
-      "Processos: Creació"
+      "Processos: Senyals"
     ]
   },
   {
-    "objectID": "blocs/02-proc/teoria/02-create.html#exemple-ls--la",
-    "href": "blocs/02-proc/teoria/02-create.html#exemple-ls--la",
-    "title": "Processos: Creació",
-    "section": "Exemple: ls -la",
-    "text": "Exemple: ls -la\n\n\nint main() {\n    pid_t pid = fork();\n    if (pid == -1) { \n        perror(\"fork\");\n        exit(-1);\n    } else if (pid == 0) { \n        char *args[] = {\"ls\", \"-la\", NULL};\n        execv(\"/bin/ls\", args);\n        perror(\"execv fallat\"); \n        exit(-1);\n    } else { \n        int status;\n        pid_t w = waitpid(pid, \n            &status, WUNTRACED);\n    } exit(0);\n}\n\ngcc ex7.c -o ex7\n./ex7\ntotal 24\ndrwxr-xr-x  2 user user 4096 Feb 20 10:00 .\ndrwxr-xr-x 10 user user 4096 Feb 20 09:58 .. \n-rwxr-xr-x 1 user user 70512 Feb 20 14:57 ex7\n-rw-r--r-- 1 user user   107 Feb 20 13:23 ex7.c\n\n\n\n\n\n\nsequenceDiagram\n    box rgb(240,240,240) Parent Process\n    participant P\n    end\n    \n    box rgb(240,240,240) Kernel\n    participant K\n    end\n    \n    box rgb(240,240,240) Child Process\n    participant F\n    end\n\n    P-&gt;&gt;K: Calls `fork()`\n    activate K\n    K--&gt;&gt;F: Crea una nova còpia del procés (Fill, PID Y)&lt;br&gt; amb memòria idèntica (CoW)\n    K--&gt;&gt;P: Retorna PID Y al Pare\n    deactivate K\n    \n    par Execució Concurrent\n        F-&gt;&gt;K: Crida `execv(\"/bin/ls\", [\"ls\",\"-la\"], NULL)`\n        \n        activate K\n        K-&gt;&gt;K: Valida `/bin/ls` (permissos, format)\n        K-&gt;&gt;K: Esborra tota la memòria del Fill (F)**\n        K-&gt;&gt;K: Carrega `ls` a la memòria del Fill**&lt;br&gt;  (codi, dades, nova pila)\n        K-&gt;&gt;K: Reconfigura els registres de la CPU i el PC/IP&lt;br&gt;  al punt d'entrada de `ls`\n        deactivate K\n\n        activate F\n        F-&gt;&gt;F: Executa el programa `/bin/ls -la`&lt;br&gt;Genera la llista a `stdout`.\n        F-&gt;&gt;K: `exit(0)` (Finalitza `/bin/ls`)\n        deactivate F\n        \n        activate P\n        P-&gt;&gt;K: `waitpid(PID Y, &status, WUNTRACED)`\n        deactivate P\n    end\n\n    K--&gt;&gt;P: Notifica al Pare que el fill (ara `ls`) ha acabat.\n    activate P\n    P-&gt;&gt;K: `exit(0)` (Finalitza el Pare)\n    deactivate P",
+    "objectID": "blocs/02-proc/teoria/03-signals.html#alarm-a-userspace",
+    "href": "blocs/02-proc/teoria/03-signals.html#alarm-a-userspace",
+    "title": "Processos: Senyals",
+    "section": "alarm() a userspace",
+    "text": "alarm() a userspace\nEl procés s’envia a si mateix després de sec segons un senyal SIGALRM. Retorna el nombre de segons pendents si hi havia una crida a alarm anterior, o zero en altre cas.\n#include &lt;unistd.h&gt; C\nunsigned int alarm(unsigned int sec);\n\n\n\n\n\n\n\nDesactivar alarmes\n\n\nPer desactivar una alarma pendent, es pot cridar a alarm(0), aquesta comanda cancel·la qualsevol alarma pendent.",
     "crumbs": [
       "Inici",
       "Blocs",
       "Bloc 2 · Processos",
       "Teoria",
-      "Processos: Creació"
+      "Processos: Senyals"
     ]
   },
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Sistemes Operatius",
-    "section": "",
-    "text": "Aquesta assignatura proporciona els coneixements necessaris per comprendre el funcionament intern dels sistemes operatius, amb Linux com a plataforma de referència."
-  },
-  {
-    "objectID": "index.html#professorat",
-    "href": "index.html#professorat",
-    "title": "Sistemes Operatius",
-    "section": "Professorat",
-    "text": "Professorat\n\nJordi Mateo mailto:jordi.mateo@udl.cat"
+    "objectID": "blocs/02-proc/teoria/03-signals.html#resum",
+    "href": "blocs/02-proc/teoria/03-signals.html#resum",
+    "title": "Processos: Senyals",
+    "section": "Resum",
+    "text": "Resum",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Senyals"
+    ]
   },
   {
     "objectID": "blocs/02-proc/teoria/01-procs.html#objectius",
@@ -2604,6 +2604,356 @@
       "Bloc 2 · Processos",
       "Teoria",
       "Processos: concepte, estats i PCB"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Sistemes Operatius",
+    "section": "",
+    "text": "Aquesta assignatura proporciona els coneixements necessaris per comprendre el funcionament intern dels sistemes operatius, amb Linux com a plataforma de referència."
+  },
+  {
+    "objectID": "index.html#professorat",
+    "href": "index.html#professorat",
+    "title": "Sistemes Operatius",
+    "section": "Professorat",
+    "text": "Professorat\n\nJordi Mateo mailto:jordi.mateo@udl.cat"
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#mecanisme-de-creació-fork",
+    "href": "blocs/02-proc/teoria/02-create.html#mecanisme-de-creació-fork",
+    "title": "Processos: Creació",
+    "section": "Mecanisme de Creació fork()",
+    "text": "Mecanisme de Creació fork()\n\n\nfork() crea una còpia exacta del procés actual (el pare). Aquesta còpia esdevé el procés fill i s’executa independentment i simultàniament.\n#include &lt;sys/types.h&gt; # pid_t\n#include &lt;unistd.h&gt;    # fork()\nint main() {\n    pid_t pid = fork();\n    exit(0);\n}\n\n\n\n\n\n\n\nEspai de Memòria\n\n\nEls processos pare (A) i fill (B) no comparteixen espai de memòria. Cada procés té el seu propi espai d’adreces virtuals. No obstant això, el contingut inicial de la memòria del procés pare es copia a l’espai d’adreces del fill.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#jerarquia-de-processos-fork",
+    "href": "blocs/02-proc/teoria/02-create.html#jerarquia-de-processos-fork",
+    "title": "Processos: Creació",
+    "section": "Jerarquia de Processos · fork()",
+    "text": "Jerarquia de Processos · fork()\nex1.c\n#include &lt;stdlib.h&gt;\n#include &lt;unistd.h&gt;\n#include &lt;sys/types.h&gt;\nint main() {\n    pid_t pid;\n    pid = fork();\n    sleep(20);\n    exit(0);\n}\n\nTerminal A\nwatch -n 1 \"ps -ef | grep ex1\"\n\nTerminal B\necho $$ && gcc ex1.c -o ex1 && ./ex1",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#execució-independentfork",
+    "href": "blocs/02-proc/teoria/02-create.html#execució-independentfork",
+    "title": "Processos: Creació",
+    "section": "Execució Independent:fork()",
+    "text": "Execució Independent:fork()\n\n\n\n\n\n\n\n\n\nValors de retorn: fork()\n\n\n\nSi fork() té èxit:\n\nRetorna un valor \\(&gt;0\\) al procés pare (el PID del procés fill).\nRetorna 0 al procés fill.\n\n\n\n\n\n\n\n\n\n\n\n\n\nConsideracions\n\n\n\nSi fork() falla en el procés pare, retorna un valor \\(&lt;0\\) i el codi d’error es guarda a la variable errno.\nSi fork() falla, no es crea cap procés fill.\n\n\n\n\n\n\n\n\n\n\n\n\nObservacions\n\n\n\nLa instrucció exit(0) s’executa tant pel procés pare com pel fill.\nCada procés executa el seu propi printf de manera independent.\n\n\n\n\n\n\nex2.c\n#include &lt;stdio.h&gt;\n#include &lt;unistd.h&gt;\n#include &lt;errno.h&gt;\nint main() {\n    pid_t pid = fork();\n    if (pid == 0) {\n        printf(\"Hello, I am the child.\\n\");\n    } else if (pid &gt; 0) {\n        printf(\"Hello I am the father.\\n\");\n    } else {\n        perror(\"Error creating process\");\n    }\n    exit(0);\n}\n\nExecució\ngcc ex2.c -o ex2 && ./ex2",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#registres-i-fork",
+    "href": "blocs/02-proc/teoria/02-create.html#registres-i-fork",
+    "title": "Processos: Creació",
+    "section": "Registres i fork()",
+    "text": "Registres i fork()\n\n\n\n\n\n\n\nsequenceDiagram\n    participant P as Pare\n    participant K as Kernel\n    participant C as Fill\n\n    Note over P: Estat abans de fork()&lt;br&gt;RAX = ?, PC = adreça_crida_fork\n    P-&gt;&gt;K: `fork()`\n    activate K\n    K--&gt;&gt;P: Retorn al Pare:&lt;br&gt;RAX = Child PID &lt;br&gt;PC = adreça_següent_instrucció\n    K--&gt;&gt;C: Retorn al Fill:&lt;br&gt;RAX = 0&lt;br&gt;PC = adreça_següent_instrucció\n    deactivate K\n\n    par Execució paral·lela des del mateix punt\n        P--&gt;&gt;P: Pare: Continua l'execució.(`if (RAX &gt; 0)`)\n        C--&gt;&gt;C: Fill: Continua l'execució.(`if (RAX == 0)`)\n    end\n\n    Note over P,C: Ambdós processos s'executen de manera independent\n\n\n\n\n\n\n\n\n\n\n\n\nsequenceDiagram\n    participant P as Pare\n    participant K as Kernel\n\n    Note over P: Estat abans de fork()&lt;br&gt;RAX = ?, PC = adreça_crida_fork\n    P-&gt;&gt;K: `fork()`\n    activate K\n   \n    alt Error a `fork()`\n        P--xK: Retorna al pare:&lt;br&gt;RAX = -1\n        Note over P: `errno` s'estableix.\n    end\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nObservació\n\n\nA l’arquitectura x86, el registre RAX s’utilitza per emmagatzemar el valor de retorn de la crida al sistema fork(). En altres arquitectures, s’utilitzen registres equivalents (sovint R0 o X0).",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#gestió-derrors-fork",
+    "href": "blocs/02-proc/teoria/02-create.html#gestió-derrors-fork",
+    "title": "Processos: Creació",
+    "section": "Gestió d’errors: fork()",
+    "text": "Gestió d’errors: fork()\n\n\n\n\n\n\n\n\nError\nDescripció\nRaons\n\n\n\n\nEAGAIN\nS’han assolit els límits del sistema.\n- Límits de processos (RLIMIT_NPROC)- Límits de fils (threads-max)- Esgotament dels PIDs disponibles (pid_max)- Límits de cgroup\n\n\nENOMEM\nMemòria del Kernel insuficient.\n- Escassetat de RAM o Swap- Problemes amb els espais de noms PID\n\n\nENOSYS\nfork() no és compatible.\n- Maquinari sense unitat de gestió de memòria (MMU)- SO no compatible amb fork()\n\n\nERESTARTNOINTR\nCrida interrompuda i reiniciada.\nIntern al Kernel, no és un error vist directament per l’aplicació.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#forkbomb",
+    "href": "blocs/02-proc/teoria/02-create.html#forkbomb",
+    "title": "Processos: Creació",
+    "section": "Forkbomb",
+    "text": "Forkbomb\n\n\n\n\n\n\n\n\n\nQuè és una Forkbomb?\n\n\nA forkbomb és un atac de denegació de servei que crea ràpidament un nombre massiu de processos, sobrecarregant els recursos del sistema i fent-lo inoperable.\nint main() {\n    while (1) {\n        fork();\n    }\n\n\n\n\n\n\n\n\n\n\n\nMecanismes de Protecció\n\n\nEl nucli implementa dos mecanismes per prevenir les forkbombs:\n\nLímits de processos per usuari: Cada usuari té un límit configurable sobre el nombre de processos que pot crear, establert per ulimit -u.\nLímit global de processos: El sistema té un límit global sobre el nombre total de processos que pot crear, configurat per pid_max (típicament 32768).\n\n\n\n\n\n\n\n\n\n\n\nsequenceDiagram\n    participant P as Procés Forkbomb \n    participant K as Nucli (Kernel)\n    \n    P-&gt;&gt;K: fork() (1r intent)\n    activate K\n    K--&gt;&gt;P: Retorna PID del fill1\n    deactivate K\n    \n    par Creació Exponencial\n        P-&gt;&gt;K: fork() (2n intent)\n        activate K\n        K--&gt;&gt;P: Retorna PID del fill2\n        deactivate K\n        \n        fork1-&gt;&gt;K: fork() (1r fill)\n        activate K\n        K--&gt;&gt;fork1: Retorna PID del fill3\n        deactivate K\n    end\n    \n    Note over K: Processos creats: 4\n    \n    loop Fase de Saturació\n        P/fills-&gt;&gt;K: fork() (Nou intent)\n        activate K\n        alt Abans del límit\n            K--&gt;&gt;P/fills: Retorna nou PID\n        else Després del límit\n            K--&gt;&gt;P/fills: Retorna -1 (EAGAIN)\n        end\n        deactivate K\n    end\n    \n    Note over K: Estat Final:&lt;br&gt;- Límit de processos assolit&lt;br&gt;- CPU al 100%&lt;br&gt;- Nous forks bloquejats.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#gestió-de-memòria-fork",
+    "href": "blocs/02-proc/teoria/02-create.html#gestió-de-memòria-fork",
+    "title": "Processos: Creació",
+    "section": "Gestió de Memòria · fork()",
+    "text": "Gestió de Memòria · fork()\n\n\n\n\n\n\n\n\n\n\n\nObservacions\n\n\n\nEn el moment de fork() \\(\\rightarrow\\) El pare i el fill comparteixen el mateix espai d’adreces físic.\nCada procés té el seu propi espai d’adreces virtual, que tradueix a l’espai d’adreces físic compartit.\n\n\n\n\n\n\n\n\n\n\n\n\nDuplicats idèntics\n\n\nInicialment, el pare i el fill són duplicats idèntics. A partir d’aquest moment, cada procés té el seu propi espai d’adreces virtual, i qualsevol modificació en un no afecta l’altre.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#duplicació-rightarrow-independència",
+    "href": "blocs/02-proc/teoria/02-create.html#duplicació-rightarrow-independència",
+    "title": "Processos: Creació",
+    "section": "Duplicació \\(\\rightarrow\\) Independència",
+    "text": "Duplicació \\(\\rightarrow\\) Independència\n\n\nstatic int i = 11; //.data\nint main() {\n    int j= 22; // Stack\n    int *z = malloc(sizeof(int)); // Heap\n\n    pid_t pid;\n    switch (pid=fork())\n    {\n    case 0:\n        i *= 3; \n        j *= 3;\n        *z=44;\n        break;\n    default:\n        sleep(3);\n        *z=55;\n        break;\n    }\n \n    printf(\"PID=%ld %s data=%d stack=%d heap=%d\\n\", \n        (long) getpid(), \n        (pid == 0) ? \"(child) \" : \"(parent)\",i,j,*z);\n    free(z);\n    exit(0);\n}\n\n\n\n\n\n\nsequenceDiagram\n    participant P as Pare\n    participant OS as Kernel\n    participant C as Fill\n\n    Note over P: i=11, j=22, z=NULL\n    P-&gt;&gt;OS: `fork()`\n\n    par\n        C-&gt;&gt;OS: i *= 3 (.data) [i es converteix en 33]\n        activate OS\n        OS--&gt;&gt;C: Duplica Pàgina, Actualitza VMA\n        deactivate OS\n\n        C-&gt;&gt;OS: j *= 3 (stack) [j es converteix en 66]\n        activate OS\n        OS--&gt;&gt;C: Duplica Pàgina, Actualitza VMA\n        deactivate OS\n\n        C-&gt;&gt;OS: *z = 44 (heap) [z apunta a 44]\n        activate OS\n        OS--&gt;&gt;C: Duplica Pàgina, Actualitza VMA\n        deactivate OS\n    end\n\n    P-&gt;&gt;OS: *z = 55 (heap) [z apunta a 55]\n    activate OS\n    OS--&gt;&gt;P: Duplica Pàgina, Actualitza VMA\n    deactivate OS\n\n    C-&gt;&gt;C: Prints: data=33 stack=66 heap=44\n    P-&gt;&gt;P: Prints: data=11 stack=22 heap=55",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#copy-on-write-cow",
+    "href": "blocs/02-proc/teoria/02-create.html#copy-on-write-cow",
+    "title": "Processos: Creació",
+    "section": "Copy-On-Write (CoW)",
+    "text": "Copy-On-Write (CoW)\n\n\n\n\n\n\n\nsequenceDiagram\n    participant P as Pare\n    participant M as Memòria\n    participant C as Fill\n\n    P-&gt;&gt;C: Crea Procés Fill\n    M-&gt;&gt;C: Comparteix Pàgina X\n\n\n    rect rgba(255, 200, 200, 0.2)\n    Note over P,C: Post-fork - Operació escriptura\n    P-&gt;&gt;M: Modifica Pàgina X\n    M-&gt;&gt;P: Crea còpia privada X' (RW)\n    M-&gt;&gt;C: Manté original X (RO)\n\n    end\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nCom funciona?\n\n\nQuan fork() crea un nou procés, el pare i el fill inicialment comparteixen les mateixes pàgines de memòria. Aquestes es marquen com a només lectura per a ambdós processos.\n\nCrea una còpia privada d’aquella pàgina per al procés que escriu.\nAssigna la nova pàgina amb permisos d’escriptura.\nManté la transparència per a l’aplicació.\n\nAquest mecanisme optimitza tant el temps com la memòria, ja que només es copia la informació modificada.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#indeterminisme-fork",
+    "href": "blocs/02-proc/teoria/02-create.html#indeterminisme-fork",
+    "title": "Processos: Creació",
+    "section": "Indeterminisme fork()",
+    "text": "Indeterminisme fork()\n\n\nint main() {\n  pid_t pid;\n  if ((pid = fork()) &lt; 0) {\n    exit(-1);\n  } else if (pid == 0) {  \n    printf(\"My name is Rhaenyra\")\n  } else {\n    printf(\"My name is King Viserys\");\n  }\n  exit(0);\n}\n\n\n\n\n\n\n\n\n\n\nObservacions\n\n\n\nLa execució del programa és no determinista.\nEl procés pare i el fill poden executar-se en qualsevol ordre.\nL’planificador del sistema operatiu decideix quin procés s’executa en un moment donat.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#wait",
+    "href": "blocs/02-proc/teoria/02-create.html#wait",
+    "title": "Processos: Creació",
+    "section": "wait()",
+    "text": "wait()\n\n\n\n\n\n\n\n\n\nwait()\n\n\nLa crida al sistema wait() permet que un procés pare bloquegi la seva execució fins que un dels seus processos fills canviï d’estat (normalment, quan finalitza). També recupera informació sobre el fill que ha canviat d’estat.\n#include &lt;sys/types.h&gt;\n#include &lt;sys/wait.h&gt;\npid_t wait(int *_Nullable wstatus);\n\n\n\n\n\n\n\n\n\n\n\nPropietats\n\n\n\nRetorna el PID del procés fill que ha canviat d’estat, o -1 en cas d’error.\nSi wstatus no és NULL, l’estat de sortida del fill s’hi emmagatzema.\n\n\n\n\n\n\n\n\n\n\n\n\nSIGCHLD\n\n\nEl senyal SIGCHLD s’envia al procés pare quan un fill canvia d’estat.\n\n\n\n\n\n\n\n\n\n\nsequenceDiagram\n    participant P as Pare\n    participant K as Kernel\n    participant C as Fill\n    P-&gt;&gt;K: fork()\n    K--&gt;&gt;C: Crea Procés Fill\n    activate C\n    K--&gt;&gt;P: Retorna PID del Fill\n    C-&gt;&gt;C: Execució del Fill\n    P-&gt;&gt;K: wait()\n    K-&gt;&gt;K: Bloqueja pare fins que el fill canviï d'estat\n    C-&gt;&gt;K: exit(42)\n    deactivate C\n    K-&gt;&gt;K: PCB retingut \n    K--&gt;&gt;P: notificació SIGCHLD\n    P-&gt;&gt;K: Llegeix estat del Fill Reads\n    K-&gt;&gt;K: Allibera PCB fill\n    K--&gt;&gt;P: Retorna estat (42)",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#example-wait",
+    "href": "blocs/02-proc/teoria/02-create.html#example-wait",
+    "title": "Processos: Creació",
+    "section": "Example: wait()",
+    "text": "Example: wait()\n\n\nint main() {\n    pid_t pid;\n    if ((pid = fork()) &lt; 0) {\n        exit(-1);\n    } else if (pid == 0) {  \n        printf(\"My name is Rhaenyra\")\n    } else {\n        wait(NULL);\n        printf(\"My name is King Viserys\");\n        }\n    exit(0);\n}\n\n\n\n\n\n\n\nObservacions\n\n\n\nEl procés pare utilitza wait() per esperar que el seu fill finalitzi abans de continuar. Això assegura que la sortida serà sempre My name is King Viserys després de My name is Rhaenyra.\nNo garanteix que el fill s’executi primer. Només assegura que el fill acabi abans que el pare reprengui la seva execució.\nwait() és per a un pare que espera un fill. Un fill no pot utilitzar-lo per esperar el seu pare.\nAltres mecanismes, com pause() i senyals, són necessaris per a diferents escenaris de sincronització.\n\n\n\n\n\n\n\n\n\n\n\nsequenceDiagram\n    participant P as Pare (PID X)\n    participant K as Kernel\n    participant C as Fill (PID Y)\n    \n    P-&gt;&gt;K: fork()\n    K--&gt;&gt;C: Crea Procés\n    K--&gt;&gt;P: Retorna PID Y\n    K--&gt;&gt;C: Returns 0\n    \n    P-&gt;&gt;K: wait()\n    Note right of P: Estat: WAITING\n    K-&gt;&gt;K: Planificador: continua Fill\n    \n    activate C\n    C-&gt;&gt;C: printf(\"My name is Rhaenyra\")\n    C-&gt;&gt;K: exit(0)\n    deactivate C\n    \n    K--&gt;&gt;P: SIGCHLD + status (0)\n    Note right of P: Estat: RUNNING\n    P-&gt;&gt;P: printf(\"My name is King Viserys\")\n    P-&gt;&gt;K: exit(0)",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#waitpid",
+    "href": "blocs/02-proc/teoria/02-create.html#waitpid",
+    "title": "Processos: Creació",
+    "section": "waitpid()",
+    "text": "waitpid()\n\n\n\n\n\n\n\n\n\nwaitpid()\n\n\nPermet que un procés pare esperi de manera selectiva que un procés fill específic canviï d’estat. També proporciona més control sobre el comportament de l’espera mitjançant opcions addicionals.\npid_t waitpid(pid_t pid, int *_Nullable wstatus, int options);\n\n\n\n\n\n\n\n\n\n\n\nOptions\n\n\n\nWNOHANG: No bloquejar si cap procés fill ha canviat d’estat. Això significa que la crida retorna immediatament.\nWUNTRACED: També retorna per processos fills que han estat aturats (per exemple, per un senyal).\nWCONTINUED: També retorna per processos fills que han estat reprès després d’haver estat aturat (disponible des de Linux 2.6.10).\n\n\n\n\n\n\n\n\n\n\n\n\n\nValors de pid\n\n\n\n\\(\\lt -1\\): Espera qualsevol procés fill el PID del qual sigui igual al valor absolut de pid.\n\\(= -1\\): Espera qualsevol procés fill.\n\\(= 0\\): Espera qualsevol procés fill el PID del qual sigui igual al del procés que crida (el pare).\n\\(\\gt 0\\): Espera el procés fill específic identificat per aquest valor de pid.\n\n\n\n\n\n\n\n\n\n\n\n\nObservació\n\n\nwait(NULL) és equivalent a waitpid(-1, NULL, 0)",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#example-waitpid",
+    "href": "blocs/02-proc/teoria/02-create.html#example-waitpid",
+    "title": "Processos: Creació",
+    "section": "Example: waitpid()",
+    "text": "Example: waitpid()\n\n\nint main() {\n    printf(\"Dracarys!\\n\");\n    pid_t drogon = fork();\n    if (drogon == 0) { \n        sleep(1);  \n        printf(\"Fire and blood in KL!\\n\");\n        exit(0); \n    }\n    pid_t rhaegal = fork();\n    if (rhaegal == 0) {\n        sleep(3); \n        printf(\"Flying over Saltspear\\n\");\n        exit(0);\n    }\n    waitpid(rhaegal, NULL, 0);\n    printf(\"Rhaegal has returned\\n\");\n    waitpid(drogon, NULL, 0);\n    printf(\"Drogon has returned\\n\");\n    exit(0);\n}\n\n\n\n\n\n\nsequenceDiagram\n    participant D as Daenerys\n    participant K as Kernel\n    participant D1 as Drogon\n    participant D2 as Rhaegal\n  \n    Note over D: dracarys!\n    D-&gt;&gt;K: fork() (Drogon)\n    activate D1\n    D-&gt;&gt;K: fork() (Rhaegal)\n    activate D2\n\n    Note over D1: sleep(1)\n    D1-&gt;&gt;D1: printf(\"Fire and blood in KL!\")\n    D1-&gt;&gt;K: exit(0)\n    deactivate D1\n\n    Note over D2: sleep(3)\n    D2-&gt;&gt;D2: printf(\"Flying over Saltspear\")\n    D2-&gt;&gt;K: exit(0)\n    deactivate D2\n\n    D-&gt;&gt;K: waitpid(Rhaegal)\n    K--&gt;&gt;D: Returns Rhaegal's PID (Rhaegal finished)\n    D-&gt;&gt;D: printf(\"Rhaegal has returned\")\n    \n    D-&gt;&gt;K: waitpid(Drogon)\n    K--&gt;&gt;D: Returns Drogon's PID (Drogon finished)\n    D-&gt;&gt;D: printf(\"Drogon has returned\")\n\n    D-&gt;&gt;K: exit(0)",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#waitwaitpid-macros",
+    "href": "blocs/02-proc/teoria/02-create.html#waitwaitpid-macros",
+    "title": "Processos: Creació",
+    "section": "wait()/waitpid(): Macros",
+    "text": "wait()/waitpid(): Macros\nEl paràmetre status de wait() o waitpid() és un enter (int) que conté informació codificada sobre com ha finalitzat (o ha canviat d’estat) el procés fill.\nPer a X86:\n\n\n\n\n\n\n\n\nBits\nCamp\nDescripció\n\n\n\n\n0-6\nCodi de Senyal\nEl número del senyal que ha causat la terminació del fill, si n’hi ha. (WTERMSIG(status)).\n\n\n7\nIndicador de Core Dump\nIndicador si s’ha generat un core dump. (WCOREDUMP(status)).\n\n\n8-15\nExit\nEl valor de retorn de l’exit() del fill. (WEXITSTATUS(status))\n\n\n16-31\n-\nGeneralment no utilitzat o reservat.\n\n\n\n\n\n\n\n\n\n\nQuè passa amb exit(256)?\n\n\nEl número 256 es converteix en un codi de sortida de 0 perquè els codis de sortida solen estar limitats a 8 bits (0-255). Això es deu al fet que el sistema operatiu només utilitza els 8 bits menys significatius per al codi de sortida. Per tant, WEXITSTATUS(status) retornarà 0.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#waitwaitpid-status-macros",
+    "href": "blocs/02-proc/teoria/02-create.html#waitwaitpid-status-macros",
+    "title": "Processos: Creació",
+    "section": "wait()/waitpid(): Status Macros",
+    "text": "wait()/waitpid(): Status Macros\n\nWIFEXITED(status): Retorna cert (no zero) si el procés fill ha finalitzat normalment mitjançant exit().\nWEXITSTATUS(status): Retorna el codi de sortida del fill. Només vàlid si WIFEXITED(status) és cert.\nWIFSIGNALED(status): Retorna cert si el canvi d’estat del fill ha estat causat per un senyal.\nWTERMSIG(status): Retorna el número del senyal que ha causat la terminació del procés fill. Només vàlid si WIFSIGNALED(status) és cert.\nWCOREDUMP(status): Retorna cert si el fill ha terminat i ha generat un core dump. Només vàlid si WIFSIGNALED(status) és cert. (La disponibilitat pot variar).\nWIFSTOPPED(status): Retorna cert si el fill ha estat suspès (aturat) per un senyal. Per detectar això, waitpid() ha de ser cridat amb l’opció WUNTRACED.\nWSTOPSIG(status): Retorna el número del senyal que ha aturat el fill. Només vàlid si WIFSTOPPED(status) és cert.\nWIFCONTINUED(status): Retorna cert si un fill que havia estat aturat ha estat reactivat (amb SIGCONT). Requereix l’opció WCONTINUED en waitpid() (Linux kernel 2.6 i posteriors).",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#exemple-waitpid-macros",
+    "href": "blocs/02-proc/teoria/02-create.html#exemple-waitpid-macros",
+    "title": "Processos: Creació",
+    "section": "Exemple: waitpid() & Macros",
+    "text": "Exemple: waitpid() & Macros\n\n\nint main(int argc, char *argv[]){\npid_t pid, w; int status; \npid = fork();\nif (pid == 0) { \n    if (argc == 1) pause(); \n    exit(atoi(argv[1]));\n} else {                    \n  do {\n    w = waitpid(pid, &status, WUNTRACED | WCONTINUED);\n    if (w == -1) { perror(\"waitpid\"); exit(EXIT_FAILURE);}\n    if (WIFEXITED(status)) {\n      printf(\"ex8: child %d exited, status=%d\\n\", \n        w, WEXITSTATUS(status))\n    } else if (WIFSIGNALED(status)) {\n      printf(\"ex8: child %d killed by signal %d\\n\", \n        w, WTERMSIG(status));    \n    } else if (WIFSTOPPED(status)) {\n      printf(\"ex8: child %d stopped by signal %d\\n\", \n        w, WSTOPSIG(status));\n    } else if (WIFCONTINUED(status)) {\n      printf(\"ex8: child %d continued\\n\", w);\n  } while (!WIFEXITED(status) && !WIFSIGNALED(status));\n}\n\n\n\n\n\n\n\n\n\nPregunta?\n\n\nQuin serà el resultat després d’executar ./ex8 42?",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#estat-zombie",
+    "href": "blocs/02-proc/teoria/02-create.html#estat-zombie",
+    "title": "Processos: Creació",
+    "section": "Estat Zombie",
+    "text": "Estat Zombie\n\n\n\n\n\n\n\nTASK_ZOMBIE\n\n\nDesprés d’executar exit(), un procés no s’elimina immediatament. En lloc d’això, entra en l’estat zombie fins que el seu procés pare processa la notificació SIGCHLD o crida a wait() o waitpid(). Si el pare no ho fa, el fill roman en aquest estat indefinidament.\n\n\n\n\n\n\n// kernel/exit.c\nvoid do_exit(long code) {\n    struct task_struct *tsk = current;\n    tsk-&gt;exit_code = code;          \n    exit_files(tsk);               \n    exit_mm(tsk);                 \n    exit_notify(tsk, group_dead);   \n}\n\n// kernel/exit.c\nstatic void exit_notify(struct task_struct *tsk, \n    int group_dead) {\n    tsk-&gt;exit_state = EXIT_ZOMBIE;  \n    if (group_dead)\n        tsk-&gt;exit_state |= EXIT_DEAD;\n    tsk-&gt;exit_signal : SIGCHLD;\n    do_notify_parent(tsk, sig);\n}",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#orfes-i",
+    "href": "blocs/02-proc/teoria/02-create.html#orfes-i",
+    "title": "Processos: Creació",
+    "section": "Orfes (I)",
+    "text": "Orfes (I)\nUn procés fill esdevé un orfe si el seu pare mor abans que ell. En aquest cas, el nucli reassigna el fill al procés init (PID 1), que és responsable de netejar els processos orfes.\n\n\n\n\n\nsequenceDiagram\n    participant Pare\n    participant Kernel\n    participant Fill\n    participant Init\n    \n    Parent-&gt;&gt;Kernel: exit() // Mor el pare\n    Kernel-&gt;&gt;Kernel: find_zombie_children()\n    Note right of Child: Orfe, fill sense pare\n    Kernel-&gt;&gt;Child: reparent_to_init()\n    loop Cada 0.5s\n        Init-&gt;&gt;Kernel: wait()\n        Kernel-&gt;&gt;Init: Retorna estat\n        Kernel-&gt;&gt;Child: release_task()\n    end",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#orfes-i-zombies",
+    "href": "blocs/02-proc/teoria/02-create.html#orfes-i-zombies",
+    "title": "Processos: Creació",
+    "section": "Orfes i Zombies",
+    "text": "Orfes i Zombies\n\n\n\n\n\n\n\n\n\nEscenari\nMecanisme del Nucli\nTemps\nConsequències\n\n\n\n\nPare Actiu\nReté task_struct fins a wait()\nIndefinit\n- Consumeix entrada a la taula de processos- PID es manté ocupat\n\n\nPare Mort\nreparent_to_init() (PPID←1)\n\\(\\le 1\\) ms\n- Init neteja en segon pla (init periodicament crida wait()) - Alliberació asíncrona\n\n\nReinici del Sistema\nkill(pid, SIGKILL)\n0\n- Alliberació forçada (via do_exit() global) - Sense garantia d’estat\n\n\nPare ignora SIGCHLD\nZombie persistent\n\\(\\infty\\)\n- Requereix intervenció manual",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#example-factoria-de-zombies",
+    "href": "blocs/02-proc/teoria/02-create.html#example-factoria-de-zombies",
+    "title": "Processos: Creació",
+    "section": "Example: Factoria de Zombies",
+    "text": "Example: Factoria de Zombies\n\n\nzombie.c\nint main() {\npid_t pid; int i;\nfor (i = 0; ; i++) {\n    pid = fork();\n    if (pid &gt; 0) {\n        printf(\"Zombie #%d born:\\n\",i + 1); \n        sleep(1);\n    } else {\n        printf(\"*drool* Boooo! Arrgghh! *slobber*\\n\");\n        exit(0);\n    }\n}\nreturn 0;\n}\n\nTerminal 1\n$ gcc zombie.c -o zombie\n$ ./zombie\nZombie #1 born:\nZombie #2 born:\nZombie #3 born:\n...\n\nTerminal 2\n$ watch -n 1 \"ps u -C zombie\"\n\n\n\nInspired by https://www.refining-linux.org/archives/7-Dr.-Frankenlinux-or-how-to-create-zombie-processes.html",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#transformació-exec",
+    "href": "blocs/02-proc/teoria/02-create.html#transformació-exec",
+    "title": "Processos: Creació",
+    "section": "Transformació: exec()",
+    "text": "Transformació: exec()\n\n\n\n\n\n\n\n\n\nProcessos Independents?\n\n\nTots els processos (excepte PID 1) tenen un pare i es creen amb clone(). Però com poden bash i ls ser programes separats?\n\n\n\n\n\n\n\n\n\n\n\nSyscall exec()\n\n\nPermet transformar un procés fill en un nou programa. La família de funcions exec substitueix l’espai d’adreces del procés actual amb un nou programa carregat des d’un fitxer executable (normalment en format ELF).\n\n\n\n\n\n\n\n\n\n\n\n\nComponent\nAbans de exec()\nDesprés de exec()\n\n\n\n\nEspai d’Adreces\nMapeig original\nNou mapeig ELF\n\n\nTaula de Fitxers\nHeretat\nHeretat (excepte FD_CLOEXEC)\n\n\nRegistres CPU\nContext original\nEIP=punt d’entrada, ESP=pila\n\n\nSenyals\nHandlers personalitzats\nTots restablerts a SIG_DFL\n\n\nMemòria Compartida\nMAP_SHARED preservada\nMAP_PRIVATE eliminada\n\n\n\n\n\n\n\n\n\nsequenceDiagram\n    participant P as Original\n    participant K as Kernel\n    participant N as Nou\n\n    P-&gt;&gt;K: execve(\"/bin/ls\", [\"ls\",\"-l\"], envp)\n    activate K\n\n    K-&gt;&gt;K: Valida ELF (e_ident, permissions)\n    K-&gt;&gt;K: flush_old_exec()\n    K-&gt;&gt;K: free_pgtables()\n    K-&gt;&gt;K: load_elf_binary()\n\n    Note over P,N: El PID no canvia: és el mateix procés a nivell de nucli\n\n    Note over K,N: Crear Nou Context\n    K-&gt;&gt;N: Map .text (RX)\n    K-&gt;&gt;N: Map .data/.bss (RW)\n    K-&gt;&gt;N: setup_arg_pages(argv, envp) ⟶ stack\n    K-&gt;&gt;N: setup_brk() ⟶ heap\n    K-&gt;&gt;N: start_thread(entry_point) &lt;br&gt; PC/IP ← entry point of the ELF binary\n\n    deactivate K\n\n    Note over N: Nova execució de codi\n    N--&gt;&gt;K: Syscalls Futures\n    K--&gt;&gt;N: Returna\n\n    Note right of P: Els espai d'adreces original &lt;br&gt; s'ha destruït &lt;br&gt; `task_struct` és el mateix &lt;br&gt; però amb el nou codi carregat",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#familia-exec",
+    "href": "blocs/02-proc/teoria/02-create.html#familia-exec",
+    "title": "Processos: Creació",
+    "section": "Familia exec()",
+    "text": "Familia exec()\n\n\n\n\n\n\n\n\n\n\nValors de retorn\n\n\n\nMai retorna en cas d’èxit (substitueix completament el procés).\nRetorna -1 només en cas d’error (s’estableix errno).\n\n\n\n\n\n\n#include &lt;unistd.h&gt;\n// Variants with argument list (variable arguments)\nint execl(const char *path, const char *arg0, ..., NULL);                \nint execlp(const char *file, const char *arg0, ..., NULL);                  \nint execle(const char *path, const char *arg0, ..., NULL, \n    char *const envp[]);\n\n#include &lt;unistd.h&gt;\n// Variants with argument vector (array)\nint execv(const char *path, char *const argv[]);                         \nint execvp(const char *file, char *const argv[]);                       \nint execve(const char *path, char *const argv[],\n    char *const envp[]);             \n\n\n\n\nexecve() és la crida al sistema bàsica (les altres són embolcalls de glibc).\nGestiona correctament SUID/SGID.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/02-create.html#exemple-ls--la",
+    "href": "blocs/02-proc/teoria/02-create.html#exemple-ls--la",
+    "title": "Processos: Creació",
+    "section": "Exemple: ls -la",
+    "text": "Exemple: ls -la\n\n\nint main() {\n    pid_t pid = fork();\n    if (pid == -1) { \n        perror(\"fork\");\n        exit(-1);\n    } else if (pid == 0) { \n        char *args[] = {\"ls\", \"-la\", NULL};\n        execv(\"/bin/ls\", args);\n        perror(\"execv fallat\"); \n        exit(-1);\n    } else { \n        int status;\n        pid_t w = waitpid(pid, \n            &status, WUNTRACED);\n    } exit(0);\n}\n\ngcc ex7.c -o ex7\n./ex7\ntotal 24\ndrwxr-xr-x  2 user user 4096 Feb 20 10:00 .\ndrwxr-xr-x 10 user user 4096 Feb 20 09:58 .. \n-rwxr-xr-x 1 user user 70512 Feb 20 14:57 ex7\n-rw-r--r-- 1 user user   107 Feb 20 13:23 ex7.c\n\n\n\n\n\n\nsequenceDiagram\n    box rgb(240,240,240) Parent Process\n    participant P\n    end\n    \n    box rgb(240,240,240) Kernel\n    participant K\n    end\n    \n    box rgb(240,240,240) Child Process\n    participant F\n    end\n\n    P-&gt;&gt;K: Calls `fork()`\n    activate K\n    K--&gt;&gt;F: Crea una nova còpia del procés (Fill, PID Y)&lt;br&gt; amb memòria idèntica (CoW)\n    K--&gt;&gt;P: Retorna PID Y al Pare\n    deactivate K\n    \n    par Execució Concurrent\n        F-&gt;&gt;K: Crida `execv(\"/bin/ls\", [\"ls\",\"-la\"], NULL)`\n        \n        activate K\n        K-&gt;&gt;K: Valida `/bin/ls` (permissos, format)\n        K-&gt;&gt;K: Esborra tota la memòria del Fill (F)**\n        K-&gt;&gt;K: Carrega `ls` a la memòria del Fill**&lt;br&gt;  (codi, dades, nova pila)\n        K-&gt;&gt;K: Reconfigura els registres de la CPU i el PC/IP&lt;br&gt;  al punt d'entrada de `ls`\n        deactivate K\n\n        activate F\n        F-&gt;&gt;F: Executa el programa `/bin/ls -la`&lt;br&gt;Genera la llista a `stdout`.\n        F-&gt;&gt;K: `exit(0)` (Finalitza `/bin/ls`)\n        deactivate F\n        \n        activate P\n        P-&gt;&gt;K: `waitpid(PID Y, &status, WUNTRACED)`\n        deactivate P\n    end\n\n    K--&gt;&gt;P: Notifica al Pare que el fill (ara `ls`) ha acabat.\n    activate P\n    P-&gt;&gt;K: `exit(0)` (Finalitza el Pare)\n    deactivate P",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Creació"
     ]
   },
   {
