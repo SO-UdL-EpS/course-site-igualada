@@ -1,0 +1,1662 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.19">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Jordi Mateo Fornés">
+
+<title>Pralab 05: shell (I): getline(),fork(), wait(), execvp() – Sistemes Operatius</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../../blocs/02-proc/activitats/01-fork-wait.html" rel="prev">
+<link href="../../../assets/logo.svg" rel="icon" type="image/svg+xml">
+<script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b626d73c4c936ccc3cb08be7d45d1df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-1dfaff2789308095fe41ecae51c32134.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/bootstrap/bootstrap-dark-22a7e036b50e3db51dccb7b2ace09654.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../../site_libs/bootstrap/bootstrap-1dfaff2789308095fe41ecae51c32134.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating nav-fixed fullcontent quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const queryPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    const darkModeDefault = queryPrefersDark.matches;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    queryPrefersDark.addEventListener("change", e => {
+      if(window.localStorage.getItem("quarto-color-scheme") !== null)
+        return;
+      const alternate = e.matches
+      toggleColorMode(alternate);
+      localAlternateSentinel = e.matches ? 'alternate' : 'default'; // this is used alongside local storage!
+      toggleGiscusIfUsed(alternate, darkModeDefault);
+    });
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">SO</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../../index.html"> 
+<span class="menu-text">Inici</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://guiadocent.udl.cat/html/2026-27_105012"> 
+<span class="menu-text">Guia docent</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/SO-UdL-EpS/course-site"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Blocs</li><li class="breadcrumb-item">Bloc 2 · Processos</li><li class="breadcrumb-item"><a href="../../../blocs/02-proc/pralabs/01_minishell.html">Pralabs</a></li><li class="breadcrumb-item"><a href="../../../blocs/02-proc/pralabs/01_minishell.html">Pralab 05: shell (I): <code>getline()</code>,<code>fork()</code>, <code>wait()</code>, <code>execvp()</code></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+      <a href="../../../index.html" class="sidebar-logo-link">
+      <img src="../../../assets/logo.png" alt="AMSA Logo" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../../../assets/logo.png" alt="AMSA Logo" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../course-info/presentation-slides.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Presentació del curs</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../course-info/contributions/contribute.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Contribueix al curs</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Blocs</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Bloc 1 · Desenvolupament de Programari en Espai d’Usuari</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+ <span class="menu-text">Teoria</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/teoria/01_rols_funcions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Rols i funcions d’un sistema operatiu</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">L’espai de memòria d’un procés</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Crides de funció: CPU, registres i stack</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/teoria/04_construccio_progama_c.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Com es construeix un programa C?</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/teoria/05_variables_estructures.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">De variables a estructures de dades</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">System calls: del programa C al kernel</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/teoria/07_syscalls_kernel.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">System calls: dins del kernel</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false">
+ <span class="menu-text">Pralabs</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/pralabs/01_c_mem.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pralab 01: Del C a la memòria (I)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/pralabs/02_c_mem.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pralab 02: Del <code>v[i]</code> al punter</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/pralabs/03_c_heap.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pralab 03: Memòria dinàmica (I): <code>malloc</code>, <code>free</code> i <code>lifetime</code></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/pralabs/04_c_ptrptr.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pralab 04: Memòria dinàmica (II): Punters a punters</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false">
+ <span class="menu-text">Activitats</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/activitats/01_c_punters_arrays.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exercicis amb C · Apuntadors i arrays</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/activitats/01_rols_funcions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">The UNIX Time-Sharing System</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/activitats/02_espai_funcions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Què passa quan faig foo()?</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/activitats/03_pokemon.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exercicis amb C · Pokémon</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">Bloc 2 · Processos</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false">
+ <span class="menu-text">Teoria</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/02-proc/teoria/01-procs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Processos: concepte, estats i PCB</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/02-proc/teoria/02-create.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Processos: Creació</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/02-proc/teoria/03-signals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Processos: Senyals</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false">
+ <span class="menu-text">Activitats</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/02-proc/activitats/02-create.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exercicis de Creació de processos en C</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/02-proc/activitats/03-exec.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Problemes de classe (2) — zombis, orfes i <code>exec</code> en C</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/02-proc/activitats/01-fork-wait.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Problemes de classe — <code>fork()</code> i <code>wait()</code> en C</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true">
+ <span class="menu-text">Pralabs</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth3 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/02-proc/pralabs/01_minishell.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Pralab 05: shell (I): <code>getline()</code>,<code>fork()</code>, <code>wait()</code>, <code>execvp()</code></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Blocs</li><li class="breadcrumb-item">Bloc 2 · Processos</li><li class="breadcrumb-item"><a href="../../../blocs/02-proc/pralabs/01_minishell.html">Pralabs</a></li><li class="breadcrumb-item"><a href="../../../blocs/02-proc/pralabs/01_minishell.html">Pralab 05: shell (I): <code>getline()</code>,<code>fork()</code>, <code>wait()</code>, <code>execvp()</code></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Pralab 05: shell (I): <code>getline()</code>,<code>fork()</code>, <code>wait()</code>, <code>execvp()</code></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Jordi Mateo Fornés </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introducció" class="level2">
+<h2 class="anchored" data-anchor-id="introducció">Introducció</h2>
+<p>Cada cop que obres una terminal i escrius <code>ls -l ; pwd</code>, hi ha un programa que fa tot el treball: llegeix la línia, la trosseja, decideix què s’ha d’executar i en quin ordre, <strong>crea processos</strong> i espera que acabin. Aquest programa és el <strong>shell</strong>.</p>
+<blockquote class="blockquote">
+<p><strong>Què ha de passar entre que escric una línia i que es veu el resultat?</strong></p>
+</blockquote>
+<p>El cor de qualsevol shell és aquest cicle, i el construirem peça a peça:</p>
+<p><img src="figures/01/shell.png" class="img-fluid"></p>
+<div class="programari udl-component udl-programari">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-programari"></use></svg><span>Programari Necessari</span></div>
+<ul>
+<li><code>gcc</code>. <strong>Sistema de referència: Debian bookworm, amb gcc 12.2.</strong></li>
+<li>Compila sempre amb <code>gcc -Wall -Wextra -g -O0</code>.</li>
+<li><strong>Extra</strong>: Compilar amb <code>-fsanitize=address,undefined</code> per a una comprovació més rigorosa. Et dirà a l’instant si tens una fuita o un accés fora de límits. Recorda que és una opció <strong>de compilació</strong>, no un argument del programa.</li>
+<li>Eines de diagnòstic que farem servir: <code>strace</code> (<code>sudo apt install strace</code>) i <code>man</code> (<code>sudo apt install manpages-dev</code>).</li>
+</ul>
+</div>
+<div class="bonapractica udl-component udl-bonapractica">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-bonapractica"></use></svg><span>Bona Pràctica</span></div>
+<p><strong>El <code>man</code> és el teu company.</strong> Cada cop que apareix una funció nova, la decisió de com usar-la es pren llegint el seu <code>man</code>, no recordant-ho de memòria. Aquestes són les que farem servir (el número és la secció: <code>man 3 getline</code>, <code>man 2 fork</code>). Consulta totes les funcions amb <code>man</code>: <code>getline</code>, <code>strcspn</code>, <code>fork</code>, <code>wait</code>, <code>execvp</code>, <code>perror</code>, <code>_exit</code></p>
+<div class="concepte udl-component udl-concepte">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-concepte"></use></svg><span>Concepte</span></div>
+<ul>
+<li><code>man 3 getline</code> obre la pàgina. El número és la <strong>secció</strong>: <code>1</code> ordres del shell, <code>2</code> crides al sistema (<code>fork</code>, <code>wait</code>), <code>3</code> biblioteca de C (<code>printf</code>, <code>strcspn</code>). <code>man printf</code> pot obrir l’ordre de shell i no la funció: per això escrivim <code>man 3 printf</code>.</li>
+<li>Es navega amb <strong>espai</strong> (avança), <strong>b</strong> (enrere), <strong>/text</strong> (cerca; <strong>n</strong> per a la següent coincidència) i <strong>q</strong> (surt).</li>
+<li>Les pàgines tenen sempre la mateixa estructura. Les que importen: <strong>SYNOPSIS</strong> (la signatura i <strong>quins <code>#include</code> calen</strong>), <strong>DESCRIPTION</strong>, <strong>RETURN VALUE</strong> (què retorna, i com s’indica l’error) i <strong>NOTES/ERRORS</strong>.</li>
+<li>Si no saps com es diu la funció: <code>man -k paraula</code> (o <code>apropos</code>) cerca per descripció, i <code>man 3 string</code> llista la família de funcions de cadenes.</li>
+</ul>
+<p>Abans de cridar una funció per primera vegada, llegeix <strong>SYNOPSIS</strong> i <strong>RETURN VALUE</strong>.</p>
+</div>
+</div>
+<div class="concepte udl-component udl-concepte" title="Mapa de la sessió">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-concepte"></use></svg><span>Concepte — Mapa de la sessió</span></div>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 50%">
+<col style="width: 38%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Part</th>
+<th>Què fem</th>
+<th>Estat</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td>Llegir una línia amb <code>getline</code> i veure les diferències amb <code>scanf</code> i <code>fgets</code></td>
+<td>Completa</td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td>Executar una comanda amb <code>fork</code> + <code>execvp</code> + <code>wait</code></td>
+<td>Completa, <strong>amb un error que has de trobar</strong></td>
+</tr>
+<tr class="odd">
+<td>C</td>
+<td>Tokenitzar la línia (<code>char **</code>)</td>
+<td>Pendent: el que et falta per fer funcionar <code>ls -l</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+<section id="part-a-el-prompt-de-la-mini-shell-lectura-de-línia" class="level3">
+<h3 class="anchored" data-anchor-id="part-a-el-prompt-de-la-mini-shell-lectura-de-línia">Part A · El prompt de la mini-shell (Lectura de línia)</h3>
+<section id="a.1-quina-funció-triem-per-llegir" class="level4">
+<h4 class="anchored" data-anchor-id="a.1-quina-funció-triem-per-llegir">A.1 — Quina funció triem per llegir?</h4>
+<p>La primera idea que ve al cap és <code>scanf</code>. Anem a posar-la a prova.</p>
+<p>Crea <code>main.c</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">char</span> buf<span class="op">[</span><span class="dv">64</span><span class="op">];</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"&gt; "</span><span class="op">);</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    scanf<span class="op">(</span><span class="st">"</span><span class="sc">%s</span><span class="st">"</span><span class="op">,</span> buf<span class="op">);</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"llegit: '</span><span class="sc">%s</span><span class="st">'</span><span class="sc">\n</span><span class="st">"</span><span class="op">,</span> buf<span class="op">);</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"&gt; "</span><span class="op">);</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    scanf<span class="op">(</span><span class="st">"</span><span class="sc">%s</span><span class="st">"</span><span class="op">,</span> buf<span class="op">);</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"llegit: '</span><span class="sc">%s</span><span class="st">'</span><span class="sc">\n</span><span class="st">"</span><span class="op">,</span> buf<span class="op">);</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Fixa’t que <code>scanf("%s", buf)</code> necessita un buffer per guardar la cadena que l’usuari escriu. En aquest cas, <code>buf</code> té <strong>64 bytes</strong>. Aquesta versió únicament permet executar dues instruccions. Una alternativa més elegant seria fer un bucle:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">char</span> buf<span class="op">[</span><span class="dv">64</span><span class="op">];</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">(</span><span class="dv">1</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>        printf<span class="op">(</span><span class="st">"&gt; "</span><span class="op">);</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        scanf<span class="op">(</span><span class="st">"</span><span class="sc">%s</span><span class="st">"</span><span class="op">,</span> buf<span class="op">);</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        printf<span class="op">(</span><span class="st">"llegit: '</span><span class="sc">%s</span><span class="st">'</span><span class="sc">\n</span><span class="st">"</span><span class="op">,</span> buf<span class="op">);</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Per compilar i executar:</p>
+<div class="terminal">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gcc</span> <span class="at">-o</span> main main.c</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./main</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># o bé, per fer-ho millor</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">gcc</span> <span class="at">-Wall</span> <span class="at">-Wextra</span> <span class="at">-g</span> <span class="at">-O0</span> <span class="at">-fsanitize</span><span class="op">=</span>address,undefined <span class="at">-o</span> main main.c</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="ex">./main</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Escriu <code>ls -l</code> <strong>una sola vegada</strong> i observa què passa. Després prova <code>Ctrl-D</code> amb la versió en bucle: què fa? (Pista: mira què retorna <code>scanf</code> quan arriba al final de l’entrada i qui ho comprova.)</p>
+<details>
+<summary>
+<b>Pots veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<p><code>buf</code> conté <code>ls</code>, i el programa <strong>no ha esperat</strong> que escriguis res al segon <code>scanf</code>: aquest llegeix <code>-l</code> directament, que ja era a l’entrada.</p>
+<pre class="text"><code>&gt; llegit: 'ls'
+&gt; llegit: '-l'</code></pre>
+<p><code>%s</code> llegeix <strong>una paraula</strong> (s’atura al primer espai), i deixa la resta de la línia a l’entrada pendent de ser llegida. Un shell necessita la <strong>línia sencera</strong> (<code>ls -l</code>, amb espais), perquè en tractar-la nosaltres decidirem què són arguments, operadors, etc.</p>
+<p>Amb <code>Ctrl-D</code>, <code>scanf</code> retorna <code>EOF</code>, però el programa no ho comprova: el bucle no s’acaba mai i va imprimint l’últim valor de <code>buf</code>. Un motiu més per no usar <code>scanf</code> sense mirar-ne el valor de retorn.</p>
+</div>
+</details>
+<p>Queda un problema més greu, que hem d’entendre bé: <strong>la mida del buffer</strong>.</p>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p>Si declarem <code>char buf[8]</code> i l’usuari escriu 30 lletres, què fa <code>scanf("%s", buf)</code>? Compila <code>main.c</code> amb <code>-fsanitize=address</code> i comprova-ho:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">char</span> buf<span class="op">[</span><span class="dv">8</span><span class="op">];</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    scanf<span class="op">(</span><span class="st">"</span><span class="sc">%s</span><span class="st">"</span><span class="op">,</span> buf<span class="op">);</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"llegit: '</span><span class="sc">%s</span><span class="st">'</span><span class="sc">\n</span><span class="st">"</span><span class="op">,</span> buf<span class="op">);</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<details>
+<summary>
+<b>Pots veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<p><code>AddressSanitizer</code> avorta amb <code>stack-buffer-overflow</code>: <code>scanf</code> ha escrit <strong>31 bytes en un buffer de 8</strong>. <code>scanf</code> no té manera de saber de quina mida és <code>buf</code> (només rep l’adreça), així que escriu fins que acaba l’entrada. Sense el sanitizer seria <strong>comportament indefinit</strong>: podria no fer res visible, fer petar el programa o, pitjor, deixar que algú sobreescrigui la pila amb dades escollides: una vulnerabilitat clàssica.</p>
+<p>Es pot limitar amb <code>%7s</code>, però llavors <strong>trunquem</strong> la comanda sense avisar, i a més seguim llegint només una paraula.</p>
+</div>
+</details>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p><strong>I <code>fgets(buf, sizeof buf, stdin)</code>?</strong> Aquesta sí que rep la mida i no es desborda. Prediu què imprimeix aquest programa amb <code>buf[8]</code> si l’entrada és <code>ls -l -a -h</code> + Enter, i després <code>ok</code> + Enter:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">char</span> buf<span class="op">[</span><span class="dv">8</span><span class="op">];</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">(</span>fgets<span class="op">(</span>buf<span class="op">,</span> <span class="kw">sizeof</span> buf<span class="op">,</span> stdin<span class="op">)</span> <span class="op">!=</span> NULL<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>        printf<span class="op">(</span><span class="st">"llegit: '</span><span class="sc">%s</span><span class="st">'</span><span class="sc">\n</span><span class="st">"</span><span class="op">,</span> buf<span class="op">);</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<details>
+<summary>
+<b>Pots veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<p>Surten <strong>tres</strong> lectures per només dues línies:</p>
+<pre class="text"><code>llegit: 'ls -l -'
+llegit: 'a -h
+'
+llegit: 'ok
+'</code></pre>
+<p><code>fgets</code> llegeix com a molt <code>mida - 1</code> caràcters (el darrer lloc és per al <code>'\0'</code>). La línia <code>ls -l -a -h</code> no hi cap i queda <strong>partida en dues</strong>: el nostre shell veuria les comandes <code>ls -l -</code> i <code>a -h</code>. Per evitar-ho hauríem de detectar si el <code>\n</code> hi és, i continuar llegint en cas contrari: més codi, més errors possibles. I, sigui quina sigui la mida que triem, <strong>sempre hi haurà una línia més llarga</strong>.</p>
+<p>Una cosa més: <code>gets(buf)</code> (sense mida) <strong>va ser eliminada de l’estàndard en C11</strong> precisament per ser impossible d’usar amb seguretat.</p>
+</div>
+</details>
+<p>Anem a la solució que fa servir <code>getline</code>, que <strong>llegeix la línia sencera</strong> i <strong>s’autoajusta a la mida necessària</strong>. Fixa’t que en el manual diu que <code>getline</code> <strong>retorna el nombre de bytes llegits</strong>, i que <strong>el buffer és dinàmic</strong>: si és massa petit, <code>getline</code> el redimensiona amb <code>realloc</code>. Això vol dir que hem de passar un <strong>punter a punter</strong> (<code>char **</code>) i un <strong>punter a mida</strong> (<code>size_t *</code>).</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdlib.h&gt;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">char</span> <span class="op">*</span>linia <span class="op">=</span> NULL<span class="op">;</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">size_t</span> cap <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">(</span><span class="dv">1</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>        printf<span class="op">(</span><span class="st">"&gt; "</span><span class="op">);</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>        <span class="dt">ssize_t</span> n <span class="op">=</span> getline<span class="op">(&amp;</span>linia<span class="op">,</span> <span class="op">&amp;</span>cap<span class="op">,</span> stdin<span class="op">);</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>        printf<span class="op">(</span><span class="st">"has escrit: '</span><span class="sc">%s</span><span class="st">' (</span><span class="sc">%zd</span><span class="st"> bytes llegits)</span><span class="sc">\n</span><span class="st">"</span><span class="op">,</span> linia<span class="op">,</span> n<span class="op">);</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    free<span class="op">(</span>linia<span class="op">);</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="a.2-treure-el-salt-de-línia" class="level4">
+<h4 class="anchored" data-anchor-id="a.2-treure-el-salt-de-línia">A.2 — Treure el salt de línia</h4>
+<p><code>getline</code> ens dona <code>"ls -l\n"</code>. Si el passéssim tal qual a <code>execvp</code>, buscaria un programa que es digui <code>ls\n</code>. Hem de treure el <code>\n</code>. Tenim tres maneres de fer-ho:</p>
+<ul>
+<li><ol type="a">
+<li><code>linia[n - 1] = '\0';</code> (el <code>\n</code> és l’últim caràcter, no?)</li>
+</ol></li>
+<li><ol start="2" type="a">
+<li><code>linia[strcspn(linia, "\n")] = '\0';</code></li>
+</ol></li>
+<li><ol start="3" type="a">
+<li>buscar el <code>\n</code> amb <code>strchr</code> i, si no és <code>NULL</code>, posar-hi un <code>'\0'</code>.</li>
+</ol></li>
+</ul>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p>Obre <code>man 3 strcspn</code>. Què fa? Què retorna <code>strcspn("ls -l\n", "\n")</code>? I després <strong>pensa en el cas límit</strong>: què passa amb (a) i amb (b) si l’última línia de l’entrada <strong>no acaba en <code>\n</code></strong> (per exemple, si l’usuari prem <code>Ctrl-D</code> enmig d’una línia, o si fem <code>printf 'pwd\nls' | ./programa</code>)?</p>
+</div>
+<details>
+<summary>
+<b>Pots veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<p><code>strcspn(s, reject)</code> retorna la <strong>longitud del tros inicial de <code>s</code> que no conté cap dels caràcters de <code>reject</code></strong>. Amb <code>"ls -l\n"</code> i <code>"\n"</code> retorna <code>5</code>: just la posició on hi ha el <code>\n</code>. Si no hi ha cap <code>\n</code>, retorna <code>strlen(s)</code>: la posició del <code>'\0'</code>.</p>
+<p>Per tant, a (b) sempre escrivim <code>'\0'</code> en una posició vàlida: si hi ha <code>\n</code>, el substitueix; si no n’hi ha, <strong>escriu un <code>'\0'</code> damunt d’un altre <code>'\0'</code></strong> (inofensiu).</p>
+<p>A (a), en canvi, <strong>assumim que el <code>\n</code> hi és</strong>, i si no hi és, esborrem l’últim caràcter útil. L’opció (c) també és correcta, però demana un <code>if</code> i una variable més. Escollim (b): <strong>una sola línia i sense casos especials</strong>.</p>
+</div>
+</details>
+</section>
+<section id="a.3-el-bucle-complet" class="level4">
+<h4 class="anchored" data-anchor-id="a.3-el-bucle-complet">A.3 — El bucle complet</h4>
+<p>Crea <code>shell.c</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdlib.h&gt;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;string.h&gt;</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">char</span> <span class="op">*</span>linia <span class="op">=</span> NULL<span class="op">;</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">size_t</span> cap <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">(</span><span class="dv">1</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>        printf<span class="op">(</span><span class="st">"&gt; "</span><span class="op">);</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>        <span class="dt">ssize_t</span> n <span class="op">=</span> getline<span class="op">(&amp;</span>linia<span class="op">,</span> <span class="op">&amp;</span>cap<span class="op">,</span> stdin<span class="op">);</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>n <span class="op">&lt;</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>            printf<span class="op">(</span><span class="st">"</span><span class="sc">\n</span><span class="st">"</span><span class="op">);</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>            <span class="cf">break</span><span class="op">;</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>        linia<span class="op">[</span>strcspn<span class="op">(</span>linia<span class="op">,</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span><span class="op">)]</span> <span class="op">=</span> <span class="ch">'</span><span class="sc">\0</span><span class="ch">'</span><span class="op">;</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>        printf<span class="op">(</span><span class="st">"has escrit: '</span><span class="sc">%s</span><span class="st">' (</span><span class="sc">%zd</span><span class="st"> bytes llegits)</span><span class="sc">\n</span><span class="st">"</span><span class="op">,</span> linia<span class="op">,</span> n<span class="op">);</span></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>    free<span class="op">(</span>linia<span class="op">);</span></span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Fixa’t:</p>
+<ul>
+<li><strong><code>n &lt; 0</code> es comprova abans de tocar <code>linia</code>.</strong> Si <code>getline</code> falla (o l’usuari prem <code>Ctrl-D</code>), no hem de processar res.</li>
+</ul>
+<p>També cal tenir en compte que l’usuari necessita una <code>comanda</code> per sortir. Podem fer que escriure <code>q</code> acabi el bucle i anomenarem aquestes comandes <strong>built-in</strong> (no són programes externs, sinó que el shell les processa ell mateix).</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdlib.h&gt;</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;string.h&gt;</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="pp">#define ACABAR</span><span class="op">(</span><span class="pp">s</span><span class="op">)</span><span class="pp"> </span><span class="op">(</span><span class="pp">strcmp</span><span class="op">((</span><span class="pp">s</span><span class="op">),</span><span class="pp"> </span><span class="st">"q"</span><span class="op">)</span><span class="pp"> </span><span class="op">==</span><span class="pp"> </span><span class="dv">0</span><span class="op">)</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    <span class="dt">char</span> <span class="op">*</span>linia <span class="op">=</span> NULL<span class="op">;</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">size_t</span> cap <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">(</span><span class="dv">1</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>        printf<span class="op">(</span><span class="st">"&gt; "</span><span class="op">);</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>        <span class="dt">ssize_t</span> n <span class="op">=</span> getline<span class="op">(&amp;</span>linia<span class="op">,</span> <span class="op">&amp;</span>cap<span class="op">,</span> stdin<span class="op">);</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>n <span class="op">&lt;</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>            printf<span class="op">(</span><span class="st">"</span><span class="sc">\n</span><span class="st">"</span><span class="op">);</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>            <span class="cf">break</span><span class="op">;</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>        linia<span class="op">[</span>strcspn<span class="op">(</span>linia<span class="op">,</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span><span class="op">)]</span> <span class="op">=</span> <span class="ch">'</span><span class="sc">\0</span><span class="ch">'</span><span class="op">;</span></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>ACABAR<span class="op">(</span>linia<span class="op">))</span></span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>            <span class="cf">break</span><span class="op">;</span></span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>        printf<span class="op">(</span><span class="st">"has escrit: '</span><span class="sc">%s</span><span class="st">' (</span><span class="sc">%zd</span><span class="st"> bytes llegits)</span><span class="sc">\n</span><span class="st">"</span><span class="op">,</span> linia<span class="op">,</span> n<span class="op">);</span></span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>    free<span class="op">(</span>linia<span class="op">);</span></span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="concepte udl-component udl-concepte">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-concepte"></use></svg><span>Concepte</span></div>
+<p>Per convenció, les macros s’escriuen en <strong>MAJÚSCULES</strong> (<code>ACABAR</code>). Així es distingeixen d’una funció a simple vista (una macro no es comporta exactament com una funció: per exemple, avalua l’argument tantes vegades com el fa servir) i evitem col·lisions amb noms de la biblioteca estàndard. Si l’haguéssim anomenat <code>exit</code>, estaríem redefinint una funció de <code>&lt;stdlib.h&gt;</code>, cosa que és comportament indefinit.</p>
+</div>
+<div class="reflexio udl-component udl-reflexio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-reflexio"></use></svg><span>Reflexió</span></div>
+<p>Aquesta solució encara no és perfecta: si l’usuari escriu <code>q</code> amb espais, tabuladors,… al davant o al darrere (<code>"  q"</code>, <code>"q  "</code>, <code>"  q  "</code>), el shell <strong>no surt</strong>. Mes endavant veurem com <strong>tokenitzar</strong> la línia i detectar millor les built-in.</p>
+</div>
+<hr>
+</section>
+</section>
+<section id="part-b-executar-una-comanda" class="level3">
+<h3 class="anchored" data-anchor-id="part-b-executar-una-comanda">Part B — Executar una comanda</h3>
+<p>Ja sabem llegir una línia. Ara toca fer que el programa <strong>executi</strong> el que l’usuari escriu. En Unix això no es fa amb una sola crida: es fa amb tres peces que cooperen.</p>
+<p><img src="figures/01/fork.png" class="img-fluid"></p>
+<section id="b.1-fork" class="level4">
+<h4 class="anchored" data-anchor-id="b.1-fork">B.1 —<code>fork</code></h4>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p>Sense compilar-lo, prediu què imprimeix aquest programa i <strong>quantes vegades</strong> apareix cada línia. Després compila’l i comprova-ho.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;unistd.h&gt;</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"abans del fork</span><span class="sc">\n</span><span class="st">"</span><span class="op">);</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    pid_t pid <span class="op">=</span> fork<span class="op">();</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>pid <span class="op">==</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>        printf<span class="op">(</span><span class="st">"soc el fill</span><span class="sc">\n</span><span class="st">"</span><span class="op">);</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>        printf<span class="op">(</span><span class="st">"soc el pare, el fill es diu </span><span class="sc">%d\n</span><span class="st">"</span><span class="op">,</span> pid<span class="op">);</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"fi (pid </span><span class="sc">%d</span><span class="st">)</span><span class="sc">\n</span><span class="st">"</span><span class="op">,</span> getpid<span class="op">());</span></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<details>
+<summary>
+<b>Pots veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<p><code>abans del fork</code> surt <strong>una sola vegada</strong> (només el pare existia en aquell moment). Les línies posteriors al <code>fork</code> les executen <strong>els dos processos</strong>, així que <code>fi (pid ...)</code> surt <strong>dues vegades</strong>. L’ordre entre pare i fill <strong>no està garantit</strong>: depèn del planificador.</p>
+<pre class="text"><code>abans del fork
+soc el pare, el fill es diu 4312
+soc el fill
+fi (pid 4311)
+fi (pid 4312)</code></pre>
+</div>
+</details>
+</section>
+<section id="b.2-esperar-el-fill-i-llegir-com-ha-acabat" class="level4">
+<h4 class="anchored" data-anchor-id="b.2-esperar-el-fill-i-llegir-com-ha-acabat">B.2 — Esperar el fill i llegir com ha acabat</h4>
+<p>Sense <code>wait</code>, el pare pot continuar (i tornar a mostrar el prompt) abans que el fill acabi, i el fill queda com a <strong>zombie</strong> quan acaba. Per això el pare ha d’esperar.</p>
+<p>Llegeix <code>man 2 wait</code>, apartats <strong>SYNOPSIS</strong>, <strong>DESCRIPTION</strong> (les macros <code>WIFEXITED</code>, <code>WEXITSTATUS</code>, <code>WIFSIGNALED</code>, <code>WTERMSIG</code>) i <strong>RETURN VALUE</strong>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>pid_t pid <span class="op">=</span> fork<span class="op">();</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="op">(</span>pid <span class="op">==</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">/* codi del fill */</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> status<span class="op">;</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    wait<span class="op">(&amp;</span>status<span class="op">);</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>WIFEXITED<span class="op">(</span>status<span class="op">))</span> <span class="op">{</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>        printf<span class="op">(</span><span class="st">"codi: </span><span class="sc">%d\n</span><span class="st">"</span><span class="op">,</span> WEXITSTATUS<span class="op">(</span>status<span class="op">));</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<ol type="1">
+<li><code>status</code> <strong>no és</strong> directament el codi de sortida. Què és? Per què cal <code>WEXITSTATUS</code>?</li>
+<li>Quan és <code>WIFEXITED(status)</code> fals? Dona un exemple de programa que ho provoqui.</li>
+<li>Quin codi de sortida diries que usa el shell quan una comanda <strong>no existeix</strong>? Comprova-ho al teu shell real: <code>no_existeix; echo $?</code></li>
+</ol>
+</div>
+<details>
+<summary>
+<b>Pots veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<ol type="1">
+<li><code>status</code> empaqueta <strong>diversa informació</strong> en un sol enter: si el procés ha sortit amb <code>exit</code> o l’ha matat un senyal, el codi de sortida, el senyal… Les macros desempaqueten cada part. Imprimir <code>status</code> directament dona valors com <code>256</code> per a un <code>exit(1)</code>.</li>
+<li>Quan el procés <strong>no</strong> ha acabat amb <code>exit</code>, sinó mort per un senyal. Per exemple, un programa que faci <code>raise(SIGSEGV);</code> (amb <code>#include &lt;signal.h&gt;</code>) acaba amb <code>SIGSEGV</code>. Llavors s’ha d’usar <code>WIFSIGNALED</code> i <code>WTERMSIG</code>. (Evita <code>*(int *)0 = 1;</code> per provar-ho: és comportament indefinit i, amb optimitzacions, el compilador pot eliminar-lo.)</li>
+<li><strong>127</strong>, per convenció (<em>command not found</em>). Per això el fill de la nostra <code>executa</code> farà <code>_exit(127)</code> si <code>execvp</code> falla.</li>
+</ol>
+</div>
+</details>
+</section>
+<section id="b.3-llegim-execvp" class="level4">
+<h4 class="anchored" data-anchor-id="b.3-llegim-execvp">B.3 — Llegim <code>execvp</code></h4>
+<p>Aquesta és la crida on és més fàcil equivocar-se, i <strong>tota la informació és al <code>man</code></strong>.</p>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p>Obre <code>man 3 execvp</code> i respon:</p>
+<ol type="1">
+<li>Quina és la signatura? Quin és el tipus del segon paràmetre?</li>
+<li>Què fa la <code>p</code> del nom? I la <code>v</code>?</li>
+<li>Què cal complir <strong>obligatòriament</strong> amb l’array d’arguments? Busca-ho a la descripció: <em>The array of pointers <strong>must</strong> be terminated by…</em></li>
+<li>Quin ha de ser <code>argv[0]</code>?</li>
+<li>Què retorna si va bé? I si falla?</li>
+</ol>
+</div>
+<details>
+<summary>
+<b>Pots veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<ol type="1">
+<li><code>int execvp(const char *file, char *const argv[]);</code>: el segon és un <strong>array de punters a cadena</strong> (<code>char **</code>).</li>
+<li><code>p</code>: busca l’executable als directoris del <code>PATH</code> (per això podem escriure <code>ls</code> i no <code>/usr/bin/ls</code>). <code>v</code>: els arguments es passen en un <strong>v</strong>ector (array), per oposició a <code>execlp</code>, que els rep com a llista de paràmetres.</li>
+<li>L’array <strong>ha d’acabar amb un punter <code>NULL</code></strong>. És com <code>execvp</code> sap quants arguments hi ha: no rep cap longitud.</li>
+<li>El nom del programa (el mateix que <code>file</code>). La resta d’elements són els arguments.</li>
+<li><strong>Si va bé, no retorna mai</strong>: el codi després de la crida ja no existeix. Si retorna, sempre és <code>-1</code> (i <code>errno</code> indica la causa). Per això el codi que segueix un <code>execvp</code> és <em>únicament</em> el tractament de l’error.</li>
+</ol>
+<p>Exemple correcte, escrit a mà:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="dt">char</span> <span class="op">*</span>args<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span> <span class="st">"ls"</span><span class="op">,</span> <span class="st">"-l"</span><span class="op">,</span> NULL <span class="op">};</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>execvp<span class="op">(</span>args<span class="op">[</span><span class="dv">0</span><span class="op">],</span> args<span class="op">);</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</details>
+</section>
+<section id="b.4-la-funció-executa" class="level4">
+<h4 class="anchored" data-anchor-id="b.4-la-funció-executa">B.4 — La funció <code>executa</code></h4>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> executa<span class="op">(</span><span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    pid_t pid <span class="op">=</span> fork<span class="op">();</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>pid <span class="op">&lt;</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>        perror<span class="op">(</span><span class="st">"fork"</span><span class="op">);</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="op">-</span><span class="dv">1</span><span class="op">;</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>pid <span class="op">==</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>        execvp<span class="op">(</span>argv<span class="op">[</span><span class="dv">0</span><span class="op">],</span> argv<span class="op">);</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>        perror<span class="op">(</span>argv<span class="op">[</span><span class="dv">0</span><span class="op">]);</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>        _exit<span class="op">(</span><span class="dv">127</span><span class="op">);</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> status<span class="op">;</span></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>    wait<span class="op">(&amp;</span>status<span class="op">);</span></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>WIFEXITED<span class="op">(</span>status<span class="op">))</span> <span class="op">{</span></span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> WEXITSTATUS<span class="op">(</span>status<span class="op">);</span></span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">128</span> <span class="op">+</span> WTERMSIG<span class="op">(</span>status<span class="op">);</span></span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Fixa’t en els detalls (cadascun és una decisió que s’ha pres llegint el <code>man</code>):</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 47%">
+<col style="width: 52%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Detall</th>
+<th>Per què</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>if (pid &lt; 0)</code> amb <code>perror("fork")</code></td>
+<td><code>fork</code> pot fallar (sense memòria, límit de processos). El shell <strong>ha de seguir viu</strong>, no fer <code>exit</code>.</td>
+</tr>
+<tr class="even">
+<td>Després d’<code>execvp</code>, només <code>perror</code> + <code>_exit(127)</code></td>
+<td>Si arribem aquí, <code>execvp</code> ha fallat. No hem de continuar executant el codi del shell dins del fill!</td>
+</tr>
+<tr class="odd">
+<td><code>_exit</code> i <strong>no</strong> <code>exit</code> al fill</td>
+<td><code>exit</code> buida els buffers de <code>stdio</code> heretats del pare; <code>_exit</code> no</td>
+</tr>
+<tr class="even">
+<td><code>128 + WTERMSIG(status)</code></td>
+<td>Convenció del shell per a un procés mort per senyal (p.&nbsp;ex. <code>139</code> = <code>SIGSEGV</code>).</td>
+</tr>
+<tr class="odd">
+<td><code>wait(&amp;status)</code> + macros</td>
+<td><code>wait</code> retorna el PID del fill i omple <code>status</code>; és <code>executa</code> qui el desempaqueta (<code>WEXITSTATUS</code>, <code>WTERMSIG</code>) i retorna el codi, de manera que el pare (el bucle del shell) podrà decidir què fer amb ell.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="b.5-primera-versió-de-la-mini-shell" class="level4">
+<h4 class="anchored" data-anchor-id="b.5-primera-versió-de-la-mini-shell">B.5 — Primera versió de la mini-shell</h4>
+<p>Aquest és <strong>el punt on vam deixar la sessió</strong>. Funciona a mitges. :)</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;string.h&gt;</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;sys/types.h&gt;</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;sys/wait.h&gt;</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;unistd.h&gt;</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdlib.h&gt;</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="pp">#define ACABAR</span><span class="op">(</span><span class="pp">s</span><span class="op">)</span><span class="pp"> </span><span class="op">(</span><span class="pp">strcmp</span><span class="op">((</span><span class="pp">s</span><span class="op">),</span><span class="pp"> </span><span class="st">"q"</span><span class="op">)</span><span class="pp"> </span><span class="op">==</span><span class="pp"> </span><span class="dv">0</span><span class="op">)</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> executa<span class="op">(</span><span class="dt">char</span> <span class="op">**</span>argv<span class="op">);</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>    <span class="dt">char</span> <span class="op">*</span>linia <span class="op">=</span> NULL<span class="op">;</span></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">size_t</span> cap <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">(</span><span class="dv">1</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>        printf<span class="op">(</span><span class="st">"&gt; "</span><span class="op">);</span></span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>        <span class="dt">ssize_t</span> n <span class="op">=</span> getline<span class="op">(&amp;</span>linia<span class="op">,</span> <span class="op">&amp;</span>cap<span class="op">,</span> stdin<span class="op">);</span></span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>n <span class="op">&lt;</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>            printf<span class="op">(</span><span class="st">"</span><span class="sc">\n</span><span class="st">"</span><span class="op">);</span></span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>            <span class="cf">break</span><span class="op">;</span></span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a>        linia<span class="op">[</span>strcspn<span class="op">(</span>linia<span class="op">,</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span><span class="op">)]</span> <span class="op">=</span> <span class="ch">'</span><span class="sc">\0</span><span class="ch">'</span><span class="op">;</span></span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>        printf<span class="op">(</span><span class="st">"has escrit: '</span><span class="sc">%s</span><span class="st">' (</span><span class="sc">%zd</span><span class="st"> bytes llegits)</span><span class="sc">\n</span><span class="st">"</span><span class="op">,</span> linia<span class="op">,</span> n<span class="op">);</span></span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>ACABAR<span class="op">(</span>linia<span class="op">))</span></span>
+<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a>            <span class="cf">break</span><span class="op">;</span></span>
+<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a>        executa<span class="op">(&amp;</span>linia<span class="op">);</span></span>
+<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb16-34"><a href="#cb16-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-35"><a href="#cb16-35" aria-hidden="true" tabindex="-1"></a>    free<span class="op">(</span>linia<span class="op">);</span></span>
+<span id="cb16-36"><a href="#cb16-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-37"><a href="#cb16-37" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb16-38"><a href="#cb16-38" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb16-39"><a href="#cb16-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-40"><a href="#cb16-40" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> executa<span class="op">(</span><span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span></span>
+<span id="cb16-41"><a href="#cb16-41" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb16-42"><a href="#cb16-42" aria-hidden="true" tabindex="-1"></a>    pid_t pid <span class="op">=</span> fork<span class="op">();</span></span>
+<span id="cb16-43"><a href="#cb16-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-44"><a href="#cb16-44" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>pid <span class="op">&lt;</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb16-45"><a href="#cb16-45" aria-hidden="true" tabindex="-1"></a>        perror<span class="op">(</span><span class="st">"fork"</span><span class="op">);</span></span>
+<span id="cb16-46"><a href="#cb16-46" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="op">-</span><span class="dv">1</span><span class="op">;</span></span>
+<span id="cb16-47"><a href="#cb16-47" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb16-48"><a href="#cb16-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-49"><a href="#cb16-49" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>pid <span class="op">==</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb16-50"><a href="#cb16-50" aria-hidden="true" tabindex="-1"></a>        execvp<span class="op">(</span>argv<span class="op">[</span><span class="dv">0</span><span class="op">],</span> argv<span class="op">);</span></span>
+<span id="cb16-51"><a href="#cb16-51" aria-hidden="true" tabindex="-1"></a>        perror<span class="op">(</span>argv<span class="op">[</span><span class="dv">0</span><span class="op">]);</span></span>
+<span id="cb16-52"><a href="#cb16-52" aria-hidden="true" tabindex="-1"></a>        _exit<span class="op">(</span><span class="dv">127</span><span class="op">);</span></span>
+<span id="cb16-53"><a href="#cb16-53" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb16-54"><a href="#cb16-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-55"><a href="#cb16-55" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> status<span class="op">;</span></span>
+<span id="cb16-56"><a href="#cb16-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-57"><a href="#cb16-57" aria-hidden="true" tabindex="-1"></a>    wait<span class="op">(&amp;</span>status<span class="op">);</span></span>
+<span id="cb16-58"><a href="#cb16-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-59"><a href="#cb16-59" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>WIFEXITED<span class="op">(</span>status<span class="op">))</span> <span class="op">{</span></span>
+<span id="cb16-60"><a href="#cb16-60" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> WEXITSTATUS<span class="op">(</span>status<span class="op">);</span></span>
+<span id="cb16-61"><a href="#cb16-61" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb16-62"><a href="#cb16-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-63"><a href="#cb16-63" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">128</span> <span class="op">+</span> WTERMSIG<span class="op">(</span>status<span class="op">);</span></span>
+<span id="cb16-64"><a href="#cb16-64" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Compila’l i prova <strong>tres</strong> coses:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gcc</span> <span class="at">-Wall</span> <span class="at">-Wextra</span> <span class="at">-g</span> <span class="at">-O0</span> <span class="at">-fsanitize</span><span class="op">=</span>address,undefined <span class="at">-o</span> shell shell.c</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./shell</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> ls</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> ls <span class="ex">-l</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> q</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p><strong>Exercici 1: troba l’error.</strong></p>
+<p>Segurament has vist això en escriure <code>ls</code>:</p>
+<pre class="text"><code>&gt; ls
+has escrit: 'ls' (3 bytes llegits)
+ls: Bad address</code></pre>
+<ol type="1">
+<li><p>Què vol dir <code>Bad address</code>? Quin <code>errno</code> és? (<code>man 3 errno</code>, busca <code>EFAULT</code>.)</p></li>
+<li><p>Per què <code>execvp</code> rep una adreça dolenta? <strong>Mira de quin tipus és el que li passem com a <code>argv</code> i què hi ha a continuació a la memòria.</strong> (Pista: repassa la resposta 3 de B.3.) Fixa’t que ni <code>-Wall</code> ni <code>-Wextra</code> t’han avisat de res: el tipus <code>char **</code> és correcte per al compilador, i l’error només es veu en execució.</p></li>
+<li><p>Fes servir <code>strace</code> per veure-ho amb els teus ulls:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="ex">strace</span> <span class="at">-f</span> <span class="at">-e</span> trace=execve ./shell</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Què hi ha dins l’array que rep <code>execve</code>? Com acaba la crida?</p></li>
+<li><p>Passa a un altre problema: si ho arregles de la manera més ràpida possible (un array de dos elements), <code>ls</code> funcionarà… però <code>ls -l</code>? Per què no? Què caldrà fer amb la línia?</p></li>
+</ol>
+</div>
+
+
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/igualada\.os\.udl\.cat");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../../blocs/02-proc/activitats/01-fork-wait.html" class="pagination-link" aria-label="Problemes de classe — `fork()` i `wait()` en C">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Problemes de classe — <code>fork()</code> i <code>wait()</code> en C</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Universitat de Lleida · Departament d’Enginyeria Informàtica i Disseny Digital</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>Construït amb Quarto</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
