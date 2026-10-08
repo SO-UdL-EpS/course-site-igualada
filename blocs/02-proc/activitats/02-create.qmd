@@ -1,121 +1,457 @@
 ---
-title: Creació amb `fork` i `wait`
+title: Exercicis de Creació de processos en C
 description: Creació de processos en C
 lang: ca
 ---
 
-1. Quants processos es creen en executar el següent codi i quina és la seqüència d'esdeveniments? 
+## Introducció
 
-    ```c
+Aquests exercicis es poden resoldre amb **paper i llapis**. Per a cadascun, **dibuixa l'arbre de processos** i anota què fa cada procés i en quin ordre. Intenta resoldre'l abans d'obrir el raonament; després, si vols, compila'l i comprova-ho.
+
+:::{.concepte title="Recordatori: fork, wait i exit"}
+- `fork()` retorna `0` al **fill**, el PID del fill al **pare** i `-1` si falla. Després del `fork`, tots dos processos continuen **just a la instrucció següent**, cadascun amb la seva còpia de la memòria.
+- `wait()` bloqueja el procés fins que **un** dels seus fills acaba i en retorna el PID. Si el procés **no té fills** per esperar, retorna `-1` immediatament.
+- Un fill que acaba abans que el pare faci `wait` queda **zombi**. Si el pare acaba abans que el fill, el fill queda **orfe** i l'adopta `init`, que el recull.
+- `exec*` **no retorna** si té èxit: substitueix el codi del procés.
+:::
+
+:::{.bonapractica}
+**Convencions dels enunciats.** Els fragments són trossos de `main` sense `#include`. Quan apareix `wait(st)`, `st` és un `int` i s'ha d'entendre `wait(&st)`; `exit()` s'ha d'entendre com `exit(0)`, i `id` és un `pid_t`. Per compilar-los, afegeix `<stdio.h>`, `<stdlib.h>`, `<unistd.h>` i `<sys/wait.h>`.
+:::
+
+---
+
+::: {.exercici}
+Quants processos es creen en executar el següent codi i quina és la seqüència d'esdeveniments?
+
+```{.c}
+fork();
+if (wait(st) > 0)
     fork();
-    if (wait(st)>0)
-        fork();
-    exit();
-    ```
+exit();
+```
+:::
 
-2. Quantes vegades `wait(st)` retorna -1?
+<details>
+<summary><b>Pots veure el raonament</b></summary>
 
-    ```c    
-    id = fork();
-    wait(st); //1
-    if (id==0)
-        fork();
-    wait(st); //2
-    exit();
-    ```
+:::{.solucio}
+Es creen **3 processos** en total: el pare i dos fills (F1 i F2).
 
-3. Quantes vegades `wait(st)` retorna -1?
+1. El primer `fork()` crea F1. Ara hi ha dos processos que executen el `wait`.
+2. F1 no té fills: `wait` retorna `-1`, la condició `> 0` és falsa, **no fa el segon `fork`** i acaba.
+3. El pare es desbloqueja quan F1 acaba: `wait` retorna el PID de F1 (> 0), per tant executa el segon `fork()` i crea F2.
+4. F2 neix **després** del `wait`, així que va directe a l'`exit`. El pare també acaba.
 
+```{mermaid}
+sequenceDiagram
+    autonumber
+    participant P as Pare · PID 100
+    participant F1 as Fill1 · PID 101
+    participant F2 as Fill2 · PID 102
 
-    ```c
-    id = fork();
-    wait(st); //1
-    if (id!=0)
-        fork();
-    wait(st); //2
-    exit();
-    ```
+    P->>F1: fork → crea F1
+    P->>P: wait bloquejat
+    F1->>F1: wait retorna -1
+    F1->>F1: exit
+    F1-->>P: desbloqueja wait del PID 100, retorna 101
+    P->>F2: fork → crea F2
+    P->>P: exit
+    F2->>F2: exit
+```
 
-5. Analitza el següent codi i respon les preguntes:
+:::{.callout-note}
+Els valors dels PID són només exemples i poden variar en cada execució.
+:::
+:::
 
-    ```c
-    int main(void) {
-        int a = 1;
-        pid_t fork_ret = fork();
-        if (fork_ret > 0) {
-            a++;
-            fprintf(stdout, "Parent: int a is %d at %p\n", a, &a);
-            } else if (fork_ret == 0) { a++;}
-            fprintf(stdout, "Child: int a is %d at %p\n", a, &a);
-        return 0;
+</details>
+
+---
+
+::: {.exercici}
+Quantes vegades s'imprimirà `OS`? Justifica la resposta. Canviaria alguna cosa si `ls` no es trobés a la ruta indicada?
+
+```{.c}
+int main()
+{
+    if (execl("/bin/ls", "ls", NULL) == -1) {
+        perror("execl");
     }
-    ```
 
-    - Quin és el valor de `a` en el procés pare i en el procés fill?
-    - S'imprimirà la mateixa adreça de memòria per a `a` en el procés pare i en el procés fill?
-    - S'imprimirà a la mateixa sortida estàndard (STDOUT) en el procés pare i en el procés fill?
+    printf("OS\n");
 
+    return 0;
+}
+```
+:::
 
-6. Analitza el següent codi i justifica quin serà el resultat de la seva execució:
+<details>
+<summary><b>Pots veure el raonament</b></summary>
 
-    ```c
-    int main(void) {
-        int* stuff = malloc(sizeof(int));
-        *stuff = 5;
-        pid_t fork_ret = fork();
-        printf("The last digit of pi is %d\n", *stuff);
-        if (fork_ret == 0)
-            *stuff = 6;
-        return 0;
+:::{.solucio}
+**0 vegades**, si `execl` té èxit. Una crida `exec` que va bé **no retorna mai**: el codi, les dades i la pila del procés es substitueixen pels de `ls`. El `printf("OS\n")` ja no existeix i el que veiem és el llistat del directori actual. Fixa't que aquí **no hi ha `fork`**: el programa mateix es converteix en `ls`.
+
+Si `execl` **falla** (per exemple, perquè la ruta és incorrecta), retorna `-1`, `perror` mostra l'error i l'execució continua: llavors `OS` s'imprimeix **1 vegada**. Per això el codi que segueix un `exec` és, en la pràctica, només tractament d'error.
+
+Compte amb la ruta: `"bin/ls"` (sense la `/` inicial) és una ruta **relativa** al directori actual, i fallaria quasi sempre.
+:::
+
+</details>
+
+---
+
+::: {.exercici}
+Quantes vegades `wait(st)` retorna `-1`? Dibuixa l'arbre de processos i anota, per a cada procés, quins `wait` executa.
+
+```{.c}
+id = fork();
+wait(st);          // 1
+if (id == 0)
+    fork();
+wait(st);          // 2
+exit();
+```
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+`wait(st)` retorna `-1` **3** vegades. Cada procés executa només els `wait` que li queden **després** del moment en què neix:
+
+| Procés | `wait` //1 | `wait` //2 |
+|--------|-----------|-----------|
+| Pare | retorna 101 (F1 ha acabat) | **-1** (ja no té fills) |
+| Fill F1 | **-1** (no té fills) | retorna 102 (N1 ha acabat) |
+| Net N1 | no l'executa (neix després) | **-1** (no té fills) |
+
+```{mermaid}
+sequenceDiagram
+    autonumber
+    participant P as Pare · PID 100
+    participant F1 as Fill1 · PID 101
+    participant N1 as Net1 · PID 102
+
+    P->>F1: fork → crea F1
+    P->>P: wait bloquejat //1
+    F1->>F1: wait retorna -1 //1
+    F1->>N1: fork → crea N1
+    F1->>F1: wait bloquejat //2
+    N1->>N1: wait retorna -1 //2
+    N1->>N1: exit
+    N1-->>F1: desbloqueja wait del PID 101, retorna 102
+    F1->>F1: exit
+    F1-->>P: desbloqueja wait del PID 100, retorna 101
+    P-->>P: wait retorna -1 //2
+    P->>P: exit
+```
+:::
+
+</details>
+
+---
+
+::: {.exercici}
+Quantes vegades `wait(st)` retorna `-1`? Fixa't en la diferència amb l'exercici anterior: ara qui fa el segon `fork` és el **pare**.
+
+```{.c}
+id = fork();
+wait(st);          // 1
+if (id != 0)
+    fork();
+wait(st);          // 2
+exit();
+```
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+Altre cop `wait(st)` retorna `-1` **3** vegades:
+
+| Procés | `wait` //1 | `wait` //2 |
+|--------|-----------|-----------|
+| Pare | retorna 101 (F1 ha acabat) | retorna 102 (F2 ha acabat) |
+| Fill F1 | **-1** (no té fills) | **-1** (no té fills: no ha fet el segon `fork`, perquè `id == 0`) |
+| Fill F2 | no l'executa (neix després) | **-1** (no té fills) |
+
+F2 és una còpia del pare **just després del `fork`**, així que té `id` amb el mateix valor que el pare (≠ 0), però ja ha passat l'`if`: no fa cap altre `fork`.
+
+```{mermaid}
+sequenceDiagram
+    autonumber
+    participant P as Pare · PID 100
+    participant F1 as Fill1 · PID 101
+    participant F2 as Fill2 · PID 102
+
+    P->>F1: fork → crea F1
+    P->>P: wait bloquejat //1
+    F1->>F1: wait retorna -1 //1
+    F1->>F1: wait retorna -1 //2
+    F1->>F1: exit
+    F1-->>P: desbloqueja wait del PID 100, retorna 101
+    P->>F2: fork → crea F2
+    P->>P: wait bloquejat //2
+    F2->>F2: wait retorna -1 //2
+    F2->>F2: exit
+    F2-->>P: desbloqueja wait del PID 100, retorna 102
+    P->>P: exit
+```
+:::
+
+</details>
+
+---
+
+::: {.exercici}
+Analitza el següent codi i respon les preguntes:
+
+```{.c}
+int main(void)
+{
+    int a = 1;
+    pid_t fork_ret = fork();
+
+    if (fork_ret > 0) {
+        a++;
+        fprintf(stdout, "Parent: int a is %d at %p\n", a, (void *)&a);
+    } else if (fork_ret == 0) {
+        a++;
     }
-    ```
 
-7. Quina és la sortida del següent codi?
+    fprintf(stdout, "Child: int a is %d at %p\n", a, (void *)&a);
 
-    ```c
-    int main()
-    {
-        switch(fork()){
-            case 0: printf("A");
-                    switch(fork()){
-                        case 0: printf("B");exit(0);
-                        default: switch(fork()){
-                            case 0: printf("C");exit(0);
-                            default: wait(&st);wait(&st);exit(0);
-                        }            
-                    wait(&st);
-                    }
-            default: wait(&st); exit(0);
-        }
-    }
-    ```
+    return 0;
+}
+```
 
-8. Indiqueu quin és el resultat de l'execució del següent codi. Nombre de processos creats, parantiu, informació de stdout, procés zombi, etc.
+1. Quin és el valor de `a` en el procés pare i en el procés fill?
+2. S'imprimirà la mateixa adreça de memòria per a `a` en el procés pare i en el procés fill?
+3. S'imprimirà a la mateixa sortida estàndard (`STDOUT`) en el procés pare i en el procés fill?
+4. Quantes línies s'imprimeixen en total? Quin procés imprimeix cadascuna?
+:::
 
-    ```c
-    #define N 10
-    int main()
-    {
-        int pid = getpid();
-        for (int x=0; x<N x++)
-        {
-            switch(fork())
-            {
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+1. **`a` val 2 en tots dos**. El `fork` duplica la memòria, així que cada procés té la seva pròpia `a`, i cadascun l'incrementa una vegada: el pare a la branca `fork_ret > 0` i el fill a la branca `fork_ret == 0`. Cap incrementa la `a` de l'altre.
+2. **Sí, la mateixa adreça.** Són adreces **virtuals**: el fill hereta la mateixa disposició de memòria que el pare. Les pàgines físiques es comparteixen (*copy-on-write*) fins que un dels dos escriu: aleshores el sistema operatiu en fa una còpia privada. Així, la mateixa adreça virtual apunta a memòria física diferent. (Entre dues execucions les adreces poden canviar per l'ASLR, però dins d'una mateixa execució pare i fill coincideixen.)
+3. **Sí.** El fill hereta els descriptors de fitxer del pare, així que l'`stdout` és el mateix terminal (o fitxer). Les línies es barregen en un **ordre no determinista**.
+4. **3 línies.** La segona `fprintf` queda **fora** de l'`if`/`else`, per tant l'executen els dos processos. El pare imprimeix la línia `Parent` **i també** la línia `Child`, i el fill imprimeix la línia `Child`. L'etiqueta `Child` és enganyosa:
+
+```{.text}
+Parent: int a is 2 at 0x7ffd5c3a1a4c
+Child: int a is 2 at 0x7ffd5c3a1a4c
+Child: int a is 2 at 0x7ffd5c3a1a4c
+```
+:::
+
+</details>
+
+---
+
+::: {.exercici}
+Analitza el següent codi i justifica quin serà el resultat de la seva execució. Arriba el pare a veure el `6` que escriu el fill?
+
+```{.c}
+int main(void)
+{
+    int *stuff = malloc(sizeof(int));
+    *stuff = 5;
+
+    pid_t fork_ret = fork();
+
+    printf("The last digit of pi is %d\n", *stuff);
+
+    if (fork_ret == 0)
+        *stuff = 6;
+
+    return 0;
+}
+```
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+Surt **dues vegades** la mateixa línia, amb un `5`:
+
+```{.text}
+The last digit of pi is 5
+The last digit of pi is 5
+```
+
+- El `printf` s'executa **abans** que el fill canviï el valor, i els dos processos hi arriben amb `*stuff == 5`.
+- Encara que el `printf` fos després, el pare **no veuria mai el `6`**: la memòria dinàmica (*heap*) es duplica en el `fork` igual que la pila, i el fill escriu en la **seva còpia**. Si el `printf` fos posterior a l'assignació, el fill imprimiria `6` i el pare `5`.
+- Que `stuff` sigui un **punter** no fa que la memòria sigui compartida: el valor del punter és el mateix en tots dos (és una adreça virtual), però apunta a còpies independents.
+:::
+
+</details>
+
+---
+
+::: {.exercici}
+Quina és la sortida del següent codi? Dibuixa l'arbre de processos, **prediu la sortida** (en pot haver-hi més d'una) i després compila'l i executa'l diverses vegades.
+
+```{.c}
+int main()
+{
+    int st;
+
+    switch (fork()) {
+        case 0:
+            printf("A");
+            switch (fork()) {
                 case 0:
-                    if ( (pid%2) == 0 )
-                        printf("Pid Fill: %d\n", getpid());
-                        exit(0); //3
-                    break;
-            
+                    printf("B");
+                    exit(0);
                 default:
-                    if ( (pid%2) !== 0 )
-                        exit(0); //2
-                    break;
+                    switch (fork()) {
+                        case 0:
+                            printf("C");
+                            exit(0);
+                        default:
+                            wait(&st);
+                            wait(&st);
+                            exit(0);
+                    }
+                    wait(&st);
             }
-        }
-        wait(NULL);
-        exit(0); //1
+        default:
+            wait(&st);
+            exit(0);
     }
-    ```
+}
+```
 
-    
+**Repte:** què canvia si cada `printf` acaba amb un salt de línia (`"A\n"`, `"B\n"`, `"C\n"`)? I si a més redirigeixes la sortida amb `./programa | cat`?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+L'arbre és: el pare crea F1; F1 imprimeix `A` i crea F2 (que imprimeix `B`) i F3 (que imprimeix `C`). Tothom hi acaba amb `exit`. Si ho llegíssim amb *ingenuïtat*, la sortida seria `ABC` o `ACB`. **Però la sortida real és:**
+
+```{.text}
+ABACA        (o bé ACABA)
+```
+
+El motiu és el **buffer d'`stdio`**:
+
+1. F1 fa `printf("A")`. Com que no hi ha `\n`, la `A` es queda al buffer de F1 **sense escriure's**.
+2. El `fork` copia aquest buffer: F2 i F3 neixen amb la `A` **pendent** dins del seu propi buffer.
+3. En fer `exit(0)`, que buida els buffers, F2 escriu `AB` i F3 escriu `AC`. L'ordre entre elles depèn del planificador.
+4. F1 espera els dos fills i, en acabar, escriu la seva `A`. Per això l'última lletra és **sempre** una `A`.
+
+La `wait(&st);` que hi ha darrere el `switch` imbricat és **codi inabastable**: totes les branques d'aquell `switch` acaben amb `exit`, així que mai s'hi arriba (ni tampoc es cau en el `default` exterior).
+
+**Repte.** Amb `\n` en cada `printf` i la sortida al terminal, el buffer es buida a cada línia (*line buffered*), per tant la `A` ja ha sortit **abans** del `fork`: surt `A`, `B`, `C` o `A`, `C`, `B`. Però amb `./programa | cat` la sortida és *completament buferitzada*, i el `\n` no la buida: tornem a tenir `A B A C A` (una línia per lletra, o `A C A B A`).
+
+Aquest és exactament el motiu pel qual, en la nostra mini-shell, el fill fa `_exit` en lloc d'`exit` quan `execvp` falla: `exit` buidaria al fill els buffers heretats del pare i duplicaria la sortida.
+:::
+
+</details>
+
+---
+
+::: {.exercici}
+Indica quin és el resultat de l'execució del següent codi: nombre de processos creats, parentiu, informació per `stdout`, processos zombis, etc. Analitza'l en **dos casos**: que el PID del procés inicial sigui **parell**, o que sigui **senar**. Fixa't que `pid` es calcula **una sola vegada**, abans del bucle.
+
+```{.c}
+#define N 10
+
+int main()
+{
+    int pid = getpid();
+
+    for (int x = 0; x < N; x++) {
+        switch (fork()) {
+            case 0:
+                if ((pid % 2) == 0) {
+                    printf("Pid Fill: %d\n", getpid());
+                    exit(0);                 // 3
+                }
+                break;
+
+            default:
+                if ((pid % 2) != 0)
+                    exit(0);                 // 2
+                break;
+        }
+    }
+
+    wait(NULL);
+    exit(0);                                 // 1
+}
+```
+
+1. Quants processos es creen en total en cada cas?
+2. Què s'imprimeix per `stdout`?
+3. Quins processos fan `wait`? Hi ha processos zombis o orfes?
+4. **Repte:** treu les claus de l'`if` del `case 0` i escriu `if ((pid % 2) == 0) printf(...); exit(0);`. Què canvia?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+El comportament depèn de la **parity del PID del procés inicial**. Com que `pid` es calcula una sola vegada, tots els descendents hereten aquest mateix valor i es comporten d'acord amb ell.
+
+**Cas parell: el pare crea 10 fills.** Es creen **11 processos** (el pare i 10 fills), i s'imprimeixen **10 línies** `Pid Fill: ...`, una per fill, en un ordre no garantit.
+
+```{mermaid}
+sequenceDiagram
+    autonumber
+    participant P as Pare · PID parell
+    participant F1 as Fill 1
+    participant F2 as Fill 2
+    participant F10 as Fill 10
+
+    P->>F1: fork (x=0)
+    F1->>F1: printf Pid Fill i exit //3
+    P->>F2: fork (x=1)
+    F2->>F2: printf Pid Fill i exit //3
+    Note over P,F10: ... el mateix patró fins a x=9
+    P->>F10: fork (x=9)
+    F10->>F10: printf Pid Fill i exit //3
+    P->>P: wait(NULL) recull UN sol fill
+    P->>P: exit //1
+```
+
+- Cada fill imprimeix i acaba de seguida (`exit //3`). El pare **no fa cap `wait` dins del bucle**, així que els fills queden **zombis** en acabar.
+- Després del bucle, el pare fa **un sol** `wait(NULL)`: recull un fill i acaba (`exit //1`).
+- Els **9 fills restants** estaven zombis; quan el pare acaba queden **orfes** i els adopta `init`, que els recull. Si el pare no acabés, es quedarien a la taula de processos com a `<defunct>`.
+
+**Cas senar: una cadena de 10 generacions.** Es creen també **11 processos**, però **no s'imprimeix res** (cap fill compleix `pid % 2 == 0`).
+
+```{mermaid}
+sequenceDiagram
+    autonumber
+    participant P as Pare · PID senar
+    participant F1 as Fill 1
+    participant F2 as Fill 2
+    participant F10 as Fill 10
+
+    P->>F1: fork (x=0)
+    P->>P: exit //2
+    F1->>F2: fork (x=1)
+    F1->>F1: exit //2
+    Note over F2,F10: ... el patró es repeteix fins a x=9
+    F10->>F10: surt del bucle (x=10)
+    F10->>F10: wait(NULL) retorna -1
+    F10->>F10: exit //1
+```
+
+- Cada procés crea el següent i acaba de seguida (`exit //2`), mentre que el fill continua el bucle. Es forma una cadena `P → F → N → ...` de 10 generacions.
+- Només l'**últim** fill surt del bucle i fa `wait(NULL)`; com que no té fills, retorna `-1` i acaba (`exit //1`).
+- Cada fill queda **orfe** quan el seu pare acaba, i l'adopta `init`. No hi ha zombis duradors: com a molt, un fill pot ser zombi un instant si acaba abans que el seu pare, fins que `init` l'adopta i el recull.
+
+**Repte.** Sense claus, l'`exit(0)` **ja no forma part de l'`if`** i s'executa sempre en el fill. Així, en el cas parell no canvia res, però en el cas senar **tots els fills acaben de seguida**: només hi ha 2 processos (el pare, que acaba després del primer `fork`, i un fill) i no s'imprimeix res. L'indentació enganya: **usa sempre claus**.
+:::
+
+</details>

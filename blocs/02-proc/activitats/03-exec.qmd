@@ -1,0 +1,415 @@
+---
+title: Problemes de classe (2) — zombis, orfes i `exec` en C
+description: Zombis, orfes i la família exec en C
+lang: ca
+---
+
+## Introducció
+
+Tots es poden resoldre amb **paper i llapis**. Per a cadascun, **dibuixa l'arbre de processos** i anota què fa cada procés i en quin ordre. Intenta resoldre'l abans d'obrir el raonament; després, si vols, compila'l i comprova-ho (o segueix-lo amb GDB).
+
+:::{.concepte title="Recordatori: exec, zombis i orfes"}
+- **`exec*` reemplaça la imatge del procés** (codi, pila, *heap*, dades). **No crea cap procés nou**: el PID no canvia. Si té èxit, **no retorna**; només torna (amb `-1`) si falla.
+- Nomenclatura: `l` = arguments en llista, `v` = arguments en vector, `p` = cerca al `PATH`, `e` = entorn explícit. Les llistes d'arguments acaben amb `NULL`.
+- Els descriptors oberts **sobreviuen** a l'`exec` (excepte els marcats amb `FD_CLOEXEC`). Els *buffers d'stdio* **no**: viuen a la memòria del procés i es descarten.
+- **Zombi**: fill que ja ha acabat però el pare encara no ha fet `wait`/`waitpid`. Apareix a `ps` amb estat `Z` i `<defunct>`. Només ocupa una entrada a la taula de processos (guarda l'estat de sortida). **No es pot matar amb `kill -9`**: ja és mort.
+- **Orfe**: fill viu el pare del qual ha acabat. L'adopta `init`/`systemd` (o un *subreaper*), que farà `wait` per ell.
+:::
+
+:::{.bonapractica}
+**Convencions dels enunciats.** Tots els programes suposen aquests `#include`:
+
+```{.c}
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <signal.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+```
+:::
+
+---
+
+::: {.exercici}
+```{.c}
+int main(void) {
+    printf("abans\n");
+    execlp("echo", "echo", "hola", NULL);
+    printf("despres\n");
+    return 0;
+}
+```
+
+1. Què s'imprimeix?
+2. En quina circumstància s'imprimiria `despres`?
+
+**Repte:** què passa amb `abans` si redirigeixes la sortida a un fitxer (`./programa > out.txt`)?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+1. `abans` i `hola`. **Mai** `despres`: després d'un `exec` amb èxit, el codi d'aquest programa ja no existeix dins el procés.
+2. Només si `execlp` **falla** (per exemple, el programa no existeix al `PATH`): llavors retorna `-1` i el codi continua. Per això el patró correcte és `execlp(...); perror("execlp"); exit(1);`.
+
+**Repte.** Amb la sortida redirigida, `stdout` és *completament buferitzat*: `abans\n` es queda al buffer, i l'`exec` el **descarta** juntament amb la resta de la memòria. Al fitxer només hi ha `hola`. 
+:::
+
+</details>
+
+---
+
+::: {.exercici}
+```{.c}
+int main(void) {
+    if (fork() == 0)
+        exit(0);
+    sleep(30);
+    return 0;
+}
+```
+
+1. Durant aquests 30 s, en quin estat és el fill? Què mostraria `ps`?
+2. Com deixaria de ser zombi?
+3. Serveix `kill -9 <pid_fill>`?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+1. **Zombi**: ha acabat, però el pare no ha fet `wait`. `ps` el mostra amb `STAT = Z` i `CMD = [programa] <defunct>`.
+2. Si el pare fa `wait`/`waitpid`, o si el pare acaba (el fill passa a `init`/`systemd`, que el recull).
+3. **No.** Un zombi ja és mort: no rep senyals. Cal actuar sobre el pare.
+
+```{mermaid}
+sequenceDiagram
+    autonumber
+    participant P as Pare
+    participant F as Fill
+
+    P->>F: fork → crea el fill
+    F->>F: exit 0
+    Note over F: zombi (Z) des d'aquí
+    P->>P: sleep 30
+    Note over P,F: ps mostra el fill com a defunct
+    P->>P: el pare acaba
+    Note over F: init adopta el fill i el recull
+```
+:::
+
+</details>
+
+---
+
+::: {.exercici}
+```{.c}
+int main(void) {
+    char *args[] = { "ls", "-l", ______(1)______ };
+    execvp(______(2)______, ______(3)______);
+    perror("execvp");
+    exit(1);
+}
+```
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+1. `NULL` (el vector ha d'acabar amb un punter nul)
+2. `"ls"` (o `args[0]`)
+3. `args`
+
+Executa `ls -l` i no torna. Amb `execv` (sense `p`) caldria donar la ruta completa, `"/bin/ls"`, perquè no cerca al `PATH`.
+:::
+
+</details>
+
+---
+
+::: {.exercici}
+```{.c}
+int main(void) {
+    printf("PID abans: %d\n", getpid());
+    fflush(stdout);
+    execl("/bin/sh", "sh", "-c", "echo PID despres: $$", NULL);
+    return 1;
+}
+```
+
+Quina relació hi ha entre els dos PID que s'imprimeixen?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+Són **iguals**. `$$` en un shell és el PID del propi shell, que és el nostre procés amb la imatge reemplaçada per `sh`. L'`exec` no crea cap procés: el **transforma**.
+
+Fixa't que el `fflush(stdout)` és necessari només perquè, amb la sortida redirigida, `PID abans` es perdria en l'`exec` (vegeu F1 i D1).
+:::
+
+</details>
+
+---
+
+
+::: {.exercici}
+```{.c}
+int main(void) {
+    pid_t pid = fork();
+    if (pid == 0) {
+        execl("/bin/ls", "ls", "/noexisteix", NULL);
+        perror("execl");
+        exit(99);
+    }
+    int st;
+    waitpid(pid, &st, 0);
+    printf("codi=%d\n", WEXITSTATUS(st));
+    return 0;
+}
+```
+
+1. Què imprimeix el programa tal com està?
+2. I si canviem `"/bin/ls"` per `"/bin/lss"`?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+1. `ls` s'executa correctament (l'`exec` té èxit) però **falla pel seu compte**: escriu per `stderr` alguna cosa com `ls: cannot access '/noexisteix': No such file or directory` i surt amb codi **2**. El pare imprimeix `codi=2`. El `perror` i l'`exit(99)` **no s'executen**.
+2. Ara és l'**`exec`** el que falla (`ENOENT`): `perror` escriu `execl: No such file or directory`, el fill surt amb 99 i el pare imprimeix `codi=99`.
+
+```{mermaid}
+sequenceDiagram
+    autonumber
+    participant P as Pare
+    participant F as Fill
+
+    P->>F: fork → crea el fill
+    P->>P: waitpid bloquejat
+    F->>F: execl de bin ls amb èxit
+    Note over F: ara el fill és ls
+    F->>F: ls falla i surt amb codi 2
+    F-->>P: desbloqueja el waitpid
+    P->>P: printf codi=2
+```
+
+Moraleja: cal distingir «l'exec ha fallat» de «el programa llançat ha fallat» mitjançant **codis de sortida diferents**.
+:::
+
+</details>
+
+---
+
+::: {.exercici}
+```{.c}
+int main(void) {
+    execl("/bin/echo", "hola", "mon", NULL);
+    return 1;
+}
+```
+
+1. Què s'imprimeix?
+2. I amb `execl("/bin/echo", "mon", NULL);`?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+1. `mon`. El primer argument després de la ruta és `argv[0]` (el «nom» amb què s'invoca), **no un paràmetre**. S'executa `/bin/echo` amb `argv = {"hola", "mon"}`, i `echo` ignora `argv[0]`.
+2. Una **línia buida**: `argv = {"mon"}` i no hi ha res per mostrar (`echo` escriu només el salt de línia).
+
+Per això, quan es vol passar `hola` com a argument cal repetir el nom: `execl("/bin/echo", "echo", "hola", NULL)`.
+:::
+
+</details>
+
+---
+
+::: {.exercici}
+```{.c}
+int main(void) {
+    for (int i = 0; i < 3; i++)
+        if (fork() == 0)
+            exit(0);
+    sleep(10);
+    wait(NULL);
+    sleep(10);
+    return 0;
+}
+```
+
+Quants zombis hi ha a t = 5 s, t = 15 s i t = 25 s?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+- **t = 5 s: 3 zombis.** Els tres fills han acabat i el pare dorm.
+- **t = 15 s: 2 zombis.** El `wait(NULL)` només n'ha recollit **un**.
+- **t = 25 s: 0.** El pare va acabar a t = 20 s; els dos zombis restants van passar a `init`/`systemd`, que els va recollir.
+
+```{mermaid}
+sequenceDiagram
+    autonumber
+    participant P as Pare
+    participant F as 3 fills
+
+    P->>F: fork 3 vegades
+    F->>F: exit 0 → 3 zombis
+    P->>P: sleep 10
+    Note over P,F: t=5 s · 3 zombis
+    P->>F: wait recull un fill
+    Note over P,F: t=15 s · 2 zombis
+    P->>P: sleep 10 i el pare acaba a t=20 s
+    F-->>F: init adopta i recull els 2 restants
+    Note over P,F: t=25 s · 0 zombis
+```
+:::
+
+</details>
+
+---
+
+::: {.exercici}
+```{.c}
+int main(void) {
+    if (fork() == 0) {
+        sleep(2);
+        printf("el meu pare es %d\n", getppid());
+        exit(0);
+    }
+    printf("pare acaba\n");
+    exit(0);
+}
+```
+
+1. En quin ordre i amb quina diferència de temps surten les línies?
+2. Quin valor aproximat imprimeix `getppid()`?
+3. Pot aparèixer el *prompt* del shell abans de la segona línia?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+1. `pare acaba` gairebé a l'instant; `el meu pare es ...` uns 2 s després.
+2. **1** en un sistema clàssic (`init`), o el PID de `systemd` o d'un *subreaper* (per exemple `systemd --user`, o el procés principal d'un contenidor). **No** és el PID original del pare.
+3. **Sí**: el shell només espera el pare, que ja ha acabat. El fill orfe continua escrivint al terminal després.
+
+```{mermaid}
+sequenceDiagram
+    autonumber
+    participant S as Shell
+    participant P as Pare
+    participant F as Fill
+    participant I as init
+
+    S->>P: executa el programa
+    P->>F: fork → crea el fill
+    P->>P: printf pare acaba i exit
+    P-->>S: el shell recupera el prompt
+    I->>F: adopta el fill orfe
+    F->>F: després de 2 s printf amb ppid 1
+```
+:::
+
+</details>
+
+---
+
+::: {.exercici}
+`./run ls -l /tmp` ha d'executar `ls -l /tmp` i mostrar com ha acabat.
+
+```{.c}
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        fprintf(stderr, "us: %s ordre [args...]\n", argv[0]);
+        return 1;
+    }
+    pid_t pid = fork();
+    if (pid < 0) { perror("fork"); return 1; }
+    if (pid == 0) {
+        execvp(______(1)______, ______(2)______);
+        perror("execvp");
+        exit(127);
+    }
+    int st;
+    ______(3)______;
+    if (WIFEXITED(st))
+        printf("ha acabat amb %d\n", ______(4)______);
+    else if (WIFSIGNALED(st))
+        printf("mort pel senyal %d\n", ______(5)______);
+    return 0;
+}
+```
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+1. `argv[1]`
+2. `&argv[1]` (el vector des de l'ordre; ja acaba en `NULL` perquè l'estàndard garanteix `argv[argc] == NULL`)
+3. `waitpid(pid, &st, 0)`
+4. `WEXITSTATUS(st)`
+5. `WTERMSIG(st)`
+
+Nota: el `127` és la convenció dels shells per a «ordre no trobada».
+:::
+
+</details>
+
+---
+
+::: {.exercici}
+El pare crea 3 fills (el fill `i` dorm `i` segons) i, mentrestant, «treballa», recollint cada fill tan bon punt acaba, **sense quedar-se bloquejat**.
+
+```{.c}
+int main(void) {
+    for (int i = 1; i <= 3; i++)
+        if (fork() == 0) {
+            sleep(i);
+            exit(0);
+        }
+
+    int vius = 3, st;
+    while (vius > 0) {
+        pid_t p = waitpid(______(1)______, &st, ______(2)______);
+        if (______(3)______) {
+            vius--;
+            printf("recollit %d\n", p);
+        } else if (p == 0) {
+            printf("treballant...\n");
+            usleep(500000);
+        } else {
+            perror("waitpid");
+            break;
+        }
+    }
+    return 0;
+}
+```
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+1. `-1` (qualsevol fill)
+2. `WNOHANG` (tornar immediatament)
+3. `p > 0` (s'ha recollit un fill)
+
+Amb `WNOHANG`, `waitpid` retorna `0` si hi ha fills vius però cap ha acabat, `> 0` si n'ha recollit un i `-1` si hi ha un error (per exemple `ECHILD`, sense fills). La sortida alterna línies `treballant...` amb tres `recollit <pid>`.
+:::
+
+</details>

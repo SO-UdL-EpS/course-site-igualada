@@ -1,0 +1,427 @@
+---
+title: Problemes de classe — `fork()` i `wait()` en C
+description: Interpretació de codi, codi per completar
+lang: ca
+---
+
+## Introducció
+
+Tots es poden resoldre amb **paper i llapis**. Per a cadascun, **dibuixa l'arbre de processos** i anota què fa cada procés i en quin ordre. Intenta resoldre'l abans d'obrir el raonament; després, si vols, compila'l i comprova-ho (o segueix-lo amb GDB).
+
+:::{.concepte title="Recordatori: fork, wait i estat de sortida"}
+- `fork()` retorna `0` al **fill**, el PID del fill al **pare** i `-1` si falla. Després del `fork`, tots dos processos continuen **just a la instrucció següent**, cadascun amb la seva còpia de la memòria.
+- `wait(&st)` bloqueja el procés fins que **un** dels seus fills acaba i en retorna el PID. Si **no té fills** per esperar, retorna `-1` immediatament (amb `errno == ECHILD`). `waitpid(pid, &st, 0)` espera un fill concret.
+- L'**estat cru** que deixa `wait` a `st` té aquesta forma: si el fill fa `exit(n)`, `st = n << 8`; si el mata un senyal, els 7 bits baixos valen el número del senyal (i el bit `0x80` indica *core dump*).
+- Les macros de `<sys/wait.h>` ho desxifren: `WIFEXITED(st)` i `WEXITSTATUS(st)` per a una sortida normal; `WIFSIGNALED(st)` i `WTERMSIG(st)` per a una mort per senyal.
+- El **buffer d'`stdio`** viu a la memòria del procés, així que el `fork` també el duplica.
+:::
+
+:::{.bonapractica}
+**Convencions dels enunciats.** Tots els programes suposen aquests `#include`:
+
+```{.c}
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+```
+
+En tots els exemples s'usa `printf("...\n")`. En un terminal, `stdout` és *line-buffered*: el `\n` buida el buffer abans del `fork()`.
+:::
+
+---
+
+::: {.exercici}
+Analitza el codi i respon:
+
+```{.c}
+int main(void) {
+    printf("A\n");
+    fork();
+    printf("B\n");
+    return 0;
+}
+```
+
+1. Quants processos hi ha al final?
+2. Quantes línies `A` i quantes `B` s'imprimeixen?
+
+**Repte:** què canvia si redirigeixes la sortida a un fitxer (`./programa > out.txt`)?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+1. **2 processos** (el pare i un fill).
+2. `A` **una vegada** (s'imprimeix abans del `fork`, només hi ha el pare) i `B` **dues vegades** (una per procés). L'ordre relatiu de les dues `B` no importa: són idèntiques.
+
+```{mermaid}
+sequenceDiagram
+    autonumber
+    participant P as Pare
+    participant F as Fill
+
+    P->>P: printf A
+    P->>F: fork → crea el fill
+    P->>P: printf B
+    F->>F: printf B
+```
+:::
+
+</details>
+
+---
+
+::: {.exercici}
+```{.c}
+int main(void) {
+    pid_t pid = fork();
+    if (pid == 0) {
+        printf("Soc el fill\n");
+        exit(0);
+    }
+    wait(NULL);
+    printf("Soc el pare\n");
+    return 0;
+}
+```
+
+1. Quin valor té `pid` en cada procés?
+2. Pot sortir primer *Soc el pare*? Per què?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+1. Al fill, `pid == 0`; al pare, `pid` és el PID del fill (> 0).
+2. **No.** El pare es bloqueja al `wait(NULL)` fins que el fill acaba, i el fill imprimeix abans de fer `exit`. La sortida és **única**: `Soc el fill` → `Soc el pare`.
+
+```{mermaid}
+sequenceDiagram
+    autonumber
+    participant P as Pare
+    participant F as Fill
+
+    P->>F: fork → crea el fill
+    P->>P: wait bloquejat
+    F->>F: printf Soc el fill
+    F->>F: exit 0
+    F-->>P: desbloqueja el wait
+    P->>P: printf Soc el pare
+```
+:::
+
+</details>
+
+---
+
+::: {.exercici}
+```{.c}
+int main(void) {
+    fork();
+    fork();
+    printf("Hola\n");
+    return 0;
+}
+```
+
+Quants *Hola* s'imprimeixen? Dibuixa l'arbre de processos.
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+**4 x *Hola.*** Cada `fork` duplica el nombre de processos: 2² = 4. El segon `fork` l'executen **tots dos** processos que existeixen després del primer.
+
+```{mermaid}
+flowchart TD
+    P["P · pare original"] -->|"fork 1"| C1["C1"]
+    P -->|"fork 2"| C2["C2"]
+    C1 -->|"fork 2"| C1b["C1b"]
+```
+
+Els quatre processos (`P`, `C1`, `C2`, `C1b`) arriben al `printf`.
+:::
+
+</details>
+
+---
+
+::: {.exercici}
+Completa els buits perquè el pare mostri el codi amb què ha acabat el fill.
+
+```{.c}
+int main(void) {
+    pid_t pid = fork();
+    if (pid == 0) {
+        exit(7);
+    }
+    int st;
+    ______(1)______;
+    printf("El fill ha acabat amb codi %d\n", ______(2)______);
+    return 0;
+}
+```
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+1. `wait(&st)` (o `waitpid(pid, &st, 0)`)
+2. `WEXITSTATUS(st)`
+
+Sortida: `El fill ha acabat amb codi 7`.
+
+Abans d'usar `WEXITSTATUS` convé comprovar `WIFEXITED(st)`: el valor només té sentit si el fill ha acabat amb `exit` i no mort per un senyal. Recorda que `st` conté `7 << 8 = 1792`, no `7`.
+:::
+
+</details>
+
+---
+
+
+::: {.exercici}
+```{.c}
+int main(void) {
+    for (int i = 0; i < 3; i++) {
+        fork();
+    }
+    printf("X\n");
+    return 0;
+}
+```
+
+1. Quantes `X` s'imprimeixen? Dibuixa l'arbre.
+2. I si dins del bucle es fa `if (fork() == 0) exit(0);`?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+1. **2³ = 8.** Els fills també executen les iteracions que els queden, així que el nombre de processos es duplica a cada volta. Cada aresta indica en quina iteració `i` neix el procés:
+
+```{mermaid}
+flowchart TD
+    P["Pare original"] -->|"i=0"| A["A"]
+    P -->|"i=1"| B["B"]
+    P -->|"i=2"| C["C"]
+    A -->|"i=1"| D["D"]
+    A -->|"i=2"| E["E"]
+    B -->|"i=2"| F["F"]
+    D -->|"i=2"| G["G"]
+```
+
+   Hi ha 8 processos (el pare i 7 fills) i tots arriben al `printf`.
+
+2. **1 sola `X`.** Cada fill mor a la iteració en què neix, així que només el pare original arriba al `printf`. Es creen 3 fills en total (han existit 4 processos), però cap d'ells imprimeix.
+:::
+
+</details>
+
+---
+
+::: {.exercici}
+```{.c}
+int main(void) {
+    if (fork() && fork()) {
+        printf("A\n");
+    } else {
+        printf("B\n");
+    }
+    return 0;
+}
+```
+
+1. Quants processos es creen en total?
+2. Quantes `A` i quantes `B` s'imprimeixen?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+L'operador `&&` **avalua el segon operand només si el primer és cert**:
+
+- El pare `P` rep del primer `fork` un PID ≠ 0 (cert), per tant **avalua el segon `fork`** i crea `C2`.
+- El primer fill `C1` rep `0` (fals) i, per curtcircuit, **no executa el segon `fork`**.
+
+```{mermaid}
+flowchart TD
+    P["P"] -->|"fork 1 · retorna PID al pare"| C1["C1 · rep 0 · no fa el segon fork"]
+    P -->|"fork 2"| C2["C2 · rep 0 al segon fork"]
+```
+
+| Procés | 1r `fork` | 2n `fork` | Condició | Imprimeix |
+|--------|-----------|-----------|----------|-----------|
+| `P`    | PID ≠ 0   | PID ≠ 0   | cert     | **A**     |
+| `C1`   | 0         | no s'executa | fals  | **B**     |
+| `C2`   | PID ≠ 0 (heretat de `P`) | 0 | fals | **B** |
+
+1. **3 processos** (`P`, `C1`, `C2`).
+2. **1 `A` i 2 `B`.**
+:::
+
+</details>
+
+---
+
+::: {.exercici}
+```{.c}
+int main(void) {
+    int x = 10;
+    pid_t pid = fork();
+    if (pid == 0) {
+        x++;
+        printf("fill: x=%d\n", x);
+        exit(0);
+    }
+    wait(NULL);
+    printf("pare: x=%d\n", x);
+    return 0;
+}
+```
+
+Quina és la sortida? Per què?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+```{.text}
+fill: x=11
+pare: x=10
+```
+
+Després del `fork`, cada procés té la **seva còpia** de l'espai d'adreces (amb *copy-on-write*: les pàgines es comparteixen fins que algú escriu, i llavors el sistema en fa una còpia privada). Quan el fill fa `x++`, modifica la seva `x`, no la del pare.
+
+```{mermaid}
+sequenceDiagram
+    autonumber
+    participant P as Pare · x=10
+    participant F as Fill · x=10
+
+    P->>F: fork → còpia de la memòria
+    P->>P: wait bloquejat
+    F->>F: x++ → x=11
+    F->>F: printf fill x=11
+    F->>F: exit 0
+    F-->>P: desbloqueja el wait
+    P->>P: printf pare x=10
+```
+:::
+
+</details>
+
+---
+
+::: {.exercici}
+El pare crea `N` fills; el fill `i` acaba amb `exit(i)`. El pare espera **tots** els fills i en suma els codis.
+
+```{.c}
+#define N 4
+
+int main(void) {
+    for (int i = 1; i <= N; i++) {
+        pid_t pid = ______(1)______;
+        if (pid == ______(2)______) {
+            exit(______(3)______);
+        }
+    }
+
+    int status, suma = 0;
+    pid_t p;
+    while ((p = ______(4)______) > 0) {
+        if (______(5)______)
+            suma += ______(6)______;
+    }
+    printf("suma=%d\n", suma);
+    return 0;
+}
+```
+
+**Pregunta extra:** què passa si oblidem l'`exit(i)` del fill?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+1. `fork()`
+2. `0`
+3. `i`
+4. `wait(&status)`
+5. `WIFEXITED(status)`
+6. `WEXITSTATUS(status)`
+
+Sortida: `suma=10` (1 + 2 + 3 + 4).
+
+`wait` retorna `-1` amb `errno == ECHILD` quan ja no queden fills, i això acaba el bucle.
+
+**Pregunta extra.** Sense l'`exit(i)`, els fills **continuen el bucle** i creen més processos (una *fork bomb* acotada), i a més arriben al `printf`. La suma ja no surt 10 i s'imprimeixen moltes línies `suma=...`.
+:::
+
+</details>
+
+---
+
+::: {.exercici}
+```{.c}
+int main(void) {
+    if (fork() == 0) {
+        printf("A\n");
+        if (fork() == 0) {
+            printf("B\n");
+            exit(0);
+        }
+        wait(NULL);
+        printf("C\n");
+        exit(0);
+    }
+    wait(NULL);
+    printf("D\n");
+    return 0;
+}
+```
+
+1. Quina és la sortida? És única o n'hi ha diverses de possibles?
+2. I si s'elimina el `wait(NULL)` del fill (el d'abans de `printf("C\n")`)?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+:::{.solucio}
+1. **`A B C D`, única.** L'avi espera el fill, i el fill espera el nét.
+
+```{mermaid}
+sequenceDiagram
+    autonumber
+    participant AV as Avi
+    participant F as Fill
+    participant N as Net
+
+    AV->>F: fork → crea el fill
+    AV->>AV: wait bloquejat
+    F->>F: printf A
+    F->>N: fork → crea el net
+    F->>F: wait bloquejat
+    N->>N: printf B
+    N->>N: exit 0
+    N-->>F: desbloqueja el wait
+    F->>F: printf C
+    F->>F: exit 0
+    F-->>AV: desbloqueja el wait
+    AV->>AV: printf D
+```
+
+2. `A` continua sent la primera i `C` continua sortint abans que `D` (l'avi espera el fill, que imprimeix `C` abans d'acabar). Però ara el fill **ja no espera el nét**, així que `B` pot sortir en qualsevol posició posterior a `A`. Sortides possibles: `A B C D`, `A C B D` i `A C D B`. Si el nét sobreviu al fill, queda **orfe** i l'adopta `init`/`systemd`.
+:::
+
+</details>
