@@ -1,5 +1,5 @@
 ---
-title: Problemes de classe (2) — zombis, orfes i `exec` en C
+title: Problemes de classe · zombis, orfes i `exec`
 description: Zombis, orfes i la família exec en C
 lang: ca
 ---

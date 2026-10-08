@@ -1,5 +1,5 @@
 ---
-title: Problemes de classe — `fork()` i `wait()` en C
+title: Problemes de classe · `fork()` i `wait()`
 description: Interpretació de codi, codi per completar
 lang: ca
 ---
