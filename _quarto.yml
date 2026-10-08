@@ -73,6 +73,11 @@ website:
             - section: "Activitats"
               contents:
               - href: blocs/02-proc/activitats/02-create.qmd
+              - href: blocs/02-proc/activitats/03-exec.qmd
+              - href: blocs/02-proc/activitats/01-fork-wait.qmd
+            - section: "Pralabs"
+              contents:
+              - href: blocs/02-proc/pralabs/01_minishell.qmd
     
 
 
