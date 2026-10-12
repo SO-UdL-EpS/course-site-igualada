@@ -2271,20 +2271,6 @@
     ]
   },
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Sistemes Operatius",
-    "section": "",
-    "text": "Aquesta assignatura proporciona els coneixements necessaris per comprendre el funcionament intern dels sistemes operatius, amb Linux com a plataforma de referència."
-  },
-  {
-    "objectID": "index.html#professorat",
-    "href": "index.html#professorat",
-    "title": "Sistemes Operatius",
-    "section": "Professorat",
-    "text": "Professorat\n\nJordi Mateo mailto:jordi.mateo@udl.cat"
-  },
-  {
     "objectID": "blocs/02-proc/teoria/01-procs.html#objectius",
     "href": "blocs/02-proc/teoria/01-procs.html#objectius",
     "title": "Processos: concepte, estats i PCB",
@@ -2660,6 +2646,342 @@
       "Bloc 2 · Processos",
       "Teoria",
       "Processos: concepte, estats i PCB"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Sistemes Operatius",
+    "section": "",
+    "text": "Aquesta assignatura proporciona els coneixements necessaris per comprendre el funcionament intern dels sistemes operatius, amb Linux com a plataforma de referència."
+  },
+  {
+    "objectID": "index.html#professorat",
+    "href": "index.html#professorat",
+    "title": "Sistemes Operatius",
+    "section": "Professorat",
+    "text": "Professorat\n\nJordi Mateo mailto:jordi.mateo@udl.cat"
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/04-pipes.html#implementació-de-les-pipes",
+    "href": "blocs/02-proc/teoria/04-pipes.html#implementació-de-les-pipes",
+    "title": "Processos: Pipes i redirecció d’entrada/sortida",
+    "section": "Implementació de les Pipes",
+    "text": "Implementació de les Pipes\nLes pipes es poden implementar com a buffers circulars basats en memòria assignada pel sistema operatiu. Aquestes pipes es coneixen com a pipes sense nom i són transitòries. Una pipe sense nom deixa d’existir quan tots els processos que la tenen assiganda acaben o tanquen els seus descriptors associats a la pipe.\n\n\n\nEls pipes es creen en el moment que s’obren mitjançant la crida a sistema pipe() (unistd.h) o amb la sintaxis |.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Pipes i redirecció d'entrada/sortida"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/04-pipes.html#creació-de-pipes",
+    "href": "blocs/02-proc/teoria/04-pipes.html#creació-de-pipes",
+    "title": "Processos: Pipes i redirecció d’entrada/sortida",
+    "section": "Creació de Pipes",
+    "text": "Creació de Pipes\nint pipe(int desc[2]);                                                                                                \nRETORNA:  0 on success                                                       \n         -1 on error:    errno = EMFILE (no free descriptors)                  \n                                 EMFILE (system file table is full)            \n                                 EFAULT (fd array is not valid)                \n\nLa crida a sistema pipe(), crea dos descriptors de fitxer. Un de lectura (desc[0]) i un d’escriptura (desc[1]).\nLa informació que s’escriu per desc[1] es llegeix per desc[0].\nUna vegada el pipe() s’ha creat; per poder utilitzar-lo els processos han d’heretar aquests descriptors del procés pare.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Pipes i redirecció d'entrada/sortida"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/04-pipes.html#comunicació-unidireccional-i",
+    "href": "blocs/02-proc/teoria/04-pipes.html#comunicació-unidireccional-i",
+    "title": "Processos: Pipes i redirecció d’entrada/sortida",
+    "section": "Comunicació unidireccional (I)",
+    "text": "Comunicació unidireccional (I)",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Pipes i redirecció d'entrada/sortida"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/04-pipes.html#comunicació-unidireccional-ii",
+    "href": "blocs/02-proc/teoria/04-pipes.html#comunicació-unidireccional-ii",
+    "title": "Processos: Pipes i redirecció d’entrada/sortida",
+    "section": "Comunicació unidireccional (II)",
+    "text": "Comunicació unidireccional (II)",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Pipes i redirecció d'entrada/sortida"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/04-pipes.html#comunicació-unidireccional-iii",
+    "href": "blocs/02-proc/teoria/04-pipes.html#comunicació-unidireccional-iii",
+    "title": "Processos: Pipes i redirecció d’entrada/sortida",
+    "section": "Comunicació unidireccional (III)",
+    "text": "Comunicació unidireccional (III)",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Pipes i redirecció d'entrada/sortida"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/04-pipes.html#comunicació-unidireccional-iv",
+    "href": "blocs/02-proc/teoria/04-pipes.html#comunicació-unidireccional-iv",
+    "title": "Processos: Pipes i redirecció d’entrada/sortida",
+    "section": "Comunicació unidireccional (IV)",
+    "text": "Comunicació unidireccional (IV)\nvoid main(){\n   int fd[2]; // Descriptors associats a una pipe  \n   pid_t   pidFill;\n    /* El primer element de la matriu (fd[0]) està configurat i obert per \n    a la lectura, mentre que el segon element està configurat i obert per \n    escriure (fd[1]. Totes les dades que viatgen per la pipe es mouen \n    pel nucli. */\n    pipe(fd); pidFill = fork();\n     if (pidFill == -1){\n        perror(\"fork\"); exit(1);\n     } else if (pidFill == 0){\n         /*El procés fill tanca la escriptura per la pipe*/ close(fd[1]);\n     } else {\n         /* El procés pare tanca la lectura per la pipe */ close(fd[0]);\n     }\n }",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Pipes i redirecció d'entrada/sortida"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/04-pipes.html#comunicació-bidireccional-v",
+    "href": "blocs/02-proc/teoria/04-pipes.html#comunicació-bidireccional-v",
+    "title": "Processos: Pipes i redirecció d’entrada/sortida",
+    "section": "Comunicació bidireccional (V)",
+    "text": "Comunicació bidireccional (V)\n\nEl procés pare necessitarà dues pipes (una per cada direcció).\nEl pare fa un fork() creant una còpia del pare i duplicant els descriptors de fitxers associats a les dues pipes.\nEl procés pare tanca la lectura de la sortida del pipe1.\nEl procés fill tanca l’escriptura a l’entrada del pipe1.\nEl procés fill tanca la lectura de la sortida del pipe2.\nEl procés pare tanca l’escriptura a l’entrada del pipe2.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Pipes i redirecció d'entrada/sortida"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/04-pipes.html#comunicació-bidireccional-pipes",
+    "href": "blocs/02-proc/teoria/04-pipes.html#comunicació-bidireccional-pipes",
+    "title": "Processos: Pipes i redirecció d’entrada/sortida",
+    "section": "Comunicació bidireccional (Pipes)",
+    "text": "Comunicació bidireccional (Pipes)\n\n\nPipe 1\n\n\nPipe2",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Pipes i redirecció d'entrada/sortida"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/04-pipes.html#escriptura-en-les-pipes",
+    "href": "blocs/02-proc/teoria/04-pipes.html#escriptura-en-les-pipes",
+    "title": "Processos: Pipes i redirecció d’entrada/sortida",
+    "section": "Escriptura en les pipes",
+    "text": "Escriptura en les pipes\n\nL’escriptura a les pipes es realitza utilitzant la crida a sistema: write() o la funció fprintf().\nSi un procés escriu en un pipe que tingui el descriptor de lectura tancat, write() falla i s’envia un senyal SIGPIPE.\nSi un procés escriu menys bytes dels que admet el pipe, l’escriptura es realitza de forma atòmica.\nSi s’intenta escriure sobre un pipe ple; el procés es queda bloquejat fins que el pipe es buidi (un altre procés ha llegit les dades) i llavors s’acaba l’escriptura.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Pipes i redirecció d'entrada/sortida"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/04-pipes.html#lectura-de-les-pipes",
+    "href": "blocs/02-proc/teoria/04-pipes.html#lectura-de-les-pipes",
+    "title": "Processos: Pipes i redirecció d’entrada/sortida",
+    "section": "Lectura de les pipes",
+    "text": "Lectura de les pipes\n\nLa lectura dels pipes es fan mitjançant la crida a sistema: read() o la funció fscanf().\nSi un procés llegeix en un pipe que tingui el descriptor tancat, retorna un 0, indicant la condició de final de fitxer.\nSi un procés llegeix d’un pipe buit es bloqueja fins que les dades estiguin disponibles.\nSi un procés intenta llegir més dades que les disponibles en un pipe, es llegeixen els disponibles i es retorna el nombre de bytes llegits.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Pipes i redirecció d'entrada/sortida"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/04-pipes.html#exemple-lector-escriptor-i",
+    "href": "blocs/02-proc/teoria/04-pipes.html#exemple-lector-escriptor-i",
+    "title": "Processos: Pipes i redirecció d’entrada/sortida",
+    "section": "Exemple: Lector-Escriptor (I)",
+    "text": "Exemple: Lector-Escriptor (I)\n\n\nLector\nint main() {\n    int fd[2];\n    pid_t p1 = fork();\n\n    if (p1 &gt; 0) {\n    {\n      close(fd[1]);  \n      char buf[100];\n      read(fd[0], buf, sizeof(buf));\n      printf(\"MSG: %s\\n\",buf);\n      close(fd[0]);  \n    }\n\nEscriptor\nelse if (p1 == 0) {\n    close(fd[0]);  \n    char msg[5];\n    sprintf(msg, \"msg1\");\n    write(fd[1], msg, strlen(msg));\n    close(fd[1]);  \n    exit(0);\n  }\n}",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Pipes i redirecció d'entrada/sortida"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/04-pipes.html#exemple-lector-escriptor-ii",
+    "href": "blocs/02-proc/teoria/04-pipes.html#exemple-lector-escriptor-ii",
+    "title": "Processos: Pipes i redirecció d’entrada/sortida",
+    "section": "Exemple: Lector-Escriptor (II)",
+    "text": "Exemple: Lector-Escriptor (II)\n\n\nPare\nint main() {\n  int fd[2]; int r = pipe(fd);\n  pid_t p1 = fork();\n  if (p1 == 0) { /*Fill*/ }\n  close(fd[1]);\n  char buf[100];\n  while(read(fd[0],&buf,sizeof(buf))){\n    printf(\"I got a message! \n      It was %s\\n\", buf);\n    }\n  printf(\"No more messages :(\\n\");\n  close(fd[0]);\n}\n\nFill\nclose(fd[0]);\nchar msg[5];\nsprintf(msg,\"msg1\");\nssize_t nw = write(fd[1], \n    msg, strlen(msg));\nsprintf(msg,\"msg2\");\nnw = write(fd[1], \n    msg, strlen(msg));\nclose(fd[1]); \nwhile(1);\nexit(0);",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Pipes i redirecció d'entrada/sortida"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/04-pipes.html#exemple-lector-escriptor-iii",
+    "href": "blocs/02-proc/teoria/04-pipes.html#exemple-lector-escriptor-iii",
+    "title": "Processos: Pipes i redirecció d’entrada/sortida",
+    "section": "Exemple: Lector-Escriptor (III)",
+    "text": "Exemple: Lector-Escriptor (III)\n\n\nPare\nint main() {\n  int fd[2]; int r = pipe(fd);\n  pid_t p1 = fork();\n  if (p1 == 0) { /*Fill*/ }\n  close(fd[1]);\n  char buf[100];\n  while(read(fd[0],&buf,sizeof(buf))){\n    printf(\"I got a message! \n      It was %s\\n\", buf);\n    }\n  printf(\"No more messages :(\\n\");\n  close(fd[0]);\n}\n\nFill\nclose(fd[0]);\nchar msg[5];\nsprintf(msg,\"msg1\");\nssize_t nw = write(fd[1], \n    msg, strlen(msg));\nsprintf(msg,\"msg2\");\nnw = write(fd[1], \n    msg, strlen(msg));\n//close(fd[1]);  &lt;-\nwhile(1);\nexit(0);",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Pipes i redirecció d'entrada/sortida"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/04-pipes.html#exemple-lector-escriptor-iv",
+    "href": "blocs/02-proc/teoria/04-pipes.html#exemple-lector-escriptor-iv",
+    "title": "Processos: Pipes i redirecció d’entrada/sortida",
+    "section": "Exemple: Lector-Escriptor (IV)",
+    "text": "Exemple: Lector-Escriptor (IV)\n\n\nPare\nvoid sigpipe_handler(int signum) {\n    printf(\"SIGPIPE...\\n\");\n    exit(EXIT_SUCCESS);\n}\nint main() {\n  int fd[2]; int r = pipe(fd);\n  pid_t p1 = fork();\n  if (p1 == 0) { /*Fill*/ }\n    close(fd[1]);  \n    signal(SIGPIPE, sigpipe_handler);\n    write(fd[1], \"Hello\", 5);\n}\n\nFill\nclose(fd[0]);  \nsleep(2);  \nclose(fd[1]);  \nexit(EXIT_SUCCESS);",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Pipes i redirecció d'entrada/sortida"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/04-pipes.html#redirecció-i-duplicats",
+    "href": "blocs/02-proc/teoria/04-pipes.html#redirecció-i-duplicats",
+    "title": "Processos: Pipes i redirecció d’entrada/sortida",
+    "section": "Redirecció i duplicats",
+    "text": "Redirecció i duplicats\nPer utilitzar pipes amb la crida a sistema exec i simular el comportament del sistema operatiu quan interactuem amb la shell, necessitem redireccionar la sortida i l’entrada de la pipe a descriptors de fitxers predefinits assignats a cada procés.\n\n\n\n\nTancant els descriptors estàndard.\nDuplicant els descriptors de fitxer utilitzant la crida a sistema dup()(unistd.h).",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Pipes i redirecció d'entrada/sortida"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/04-pipes.html#dup-i-dup2",
+    "href": "blocs/02-proc/teoria/04-pipes.html#dup-i-dup2",
+    "title": "Processos: Pipes i redirecció d’entrada/sortida",
+    "section": "dup() i dup2()",
+    "text": "dup() i dup2()\nint dup(int fdold)\nint dup2(int fdold, int fdnew)\n\ndup: utilitza el descriptor de fitxer lliure més petit per duplicar el descriptor de fitxer fdold.\ndup2: fa que fdnew sigui una còpia de fdold, tancant fdold si és necessari.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Pipes i redirecció d'entrada/sortida"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/04-pipes.html#exemple-a-linux-ls-wc--l-i",
+    "href": "blocs/02-proc/teoria/04-pipes.html#exemple-a-linux-ls-wc--l-i",
+    "title": "Processos: Pipes i redirecció d’entrada/sortida",
+    "section": "Exemple a linux: ls | wc -l (I)",
+    "text": "Exemple a linux: ls | wc -l (I)",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Pipes i redirecció d'entrada/sortida"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/04-pipes.html#exemple-a-linux-ls-wc--l-ii",
+    "href": "blocs/02-proc/teoria/04-pipes.html#exemple-a-linux-ls-wc--l-ii",
+    "title": "Processos: Pipes i redirecció d’entrada/sortida",
+    "section": "Exemple a linux: ls | wc -l (II)",
+    "text": "Exemple a linux: ls | wc -l (II)\n\nEl procés 1 farà un recobriment de la comanda ls i l’executarà. Per defecte la comanda ls imprimeix per stdout el llistat de fitxers i directoris del directori actual.\nEn aquest cas la pipe (|) indica que ls no escriurà per stdout i ho farà per la pipe. D’aquesta manera no veurem el llista de fitxers a la terminal, seran enviats a la pipe.\nEl procés 2 farà un recobriment de la comanda wc -l, aquesta comanda compta el nombre de línies rebudes per stdin. En aquest cas, com tenim la comanda precedida d’una pipe… El procés redireccionarà stdin a la pipe. Per tant, llegirà el contingut escrit per la comanda ls.\nPer defecte la comanda wc -l escriu a stdout, com ara no hi ha cap més pipe. Aquesta sortida no es redirecciona i per tant únicament veurem el resultat per stdout. És a dir, el nombre de fitxers i directoris del directori actual.",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Pipes i redirecció d'entrada/sortida"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/04-pipes.html#exemple-a-linux-ls-wc--l-iii",
+    "href": "blocs/02-proc/teoria/04-pipes.html#exemple-a-linux-ls-wc--l-iii",
+    "title": "Processos: Pipes i redirecció d’entrada/sortida",
+    "section": "Exemple a linux: ls | wc -l (III)",
+    "text": "Exemple a linux: ls | wc -l (III)",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Pipes i redirecció d'entrada/sortida"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/04-pipes.html#implementació-amb-c-ls-wc--l",
+    "href": "blocs/02-proc/teoria/04-pipes.html#implementació-amb-c-ls-wc--l",
+    "title": "Processos: Pipes i redirecció d’entrada/sortida",
+    "section": "Implementació amb C ls | wc -l",
+    "text": "Implementació amb C ls | wc -l\nint main(int argc, char *argv[]){\nint fd[2];\nchar *p1[] = {\"ls\", NULL};\nchar *p2[] = {\"wc\", \"-l\", NULL};\nif (pipe(fd)&lt;0){ perror(\"Error de creació del pipe fd[]\");exit(-1);}\nint pid1;int pid2;\nswitch (pid1 = fork()){\n    case -1: perror(\"Error fork()\"); exit(-2); break;\n    case 0: //@TODO\n}\nswitch (pid2 = fork()){\n    case -1: perror(\"Error fork()\"); exit(-2); break;\n    case 0: //@TODO\n}\nwaitpid(pid1,0,0); \nwaitpid(pid2,0,0);\n}",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Pipes i redirecció d'entrada/sortida"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/04-pipes.html#implementació-amb-c-ls-wc--l-1",
+    "href": "blocs/02-proc/teoria/04-pipes.html#implementació-amb-c-ls-wc--l-1",
+    "title": "Processos: Pipes i redirecció d’entrada/sortida",
+    "section": "Implementació amb C ls | wc -l",
+    "text": "Implementació amb C ls | wc -l\nFill 1 (ls)\nif (close(pfd[0]) == -1)                    \n    perror(\"close 1\");\n\n    /* Duplicate stdout on write end of pipe; \n    close duplicated descriptor */\n\n    if (fd[1] != STDOUT_FILENO) {              \n        if (dup2(fd[1], STDOUT_FILENO) == -1)\n            perror(\"dup2 1\");\n        if (close(fd[1]) == -1)\n            perror(\"close 2\");\n    }\n\n    execlp(\"ls\", \"ls\", (char *) NULL);          \n    perror(\"execlp ls\");",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Pipes i redirecció d'entrada/sortida"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/04-pipes.html#implementació-amb-c-ls-wc--l-2",
+    "href": "blocs/02-proc/teoria/04-pipes.html#implementació-amb-c-ls-wc--l-2",
+    "title": "Processos: Pipes i redirecció d’entrada/sortida",
+    "section": "Implementació amb C ls | wc -l",
+    "text": "Implementació amb C ls | wc -l\nFill 2 (wc -l)\n   if (close(fd[1]) == -1)                    \n        perror(\"close 3\");\n\n    /* Duplicate stdin on read end of pipe; \n    close duplicated descriptor */\n\n    if (fd[0] != STDIN_FILENO) {              \n        if (dup2(fd[0], STDIN_FILENO) == -1)\n            perror(\"dup2 2\");\n        if (close(fd[0]) == -1)\n            perror(\"close 4\");\n    }\n\n    execlp(\"wc\", \"wc\", \"-l\", (char *) NULL);\n    perror(\"execlp wc\");",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Pipes i redirecció d'entrada/sortida"
+    ]
+  },
+  {
+    "objectID": "blocs/02-proc/teoria/04-pipes.html#implementació-amb-c-ls-wc--l-3",
+    "href": "blocs/02-proc/teoria/04-pipes.html#implementació-amb-c-ls-wc--l-3",
+    "title": "Processos: Pipes i redirecció d’entrada/sortida",
+    "section": "Implementació amb C ls | wc -l",
+    "text": "Implementació amb C ls | wc -l\n\nCom és que el programa no acaba mai?\n\nEl procés pare ha de tancar els descriptors de fitxer que no utilitza. Si no els procés fill lector de la pipe no acaba mai. Ja que no tots els processos han tancat els descriptors de fitxer associats a la pipe.\n// Pare\nif (close(fd[0]) == -1)\n    perror(\"close\");\nif (close(fd[1]) == -1)\n    perror(\"close\");\n\nwaitpid(pid1,0,0);\nwaitpid(pid2,0,0);",
+    "crumbs": [
+      "Inici",
+      "Blocs",
+      "Bloc 2 · Processos",
+      "Teoria",
+      "Processos: Pipes i redirecció d'entrada/sortida"
     ]
   },
   {
