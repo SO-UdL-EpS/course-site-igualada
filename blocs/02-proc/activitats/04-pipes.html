@@ -1,0 +1,2125 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ca" xml:lang="ca"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.19">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Comunicació entre processos amb pipes, FIFOs i redireccions (dup/dup2)">
+
+<title>Exercicis de Pipes, FIFOs i dup en C – Sistemes Operatius</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../../blocs/02-proc/activitats/05-loteria.html" rel="next">
+<link href="../../../blocs/02-proc/activitats/01-fork-wait.html" rel="prev">
+<link href="../../../assets/logo.svg" rel="icon" type="image/svg+xml">
+<script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b626d73c4c936ccc3cb08be7d45d1df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-13ad4839ea57b7f705e8de5833b7831b.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/bootstrap/bootstrap-dark-71d11ad18b64fb8e65d87cc5e3220546.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../../site_libs/bootstrap/bootstrap-13ad4839ea57b7f705e8de5833b7831b.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Cap resultat",
+    "search-matching-documents-text": "documents que coincideixen",
+    "search-copy-link-title": "Copia l'enllaç a la cerca",
+    "search-hide-matches-text": "Amaga les coincidències addicionals",
+    "search-more-match-text": "altra coincidència en aquest document",
+    "search-more-matches-text": "altres coincidències en aquest document",
+    "search-clear-button-title": "Neteja",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel·la",
+    "search-submit-button-title": "Envia",
+    "search-label": "Cerca"
+  }
+}</script>
+<script src="../../../site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="../../../site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="../../../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
+
+
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const queryPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    const darkModeDefault = queryPrefersDark.matches;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    queryPrefersDark.addEventListener("change", e => {
+      if(window.localStorage.getItem("quarto-color-scheme") !== null)
+        return;
+      const alternate = e.matches
+      toggleColorMode(alternate);
+      localAlternateSentinel = e.matches ? 'alternate' : 'default'; // this is used alongside local storage!
+      toggleGiscusIfUsed(alternate, darkModeDefault);
+    });
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">SO</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Cerca"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Commuta la navegació" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../../index.html"> 
+<span class="menu-text">Inici</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://guiadocent.udl.cat/html/2026-27_105012"> 
+<span class="menu-text">Guia docent</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/SO-UdL-EpS/course-site"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Commuta el mode fosc"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Commuta la navegació de la barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Blocs</li><li class="breadcrumb-item">Bloc 2 · Processos</li><li class="breadcrumb-item"><a href="../../../blocs/02-proc/activitats/02-create.html">Activitats</a></li><li class="breadcrumb-item"><a href="../../../blocs/02-proc/activitats/04-pipes.html">Exercicis de Pipes, FIFOs i dup en C</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Commuta la navegació de la barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+      <a href="../../../index.html" class="sidebar-logo-link">
+      <img src="../../../assets/logo.png" alt="AMSA Logo" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../../../assets/logo.png" alt="AMSA Logo" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../course-info/presentation-slides.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Presentació del curs</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../course-info/contributions/contribute.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Contribueix al curs</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Blocs</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Commuta la secció">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Bloc 1 · Desenvolupament de Programari en Espai d’Usuari</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Commuta la secció">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+ <span class="menu-text">Teoria</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Commuta la secció">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/teoria/01_rols_funcions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Rols i funcions d’un sistema operatiu</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">L’espai de memòria d’un procés</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Crides de funció: CPU, registres i stack</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/teoria/04_construccio_progama_c.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Com es construeix un programa C?</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/teoria/05_variables_estructures.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">De variables a estructures de dades</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">System calls: del programa C al kernel</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/teoria/07_syscalls_kernel.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">System calls: dins del kernel</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false">
+ <span class="menu-text">Pralabs</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Commuta la secció">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/pralabs/01_c_mem.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pralab 01: Del C a la memòria (I)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/pralabs/02_c_mem.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pralab 02: Del <code>v[i]</code> al punter</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/pralabs/03_c_heap.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pralab 03: Memòria dinàmica (I): <code>malloc</code>, <code>free</code> i <code>lifetime</code></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/pralabs/04_c_ptrptr.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pralab 04: Memòria dinàmica (II): Punters a punters</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false">
+ <span class="menu-text">Activitats</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Commuta la secció">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/activitats/01_c_punters_arrays.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exercicis amb C · Apuntadors i arrays</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/activitats/01_rols_funcions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">The UNIX Time-Sharing System</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/activitats/02_espai_funcions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Què passa quan faig foo()?</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/activitats/03_pokemon.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exercicis amb C · Pokémon</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">Bloc 2 · Processos</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Commuta la secció">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false">
+ <span class="menu-text">Teoria</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Commuta la secció">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/02-proc/teoria/01-procs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Processos: concepte, estats i PCB</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/02-proc/teoria/02-create.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Processos: Creació</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/02-proc/teoria/03-signals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Processos: Senyals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/02-proc/teoria/04-pipes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Processos: Pipes i redirecció d’entrada/sortida</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/02-proc/teoria/05-fifos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Processos: Pipes amb nom (FIFO)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
+ <span class="menu-text">Activitats</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Commuta la secció">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth3 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/02-proc/activitats/02-create.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exercicis de Creació de processos en C</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/02-proc/activitats/03-exec.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Problemes de classe · zombis, orfes i <code>exec</code></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/02-proc/activitats/01-fork-wait.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Problemes de classe · <code>fork()</code> i <code>wait()</code></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/02-proc/activitats/04-pipes.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Exercicis de Pipes, FIFOs i dup en C</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/02-proc/activitats/05-loteria.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exercici progressiu basat en un generador de bitllets de loteria</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false">
+ <span class="menu-text">Pralabs</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Commuta la secció">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/02-proc/pralabs/01_minishell.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pralab 05: shell (I): <code>getline()</code>,<code>fork()</code>, <code>wait()</code>, <code>execvp()</code></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/02-proc/pralabs/02_minishell.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pralab 05 (II): shell: <code>strtok</code>, <code>;</code> i senyals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/02-proc/pralabs/03_minishell.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pralab 05 (III): shell: redireccions (`&lt;`, `&gt;`, `&gt;&gt;`)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">En aquesta pàgina</h2>
+   
+  <ul>
+  <li><a href="#introducció" id="toc-introducció" class="nav-link active" data-scroll-target="#introducció">Introducció</a></li>
+  <li><a href="#bloc-1-la-taula-de-descriptors" id="toc-bloc-1-la-taula-de-descriptors" class="nav-link" data-scroll-target="#bloc-1-la-taula-de-descriptors">Bloc 1 · La taula de descriptors</a></li>
+  <li><a href="#bloc-2-semàntica-de-les-pipes" id="toc-bloc-2-semàntica-de-les-pipes" class="nav-link" data-scroll-target="#bloc-2-semàntica-de-les-pipes">Bloc 2 · Semàntica de les pipes</a></li>
+  <li><a href="#bloc-3-pipelines-amb-exec" id="toc-bloc-3-pipelines-amb-exec" class="nav-link" data-scroll-target="#bloc-3-pipelines-amb-exec">Bloc 3 · Pipelines amb <code>exec</code></a></li>
+  <li><a href="#bloc-4-fifos" id="toc-bloc-4-fifos" class="nav-link" data-scroll-target="#bloc-4-fifos">Bloc 4 · FIFOs</a></li>
+  <li><a href="#bloc-5-integració" id="toc-bloc-5-integració" class="nav-link" data-scroll-target="#bloc-5-integració">Bloc 5 · Integració</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Blocs</li><li class="breadcrumb-item">Bloc 2 · Processos</li><li class="breadcrumb-item"><a href="../../../blocs/02-proc/activitats/02-create.html">Activitats</a></li><li class="breadcrumb-item"><a href="../../../blocs/02-proc/activitats/04-pipes.html">Exercicis de Pipes, FIFOs i dup en C</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Exercicis de Pipes, FIFOs i dup en C</h1>
+</div>
+
+<div>
+  <div class="description">
+    Comunicació entre processos amb pipes, FIFOs i redireccions (dup/dup2)
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introducció" class="level2">
+<h2 class="anchored" data-anchor-id="introducció">Introducció</h2>
+<p>Els <strong>blocs 1 i 2</strong> es resolen amb <strong>paper i llapis</strong>: per a cada exercici <strong>dibuixa la taula de descriptors</strong> de cada procés en cada moment important (després de <code>pipe</code>, de <code>fork</code>, de cada <code>close</code>/<code>dup2</code>). A partir del <strong>bloc 3</strong> cal escriure codi. Intenta resoldre’l abans d’obrir el raonament; després compila’l i comprova-ho.</p>
+<div class="concepte udl-component udl-concepte" title="Recordatori: descriptors, pipe, dup2 i FIFO">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-concepte"></use></svg><span>Concepte — Recordatori: descriptors, pipe, dup2 i FIFO</span></div>
+<ul>
+<li>Cada procés té una <strong>taula de descriptors</strong>: cada entrada (0, 1, 2, 3…) apunta a una <strong>descripció de fitxer oberta</strong> del nucli, que guarda l’<em>offset</em> i el mode. <code>open</code> retorna sempre <strong>el descriptor lliure més petit</strong>.</li>
+<li>Els descriptors <strong>0, 1 i 2</strong> són <code>STDIN</code>, <code>STDOUT</code> i <code>STDERR</code>: per defecte, el terminal. Són una simple convenció: res no impedeix usar el 3, el 4, etc. per a altres canals (el shell ho permet amb <code>3&lt; fitxer</code> o <code>4&gt; fitxer</code>).</li>
+<li><code>fork</code> <strong>copia la taula</strong>: les entrades del fill apunten a les <strong>mateixes</strong> descripcions que les del pare (comparteixen <em>offset</em>). <code>exec</code> <strong>conserva</strong> els descriptors oberts.</li>
+<li><code>dup(fd)</code> retorna el descriptor lliure més petit que apunta al mateix que <code>fd</code>. <code>dup2(old, new)</code> fa que <code>new</code> apunti al mateix que <code>old</code>, <strong>tancant <code>new</code> abans si estava obert</strong>. Els dos descriptors <strong>comparteixen l’<em>offset</em></strong>.</li>
+<li><code>pipe(p)</code> crea un canal al nucli: <code>p[0]</code> és l’extrem de <strong>lectura</strong> i <code>p[1]</code> el d’<strong>escriptura</strong>.</li>
+<li><code>read</code> d’una pipe <strong>buida</strong>: <strong>es bloqueja</strong> mentre hi hagi algun extrem d’escriptura obert, i retorna <code>0</code> (<strong>EOF</strong>) només quan <strong>tots</strong> els extrems d’escriptura (de qualsevol procés) estan tancats.</li>
+<li><code>write</code> en una pipe <strong>sense cap lector</strong>: el procés rep <code>SIGPIPE</code> (o <code>-1</code> amb <code>EPIPE</code> si s’ignora). Si la pipe és <strong>plena</strong>, <code>write</code> es <strong>bloqueja</strong>.</li>
+<li>La capacitat d’una pipe a Linux és, per defecte, <strong>64 KiB</strong>. Un <code>write</code> de <strong>fins a <code>PIPE_BUF</code> bytes</strong> (4096 a Linux) és <strong>atòmic</strong>: no es barreja amb el d’un altre procés.</li>
+<li>Un <strong>FIFO</strong> és una pipe amb <strong>nom</strong> (<code>mkfifo</code>): apareix al sistema de fitxers (tipus <code>p</code>), però les dades <strong>no es guarden al disc</strong>. <code>open</code> d’un FIFO <strong>es bloqueja</strong> fins que l’altre extrem també s’obre.</li>
+</ul>
+</div>
+<div class="bonapractica udl-component udl-bonapractica">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-bonapractica"></use></svg><span>Bona Pràctica</span></div>
+<p><strong>Convencions dels enunciats.</strong> Els fragments són trossos de <code>main</code> sense <code>#include</code>; suposen que al començament només estan oberts els descriptors <code>0</code>, <code>1</code> i <code>2</code>, i que <code>pipe(p)</code> crea <code>p[0] = 3</code> i <code>p[1] = 4</code> si no hi ha cap altre fitxer obert. En els fragments <strong>s’ometen les comprovacions d’error</strong> per simpliciat; en les solucions completes sí que hi són. Quan un <code>exec</code> falla, el fill acaba amb <code>_exit(127)</code>.</p>
+</div>
+<hr>
+</section>
+<section id="bloc-1-la-taula-de-descriptors" class="level2">
+<h2 class="anchored" data-anchor-id="bloc-1-la-taula-de-descriptors">Bloc 1 · La taula de descriptors</h2>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p>Escriu la taula de descriptors del procés després de cada línia, i indica el valor de <code>a</code>, <code>b</code>, <code>c</code> i <code>d</code>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> a <span class="op">=</span> open<span class="op">(</span><span class="st">"x.txt"</span><span class="op">,</span> O_RDONLY<span class="op">);</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> b <span class="op">=</span> open<span class="op">(</span><span class="st">"y.txt"</span><span class="op">,</span> O_WRONLY <span class="op">|</span> O_CREAT <span class="op">|</span> O_TRUNC<span class="op">,</span> <span class="bn">0644</span><span class="op">);</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> c <span class="op">=</span> dup<span class="op">(</span>b<span class="op">);</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>close<span class="op">(</span><span class="dv">0</span><span class="op">);</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> d <span class="op">=</span> dup<span class="op">(</span>a<span class="op">);</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>dup2<span class="op">(</span>b<span class="op">,</span> <span class="dv">2</span><span class="op">);</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>close<span class="op">(</span>b<span class="op">);</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<ol type="1">
+<li>Quins descriptors <strong>comparteixen l’<em>offset</em></strong>?</li>
+<li>Si ara fem <code>read(0, buf, 10)</code> i després <code>read(3, buf, 10)</code>, el segon <code>read</code> llegeix els mateixos 10 bytes que el primer?</li>
+<li><strong>Repte:</strong> on escriurà ara <code>perror</code>?</li>
+</ol>
+</div>
+<details>
+<summary>
+<b>Pots veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<p><code>a = 3</code>, <code>b = 4</code>, <code>c = 5</code>, <code>d = 0</code>. Després de <code>close(0)</code> el descriptor <code>0</code> queda lliure i <code>dup(a)</code> agafa el <strong>més petit lliure</strong>, que és el <code>0</code>.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 30%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Moment</th>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>inici</td>
+<td>STDIN</td>
+<td>STDOUT</td>
+<td>STDERR</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>després dels dos <code>open</code> i <code>dup(b)</code></td>
+<td>STDIN</td>
+<td>STDOUT</td>
+<td>STDERR</td>
+<td>x.txt</td>
+<td>y.txt</td>
+<td>y.txt</td>
+</tr>
+<tr class="odd">
+<td>després de <code>close(0)</code></td>
+<td>—</td>
+<td>STDOUT</td>
+<td>STDERR</td>
+<td>x.txt</td>
+<td>y.txt</td>
+<td>y.txt</td>
+</tr>
+<tr class="even">
+<td>després de <code>dup(a)</code></td>
+<td>x.txt</td>
+<td>STDOUT</td>
+<td>STDERR</td>
+<td>x.txt</td>
+<td>y.txt</td>
+<td>y.txt</td>
+</tr>
+<tr class="odd">
+<td>després de <code>dup2(b, 2)</code></td>
+<td>x.txt</td>
+<td>STDOUT</td>
+<td>y.txt</td>
+<td>x.txt</td>
+<td>y.txt</td>
+<td>y.txt</td>
+</tr>
+<tr class="even">
+<td>després de <code>close(b)</code></td>
+<td>x.txt</td>
+<td>STDOUT</td>
+<td>y.txt</td>
+<td>x.txt</td>
+<td>—</td>
+<td>y.txt</td>
+</tr>
+</tbody>
+</table>
+<ol type="1">
+<li>Comparteixen <em>offset</em> els que apunten a la mateixa descripció oberta: <strong>{0, 3}</strong> (<code>x.txt</code>) i <strong>{2, 5}</strong> (<code>y.txt</code>).</li>
+<li><strong>No</strong>: el segon <code>read</code> llegeix els <strong>10 bytes següents</strong>, perquè <code>0</code> i <code>3</code> comparteixen l’<em>offset</em>. Si haguéssim fet dos <code>open</code> independents de <code>x.txt</code>, cadascun tindria el seu <em>offset</em> i tots dos llegirien els mateixos 10 bytes.</li>
+<li>A <strong><code>y.txt</code></strong>: <code>perror</code> escriu per descriptor <code>2</code>, i ara el <code>2</code> apunta a <code>y.txt</code>. El <code>dup2</code> va tancar l’<code>STDERR</code> original.</li>
+</ol>
+</div>
+</details>
+<hr>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p>El programa següent s’executa amb la sortida estàndard al <strong>terminal</strong>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> fd <span class="op">=</span> open<span class="op">(</span><span class="st">"out.txt"</span><span class="op">,</span> O_WRONLY <span class="op">|</span> O_CREAT <span class="op">|</span> O_TRUNC<span class="op">,</span> <span class="bn">0644</span><span class="op">);</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>dup2<span class="op">(</span>fd<span class="op">,</span> <span class="dv">1</span><span class="op">);</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>close<span class="op">(</span>fd<span class="op">);</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>printf<span class="op">(</span><span class="st">"A</span><span class="sc">\n</span><span class="st">"</span><span class="op">);</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>write<span class="op">(</span><span class="dv">1</span><span class="op">,</span> <span class="st">"B</span><span class="sc">\n</span><span class="st">"</span><span class="op">,</span> <span class="dv">2</span><span class="op">);</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>printf<span class="op">(</span><span class="st">"C</span><span class="sc">\n</span><span class="st">"</span><span class="op">);</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<ol type="1">
+<li>Què apareix per pantalla? Què conté <code>out.txt</code> i en quin ordre?</li>
+<li><strong>Repte:</strong> què canvia si movem el <code>dup2</code> (i el <code>close</code>) <strong>després</strong> de <code>printf("A\n")</code>?</li>
+</ol>
+</div>
+<details>
+<summary>
+<b>Pots veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<ol type="1">
+<li><p><strong>Pantalla: res.</strong> <code>out.txt</code> conté <code>B</code>, <code>A</code>, <code>C</code> (en aquest ordre).</p>
+<p>Quan <code>printf</code> escriu per primera vegada, <code>stdout</code> ja apunta a un <strong>fitxer</strong>, i <code>stdio</code> tria <em>buffering</em> <strong>complet</strong>. <code>A\n</code> i <code>C\n</code> es queden al buffer; el <code>write(1, "B\n", 2)</code> va <strong>directe</strong> al nucli i surt primer. El buffer es buida en acabar el programa (<code>return 0</code>), i hi surt <code>A\nC\n</code>.</p></li>
+<li><p>Ara el primer <code>printf("A\n")</code> s’executa amb <code>stdout</code> al <strong>terminal</strong>, i <code>stdio</code> tria <em>line buffering</em>: <code>A</code> surt per pantalla a l’instant. Aquest mode <strong>ja no canvia</strong> encara que després el descriptor 1 apunti a un fitxer, així que <code>printf("C\n")</code> també s’escriu de seguida. <strong>Pantalla: <code>A</code>. <code>out.txt</code>: <code>B</code>, <code>C</code>.</strong></p></li>
+</ol>
+<div class="errorcomu udl-component udl-errorcomu">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-errorcomu"></use></svg><span>Error Comú</span></div>
+<p>El mode de <em>buffering</em> de <code>stdout</code> es decideix <strong>la primera vegada que s’escriu</strong>, mirant on apunta llavors. Per això el mateix codi es comporta diferent amb la sortida a terminal, a fitxer o a una pipe.</p>
+</div>
+</div>
+</details>
+<hr>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p>El shell executa <code>ls /noexisteix /etc/hostname &gt; out.txt 2&gt;&amp;1</code> de manera diferent que <code>ls /noexisteix /etc/hostname 2&gt;&amp;1 &gt; out.txt</code>. Considera aquests dos fragments, que s’executen en un fill just abans de l’<code>exec</code> de <code>ls</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> fd <span class="op">=</span> open<span class="op">(</span><span class="st">"out.txt"</span><span class="op">,</span> O_WRONLY <span class="op">|</span> O_CREAT <span class="op">|</span> O_TRUNC<span class="op">,</span> <span class="bn">0644</span><span class="op">);</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">/* Cas A */</span>                 <span class="co">/* Cas B */</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>dup2<span class="op">(</span>fd<span class="op">,</span> <span class="dv">1</span><span class="op">);</span>                dup2<span class="op">(</span><span class="dv">1</span><span class="op">,</span> <span class="dv">2</span><span class="op">);</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>dup2<span class="op">(</span><span class="dv">1</span><span class="op">,</span> <span class="dv">2</span><span class="op">);</span>                 dup2<span class="op">(</span>fd<span class="op">,</span> <span class="dv">1</span><span class="op">);</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>close<span class="op">(</span>fd<span class="op">);</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>execlp<span class="op">(</span><span class="st">"ls"</span><span class="op">,</span> <span class="st">"ls"</span><span class="op">,</span> <span class="st">"/noexisteix"</span><span class="op">,</span> <span class="st">"/etc/hostname"</span><span class="op">,</span> NULL<span class="op">);</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<ol type="1">
+<li>En cada cas, què surt per pantalla i què hi ha a <code>out.txt</code>?</li>
+<li>Quin cas equival a <code>&gt; out.txt 2&gt;&amp;1</code> i quin a <code>2&gt;&amp;1 &gt; out.txt</code>?</li>
+</ol>
+</div>
+<details>
+<summary>
+<b>Pots veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<p><code>dup2(a, b)</code> es llegeix com <strong><code>b</code> passa a apuntar on apunta <code>a</code> ara mateix</strong>, i les redireccions s’apliquen <strong>d’esquerra a dreta</strong>.</p>
+<ul>
+<li><strong>Cas A.</strong> <code>dup2(fd, 1)</code>: el <code>1</code> apunta a <code>out.txt</code>. <code>dup2(1, 2)</code>: el <code>2</code> apunta on apunta el <code>1</code> <strong>ara</strong>, és a dir <code>out.txt</code>. Resultat: <strong>pantalla buida</strong>, i <code>out.txt</code> conté <code>/etc/hostname</code> <strong>i</strong> el missatge d’error de <code>ls</code>. Equival a <code>&gt; out.txt 2&gt;&amp;1</code>.</li>
+<li><strong>Cas B.</strong> <code>dup2(1, 2)</code>: el <code>2</code> apunta al terminal (on apunta el <code>1</code> encara). Després <code>dup2(fd, 1)</code>: el <code>1</code> passa a <code>out.txt</code>, però el <code>2</code> <strong>no es mou</strong>. Resultat: el <strong>missatge d’error surt per pantalla</strong> i <code>out.txt</code> conté només <code>/etc/hostname</code>. Equival a <code>2&gt;&amp;1 &gt; out.txt</code>.</li>
+</ul>
+<p>L’ordre importa perquè <code>dup2</code> copia <strong>el que hi ha en aquell moment</strong>, no crea cap enllaç entre els dos descriptors.</p>
+</div>
+</details>
+<hr>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p><strong>Intercanviar <code>STDOUT</code> i <code>STDERR</code>.</strong> Un fill té la seva <code>STDOUT</code> connectada a una pipe que llegeix <code>wc -l</code> (és a dir, el pare executa <code>ls ... | wc -l</code>), i la seva <code>STDERR</code> al terminal. Abans de l’<code>exec</code> de <code>ls</code>, el fill fa:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> t <span class="op">=</span> dup<span class="op">(</span><span class="dv">1</span><span class="op">);</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>dup2<span class="op">(</span><span class="dv">2</span><span class="op">,</span> <span class="dv">1</span><span class="op">);</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>dup2<span class="op">(</span>t<span class="op">,</span> <span class="dv">2</span><span class="op">);</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>close<span class="op">(</span>t<span class="op">);</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>execlp<span class="op">(</span><span class="st">"ls"</span><span class="op">,</span> <span class="st">"ls"</span><span class="op">,</span> <span class="st">"/noexisteix"</span><span class="op">,</span> <span class="st">"/etc/hostname"</span><span class="op">,</span> NULL<span class="op">);</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<ol type="1">
+<li>Quin valor té <code>t</code>? Escriu la taula de descriptors del fill després de cada línia.</li>
+<li>Què apareix per pantalla i quin número imprimeix <code>wc -l</code>?</li>
+<li>Per què cal la variable <code>t</code>? Què passaria amb <code>dup2(2, 1); dup2(1, 2);</code>?</li>
+<li><strong>Repte:</strong> escriu l’ordre del shell equivalent amb els descriptors <code>3&gt;&amp;1 1&gt;&amp;2 2&gt;&amp;3 3&gt;&amp;-</code>. Per a què serveix el <code>3&gt;&amp;-</code> final?</li>
+</ol>
+</div>
+<details>
+<summary>
+<b>Pots veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<ol type="1">
+<li><code>t = 3</code>: el <code>3</code> és el primer descriptor lliure.</li>
+</ol>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 40%">
+<col style="width: 15%">
+<col style="width: 15%">
+<col style="width: 15%">
+<col style="width: 15%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Moment</th>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>inici</td>
+<td>STDIN</td>
+<td>pipe (escriptura)</td>
+<td>terminal</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>després de <code>dup(1)</code></td>
+<td>STDIN</td>
+<td>pipe (escriptura)</td>
+<td>terminal</td>
+<td>pipe (escriptura)</td>
+</tr>
+<tr class="odd">
+<td>després de <code>dup2(2, 1)</code></td>
+<td>STDIN</td>
+<td>terminal</td>
+<td>terminal</td>
+<td>pipe (escriptura)</td>
+</tr>
+<tr class="even">
+<td>després de <code>dup2(t, 2)</code></td>
+<td>STDIN</td>
+<td>terminal</td>
+<td>pipe (escriptura)</td>
+<td>pipe (escriptura)</td>
+</tr>
+<tr class="odd">
+<td>després de <code>close(t)</code></td>
+<td>STDIN</td>
+<td>terminal</td>
+<td>pipe (escriptura)</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<ol start="2" type="1">
+<li><code>ls</code> escriu <code>/etc/hostname</code> per <code>STDOUT</code>, que ara és el <strong>terminal</strong>, i el missatge d’error per <code>STDERR</code>, que ara és la <strong>pipe</strong>. Per pantalla apareix <code>/etc/hostname</code>, i <code>wc -l</code> imprimeix <strong><code>1</code></strong> (la línia d’error).</li>
+<li><code>t</code> és una <strong>còpia de seguretat</strong> de l’extrem de la pipe: sense ella, el primer <code>dup2(2, 1)</code> <strong>sobreescriu el descriptor 1</strong> i ja no queda cap referència a la pipe. Amb <code>dup2(2, 1); dup2(1, 2);</code> els dos descriptors acaben apuntant al terminal, <code>wc -l</code> no rep res i imprimeix <code>0</code>. És el mateix problema d’intercanviar dues variables: cal una temporal.</li>
+<li><code>ls /noexisteix /etc/hostname 3&gt;&amp;1 1&gt;&amp;2 2&gt;&amp;3 3&gt;&amp;- | wc -l</code>. El <code>3&gt;&amp;-</code> <strong>tanca el <code>3</code></strong> perquè <code>ls</code> no el rebi: és el <code>close(t)</code> del programa en C.</li>
+</ol>
+</div>
+</details>
+<hr>
+</section>
+<section id="bloc-2-semàntica-de-les-pipes" class="level2">
+<h2 class="anchored" data-anchor-id="bloc-2-semàntica-de-les-pipes">Bloc 2 · Semàntica de les pipes</h2>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p>Analitza el fragment següent.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> p<span class="op">[</span><span class="dv">2</span><span class="op">];</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="dt">char</span> c<span class="op">;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>pipe<span class="op">(</span>p<span class="op">);</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="op">(</span>fork<span class="op">()</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    close<span class="op">(</span>p<span class="op">[</span><span class="dv">1</span><span class="op">]);</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">(</span>read<span class="op">(</span>p<span class="op">[</span><span class="dv">0</span><span class="op">],</span> <span class="op">&amp;</span>c<span class="op">,</span> <span class="dv">1</span><span class="op">)</span> <span class="op">&gt;</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>        write<span class="op">(</span><span class="dv">1</span><span class="op">,</span> <span class="op">&amp;</span>c<span class="op">,</span> <span class="dv">1</span><span class="op">);</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    exit<span class="op">(</span><span class="dv">0</span><span class="op">);</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>write<span class="op">(</span>p<span class="op">[</span><span class="dv">1</span><span class="op">],</span> <span class="st">"ABC"</span><span class="op">,</span> <span class="dv">3</span><span class="op">);</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>close<span class="op">(</span>p<span class="op">[</span><span class="dv">1</span><span class="op">]);</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>wait<span class="op">(</span>NULL<span class="op">);</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<ol type="1">
+<li>Quins valors tenen <code>p[0]</code> i <code>p[1]</code>? Què imprimeix el programa?</li>
+<li>Què passa si traiem el <code>close(p[1])</code> del <strong>pare</strong>?</li>
+<li>Què passa si traiem el <code>close(p[1])</code> del <strong>fill</strong>?</li>
+</ol>
+</div>
+<details>
+<summary>
+<b>Pots veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<ol type="1">
+<li><code>p[0] = 3</code> i <code>p[1] = 4</code>. Imprimeix <code>ABC</code> (sense salt de línia): el fill llegeix byte a byte fins que <code>read</code> retorna <code>0</code>.</li>
+<li><strong>Interbloqueig.</strong> El <code>read</code> del fill només retorna <code>0</code> quan <strong>tots</strong> els extrems d’escriptura estan tancats, i el del pare continua obert. El fill es queda bloquejat al <code>read</code>, i el pare al <code>wait</code> esperant el fill.</li>
+<li><strong>El mateix interbloqueig</strong>, però ara l’extrem obert és <strong>el del mateix fill</strong>: tot i que el pare l’ha tancat, el fill n’és també escriptor. Un procés que llegeix d’una pipe ha de tancar <strong>el seu propi</strong> extrem d’escriptura.</li>
+</ol>
+<div class="errorcomu udl-component udl-errorcomu">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-errorcomu"></use></svg><span>Error Comú</span></div>
+<p>L’EOF d’una pipe no depèn de qui ha acabat d’escriure, sinó de <strong>quants extrems d’escriptura queden oberts en total</strong>, comptant els que hereten els fills en el <code>fork</code>. Si un procés que no escriu es deixa un extrem obert, el lector no veurà mai l’EOF.</p>
+</div>
+</div>
+</details>
+<hr>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p>Analitza el programa següent. Indica l’evolució de la taula de descriptors de cada procés i explica què fa <strong>realment</strong>. Després, <strong>corregeix-lo</strong> perquè imprimeixi <code>PARE -&gt; Hola</code> i acabi.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(){</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> fd<span class="op">;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> pipefd<span class="op">[</span><span class="dv">2</span><span class="op">];</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">char</span> msg<span class="op">[</span><span class="dv">200</span><span class="op">];</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">char</span> buffer<span class="op">[</span><span class="dv">200</span><span class="op">];</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    fd <span class="op">=</span> open<span class="op">(</span><span class="st">"fitxer.txt"</span><span class="op">,</span> O_RDONLY<span class="op">);</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    pipe<span class="op">(</span>pipefd<span class="op">);</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span><span class="op">(</span>fork<span class="op">()</span> <span class="op">==</span> <span class="dv">0</span><span class="op">){</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>        close<span class="op">(</span><span class="dv">1</span><span class="op">);</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>        close<span class="op">(</span>pipefd<span class="op">[</span><span class="dv">0</span><span class="op">]);</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>        write<span class="op">(</span><span class="dv">4</span><span class="op">,</span> <span class="st">"Hola"</span><span class="op">,</span> <span class="dv">4</span><span class="op">);</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">while</span><span class="op">(</span><span class="dv">1</span><span class="op">);</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>        exit<span class="op">(</span><span class="dv">0</span><span class="op">);</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span><span class="op">{</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>        close<span class="op">(</span>pipefd<span class="op">[</span><span class="dv">1</span><span class="op">]);</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>        read<span class="op">(</span>pipefd<span class="op">[</span><span class="dv">0</span><span class="op">],</span> buffer<span class="op">,</span> <span class="dv">4</span><span class="op">);</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>        sprintf<span class="op">(</span>msg<span class="op">,</span> <span class="st">"PARE -&gt; </span><span class="sc">%s\n</span><span class="st">"</span><span class="op">,</span> buffer<span class="op">);</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>        write<span class="op">(</span><span class="dv">1</span><span class="op">,</span> msg<span class="op">,</span> strlen<span class="op">(</span>msg<span class="op">));</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>        wait<span class="op">(</span>NULL<span class="op">);</span></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>        exit<span class="op">(</span><span class="dv">0</span><span class="op">);</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<details>
+<summary>
+<b>Pots veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<p>Tal com està, el programa <strong>no imprimeix res i es queda penjat</strong>.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 23%">
+<col style="width: 23%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Moment</th>
+<th>Procés</th>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>després d’<code>open</code> i <code>pipe</code></td>
+<td>Pare</td>
+<td>STDIN</td>
+<td>STDOUT</td>
+<td>STDERR</td>
+<td>fitxer.txt</td>
+<td>pipe (lectura)</td>
+<td>pipe (escriptura)</td>
+</tr>
+<tr class="even">
+<td>després de <code>fork</code></td>
+<td>Fill</td>
+<td>STDIN</td>
+<td>STDOUT</td>
+<td>STDERR</td>
+<td>fitxer.txt</td>
+<td>pipe (lectura)</td>
+<td>pipe (escriptura)</td>
+</tr>
+<tr class="odd">
+<td>fill després de <code>close(1)</code> i <code>close(pipefd[0])</code></td>
+<td>Fill</td>
+<td>STDIN</td>
+<td>—</td>
+<td>STDERR</td>
+<td>fitxer.txt</td>
+<td>—</td>
+<td>pipe (escriptura)</td>
+</tr>
+<tr class="even">
+<td>pare després de <code>close(pipefd[1])</code></td>
+<td>Pare</td>
+<td>STDIN</td>
+<td>STDOUT</td>
+<td>STDERR</td>
+<td>fitxer.txt</td>
+<td>pipe (lectura)</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>El fill fa <code>write(4, ...)</code>, però el <code>4</code> és <code>pipefd[0]</code> i <strong>ja l’ha tancat</strong>: <code>write</code> retorna <code>-1</code> amb <code>EBADF</code> i <strong>no s’escriu res</strong>. L’extrem d’escriptura és el <strong><code>5</code></strong>.</li>
+<li>Després el fill entra al <code>while(1)</code>, <strong>sense tancar el <code>5</code></strong>. El pare fa <code>read</code> d’una pipe buida amb un extrem d’escriptura obert (el del fill): <strong>es bloqueja per sempre</strong>.</li>
+<li>Encara que corregíssim el <code>write(4)</code> per <code>write(5)</code>, el pare imprimiria <code>Hola</code>, però quedaria penjat al <code>wait(NULL)</code> perquè el fill <strong>mai no acaba</strong>.</li>
+<li>Hi ha un segon error: <code>read</code> no escriu un <code>'\0'</code>, així que <code>sprintf("%s", buffer)</code> llegeix una cadena <strong>sense terminador</strong> (comportament indefinit).</li>
+<li>El <code>close(1)</code> del fill no serveix de res: només tindria efecte si la pipe es creés <strong>després</strong>, perquè llavors <code>pipe</code> ocuparia el <code>1</code>.</li>
+</ul>
+<p>Versió corregida:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="op">(</span>fork<span class="op">()</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    close<span class="op">(</span>pipefd<span class="op">[</span><span class="dv">0</span><span class="op">]);</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    write<span class="op">(</span>pipefd<span class="op">[</span><span class="dv">1</span><span class="op">],</span> <span class="st">"Hola"</span><span class="op">,</span> <span class="dv">4</span><span class="op">);</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    close<span class="op">(</span>pipefd<span class="op">[</span><span class="dv">1</span><span class="op">]);</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    exit<span class="op">(</span><span class="dv">0</span><span class="op">);</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>close<span class="op">(</span>pipefd<span class="op">[</span><span class="dv">1</span><span class="op">]);</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="dt">ssize_t</span> n <span class="op">=</span> read<span class="op">(</span>pipefd<span class="op">[</span><span class="dv">0</span><span class="op">],</span> buffer<span class="op">,</span> <span class="kw">sizeof</span> buffer <span class="op">-</span> <span class="dv">1</span><span class="op">);</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="op">(</span>n <span class="op">&lt;</span> <span class="dv">0</span><span class="op">)</span> n <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>buffer<span class="op">[</span>n<span class="op">]</span> <span class="op">=</span> <span class="ch">'</span><span class="sc">\0</span><span class="ch">'</span><span class="op">;</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>sprintf<span class="op">(</span>msg<span class="op">,</span> <span class="st">"PARE -&gt; </span><span class="sc">%s\n</span><span class="st">"</span><span class="op">,</span> buffer<span class="op">);</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>write<span class="op">(</span><span class="dv">1</span><span class="op">,</span> msg<span class="op">,</span> strlen<span class="op">(</span>msg<span class="op">));</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>wait<span class="op">(</span>NULL<span class="op">);</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>exit<span class="op">(</span><span class="dv">0</span><span class="op">);</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</details>
+<hr>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p>Considera aquest programa i l’ordre del shell següent.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> p<span class="op">[</span><span class="dv">2</span><span class="op">];</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>pipe<span class="op">(</span>p<span class="op">);</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>close<span class="op">(</span>p<span class="op">[</span><span class="dv">0</span><span class="op">]);</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> r <span class="op">=</span> write<span class="op">(</span>p<span class="op">[</span><span class="dv">1</span><span class="op">],</span> <span class="st">"x"</span><span class="op">,</span> <span class="dv">1</span><span class="op">);</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>printf<span class="op">(</span><span class="st">"r=</span><span class="sc">%d\n</span><span class="st">"</span><span class="op">,</span> r<span class="op">);</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<ol type="1">
+<li>Què passa quan s’executa? Quin codi de sortida veu el shell (<code>echo $?</code>)?</li>
+<li>Com podem fer que <code>write</code> retorni <code>-1</code> en lloc de matar el procés? Què val <code>errno</code>?</li>
+<li>Per què acaba l’ordre <code>yes | head -n 1</code>? Què passaria si no existís el mecanisme anterior?</li>
+</ol>
+</div>
+<details>
+<summary>
+<b>Pots veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<ol type="1">
+<li>El procés <strong>mor amb <code>SIGPIPE</code></strong> en el <code>write</code> i no arriba al <code>printf</code>. El shell veu el codi <strong>141</strong> (<code>128 + 13</code>, on 13 és el número de <code>SIGPIPE</code>).</li>
+<li>Ignorant el senyal amb <code>signal(SIGPIPE, SIG_IGN)</code> abans del <code>write</code>. Aleshores <code>write</code> retorna <code>-1</code>, <code>errno == EPIPE</code>, i s’imprimeix <code>r=-1</code>.</li>
+<li><code>head</code> llegeix una línia i acaba; això <strong>tanca l’únic lector</strong>. El <code>yes</code> continua escrivint, el següent <code>write</code> rep <code>SIGPIPE</code> i <code>yes</code> mor. Sense <code>SIGPIPE</code>, <code>yes</code> escriuria per sempre a una pipe que ningú no llegeix.</li>
+</ol>
+</div>
+</details>
+<hr>
+</section>
+<section id="bloc-3-pipelines-amb-exec" class="level2">
+<h2 class="anchored" data-anchor-id="bloc-3-pipelines-amb-exec">Bloc 3 · Pipelines amb <code>exec</code></h2>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p>Completa el programa que executa <code>ls | wc -l</code>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> p<span class="op">[</span><span class="dv">2</span><span class="op">];</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    pipe<span class="op">(</span>p<span class="op">);</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>fork<span class="op">()</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span>                       <span class="co">// fill 1: ls</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>        dup2<span class="op">(</span>______<span class="op">(</span><span class="dv">1</span><span class="op">)</span>______<span class="op">,</span> ______<span class="op">(</span><span class="dv">2</span><span class="op">)</span>______<span class="op">);</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>        close<span class="op">(</span>p<span class="op">[</span><span class="dv">0</span><span class="op">]);</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>        close<span class="op">(</span>p<span class="op">[</span><span class="dv">1</span><span class="op">]);</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>        execlp<span class="op">(</span><span class="st">"ls"</span><span class="op">,</span> <span class="st">"ls"</span><span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>        perror<span class="op">(</span><span class="st">"execlp"</span><span class="op">);</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>        _exit<span class="op">(</span><span class="dv">127</span><span class="op">);</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>fork<span class="op">()</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span>                       <span class="co">// fill 2: wc -l</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>        dup2<span class="op">(</span>______<span class="op">(</span><span class="dv">3</span><span class="op">)</span>______<span class="op">,</span> ______<span class="op">(</span><span class="dv">4</span><span class="op">)</span>______<span class="op">);</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>        close<span class="op">(</span>p<span class="op">[</span><span class="dv">0</span><span class="op">]);</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>        close<span class="op">(</span>p<span class="op">[</span><span class="dv">1</span><span class="op">]);</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>        execlp<span class="op">(</span><span class="st">"wc"</span><span class="op">,</span> <span class="st">"wc"</span><span class="op">,</span> <span class="st">"-l"</span><span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>        perror<span class="op">(</span><span class="st">"execlp"</span><span class="op">);</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>        _exit<span class="op">(</span><span class="dv">127</span><span class="op">);</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>    ______<span class="op">(</span><span class="dv">5</span><span class="op">)</span>______<span class="op">;</span></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>    wait<span class="op">(</span>NULL<span class="op">);</span></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>    wait<span class="op">(</span>NULL<span class="op">);</span></span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<ol type="1">
+<li>Omple els espais.</li>
+<li>Per què cada fill tanca <code>p[0]</code> i <code>p[1]</code> <strong>després</strong> del <code>dup2</code>?</li>
+<li>Què passa si el pare s’oblida de (5)? Quants descriptors té oberts <code>wc</code> en el moment de l’<code>exec</code>?</li>
+</ol>
+</div>
+<details>
+<summary>
+<b>Pots veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<ol type="1">
+<li><code>p[1]</code></li>
+<li><code>1</code> (o <code>STDOUT_FILENO</code>)</li>
+<li><code>p[0]</code></li>
+<li><code>0</code> (o <code>STDIN_FILENO</code>)</li>
+<li><code>close(p[0]); close(p[1])</code></li>
+</ol>
+<p>Després del <code>dup2</code>, l’original de la pipe és <strong>un duplicat que sobra</strong>. Si el fill 1 no tanqués <code>p[1]</code> quedarien <strong>dos</strong> extrems d’escriptura oberts al seu nom (el <code>1</code> i el <code>p[1]</code>); si el fill 2 no tanqués <code>p[1]</code>, <code>wc</code> seria escriptor de la seva pròpia pipe i <strong>mai no veuria l’EOF</strong>.</p>
+<p>Si el pare no tanca els seus extrems, conserva un extrem d’escriptura obert: <code>ls</code> acaba, però <code>wc</code> <strong>es queda esperant</strong> perquè encara hi ha un escriptor (el pare). El programa es penja al segon <code>wait</code>. En el moment de l’<code>exec</code>, <code>wc</code> ha de tenir <strong>només 3 descriptors</strong>: <code>0</code> (la pipe), <code>1</code> i <code>2</code>. Es pot comprovar substituint <code>wc</code> per <code>sleep 100</code> i mirant <code>ls -l /proc/&lt;pid&gt;/fd</code>.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">sequenceDiagram
+    autonumber
+    participant P as Pare
+    participant L as Fill ls
+    participant W as Fill wc
+
+    P-&gt;&gt;P: pipe crea el canal
+    P-&gt;&gt;L: fork
+    L-&gt;&gt;L: dup2 de l'escriptura a stdout i tanca la pipe
+    L-&gt;&gt;L: exec ls
+    P-&gt;&gt;W: fork
+    W-&gt;&gt;W: dup2 de la lectura a stdin i tanca la pipe
+    W-&gt;&gt;W: exec wc
+    P-&gt;&gt;P: tanca les dues puntes
+    L--&gt;&gt;W: ls escriu i acaba
+    Note over W: tots els extrems d'escriptura tancats, read retorna 0
+    W-&gt;&gt;W: wc escriu el recompte i acaba
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</div>
+</details>
+<hr>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p><strong>Un filtre amb descriptors personalitzats.</strong> Escriu un programa <code>filtre</code> que <strong>no usa <code>STDIN</code> ni <code>STDOUT</code> per a les dades</strong>: llegeix del descriptor <strong>3</strong>, converteix el text a majúscules i l’escriu al descriptor <strong>4</strong>. En acabar, imprimeix per <code>STDOUT</code> quants bytes ha processat. S’ha d’executar així:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./filtre</span> <span class="dv">3</span><span class="op">&lt;</span> entrada.txt <span class="dv">4</span><span class="op">&gt;</span> sortida.txt</span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<ol type="1">
+<li>Qui obre <code>entrada.txt</code> i <code>sortida.txt</code>? Per què <code>filtre</code> no necessita cap <code>open</code>?</li>
+<li>Què passa si s’executa <code>./filtre</code> <strong>sense</strong> les redireccions? Com ho pot detectar el programa?</li>
+<li><strong>Repte:</strong> què fa <code>./filtre 3&lt; entrada.txt 4&gt;&amp;1 | cat</code>? En quin ordre surten les dades i el recompte?</li>
+</ol>
+</div>
+<details>
+<summary>
+<b>Pots veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">char</span> buf<span class="op">[</span><span class="dv">256</span><span class="op">];</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">ssize_t</span> n<span class="op">;</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">long</span> total <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">((</span>n <span class="op">=</span> read<span class="op">(</span><span class="dv">3</span><span class="op">,</span> buf<span class="op">,</span> <span class="kw">sizeof</span> buf<span class="op">))</span> <span class="op">&gt;</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="dt">ssize_t</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> n<span class="op">;</span> i<span class="op">++)</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>            buf<span class="op">[</span>i<span class="op">]</span> <span class="op">=</span> toupper<span class="op">((</span><span class="dt">unsigned</span> <span class="dt">char</span><span class="op">)</span>buf<span class="op">[</span>i<span class="op">]);</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>        write<span class="op">(</span><span class="dv">4</span><span class="op">,</span> buf<span class="op">,</span> n<span class="op">);</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>        total <span class="op">+=</span> n<span class="op">;</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>n <span class="op">==</span> <span class="op">-</span><span class="dv">1</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>        perror<span class="op">(</span><span class="st">"filtre: read al descriptor 3"</span><span class="op">);</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"filtre: </span><span class="sc">%ld</span><span class="st"> bytes processats</span><span class="sc">\n</span><span class="st">"</span><span class="op">,</span> total<span class="op">);</span></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<ol type="1">
+<li><strong>El shell.</strong> Per a cada redirecció fa <code>open</code> + <code>dup2(fd, 3)</code> (o <code>4</code>) en el fill, <strong>abans de l’<code>exec</code></strong>, i com que els descriptors <strong>sobreviuen a l’<code>exec</code></strong>, <code>filtre</code> troba el <code>3</code> i el <code>4</code> ja oberts. Per al programa, un descriptor és només un número: no sap (ni li importa) a què apunta.</li>
+<li>Els descriptors <code>3</code> i <code>4</code> <strong>no existeixen</strong>: <code>read(3, ...)</code> retorna <code>-1</code> amb <code>EBADF</code> (el programa imprimeix <code>Bad file descriptor</code> i acaba amb codi 1). També es pot comprovar explícitament amb <code>fcntl(3, F_GETFD) == -1</code>.</li>
+<li>El <code>4&gt;&amp;1</code> fa que el descriptor <code>4</code> apunti on apunta el <code>1</code>, és a dir a la <strong>pipe cap a <code>cat</code></strong>. Surt primer el text en majúscules (escrit pel <code>write(4)</code>) i després el recompte, perquè el <code>printf</code> queda al buffer d’<code>stdio</code> fins que el programa acaba.</li>
+</ol>
+</div>
+</details>
+<hr>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p>Implementa en C l’ordre <code>cat &lt; /etc/passwd | grep root</code> amb <strong>un pare i dos fills</strong>. Has d’usar obligatòriament les crides <code>execlp("cat", "cat", NULL)</code> i <code>execlp("grep", "grep", "root", NULL)</code>.</p>
+<ol type="1">
+<li>Qui és el responsable de la redirecció <code>&lt;</code>? Com ha de fer-ho el teu programa?</li>
+<li><strong>Variant:</strong> el filtre ha de ser <strong>dinàmic</strong>: <code>./programa root</code>. Què canvia? Què passa si l’usuari passa un patró que comença per <code>-</code>?</li>
+<li><strong>Repte:</strong> fes que el programa retorni <strong>el mateix codi de sortida que <code>grep</code></strong> (0 si ha trobat alguna cosa, 1 si no, 2 si hi ha error).</li>
+</ol>
+</div>
+<details>
+<summary>
+<b>Pots veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<ol type="1">
+<li>En un shell, la redirecció <code>&lt;</code> la fa <strong>el shell</strong> (<code>open</code> + <code>dup2</code>) <strong>abans de l’<code>exec</code></strong>: <code>cat</code> no sap que llegeix d’un fitxer, només llegeix del descriptor 0. Per això aquí el <strong>fill de <code>cat</code></strong> ha d’obrir <code>/etc/passwd</code> i fer <code>dup2(fd, 0)</code> abans de l’<code>exec</code>.</li>
+</ol>
+<p>Solució completa (ja amb el filtre dinàmic, del punt 2):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">*</span>argv<span class="op">[])</span> <span class="op">{</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>argc <span class="op">!=</span> <span class="dv">2</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>        fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">"us: </span><span class="sc">%s</span><span class="st"> filtre</span><span class="sc">\n</span><span class="st">"</span><span class="op">,</span> argv<span class="op">[</span><span class="dv">0</span><span class="op">]);</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> p<span class="op">[</span><span class="dv">2</span><span class="op">];</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>pipe<span class="op">(</span>p<span class="op">)</span> <span class="op">==</span> <span class="op">-</span><span class="dv">1</span><span class="op">)</span> <span class="op">{</span> perror<span class="op">(</span><span class="st">"pipe"</span><span class="op">);</span> exit<span class="op">(</span><span class="dv">1</span><span class="op">);</span> <span class="op">}</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    pid_t pid_cat <span class="op">=</span> fork<span class="op">();</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>pid_cat <span class="op">==</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>        <span class="dt">int</span> fd <span class="op">=</span> open<span class="op">(</span><span class="st">"/etc/passwd"</span><span class="op">,</span> O_RDONLY<span class="op">);</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>fd <span class="op">==</span> <span class="op">-</span><span class="dv">1</span><span class="op">)</span> <span class="op">{</span> perror<span class="op">(</span><span class="st">"open"</span><span class="op">);</span> _exit<span class="op">(</span><span class="dv">1</span><span class="op">);</span> <span class="op">}</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>        dup2<span class="op">(</span>fd<span class="op">,</span> <span class="dv">0</span><span class="op">);</span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>        dup2<span class="op">(</span>p<span class="op">[</span><span class="dv">1</span><span class="op">],</span> <span class="dv">1</span><span class="op">);</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>        close<span class="op">(</span>fd<span class="op">);</span></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>        close<span class="op">(</span>p<span class="op">[</span><span class="dv">0</span><span class="op">]);</span></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>        close<span class="op">(</span>p<span class="op">[</span><span class="dv">1</span><span class="op">]);</span></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>        execlp<span class="op">(</span><span class="st">"cat"</span><span class="op">,</span> <span class="st">"cat"</span><span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>        perror<span class="op">(</span><span class="st">"execlp cat"</span><span class="op">);</span></span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>        _exit<span class="op">(</span><span class="dv">127</span><span class="op">);</span></span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>    pid_t pid_grep <span class="op">=</span> fork<span class="op">();</span></span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>pid_grep <span class="op">==</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>        dup2<span class="op">(</span>p<span class="op">[</span><span class="dv">0</span><span class="op">],</span> <span class="dv">0</span><span class="op">);</span></span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>        close<span class="op">(</span>p<span class="op">[</span><span class="dv">0</span><span class="op">]);</span></span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>        close<span class="op">(</span>p<span class="op">[</span><span class="dv">1</span><span class="op">]);</span></span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>        execlp<span class="op">(</span><span class="st">"grep"</span><span class="op">,</span> <span class="st">"grep"</span><span class="op">,</span> <span class="st">"--"</span><span class="op">,</span> argv<span class="op">[</span><span class="dv">1</span><span class="op">],</span> NULL<span class="op">);</span></span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>        perror<span class="op">(</span><span class="st">"execlp grep"</span><span class="op">);</span></span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>        _exit<span class="op">(</span><span class="dv">127</span><span class="op">);</span></span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a>    close<span class="op">(</span>p<span class="op">[</span><span class="dv">0</span><span class="op">]);</span></span>
+<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>    close<span class="op">(</span>p<span class="op">[</span><span class="dv">1</span><span class="op">]);</span></span>
+<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> st<span class="op">,</span> codi <span class="op">=</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a>    waitpid<span class="op">(</span>pid_cat<span class="op">,</span> NULL<span class="op">,</span> <span class="dv">0</span><span class="op">);</span></span>
+<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a>    waitpid<span class="op">(</span>pid_grep<span class="op">,</span> <span class="op">&amp;</span>st<span class="op">,</span> <span class="dv">0</span><span class="op">);</span></span>
+<span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>WIFEXITED<span class="op">(</span>st<span class="op">))</span></span>
+<span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a>        codi <span class="op">=</span> WEXITSTATUS<span class="op">(</span>st<span class="op">);</span></span>
+<span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> codi<span class="op">;</span></span>
+<span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<ol start="2" type="1">
+<li>Amb el filtre fix, l’últim argument és la cadena literal <code>"root"</code>; amb el dinàmic és <code>argv[1]</code>, i cal comprovar <code>argc</code>. Si <code>argv[1]</code> comença per <code>-</code> (per exemple <code>-v</code>), <code>grep</code> l’interpretaria com una <strong>opció</strong>; el <code>"--"</code> fa que el que ve després es tracti com a patró.</li>
+<li>Cal guardar el PID de <code>grep</code> i recollir-lo amb <code>waitpid</code>, que dona l’estat. Un <code>wait(NULL)</code> no serveix, perquè no sabríem quin dels dos fills ha acabat. L’ordre dels dos <code>fork</code> és <strong>irrellevant</strong>: la pipe sincronitza els processos.</li>
+</ol>
+</div>
+</details>
+<hr>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p>Implementa en C <code>head -n 10 &lt; infile | sort -n | tail -n 3 &gt; outfile</code>. Necessites <strong>3 fills</strong> i <strong>2 pipes</strong>.</p>
+<ol type="1">
+<li>Quants extrems de pipe hi ha en total? Quins ha de tancar cada procés?</li>
+<li>Quants descriptors ha de tenir obert cada fill en el moment de l’<code>exec</code>?</li>
+<li><strong>Repte:</strong> generalitza el programa a <strong>N ordres</strong> passades per línia d’ordres, amb un bucle.</li>
+</ol>
+</div>
+<details>
+<summary>
+<b>Pots veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<ol type="1">
+<li>2 pipes × 2 extrems = <strong>4 extrems</strong>. Cada fill fa els <code>dup2</code> que necessita i tanca <strong>tots quatre</strong> (i el descriptor del fitxer, si n’ha obert un). El pare, que no usa les pipes, també tanca <strong>els quatre</strong>.</li>
+<li><strong>Només 3</strong> (<code>0</code>, <code>1</code>, <code>2</code>). Qualsevol altre descriptor és una fuita, i pot impedir un EOF (vegeu l’exercici 5).</li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">void</span> tanca<span class="op">(</span><span class="dt">int</span> p<span class="op">[</span><span class="dv">2</span><span class="op">])</span> <span class="op">{</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    close<span class="op">(</span>p<span class="op">[</span><span class="dv">0</span><span class="op">]);</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    close<span class="op">(</span>p<span class="op">[</span><span class="dv">1</span><span class="op">]);</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> p1<span class="op">[</span><span class="dv">2</span><span class="op">],</span> p2<span class="op">[</span><span class="dv">2</span><span class="op">];</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>pipe<span class="op">(</span>p1<span class="op">)</span> <span class="op">==</span> <span class="op">-</span><span class="dv">1</span> <span class="op">||</span> pipe<span class="op">(</span>p2<span class="op">)</span> <span class="op">==</span> <span class="op">-</span><span class="dv">1</span><span class="op">)</span> <span class="op">{</span> perror<span class="op">(</span><span class="st">"pipe"</span><span class="op">);</span> exit<span class="op">(</span><span class="dv">1</span><span class="op">);</span> <span class="op">}</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>fork<span class="op">()</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span>                                   <span class="co">// head</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>        <span class="dt">int</span> in <span class="op">=</span> open<span class="op">(</span><span class="st">"infile"</span><span class="op">,</span> O_RDONLY<span class="op">);</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>in <span class="op">==</span> <span class="op">-</span><span class="dv">1</span><span class="op">)</span> <span class="op">{</span> perror<span class="op">(</span><span class="st">"open infile"</span><span class="op">);</span> _exit<span class="op">(</span><span class="dv">1</span><span class="op">);</span> <span class="op">}</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>        dup2<span class="op">(</span>in<span class="op">,</span> <span class="dv">0</span><span class="op">);</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>        dup2<span class="op">(</span>p1<span class="op">[</span><span class="dv">1</span><span class="op">],</span> <span class="dv">1</span><span class="op">);</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>        close<span class="op">(</span>in<span class="op">);</span></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>        tanca<span class="op">(</span>p1<span class="op">);</span></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>        tanca<span class="op">(</span>p2<span class="op">);</span></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>        execlp<span class="op">(</span><span class="st">"head"</span><span class="op">,</span> <span class="st">"head"</span><span class="op">,</span> <span class="st">"-n"</span><span class="op">,</span> <span class="st">"10"</span><span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>        perror<span class="op">(</span><span class="st">"execlp head"</span><span class="op">);</span></span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>        _exit<span class="op">(</span><span class="dv">127</span><span class="op">);</span></span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>fork<span class="op">()</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span>                                   <span class="co">// sort</span></span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>        dup2<span class="op">(</span>p1<span class="op">[</span><span class="dv">0</span><span class="op">],</span> <span class="dv">0</span><span class="op">);</span></span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>        dup2<span class="op">(</span>p2<span class="op">[</span><span class="dv">1</span><span class="op">],</span> <span class="dv">1</span><span class="op">);</span></span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>        tanca<span class="op">(</span>p1<span class="op">);</span></span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>        tanca<span class="op">(</span>p2<span class="op">);</span></span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>        execlp<span class="op">(</span><span class="st">"sort"</span><span class="op">,</span> <span class="st">"sort"</span><span class="op">,</span> <span class="st">"-n"</span><span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>        perror<span class="op">(</span><span class="st">"execlp sort"</span><span class="op">);</span></span>
+<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>        _exit<span class="op">(</span><span class="dv">127</span><span class="op">);</span></span>
+<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>fork<span class="op">()</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span>                                   <span class="co">// tail</span></span>
+<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a>        <span class="dt">int</span> out <span class="op">=</span> open<span class="op">(</span><span class="st">"outfile"</span><span class="op">,</span> O_WRONLY <span class="op">|</span> O_CREAT <span class="op">|</span> O_TRUNC<span class="op">,</span> <span class="bn">0644</span><span class="op">);</span></span>
+<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>out <span class="op">==</span> <span class="op">-</span><span class="dv">1</span><span class="op">)</span> <span class="op">{</span> perror<span class="op">(</span><span class="st">"open outfile"</span><span class="op">);</span> _exit<span class="op">(</span><span class="dv">1</span><span class="op">);</span> <span class="op">}</span></span>
+<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a>        dup2<span class="op">(</span>p2<span class="op">[</span><span class="dv">0</span><span class="op">],</span> <span class="dv">0</span><span class="op">);</span></span>
+<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a>        dup2<span class="op">(</span>out<span class="op">,</span> <span class="dv">1</span><span class="op">);</span></span>
+<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a>        close<span class="op">(</span>out<span class="op">);</span></span>
+<span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a>        tanca<span class="op">(</span>p1<span class="op">);</span></span>
+<span id="cb13-40"><a href="#cb13-40" aria-hidden="true" tabindex="-1"></a>        tanca<span class="op">(</span>p2<span class="op">);</span></span>
+<span id="cb13-41"><a href="#cb13-41" aria-hidden="true" tabindex="-1"></a>        execlp<span class="op">(</span><span class="st">"tail"</span><span class="op">,</span> <span class="st">"tail"</span><span class="op">,</span> <span class="st">"-n"</span><span class="op">,</span> <span class="st">"3"</span><span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb13-42"><a href="#cb13-42" aria-hidden="true" tabindex="-1"></a>        perror<span class="op">(</span><span class="st">"execlp tail"</span><span class="op">);</span></span>
+<span id="cb13-43"><a href="#cb13-43" aria-hidden="true" tabindex="-1"></a>        _exit<span class="op">(</span><span class="dv">127</span><span class="op">);</span></span>
+<span id="cb13-44"><a href="#cb13-44" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb13-45"><a href="#cb13-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-46"><a href="#cb13-46" aria-hidden="true" tabindex="-1"></a>    tanca<span class="op">(</span>p1<span class="op">);</span></span>
+<span id="cb13-47"><a href="#cb13-47" aria-hidden="true" tabindex="-1"></a>    tanca<span class="op">(</span>p2<span class="op">);</span></span>
+<span id="cb13-48"><a href="#cb13-48" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">3</span><span class="op">;</span> i<span class="op">++)</span></span>
+<span id="cb13-49"><a href="#cb13-49" aria-hidden="true" tabindex="-1"></a>        wait<span class="op">(</span>NULL<span class="op">);</span></span>
+<span id="cb13-50"><a href="#cb13-50" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb13-51"><a href="#cb13-51" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<ol start="3" type="1">
+<li>Idea: el pare manté una variable <code>prev</code> amb l’extrem de <strong>lectura</strong> de la pipe anterior (al principi, <code>-1</code>, que vol dir el <code>stdin</code> del programa). A cada iteració crea una pipe nova (excepte a l’última ordre), fa <code>fork</code>, i el fill fa <code>dup2(prev, 0)</code> si <code>prev != -1</code> i <code>dup2(p[1], 1)</code> si no és l’última. Després de cada <code>fork</code>, el pare tanca <code>prev</code> i <code>p[1]</code>, i passa <code>prev = p[0]</code>. Cal vigilar de <strong>no tancar el <code>0</code></strong> quan <code>prev</code> coincideix amb ell.</li>
+</ol>
+</div>
+</details>
+<hr>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p><strong>Comunicació bidireccional sense shell.</strong> Escriu un programa pare que llança el <code>./filtre</code> de l’exercici anterior <strong>sense usar el shell</strong>: el descriptor <code>3</code> del fill ha d’estar connectat a una pipe on <strong>escriu el pare</strong>, i el <code>4</code> a una altra pipe d’on <strong>llegeix el pare</strong>. El pare envia <code>hola mon\n</code>, mostra la resposta per pantalla i imprimeix el codi de sortida del fill.</p>
+<ol type="1">
+<li>Quins números tenen els descriptors de les dues pipes abans del <code>fork</code>?</li>
+<li>Per què falla la versió ingènua <code>dup2(pin[0], 3); close(pin[0]);</code> dins del fill?</li>
+<li>Quan acaba <code>filtre</code>? Qui ha de tancar què perquè això passi?</li>
+<li><strong>Repte:</strong> el pare envia <strong>1 MiB</strong> de dades abans de començar a llegir. Què passa?</li>
+</ol>
+</div>
+<details>
+<summary>
+<b>Pots veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> pin<span class="op">[</span><span class="dv">2</span><span class="op">],</span> pout<span class="op">[</span><span class="dv">2</span><span class="op">];</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>pipe<span class="op">(</span>pin<span class="op">)</span> <span class="op">==</span> <span class="op">-</span><span class="dv">1</span> <span class="op">||</span> pipe<span class="op">(</span>pout<span class="op">)</span> <span class="op">==</span> <span class="op">-</span><span class="dv">1</span><span class="op">)</span> <span class="op">{</span> perror<span class="op">(</span><span class="st">"pipe"</span><span class="op">);</span> exit<span class="op">(</span><span class="dv">1</span><span class="op">);</span> <span class="op">}</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    pid_t pid <span class="op">=</span> fork<span class="op">();</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>pid <span class="op">==</span> <span class="op">-</span><span class="dv">1</span><span class="op">)</span> <span class="op">{</span> perror<span class="op">(</span><span class="st">"fork"</span><span class="op">);</span> exit<span class="op">(</span><span class="dv">1</span><span class="op">);</span> <span class="op">}</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>pid <span class="op">==</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>        close<span class="op">(</span>pin<span class="op">[</span><span class="dv">1</span><span class="op">]);</span>                       <span class="co">// el fill no escriu a pin</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>        close<span class="op">(</span>pout<span class="op">[</span><span class="dv">0</span><span class="op">]);</span>                      <span class="co">// ni llegeix de pout</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>pin<span class="op">[</span><span class="dv">0</span><span class="op">]</span> <span class="op">!=</span> <span class="dv">3</span><span class="op">)</span>  <span class="op">{</span> dup2<span class="op">(</span>pin<span class="op">[</span><span class="dv">0</span><span class="op">],</span> <span class="dv">3</span><span class="op">);</span>  close<span class="op">(</span>pin<span class="op">[</span><span class="dv">0</span><span class="op">]);</span> <span class="op">}</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>pout<span class="op">[</span><span class="dv">1</span><span class="op">]</span> <span class="op">!=</span> <span class="dv">4</span><span class="op">)</span> <span class="op">{</span> dup2<span class="op">(</span>pout<span class="op">[</span><span class="dv">1</span><span class="op">],</span> <span class="dv">4</span><span class="op">);</span> close<span class="op">(</span>pout<span class="op">[</span><span class="dv">1</span><span class="op">]);</span> <span class="op">}</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>        execl<span class="op">(</span><span class="st">"./filtre"</span><span class="op">,</span> <span class="st">"filtre"</span><span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>        perror<span class="op">(</span><span class="st">"execl filtre"</span><span class="op">);</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>        _exit<span class="op">(</span><span class="dv">127</span><span class="op">);</span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>    close<span class="op">(</span>pin<span class="op">[</span><span class="dv">0</span><span class="op">]);</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>    close<span class="op">(</span>pout<span class="op">[</span><span class="dv">1</span><span class="op">]);</span></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>    <span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>msg <span class="op">=</span> <span class="st">"hola mon</span><span class="sc">\n</span><span class="st">"</span><span class="op">;</span></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>    write<span class="op">(</span>pin<span class="op">[</span><span class="dv">1</span><span class="op">],</span> msg<span class="op">,</span> strlen<span class="op">(</span>msg<span class="op">));</span></span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>    close<span class="op">(</span>pin<span class="op">[</span><span class="dv">1</span><span class="op">]);</span>                           <span class="co">// així filtre veurà l'EOF</span></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>    <span class="dt">char</span> buf<span class="op">[</span><span class="dv">256</span><span class="op">];</span></span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>    <span class="dt">ssize_t</span> n<span class="op">;</span></span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">((</span>n <span class="op">=</span> read<span class="op">(</span>pout<span class="op">[</span><span class="dv">0</span><span class="op">],</span> buf<span class="op">,</span> <span class="kw">sizeof</span> buf<span class="op">))</span> <span class="op">&gt;</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>        write<span class="op">(</span><span class="dv">1</span><span class="op">,</span> buf<span class="op">,</span> n<span class="op">);</span></span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>    close<span class="op">(</span>pout<span class="op">[</span><span class="dv">0</span><span class="op">]);</span></span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> st<span class="op">;</span></span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>    waitpid<span class="op">(</span>pid<span class="op">,</span> <span class="op">&amp;</span>st<span class="op">,</span> <span class="dv">0</span><span class="op">);</span></span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>    printf<span class="op">(</span><span class="st">"filtre ha acabat amb codi </span><span class="sc">%d\n</span><span class="st">"</span><span class="op">,</span> WEXITSTATUS<span class="op">(</span>st<span class="op">));</span></span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<ol type="1">
+<li><code>pin = {3, 4}</code> i <code>pout = {5, 6}</code>: justament <strong>els números que el fill necessita com a <code>3</code> i <code>4</code></strong>, i això fa que sigui delicat.</li>
+<li>Amb <code>pin[0] == 3</code>, <code>dup2(pin[0], 3)</code> <strong>no fa res</strong> i el <code>close(pin[0])</code> següent <strong>tanca el descriptor 3</strong>, el mateix que s’acabava de preparar. <code>filtre</code> fa <code>read(3, ...)</code>, rep <code>EBADF</code> i acaba, i el pare mor amb <code>SIGPIPE</code> en escriure a una pipe sense lector. Per això només es fa <code>dup2</code> + <code>close</code> quan el número és diferent. A més, el <code>dup2(pout[1], 4)</code> <strong>tanca el 4</strong>, que era <code>pin[1]</code>: per això el fill tanca primer <code>pin[1]</code> i <code>pout[0]</code>.</li>
+<li><code>filtre</code> acaba quan <code>read(3)</code> retorna <code>0</code>, és a dir quan <strong>tots</strong> els extrems d’escriptura de <code>pin</code> estan tancats: el del pare (<code>close(pin[1])</code>) i el que heretava el fill (que tanca abans de l’<code>exec</code>). El pare, al seu torn, deixa de llegir quan <code>filtre</code> acaba i tanca el <code>4</code>; per això el pare també ha de tancar el seu <code>pout[1]</code>.</li>
+<li><strong>Interbloqueig.</strong> El pare escriu a <code>pin</code> i <code>filtre</code> converteix i escriu a <code>pout</code>; com que el pare no llegeix, <code>pout</code> s’omple (64 KiB) i <code>filtre</code> es bloqueja al <code>write(4)</code>; ja no llegeix de <code>pin</code>, que també s’omple, i el pare es bloqueja al <code>write</code>. Cap dels dos no pot avançar. Es resol llegint i escrivint <strong>alhora</strong>, per exemple amb <code>poll</code>/<code>select</code>, o amb un segon procés (o fil) que s’encarregui d’una de les dues direccions. És el mateix problema de l’exercici 8, ara amb dues pipes.</li>
+</ol>
+</div>
+</details>
+<hr>
+</section>
+<section id="bloc-4-fifos" class="level2">
+<h2 class="anchored" data-anchor-id="bloc-4-fifos">Bloc 4 · FIFOs</h2>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p>Obre dos terminals.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Terminal A</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkfifo</span> /tmp/f</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> hola <span class="op">&gt;</span> /tmp/f</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> fet</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Terminal B (10 segons després d'haver llançat l'ordre del terminal A)</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> /tmp/f</span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<ol type="1">
+<li>En quin moment s’imprimeix <code>fet</code> al terminal A?</li>
+<li>Què mostra <code>ls -l /tmp/f</code>? Es guarda <code>hola</code> al disc?</li>
+<li><strong>Repte:</strong> què passa si al terminal A fem <code>exec 3&lt;&gt; /tmp/f</code> en lloc del <code>echo</code>?</li>
+</ol>
+</div>
+<details>
+<summary>
+<b>Pots veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<ol type="1">
+<li><strong>Quan el terminal B executa <code>cat</code></strong>, uns 10 s després. El shell del terminal A es bloqueja a l’<code>open</code> de la redirecció <code>&gt; /tmp/f</code>, perquè un <code>open</code> per escriure en un FIFO espera que algú l’obri per llegir. Si ningú no llegeix, el terminal A es queda bloquejat indefinidament (<code>Ctrl-C</code> per sortir). Si invertim l’ordre i <code>cat</code> va primer, <strong>és <code>cat</code> qui espera</strong> l’escriptor.</li>
+<li>El tipus del fitxer és <strong><code>p</code></strong> (<code>prw-------</code>…) i la mida és <strong>0</strong>. <code>hola</code> passa pel <strong>buffer del nucli</strong>, igual que en una pipe anònima; el fitxer és només un <strong>nom</strong> que permet que processos no emparentats trobin la mateixa pipe.</li>
+<li>En Linux, obrir el FIFO en mode <strong>lectura i escriptura</strong> (<code>&lt;&gt;</code>) <strong>no es bloqueja</strong>, perquè el mateix procés fa de lector i d’escriptor. Aquest comportament <strong>no està especificat per POSIX</strong>, així que no s’ha de fer servir en codi portable.</li>
+</ol>
+</div>
+</details>
+<hr>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p>Escriu <strong>dos programes independents</strong>: <code>escriptor</code> llegeix línies de <code>stdin</code> i les envia a un FIFO <code>/tmp/so_fifo</code>; <code>lector</code> les llegeix del FIFO i les mostra per pantalla. Cap dels dos no és fill de l’altre.</p>
+<ol type="1">
+<li>Què passa si s’executa <strong>primer</strong> el lector? I si s’executa primer l’escriptor?</li>
+<li>Quan acaba el lector?</li>
+<li>Dos escriptors alhora envien línies de com a molt 255 bytes. Es poden <strong>barrejar</strong> els bytes de dues línies?</li>
+<li>Qui hauria d’eliminar el FIFO?</li>
+</ol>
+</div>
+<details>
+<summary>
+<b>Pots veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<p><code>escriptor.c</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define FIFO </span><span class="st">"/tmp/so_fifo"</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>mkfifo<span class="op">(</span>FIFO<span class="op">,</span> <span class="bn">0600</span><span class="op">)</span> <span class="op">==</span> <span class="op">-</span><span class="dv">1</span> <span class="op">&amp;&amp;</span> errno <span class="op">!=</span> EEXIST<span class="op">)</span> <span class="op">{</span> perror<span class="op">(</span><span class="st">"mkfifo"</span><span class="op">);</span> exit<span class="op">(</span><span class="dv">1</span><span class="op">);</span> <span class="op">}</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> fd <span class="op">=</span> open<span class="op">(</span>FIFO<span class="op">,</span> O_WRONLY<span class="op">);</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>fd <span class="op">==</span> <span class="op">-</span><span class="dv">1</span><span class="op">)</span> <span class="op">{</span> perror<span class="op">(</span><span class="st">"open"</span><span class="op">);</span> exit<span class="op">(</span><span class="dv">1</span><span class="op">);</span> <span class="op">}</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>    <span class="dt">char</span> linia<span class="op">[</span><span class="dv">256</span><span class="op">];</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">(</span>fgets<span class="op">(</span>linia<span class="op">,</span> <span class="kw">sizeof</span> linia<span class="op">,</span> stdin<span class="op">)</span> <span class="op">!=</span> NULL<span class="op">)</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>        write<span class="op">(</span>fd<span class="op">,</span> linia<span class="op">,</span> strlen<span class="op">(</span>linia<span class="op">));</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>    close<span class="op">(</span>fd<span class="op">);</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>lector.c</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define FIFO </span><span class="st">"/tmp/so_fifo"</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>mkfifo<span class="op">(</span>FIFO<span class="op">,</span> <span class="bn">0600</span><span class="op">)</span> <span class="op">==</span> <span class="op">-</span><span class="dv">1</span> <span class="op">&amp;&amp;</span> errno <span class="op">!=</span> EEXIST<span class="op">)</span> <span class="op">{</span> perror<span class="op">(</span><span class="st">"mkfifo"</span><span class="op">);</span> exit<span class="op">(</span><span class="dv">1</span><span class="op">);</span> <span class="op">}</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> fd <span class="op">=</span> open<span class="op">(</span>FIFO<span class="op">,</span> O_RDONLY<span class="op">);</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>fd <span class="op">==</span> <span class="op">-</span><span class="dv">1</span><span class="op">)</span> <span class="op">{</span> perror<span class="op">(</span><span class="st">"open"</span><span class="op">);</span> exit<span class="op">(</span><span class="dv">1</span><span class="op">);</span> <span class="op">}</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    <span class="dt">char</span> buf<span class="op">[</span><span class="dv">256</span><span class="op">];</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">ssize_t</span> n<span class="op">;</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">((</span>n <span class="op">=</span> read<span class="op">(</span>fd<span class="op">,</span> buf<span class="op">,</span> <span class="kw">sizeof</span> buf<span class="op">))</span> <span class="op">&gt;</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>        write<span class="op">(</span><span class="dv">1</span><span class="op">,</span> buf<span class="op">,</span> n<span class="op">);</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>    close<span class="op">(</span>fd<span class="op">);</span></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>    unlink<span class="op">(</span>FIFO<span class="op">);</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<ol type="1">
+<li>Els dos programes fan <code>mkfifo</code> <strong>tolerant <code>EEXIST</code></strong>, així que l’ordre d’arrencada és indiferent: el primer que arriba el crea i <strong>es bloqueja a l’<code>open</code></strong> fins que arriba l’altre. Si només l’escriptor el creés, un lector arrencat primer fallaria amb <code>ENOENT</code>.</li>
+<li>Quan <code>read</code> retorna <code>0</code>, és a dir quan <strong>tots els escriptors han tancat</strong> el FIFO (per exemple, amb <code>Ctrl-D</code> a l’escriptor).</li>
+<li><strong>No</strong>, en les línies de com a molt <code>PIPE_BUF</code> bytes (4096 a Linux), perquè cada <code>write</code> és <strong>atòmic</strong>. L’ordre en què arriben les línies sí que és arbitrari. Amb línies més llargues, els trossos de cada <code>write</code> s’intercalarien.</li>
+<li>El FIFO <strong>persisteix</strong> al sistema de fitxers encara que acabin tots els processos. Algú l’ha d’eliminar amb <code>unlink</code>; aquí ho fa el lector en acabar. Si l’escriptor es torna a executar després, tornarà a crear-lo.</li>
+</ol>
+</div>
+</details>
+<hr>
+</section>
+<section id="bloc-5-integració" class="level2">
+<h2 class="anchored" data-anchor-id="bloc-5-integració">Bloc 5 · Integració</h2>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p><strong>Multiplicació de matrius amb processos.</strong> Volem calcular <code>C = A × B</code> amb matrius quadrades <code>N × N</code>. El pare crea <strong>un fill per cada fila</strong> de <code>C</code>. Cada fill calcula la seva fila i l’envia al pare per una pipe; el pare recull les files i imprimeix <code>C</code>.</p>
+<p>Per comprovar-ho, usa <code>N = 4</code>, <code>A[i][j] = i + j</code> i <code>B</code> la matriu identitat: el resultat ha de ser igual a <code>A</code>.</p>
+<ol type="1">
+<li>Els fills necessiten que el pare els enviï <code>A</code> i <code>B</code>? Per què?</li>
+<li>Quin ha de ser el contingut de cada missatge? Fins a quin <code>N</code> són atòmics els <code>write</code>?</li>
+<li>Una pipe per fill o una de compartida? Compara’ls.</li>
+<li><strong>Repte:</strong> el pare fa <code>wait</code> de tots els fills <strong>abans</strong> de llegir. Per a quin <code>N</code> deixa de funcionar?</li>
+<li><strong>Repte:</strong> si s’usés un <strong>FIFO</strong> en comptes d’una pipe anònima, què canviaria, i quin problema nou apareixeria amb l’EOF?</li>
+</ol>
+</div>
+<details>
+<summary>
+<b>Pots veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<ol type="1">
+<li><strong>No.</strong> Les matrius s’omplen abans del <code>fork</code>, i el fill <strong>hereta una còpia</strong> de tota la memòria (<em>copy-on-write</em>). Només s’ha de comunicar el <strong>resultat</strong>. Llegir les matrius d’un fitxer és una feina independent (<code>fscanf</code>), i s’ha de fer abans del <code>fork</code>.</li>
+<li>Cada missatge porta <strong>l’índex de la fila</strong> i els <code>N</code> valors, perquè les files arriben <strong>desordenades</strong>. Amb <code>int</code>, el missatge fa <code>4 + 4N</code> bytes, i és atòmic mentre <code>4 + 4N ≤ PIPE_BUF = 4096</code>, és a dir fins a <code>N = 1023</code>.</li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define N </span><span class="dv">4</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="kw">struct</span> <span class="op">{</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> fila<span class="op">;</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> valors<span class="op">[</span>N<span class="op">];</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> fila_t<span class="op">;</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> A<span class="op">[</span>N<span class="op">][</span>N<span class="op">],</span> B<span class="op">[</span>N<span class="op">][</span>N<span class="op">],</span> C<span class="op">[</span>N<span class="op">][</span>N<span class="op">];</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> N<span class="op">;</span> i<span class="op">++)</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> j <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> j <span class="op">&lt;</span> N<span class="op">;</span> j<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>            A<span class="op">[</span>i<span class="op">][</span>j<span class="op">]</span> <span class="op">=</span> i <span class="op">+</span> j<span class="op">;</span></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>            B<span class="op">[</span>i<span class="op">][</span>j<span class="op">]</span> <span class="op">=</span> <span class="op">(</span>i <span class="op">==</span> j<span class="op">)</span> <span class="op">?</span> <span class="dv">1</span> <span class="op">:</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> p<span class="op">[</span><span class="dv">2</span><span class="op">];</span></span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>pipe<span class="op">(</span>p<span class="op">)</span> <span class="op">==</span> <span class="op">-</span><span class="dv">1</span><span class="op">)</span> <span class="op">{</span> perror<span class="op">(</span><span class="st">"pipe"</span><span class="op">);</span> exit<span class="op">(</span><span class="dv">1</span><span class="op">);</span> <span class="op">}</span></span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> N<span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>        pid_t pid <span class="op">=</span> fork<span class="op">();</span></span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>pid <span class="op">==</span> <span class="op">-</span><span class="dv">1</span><span class="op">)</span> <span class="op">{</span> perror<span class="op">(</span><span class="st">"fork"</span><span class="op">);</span> exit<span class="op">(</span><span class="dv">1</span><span class="op">);</span> <span class="op">}</span></span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>pid <span class="op">==</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a>            close<span class="op">(</span>p<span class="op">[</span><span class="dv">0</span><span class="op">]);</span></span>
+<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a>            fila_t r<span class="op">;</span></span>
+<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a>            r<span class="op">.</span>fila <span class="op">=</span> i<span class="op">;</span></span>
+<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> j <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> j <span class="op">&lt;</span> N<span class="op">;</span> j<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a>                r<span class="op">.</span>valors<span class="op">[</span>j<span class="op">]</span> <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a>                <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> k <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> k <span class="op">&lt;</span> N<span class="op">;</span> k<span class="op">++)</span></span>
+<span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a>                    r<span class="op">.</span>valors<span class="op">[</span>j<span class="op">]</span> <span class="op">+=</span> A<span class="op">[</span>i<span class="op">][</span>k<span class="op">]</span> <span class="op">*</span> B<span class="op">[</span>k<span class="op">][</span>j<span class="op">];</span></span>
+<span id="cb18-31"><a href="#cb18-31" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb18-32"><a href="#cb18-32" aria-hidden="true" tabindex="-1"></a>            write<span class="op">(</span>p<span class="op">[</span><span class="dv">1</span><span class="op">],</span> <span class="op">&amp;</span>r<span class="op">,</span> <span class="kw">sizeof</span> r<span class="op">);</span></span>
+<span id="cb18-33"><a href="#cb18-33" aria-hidden="true" tabindex="-1"></a>            close<span class="op">(</span>p<span class="op">[</span><span class="dv">1</span><span class="op">]);</span></span>
+<span id="cb18-34"><a href="#cb18-34" aria-hidden="true" tabindex="-1"></a>            exit<span class="op">(</span><span class="dv">0</span><span class="op">);</span></span>
+<span id="cb18-35"><a href="#cb18-35" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb18-36"><a href="#cb18-36" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb18-37"><a href="#cb18-37" aria-hidden="true" tabindex="-1"></a>    close<span class="op">(</span>p<span class="op">[</span><span class="dv">1</span><span class="op">]);</span></span>
+<span id="cb18-38"><a href="#cb18-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-39"><a href="#cb18-39" aria-hidden="true" tabindex="-1"></a>    fila_t r<span class="op">;</span></span>
+<span id="cb18-40"><a href="#cb18-40" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">(</span>read<span class="op">(</span>p<span class="op">[</span><span class="dv">0</span><span class="op">],</span> <span class="op">&amp;</span>r<span class="op">,</span> <span class="kw">sizeof</span> r<span class="op">)</span> <span class="op">==</span> <span class="op">(</span><span class="dt">ssize_t</span><span class="op">)</span><span class="kw">sizeof</span> r<span class="op">)</span></span>
+<span id="cb18-41"><a href="#cb18-41" aria-hidden="true" tabindex="-1"></a>        memcpy<span class="op">(</span>C<span class="op">[</span>r<span class="op">.</span>fila<span class="op">],</span> r<span class="op">.</span>valors<span class="op">,</span> <span class="kw">sizeof</span> r<span class="op">.</span>valors<span class="op">);</span></span>
+<span id="cb18-42"><a href="#cb18-42" aria-hidden="true" tabindex="-1"></a>    close<span class="op">(</span>p<span class="op">[</span><span class="dv">0</span><span class="op">]);</span></span>
+<span id="cb18-43"><a href="#cb18-43" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">(</span>wait<span class="op">(</span>NULL<span class="op">)</span> <span class="op">&gt;</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb18-44"><a href="#cb18-44" aria-hidden="true" tabindex="-1"></a>        <span class="op">;</span></span>
+<span id="cb18-45"><a href="#cb18-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-46"><a href="#cb18-46" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> N<span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb18-47"><a href="#cb18-47" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> j <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> j <span class="op">&lt;</span> N<span class="op">;</span> j<span class="op">++)</span></span>
+<span id="cb18-48"><a href="#cb18-48" aria-hidden="true" tabindex="-1"></a>            printf<span class="op">(</span><span class="st">"</span><span class="sc">%3d</span><span class="st">"</span><span class="op">,</span> C<span class="op">[</span>i<span class="op">][</span>j<span class="op">]);</span></span>
+<span id="cb18-49"><a href="#cb18-49" aria-hidden="true" tabindex="-1"></a>        printf<span class="op">(</span><span class="st">"</span><span class="sc">\n</span><span class="st">"</span><span class="op">);</span></span>
+<span id="cb18-50"><a href="#cb18-50" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb18-51"><a href="#cb18-51" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb18-52"><a href="#cb18-52" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copia al porta-retalls" class="code-copy-button"><i class="bi"></i></button></div>
+<ol start="3" type="1">
+<li><strong>Una pipe compartida:</strong> només 2 descriptors, sense límit pràctic de fills, i el pare fa un únic bucle de <code>read</code>; cal l’índex de fila. <strong>Una pipe per fill:</strong> el pare sap qui li envia cada fila (no cal índex), però necessita <code>2N</code> descriptors, i el límit típic és <code>ulimit -n = 1024</code>, així que fallaria cap a <code>N ≈ 500</code>; a més, cal llegir-les en algun ordre i un fill lent pot fer esperar els altres.</li>
+<li><strong>Interbloqueig</strong> quan el total de dades, <code>N × (4 + 4N)</code> bytes aproximadament, supera la capacitat de la pipe (64 KiB): a partir de <code>N = 128</code>, algun fill es bloqueja al <code>write</code> i el pare és al <code>wait</code> (vegeu l’exercici 8). Per això el programa llegeix <strong>fins a l’EOF</strong> i fa <code>wait</code> <strong>després</strong>.</li>
+<li>Amb un FIFO, cada fill hauria de fer <code>open(ruta, O_WRONLY)</code> pel seu compte, i el pare <code>open(ruta, O_RDONLY)</code>, que es bloqueja fins que arriba el primer escriptor. El problema nou: <strong>el pare veu l’EOF quan l’últim escriptor tanca</strong>, i si el primer fill acaba abans que el segon hagi obert el FIFO, el pare veu un <strong>EOF prematur</strong> i perd files. La solució és <strong>comptar els missatges</strong> (<code>N</code> files) en lloc de dependre de l’EOF. En definitiva, un FIFO no aporta res aquí, perquè els processos ja estan emparentats.</li>
+</ol>
+</div>
+</details>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiat!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiat!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/igualada\.os\.udl\.cat");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../../blocs/02-proc/activitats/01-fork-wait.html" class="pagination-link" aria-label="Problemes de classe · `fork()` i `wait()`">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Problemes de classe · <code>fork()</code> i <code>wait()</code></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../../blocs/02-proc/activitats/05-loteria.html" class="pagination-link" aria-label="Exercici progressiu basat en un generador de bitllets de loteria">
+        <span class="nav-page-text">Exercici progressiu basat en un generador de bitllets de loteria</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Universitat de Lleida · Departament d’Enginyeria Informàtica i Disseny Digital</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>Construït amb Quarto</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

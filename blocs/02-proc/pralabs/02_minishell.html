@@ -72,6 +72,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../../../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../../../">
+<link href="../../../blocs/02-proc/pralabs/03_minishell.html" rel="next">
 <link href="../../../blocs/02-proc/pralabs/01_minishell.html" rel="prev">
 <link href="../../../assets/logo.svg" rel="icon" type="image/svg+xml">
 <script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
@@ -85,9 +86,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../../site_libs/bootstrap/bootstrap-1dfaff2789308095fe41ecae51c32134.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../../site_libs/bootstrap/bootstrap-dark-22a7e036b50e3db51dccb7b2ace09654.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../../../site_libs/bootstrap/bootstrap-1dfaff2789308095fe41ecae51c32134.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/bootstrap/bootstrap-13ad4839ea57b7f705e8de5833b7831b.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/bootstrap/bootstrap-dark-71d11ad18b64fb8e65d87cc5e3220546.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../../site_libs/bootstrap/bootstrap-13ad4839ea57b7f705e8de5833b7831b.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -584,6 +585,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text">Problemes de classe · <code>fork()</code> i <code>wait()</code></span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/02-proc/activitats/04-pipes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exercicis de Pipes, FIFOs i dup en C</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/02-proc/activitats/05-loteria.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exercici progressiu basat en un generador de bitllets de loteria</span></a>
+  </div>
+</li>
       </ul>
   </li>
           <li class="sidebar-item sidebar-item-section">
@@ -605,6 +618,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <div class="sidebar-item-container"> 
   <a href="../../../blocs/02-proc/pralabs/02_minishell.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Pralab 05 (II): shell: <code>strtok</code>, <code>;</code> i senyals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/02-proc/pralabs/03_minishell.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pralab 05 (III): shell: redireccions (`&lt;`, `&gt;`, `&gt;&gt;`)</span></a>
   </div>
 </li>
       </ul>
@@ -855,32 +874,30 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    cmd <span class="op">=</span> strtok<span class="op">(</span>NULL<span class="op">,</span> <span class="st">";"</span><span class="op">);</span></span>
 <span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>i <code>strtok</code> ens serveix per partir en paraules, també ens servirà per partir en comandes: primer pel <code>;</code>, i després cada comanda per espais.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">/* Intent ingenu: substitueix el bucle de C.3 per aquest */</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="dt">char</span> <span class="op">*</span>cmd <span class="op">=</span> strtok<span class="op">(</span>linia<span class="op">,</span> <span class="st">";"</span><span class="op">);</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="op">(</span>cmd <span class="op">!=</span> NULL<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">char</span> <span class="op">*</span>args<span class="op">[</span>MAX_ARGS<span class="op">];</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> nargs <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">char</span> <span class="op">*</span>tok <span class="op">=</span> strtok<span class="op">(</span>cmd<span class="op">,</span> <span class="st">" </span><span class="sc">\t</span><span class="st">"</span><span class="op">);</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">(</span>tok <span class="op">!=</span> NULL <span class="op">&amp;&amp;</span> nargs <span class="op">&lt;</span> MAX_ARGS <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">{</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>        args<span class="op">[</span>nargs<span class="op">++]</span> <span class="op">=</span> tok<span class="op">;</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>        tok <span class="op">=</span> strtok<span class="op">(</span>NULL<span class="op">,</span> <span class="st">" </span><span class="sc">\t</span><span class="st">"</span><span class="op">);</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    args<span class="op">[</span>nargs<span class="op">]</span> <span class="op">=</span> NULL<span class="op">;</span></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>nargs <span class="op">&gt;</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>        executa<span class="op">(</span>args<span class="op">);</span></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    cmd <span class="op">=</span> strtok<span class="op">(</span>NULL<span class="op">,</span> <span class="st">";"</span><span class="op">);</span></span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="dt">char</span> <span class="op">*</span>cmd <span class="op">=</span> strtok<span class="op">(</span>linia<span class="op">,</span> <span class="st">";"</span><span class="op">);</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="op">(</span>cmd <span class="op">!=</span> NULL<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">char</span> <span class="op">*</span>args<span class="op">[</span>MAX_ARGS<span class="op">];</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> nargs <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">char</span> <span class="op">*</span>tok <span class="op">=</span> strtok<span class="op">(</span>cmd<span class="op">,</span> <span class="st">" </span><span class="sc">\t</span><span class="st">"</span><span class="op">);</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">(</span>tok <span class="op">!=</span> NULL <span class="op">&amp;&amp;</span> nargs <span class="op">&lt;</span> MAX_ARGS <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>        args<span class="op">[</span>nargs<span class="op">++]</span> <span class="op">=</span> tok<span class="op">;</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>        tok <span class="op">=</span> strtok<span class="op">(</span>NULL<span class="op">,</span> <span class="st">" </span><span class="sc">\t</span><span class="st">"</span><span class="op">);</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    args<span class="op">[</span>nargs<span class="op">]</span> <span class="op">=</span> NULL<span class="op">;</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>nargs <span class="op">&gt;</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>        executa<span class="op">(</span>args<span class="op">);</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    cmd <span class="op">=</span> strtok<span class="op">(</span>NULL<span class="op">,</span> <span class="st">";"</span><span class="op">);</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="exercici udl-component udl-exercici">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
-<p><strong>Prediu abans de provar.</strong> Amb la línia <code>ls -l ; pwd</code>, quines comandes s’executen? Dóna’t una pista: rellegeix el <code>.concepte</code> de C.2 (<em>una sola variable</em>) i pensa què fa <code>strtok(NULL, ...)</code> just després que el bucle intern hagi acabat.</p>
+<p><strong>Prediu abans de provar.</strong> Amb la línia <code>ls -l ; pwd</code>, quines comandes s’executen?</p>
 </div>
 <details>
 <summary>
@@ -2264,6 +2281,9 @@ Per evitar-ho sense <code>SA_RESTART</code>, caldria tractar <code>EINTR</code> 
       </a>          
   </div>
   <div class="nav-page nav-page-next">
+      <a href="../../../blocs/02-proc/pralabs/03_minishell.html" class="pagination-link" aria-label="Pralab 05 (III): shell: redireccions (`<`, `>`, `>>`)">
+        <span class="nav-page-text">Pralab 05 (III): shell: redireccions (<code>&lt;</code>, <code>&gt;</code>, <code>&gt;&gt;</code>)</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
   </div>
 </nav>
 </div> <!-- /content -->

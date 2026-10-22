@@ -221,9 +221,11 @@ Jordi Mateo Fornés
 <li class="fragment"><code>pipe(fd)</code> retorna <strong>dos descriptors</strong>, però la pipe <strong>no té cap nom</strong> al sistema de fitxers.</li>
 <li class="fragment">L’única manera d’obtenir aquests descriptors és <strong>heretar-los</strong>: un ancestre comú crida <code>pipe()</code> <em>abans</em> de <code>fork()</code>.</li>
 </ul>
+<div class="fragment">
 <blockquote>
-<p><strong>Dos programes llançats des de </strong>dues terminals diferents** no poden compartir una pipe sense nom.</p>
+<p>Dos programes llançats des de <strong>dues terminals diferents</strong> no poden compartir una pipe sense nom.</p>
 </blockquote>
+</div>
 </section>
 <section id="què-és-una-fifo" class="slide level2">
 <h2>Què és una FIFO?</h2>
@@ -280,9 +282,11 @@ Jordi Mateo Fornés
 <li class="fragment"><code>mkfifo()</code> <strong>no obre</strong> la FIFO: només crea l’<em>inode</em>. Cal un <code>open()</code> posterior.</li>
 <li class="fragment">El patró habitual és tolerar <code>EEXIST</code>:</li>
 </ul>
+<div class="fragment">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb4-1"><a aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="op">(</span>mkfifo<span class="op">(</span><span class="st">"/tmp/canal"</span><span class="op">,</span> <span class="bn">0600</span><span class="op">)</span> <span class="op">==</span> <span class="op">-</span><span class="dv">1</span> <span class="op">&amp;&amp;</span> errno <span class="op">!=</span> EEXIST<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb4-2"><a aria-hidden="true" tabindex="-1"></a>    perror<span class="op">(</span><span class="st">"mkfifo"</span><span class="op">);</span> exit<span class="op">(</span>EXIT_FAILURE<span class="op">);</span></span>
 <span id="cb4-3"><a aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
 </section>
 <section id="cicle-de-vida-el-nom-i-les-dades-són-independents" class="slide level2">
 <h2>Cicle de vida: el nom i les dades són independents</h2>
@@ -416,65 +420,50 @@ Jordi Mateo Fornés
 <li class="fragment">Escriptures de <strong>com a molt <code>PIPE_BUF</code> bytes</strong> són <strong>atòmiques</strong>: no s’intercalen amb les d’altres escriptors. A Linux <code>PIPE_BUF</code> = 4096 (POSIX garanteix com a mínim 512).</li>
 <li class="fragment">La <strong>capacitat</strong> (64 KiB per defecte a Linux) és una cosa diferent de <code>PIPE_BUF</code>; es consulta amb <code>fcntl(fd, F_GETPIPE_SZ)</code>.</li>
 </ul>
-<div class="errorcomu udl-component udl-errorcomu">
+<div class="errorcomu fragment udl-component udl-errorcomu">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-errorcomu"></use></svg><span>Error Comú</span></div>
 <p>Una FIFO és un <strong>flux de bytes</strong>: no conserva diferències entre missatges. Dos <code>write()</code> de 4 bytes poden arribar en un sol <code>read()</code> de 8. I el que llegeix <code>read()</code> <strong>no acaba en <code>'\0'</code></strong>.</p>
 </div>
 </section>
 <section id="exemple-escriptor-independent" class="slide level2">
 <h2>Exemple: escriptor independent</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb5-1"><a aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;errno.h&gt;</span></span>
-<span id="cb5-2"><a aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;fcntl.h&gt;</span></span>
-<span id="cb5-3"><a aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
-<span id="cb5-4"><a aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdlib.h&gt;</span></span>
-<span id="cb5-5"><a aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;sys/stat.h&gt;</span></span>
-<span id="cb5-6"><a aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;unistd.h&gt;</span></span>
-<span id="cb5-7"><a aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-8"><a aria-hidden="true" tabindex="-1"></a><span class="pp">#define FIFO </span><span class="st">"/tmp/myfifo"</span></span>
-<span id="cb5-9"><a aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-10"><a aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
-<span id="cb5-11"><a aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>mkfifo<span class="op">(</span>FIFO<span class="op">,</span> <span class="bn">0600</span><span class="op">)</span> <span class="op">==</span> <span class="op">-</span><span class="dv">1</span> <span class="op">&amp;&amp;</span> errno <span class="op">!=</span> EEXIST<span class="op">)</span> <span class="op">{</span> perror<span class="op">(</span><span class="st">"mkfifo"</span><span class="op">);</span> exit<span class="op">(</span>EXIT_FAILURE<span class="op">);</span> <span class="op">}</span></span>
-<span id="cb5-12"><a aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-13"><a aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> fd <span class="op">=</span> open<span class="op">(</span>FIFO<span class="op">,</span> O_WRONLY<span class="op">);</span>              <span class="co">/* bloqueja fins que hi ha un lector */</span></span>
-<span id="cb5-14"><a aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>fd <span class="op">==</span> <span class="op">-</span><span class="dv">1</span><span class="op">)</span> <span class="op">{</span> perror<span class="op">(</span><span class="st">"open"</span><span class="op">);</span> exit<span class="op">(</span>EXIT_FAILURE<span class="op">);</span> <span class="op">}</span></span>
-<span id="cb5-15"><a aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-16"><a aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">3</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
-<span id="cb5-17"><a aria-hidden="true" tabindex="-1"></a>        <span class="dt">char</span> msg<span class="op">[</span><span class="dv">32</span><span class="op">];</span></span>
-<span id="cb5-18"><a aria-hidden="true" tabindex="-1"></a>        <span class="dt">int</span> n <span class="op">=</span> snprintf<span class="op">(</span>msg<span class="op">,</span> <span class="kw">sizeof</span> msg<span class="op">,</span> <span class="st">"missatge </span><span class="sc">%d\n</span><span class="st">"</span><span class="op">,</span> i<span class="op">);</span></span>
-<span id="cb5-19"><a aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>write<span class="op">(</span>fd<span class="op">,</span> msg<span class="op">,</span> n<span class="op">)</span> <span class="op">!=</span> n<span class="op">)</span> <span class="op">{</span> perror<span class="op">(</span><span class="st">"write"</span><span class="op">);</span> exit<span class="op">(</span>EXIT_FAILURE<span class="op">);</span> <span class="op">}</span></span>
-<span id="cb5-20"><a aria-hidden="true" tabindex="-1"></a>        sleep<span class="op">(</span><span class="dv">1</span><span class="op">);</span></span>
-<span id="cb5-21"><a aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb5-22"><a aria-hidden="true" tabindex="-1"></a>    close<span class="op">(</span>fd<span class="op">);</span>                                  <span class="co">/* el lector rebrà EOF */</span></span>
-<span id="cb5-23"><a aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> EXIT_SUCCESS<span class="op">;</span></span>
-<span id="cb5-24"><a aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb5-1"><a aria-hidden="true" tabindex="-1"></a><span class="pp">#define FIFO </span><span class="st">"/tmp/myfifo"</span></span>
+<span id="cb5-2"><a aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-4"><a aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>mkfifo<span class="op">(</span>FIFO<span class="op">,</span> <span class="bn">0600</span><span class="op">)</span> <span class="op">==</span> <span class="op">-</span><span class="dv">1</span> <span class="op">&amp;&amp;</span> errno <span class="op">!=</span> EEXIST<span class="op">)</span> <span class="op">{</span> perror<span class="op">(</span><span class="st">"mkfifo"</span><span class="op">);</span> exit<span class="op">(</span>EXIT_FAILURE<span class="op">);</span> <span class="op">}</span></span>
+<span id="cb5-5"><a aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> fd <span class="op">=</span> open<span class="op">(</span>FIFO<span class="op">,</span> O_WRONLY<span class="op">);</span>              <span class="co">/* bloqueja fins que hi ha un lector */</span></span>
+<span id="cb5-7"><a aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>fd <span class="op">==</span> <span class="op">-</span><span class="dv">1</span><span class="op">)</span> <span class="op">{</span> perror<span class="op">(</span><span class="st">"open"</span><span class="op">);</span> exit<span class="op">(</span>EXIT_FAILURE<span class="op">);</span> <span class="op">}</span></span>
+<span id="cb5-8"><a aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">3</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb5-10"><a aria-hidden="true" tabindex="-1"></a>        <span class="dt">char</span> msg<span class="op">[</span><span class="dv">32</span><span class="op">];</span></span>
+<span id="cb5-11"><a aria-hidden="true" tabindex="-1"></a>        <span class="dt">int</span> n <span class="op">=</span> snprintf<span class="op">(</span>msg<span class="op">,</span> <span class="kw">sizeof</span> msg<span class="op">,</span> <span class="st">"missatge </span><span class="sc">%d\n</span><span class="st">"</span><span class="op">,</span> i<span class="op">);</span></span>
+<span id="cb5-12"><a aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>write<span class="op">(</span>fd<span class="op">,</span> msg<span class="op">,</span> n<span class="op">)</span> <span class="op">!=</span> n<span class="op">)</span> <span class="op">{</span> perror<span class="op">(</span><span class="st">"write"</span><span class="op">);</span> exit<span class="op">(</span>EXIT_FAILURE<span class="op">);</span> <span class="op">}</span></span>
+<span id="cb5-13"><a aria-hidden="true" tabindex="-1"></a>        sleep<span class="op">(</span><span class="dv">1</span><span class="op">);</span></span>
+<span id="cb5-14"><a aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb5-15"><a aria-hidden="true" tabindex="-1"></a>    close<span class="op">(</span>fd<span class="op">);</span>                                  <span class="co">/* el lector rebrà EOF */</span></span>
+<span id="cb5-16"><a aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> EXIT_SUCCESS<span class="op">;</span></span>
+<span id="cb5-17"><a aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="exemple-lector-independent" class="slide level2">
 <h2>Exemple: lector independent</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb6-1"><a aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;errno.h&gt;</span></span>
-<span id="cb6-2"><a aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;fcntl.h&gt;</span></span>
-<span id="cb6-3"><a aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
-<span id="cb6-4"><a aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdlib.h&gt;</span></span>
-<span id="cb6-5"><a aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;sys/stat.h&gt;</span></span>
-<span id="cb6-6"><a aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;unistd.h&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode c code-with-copy"><code class="sourceCode c"><span id="cb6-1"><a aria-hidden="true" tabindex="-1"></a><span class="pp">#define FIFO </span><span class="st">"/tmp/myfifo"</span></span>
+<span id="cb6-2"><a aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-3"><a aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>mkfifo<span class="op">(</span>FIFO<span class="op">,</span> <span class="bn">0600</span><span class="op">)</span> <span class="op">==</span> <span class="op">-</span><span class="dv">1</span> <span class="op">&amp;&amp;</span> errno <span class="op">!=</span> EEXIST<span class="op">)</span> <span class="op">{</span> perror<span class="op">(</span><span class="st">"mkfifo"</span><span class="op">);</span> exit<span class="op">(</span>EXIT_FAILURE<span class="op">);</span> <span class="op">}</span></span>
+<span id="cb6-4"><a aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> fd <span class="op">=</span> open<span class="op">(</span>FIFO<span class="op">,</span> O_RDONLY<span class="op">);</span>              <span class="co">/* bloqueja fins que hi ha un escriptor */</span></span>
+<span id="cb6-6"><a aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>fd <span class="op">==</span> <span class="op">-</span><span class="dv">1</span><span class="op">)</span> <span class="op">{</span> perror<span class="op">(</span><span class="st">"open"</span><span class="op">);</span> exit<span class="op">(</span>EXIT_FAILURE<span class="op">);</span> <span class="op">}</span></span>
 <span id="cb6-7"><a aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-8"><a aria-hidden="true" tabindex="-1"></a><span class="pp">#define FIFO </span><span class="st">"/tmp/myfifo"</span></span>
-<span id="cb6-9"><a aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-10"><a aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
-<span id="cb6-11"><a aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>mkfifo<span class="op">(</span>FIFO<span class="op">,</span> <span class="bn">0600</span><span class="op">)</span> <span class="op">==</span> <span class="op">-</span><span class="dv">1</span> <span class="op">&amp;&amp;</span> errno <span class="op">!=</span> EEXIST<span class="op">)</span> <span class="op">{</span> perror<span class="op">(</span><span class="st">"mkfifo"</span><span class="op">);</span> exit<span class="op">(</span>EXIT_FAILURE<span class="op">);</span> <span class="op">}</span></span>
-<span id="cb6-12"><a aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-13"><a aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> fd <span class="op">=</span> open<span class="op">(</span>FIFO<span class="op">,</span> O_RDONLY<span class="op">);</span>              <span class="co">/* bloqueja fins que hi ha un escriptor */</span></span>
-<span id="cb6-14"><a aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>fd <span class="op">==</span> <span class="op">-</span><span class="dv">1</span><span class="op">)</span> <span class="op">{</span> perror<span class="op">(</span><span class="st">"open"</span><span class="op">);</span> exit<span class="op">(</span>EXIT_FAILURE<span class="op">);</span> <span class="op">}</span></span>
-<span id="cb6-15"><a aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-16"><a aria-hidden="true" tabindex="-1"></a>    <span class="dt">char</span> buf<span class="op">[</span><span class="dv">128</span><span class="op">];</span></span>
-<span id="cb6-17"><a aria-hidden="true" tabindex="-1"></a>    <span class="dt">ssize_t</span> n<span class="op">;</span></span>
-<span id="cb6-18"><a aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">((</span>n <span class="op">=</span> read<span class="op">(</span>fd<span class="op">,</span> buf<span class="op">,</span> <span class="kw">sizeof</span> buf<span class="op">))</span> <span class="op">&gt;</span> <span class="dv">0</span><span class="op">)</span></span>
-<span id="cb6-19"><a aria-hidden="true" tabindex="-1"></a>        write<span class="op">(</span>STDOUT_FILENO<span class="op">,</span> buf<span class="op">,</span> n<span class="op">);</span>           <span class="co">/* buf NO és una cadena: no té '\0' */</span></span>
-<span id="cb6-20"><a aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>n <span class="op">==</span> <span class="op">-</span><span class="dv">1</span><span class="op">)</span> perror<span class="op">(</span><span class="st">"read"</span><span class="op">);</span></span>
-<span id="cb6-21"><a aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-22"><a aria-hidden="true" tabindex="-1"></a>    close<span class="op">(</span>fd<span class="op">);</span></span>
-<span id="cb6-23"><a aria-hidden="true" tabindex="-1"></a>    unlink<span class="op">(</span>FIFO<span class="op">);</span>                               <span class="co">/* esborrem el nom */</span></span>
-<span id="cb6-24"><a aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> EXIT_SUCCESS<span class="op">;</span></span>
-<span id="cb6-25"><a aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb6-8"><a aria-hidden="true" tabindex="-1"></a>    <span class="dt">char</span> buf<span class="op">[</span><span class="dv">128</span><span class="op">];</span></span>
+<span id="cb6-9"><a aria-hidden="true" tabindex="-1"></a>    <span class="dt">ssize_t</span> n<span class="op">;</span></span>
+<span id="cb6-10"><a aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">((</span>n <span class="op">=</span> read<span class="op">(</span>fd<span class="op">,</span> buf<span class="op">,</span> <span class="kw">sizeof</span> buf<span class="op">))</span> <span class="op">&gt;</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb6-11"><a aria-hidden="true" tabindex="-1"></a>        write<span class="op">(</span>STDOUT_FILENO<span class="op">,</span> buf<span class="op">,</span> n<span class="op">);</span>           <span class="co">/* buf NO és una cadena: no té '\0' */</span></span>
+<span id="cb6-12"><a aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>n <span class="op">==</span> <span class="op">-</span><span class="dv">1</span><span class="op">)</span> perror<span class="op">(</span><span class="st">"read"</span><span class="op">);</span></span>
+<span id="cb6-13"><a aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-14"><a aria-hidden="true" tabindex="-1"></a>    close<span class="op">(</span>fd<span class="op">);</span></span>
+<span id="cb6-15"><a aria-hidden="true" tabindex="-1"></a>    unlink<span class="op">(</span>FIFO<span class="op">);</span>                               <span class="co">/* esborrem el nom */</span></span>
+<span id="cb6-16"><a aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> EXIT_SUCCESS<span class="op">;</span></span>
+<span id="cb6-17"><a aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="execució-qualsevol-ordre-funciona" class="slide level2">
 <h2>Execució: qualsevol ordre funciona</h2>
@@ -490,7 +479,7 @@ Jordi Mateo Fornés
 <li class="fragment">No hi ha cap <code>fork()</code>: els dos processos <strong>no tenen cap relació</strong> de parentiu.</li>
 <li class="fragment">Què passa si engeguem <strong>dos</strong> escriptors alhora? I <strong>dos</strong> lectors?</li>
 </ul>
-<div class="reflexio udl-component udl-reflexio">
+<div class="reflexio fragment udl-component udl-reflexio">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-reflexio"></use></svg><span>Reflexió</span></div>
 <ol type="1">
 <li class="fragment">Amb dos lectors, cada byte el llegeix <strong>només un</strong> d’ells: una FIFO no fa difusió (<em>broadcast</em>). Qui rep cada missatge depèn de la planificació.</li>
