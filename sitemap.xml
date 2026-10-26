@@ -1,127 +1,131 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://igualada.os.udl.cat/index.html</loc>
-    <lastmod>2026-10-22T16:17:07.398Z</lastmod>
-  </url>
-  <url>
     <loc>https://igualada.os.udl.cat/course-info/presentation-slides.html</loc>
-    <lastmod>2026-10-22T16:17:07.398Z</lastmod>
+    <lastmod>2026-10-26T13:07:08.922Z</lastmod>
   </url>
   <url>
-    <loc>https://igualada.os.udl.cat/blocs/01-espai-usuari/activitats/01_c_punters_arrays.html</loc>
-    <lastmod>2026-10-22T16:17:07.066Z</lastmod>
-  </url>
-  <url>
-    <loc>https://igualada.os.udl.cat/blocs/01-espai-usuari/activitats/01_rols_funcions.html</loc>
-    <lastmod>2026-10-22T16:17:07.066Z</lastmod>
-  </url>
-  <url>
-    <loc>https://igualada.os.udl.cat/blocs/01-espai-usuari/teoria/04_construccio_progama_c.html</loc>
-    <lastmod>2026-10-22T16:17:07.067Z</lastmod>
-  </url>
-  <url>
-    <loc>https://igualada.os.udl.cat/blocs/01-espai-usuari/teoria/05_variables_estructures.html</loc>
-    <lastmod>2026-10-22T16:17:07.067Z</lastmod>
-  </url>
-  <url>
-    <loc>https://igualada.os.udl.cat/blocs/01-espai-usuari/teoria/01_rols_funcions.html</loc>
-    <lastmod>2026-10-22T16:17:07.066Z</lastmod>
-  </url>
-  <url>
-    <loc>https://igualada.os.udl.cat/blocs/01-espai-usuari/pralabs/01_c_mem.html</loc>
-    <lastmod>2026-10-22T16:17:07.066Z</lastmod>
-  </url>
-  <url>
-    <loc>https://igualada.os.udl.cat/blocs/01-espai-usuari/pralabs/02_c_mem.html</loc>
-    <lastmod>2026-10-22T16:17:07.066Z</lastmod>
-  </url>
-  <url>
-    <loc>https://igualada.os.udl.cat/blocs/02-proc/activitats/01-fork-wait.html</loc>
-    <lastmod>2026-10-22T16:17:07.347Z</lastmod>
-  </url>
-  <url>
-    <loc>https://igualada.os.udl.cat/blocs/02-proc/activitats/05-loteria.html</loc>
-    <lastmod>2026-10-22T16:17:07.347Z</lastmod>
-  </url>
-  <url>
-    <loc>https://igualada.os.udl.cat/blocs/02-proc/activitats/03-exec.html</loc>
-    <lastmod>2026-10-22T16:17:07.347Z</lastmod>
-  </url>
-  <url>
-    <loc>https://igualada.os.udl.cat/blocs/02-proc/teoria/01-procs.html</loc>
-    <lastmod>2026-10-22T16:17:07.359Z</lastmod>
-  </url>
-  <url>
-    <loc>https://igualada.os.udl.cat/blocs/02-proc/teoria/04-pipes.html</loc>
-    <lastmod>2026-10-22T16:17:07.360Z</lastmod>
-  </url>
-  <url>
-    <loc>https://igualada.os.udl.cat/blocs/02-proc/pralabs/02_minishell.html</loc>
-    <lastmod>2026-10-22T16:17:07.348Z</lastmod>
-  </url>
-  <url>
-    <loc>https://igualada.os.udl.cat/blocs/02-proc/pralabs/03_minishell.html</loc>
-    <lastmod>2026-10-22T16:17:07.348Z</lastmod>
-  </url>
-  <url>
-    <loc>https://igualada.os.udl.cat/blocs/02-proc/pralabs/01_minishell.html</loc>
-    <lastmod>2026-10-22T16:17:07.347Z</lastmod>
-  </url>
-  <url>
-    <loc>https://igualada.os.udl.cat/blocs/02-proc/teoria/05-fifos.html</loc>
-    <lastmod>2026-10-22T16:17:07.360Z</lastmod>
-  </url>
-  <url>
-    <loc>https://igualada.os.udl.cat/blocs/02-proc/teoria/03-signals.html</loc>
-    <lastmod>2026-10-22T16:17:07.360Z</lastmod>
-  </url>
-  <url>
-    <loc>https://igualada.os.udl.cat/blocs/02-proc/teoria/02-create.html</loc>
-    <lastmod>2026-10-22T16:17:07.360Z</lastmod>
+    <loc>https://igualada.os.udl.cat/index.html</loc>
+    <lastmod>2026-10-26T13:07:08.922Z</lastmod>
   </url>
   <url>
     <loc>https://igualada.os.udl.cat/blocs/02-proc/activitats/04-pipes.html</loc>
-    <lastmod>2026-10-22T16:17:07.347Z</lastmod>
+    <lastmod>2026-10-26T13:07:08.875Z</lastmod>
   </url>
   <url>
-    <loc>https://igualada.os.udl.cat/blocs/02-proc/activitats/02-create.html</loc>
-    <lastmod>2026-10-22T16:17:07.347Z</lastmod>
+    <loc>https://igualada.os.udl.cat/blocs/02-proc/activitats/05-loteria.html</loc>
+    <lastmod>2026-10-26T13:07:08.875Z</lastmod>
   </url>
   <url>
-    <loc>https://igualada.os.udl.cat/blocs/01-espai-usuari/pralabs/03_c_heap.html</loc>
-    <lastmod>2026-10-22T16:17:07.066Z</lastmod>
+    <loc>https://igualada.os.udl.cat/blocs/02-proc/pralabs/02_minishell.html</loc>
+    <lastmod>2026-10-26T13:07:08.875Z</lastmod>
   </url>
   <url>
-    <loc>https://igualada.os.udl.cat/blocs/01-espai-usuari/pralabs/04_c_ptrptr.html</loc>
-    <lastmod>2026-10-22T16:17:07.066Z</lastmod>
+    <loc>https://igualada.os.udl.cat/blocs/02-proc/pralabs/01_minishell.html</loc>
+    <lastmod>2026-10-26T13:07:08.875Z</lastmod>
   </url>
   <url>
-    <loc>https://igualada.os.udl.cat/blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html</loc>
-    <lastmod>2026-10-22T16:17:07.067Z</lastmod>
+    <loc>https://igualada.os.udl.cat/blocs/02-proc/teoria/05-fifos.html</loc>
+    <lastmod>2026-10-26T13:07:08.886Z</lastmod>
   </url>
   <url>
-    <loc>https://igualada.os.udl.cat/blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html</loc>
-    <lastmod>2026-10-22T16:17:07.067Z</lastmod>
+    <loc>https://igualada.os.udl.cat/blocs/02-proc/teoria/02-create.html</loc>
+    <lastmod>2026-10-26T13:07:08.886Z</lastmod>
   </url>
   <url>
-    <loc>https://igualada.os.udl.cat/blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html</loc>
-    <lastmod>2026-10-22T16:17:07.067Z</lastmod>
+    <loc>https://igualada.os.udl.cat/blocs/03-sched/teoria/01-sched.html</loc>
+    <lastmod>2026-10-26T13:07:08.913Z</lastmod>
+  </url>
+  <url>
+    <loc>https://igualada.os.udl.cat/blocs/01-espai-usuari/activitats/01_c_punters_arrays.html</loc>
+    <lastmod>2026-10-26T13:07:08.622Z</lastmod>
+  </url>
+  <url>
+    <loc>https://igualada.os.udl.cat/blocs/01-espai-usuari/activitats/01_rols_funcions.html</loc>
+    <lastmod>2026-10-26T13:07:08.622Z</lastmod>
+  </url>
+  <url>
+    <loc>https://igualada.os.udl.cat/blocs/01-espai-usuari/pralabs/01_c_mem.html</loc>
+    <lastmod>2026-10-26T13:07:08.623Z</lastmod>
+  </url>
+  <url>
+    <loc>https://igualada.os.udl.cat/blocs/01-espai-usuari/pralabs/02_c_mem.html</loc>
+    <lastmod>2026-10-26T13:07:08.623Z</lastmod>
   </url>
   <url>
     <loc>https://igualada.os.udl.cat/blocs/01-espai-usuari/teoria/07_syscalls_kernel.html</loc>
-    <lastmod>2026-10-22T16:17:07.067Z</lastmod>
+    <lastmod>2026-10-26T13:07:08.623Z</lastmod>
+  </url>
+  <url>
+    <loc>https://igualada.os.udl.cat/blocs/01-espai-usuari/teoria/04_construccio_progama_c.html</loc>
+    <lastmod>2026-10-26T13:07:08.623Z</lastmod>
+  </url>
+  <url>
+    <loc>https://igualada.os.udl.cat/blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html</loc>
+    <lastmod>2026-10-26T13:07:08.623Z</lastmod>
+  </url>
+  <url>
+    <loc>https://igualada.os.udl.cat/blocs/01-espai-usuari/teoria/01_rols_funcions.html</loc>
+    <lastmod>2026-10-26T13:07:08.623Z</lastmod>
+  </url>
+  <url>
+    <loc>https://igualada.os.udl.cat/blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html</loc>
+    <lastmod>2026-10-26T13:07:08.623Z</lastmod>
+  </url>
+  <url>
+    <loc>https://igualada.os.udl.cat/blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html</loc>
+    <lastmod>2026-10-26T13:07:08.623Z</lastmod>
+  </url>
+  <url>
+    <loc>https://igualada.os.udl.cat/blocs/01-espai-usuari/teoria/05_variables_estructures.html</loc>
+    <lastmod>2026-10-26T13:07:08.623Z</lastmod>
+  </url>
+  <url>
+    <loc>https://igualada.os.udl.cat/blocs/01-espai-usuari/pralabs/03_c_heap.html</loc>
+    <lastmod>2026-10-26T13:07:08.623Z</lastmod>
+  </url>
+  <url>
+    <loc>https://igualada.os.udl.cat/blocs/01-espai-usuari/pralabs/04_c_ptrptr.html</loc>
+    <lastmod>2026-10-26T13:07:08.623Z</lastmod>
   </url>
   <url>
     <loc>https://igualada.os.udl.cat/blocs/01-espai-usuari/activitats/02_espai_funcions.html</loc>
-    <lastmod>2026-10-22T16:17:07.066Z</lastmod>
+    <lastmod>2026-10-26T13:07:08.622Z</lastmod>
   </url>
   <url>
     <loc>https://igualada.os.udl.cat/blocs/01-espai-usuari/activitats/03_pokemon.html</loc>
-    <lastmod>2026-10-22T16:17:07.066Z</lastmod>
+    <lastmod>2026-10-26T13:07:08.622Z</lastmod>
+  </url>
+  <url>
+    <loc>https://igualada.os.udl.cat/blocs/02-proc/teoria/01-procs.html</loc>
+    <lastmod>2026-10-26T13:07:08.885Z</lastmod>
+  </url>
+  <url>
+    <loc>https://igualada.os.udl.cat/blocs/02-proc/teoria/03-signals.html</loc>
+    <lastmod>2026-10-26T13:07:08.886Z</lastmod>
+  </url>
+  <url>
+    <loc>https://igualada.os.udl.cat/blocs/02-proc/teoria/04-pipes.html</loc>
+    <lastmod>2026-10-26T13:07:08.886Z</lastmod>
+  </url>
+  <url>
+    <loc>https://igualada.os.udl.cat/blocs/02-proc/pralabs/03_minishell.html</loc>
+    <lastmod>2026-10-26T13:07:08.875Z</lastmod>
+  </url>
+  <url>
+    <loc>https://igualada.os.udl.cat/blocs/02-proc/activitats/01-fork-wait.html</loc>
+    <lastmod>2026-10-26T13:07:08.875Z</lastmod>
+  </url>
+  <url>
+    <loc>https://igualada.os.udl.cat/blocs/02-proc/activitats/02-create.html</loc>
+    <lastmod>2026-10-26T13:07:08.875Z</lastmod>
+  </url>
+  <url>
+    <loc>https://igualada.os.udl.cat/blocs/02-proc/activitats/03-exec.html</loc>
+    <lastmod>2026-10-26T13:07:08.875Z</lastmod>
   </url>
   <url>
     <loc>https://igualada.os.udl.cat/course-info/contributions/contribute.html</loc>
-    <lastmod>2026-10-22T16:17:07.389Z</lastmod>
+    <lastmod>2026-10-26T13:07:08.914Z</lastmod>
   </url>
 </urlset>
