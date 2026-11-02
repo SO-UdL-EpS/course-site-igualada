@@ -1,0 +1,1705 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<link href="../../../assets/logo.svg" rel="icon" type="image/svg+xml">
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-html/tabby.min.js"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.11.9">
+
+  <meta name="author" content="Jordi Mateo Fornés">
+  <title>Sistemes Operatius – Planificació de processos (II)</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../../../site_libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="../../../site_libs/revealjs/dist/reveal.css">
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="../../../site_libs/revealjs/dist/theme/quarto-441239ed6778beee6228094c2d237fb1.css">
+  <link href="../../../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="../../../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="../../../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="../../../site_libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+  <script src="../../../site_libs/quarto-diagram/mermaid.min.js"></script>
+  <script src="../../../site_libs/quarto-diagram/mermaid-init.js"></script>
+  <link href="../../../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/asciinema-player@3.9.0/dist/bundle/asciinema-player.css">
+  <script src="https://cdn.jsdelivr.net/npm/asciinema-player@3.9.0/dist/bundle/asciinema-player.min.js"></script>
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="quarto-title-block center">
+  <h1 class="title">Planificació de processos (II)</h1>
+  <p class="subtitle">Prioritats · SJF · SRTF · Cues</p>
+
+<div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+Jordi Mateo Fornés
+</div>
+</div>
+</div>
+
+</section>
+<section id="objectius-de-la-sessió" class="slide level2">
+<h2>Objectius de la sessió</h2>
+<div class="objectius udl-component udl-objectius" title="En acabar la sessió, has de ser capaç de">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-objectius"></use></svg><span>Objectius d'Aprenentatge — En acabar la sessió, has de ser capaç de</span></div>
+<ul>
+<li class="fragment">Planificar per <strong>prioritats</strong> i explicar la <strong>inanició</strong>, l’<strong>envelliment</strong> i la <strong>inversió de prioritats</strong>.</li>
+<li class="fragment">Aplicar <strong>SJF</strong> i <strong>SRTF</strong> i justificar en quines condicions són òptims.</li>
+<li class="fragment">Estimar la propera ràfega amb una <strong>mitjana exponencial</strong>.</li>
+<li class="fragment">Descriure com una <strong>cua multinivell amb retroalimentació</strong> aproxima SRTF sense conèixer el futur.</li>
+<li class="fragment">Relacionar-ho amb el planificador de <strong>Linux</strong> (Debian bookworm).</li>
+</ul>
+</div>
+<div class="prerequisits udl-component udl-prerequisits" title="Necessites recordar">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-prerequisits"></use></svg><span>Prerequisits — Necessites recordar</span></div>
+<ul>
+<li class="fragment">Mètriques: <span class="math inline">\(T_{retorn}\)</span>, <span class="math inline">\(T_{espera}\)</span>, <span class="math inline">\(T_{resposta}\)</span>, <span class="math inline">\(T_N\)</span>.</li>
+<li class="fragment">FCFS, RR, apropiació i efecte comboi.</li>
+</ul>
+</div>
+</section>
+<section id="on-érem" class="slide level2">
+<h2>On érem</h2>
+<ul>
+<li class="fragment">FCFS i RR <strong>no saben res</strong> dels processos: tracten igual una tasca de 2 ms que una de 2 hores.</li>
+<li class="fragment">Avui afegim <strong>informació</strong>:
+<ul>
+<li class="fragment">una <strong>importància</strong> externa (prioritats);</li>
+<li class="fragment">la <strong>durada</strong> de la propera ràfega (SJF i SRTF);</li>
+<li class="fragment">el <strong>comportament passat</strong> (MLFQ).</li>
+</ul></li>
+<li class="fragment">Cada fragment d’informació millora alguna mètrica i obre un problema nou.</li>
+</ul>
+</section>
+<section>
+<section id="prioritats" class="title-slide slide level1 center">
+<h1>Prioritats</h1>
+
+</section>
+<section id="planificació-per-prioritats" class="slide level2">
+<h2>Planificació per prioritats</h2>
+<ul>
+<li class="fragment">Cada procés té una <strong>prioritat</strong>; s’executa el preparat més prioritari.</li>
+<li class="fragment">En cas d’empat, s’aplica una altra política (habitualment FCFS o RR).</li>
+<li class="fragment">Pot ser <strong>apropiativa</strong> (un procés més prioritari expulsa l’actual) o <strong>no apropiativa</strong>.</li>
+<li class="fragment">Les prioritats poden ser <strong>estàtiques</strong> o <strong>dinàmiques</strong> (el SO les ajusta).</li>
+</ul>
+<div class="errorcomu fragment udl-component udl-errorcomu" title="Número petit, prioritat alta?">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-errorcomu"></use></svg><span>Error Comú — Número petit, prioritat alta?</span></div>
+<p>Depèn del sistema. A Linux, un <code>nice</code> <strong>més baix</strong> vol dir <strong>més</strong> prioritat, però en temps real una prioritat <strong>més alta</strong> (1–99) vol dir més prioritat. Sempre cal indicar quin conveni fa servir.</p>
+</div>
+</section>
+<section id="exercici-prioritats" class="slide level2">
+<h2>Exercici: prioritats</h2>
+<div class="exercici udl-component udl-exercici" title="Planificació per prioritats apropiativa">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici — Planificació per prioritats apropiativa</span></div>
+<p>Número més petit = més prioritat (ordre B, A, C). Un procés que arriba amb més prioritat <strong>expulsa</strong> l’actual.</p>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Procés</th>
+<th><span class="math inline">\(T_a\)</span></th>
+<th><span class="math inline">\(T_{cpu}\)</span></th>
+<th>Prioritat</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td>0</td>
+<td>7</td>
+<td>5</td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td>2</td>
+<td>4</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>C</td>
+<td>3</td>
+<td>2</td>
+<td>6</td>
+</tr>
+</tbody>
+</table>
+<ol type="1">
+<li class="fragment">Dibuixa el diagrama de Gantt.</li>
+<li class="fragment">Calcula la utilització, la productivitat, <span class="math inline">\(\bar{T}_{espera}\)</span>, <span class="math inline">\(\bar{T}_{retorn}\)</span> i <span class="math inline">\(\bar{T}_{resposta}\)</span>.</li>
+</ol>
+</div>
+</section>
+<section id="exercici-03-solució" class="slide level2 smaller">
+<h2>Exercici 03: solució</h2>
+<div class="solucio udl-component udl-solucio" title="Prioritats apropiatives">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució — Prioritats apropiatives</span></div>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th><span class="math inline">\(t\)</span></th>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+<th>10</th>
+<th>11</th>
+<th>12</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>CPU</td>
+<td>A</td>
+<td>A</td>
+<td>B</td>
+<td>B</td>
+<td>B</td>
+<td>B</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>C</td>
+<td>C</td>
+</tr>
+</tbody>
+</table>
+<table class="caption-top">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 10%">
+<col style="width: 21%">
+<col style="width: 21%">
+<col style="width: 24%">
+<col style="width: 10%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Procés</th>
+<th><span class="math inline">\(T_f\)</span></th>
+<th><span class="math inline">\(T_{retorn}\)</span></th>
+<th><span class="math inline">\(T_{espera}\)</span></th>
+<th><span class="math inline">\(T_{resposta}\)</span></th>
+<th><span class="math inline">\(T_N\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td>11</td>
+<td>11</td>
+<td>4</td>
+<td>0</td>
+<td>1.57</td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td>6</td>
+<td>4</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>C</td>
+<td>13</td>
+<td>10</td>
+<td>8</td>
+<td>8</td>
+<td>5</td>
+</tr>
+<tr class="even">
+<td><strong>Mitjana</strong></td>
+<td></td>
+<td><strong>8.33</strong></td>
+<td><strong>4</strong></td>
+<td><strong>2.67</strong></td>
+<td><strong>2.52</strong></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li class="fragment">Utilització <span class="math inline">\(= 13/13 = 100\%\)</span>; productivitat <span class="math inline">\(= 3/13 \approx 0.23\)</span> processos/u.t.</li>
+<li class="fragment">C és el més curt i el que pitjor surt: la prioritat ignora completament la durada.</li>
+</ul>
+</div>
+</section>
+<section id="inanició-i-envelliment" class="slide level2">
+<h2>Inanició i envelliment</h2>
+<div class="definicio udl-component udl-definicio" title="Inanició (starvation)">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-definicio"></use></svg><span>Definició — Inanició (starvation)</span></div>
+<p>Un procés preparat no aconsegueix la CPU durant un temps <strong>indefinit</strong> perquè sempre n’hi ha de més prioritaris.</p>
+</div>
+<ul>
+<li class="fragment"><strong>Envelliment</strong> (<em>aging</em>): augmentar periòdicament la prioritat dels processos que fa temps que esperen.</li>
+</ul>
+<div class="fragment">
+<pre class="pseudocode"><code>cada tick:
+    per a cada procés p a la cua de preparats:
+        si p.espera &gt;= LLINDAR:
+            p.prioritat = p.prioritat + 1   // més prioritari
+            p.espera = 0</code></pre>
+</div>
+<ul>
+<li class="fragment">Funciona, però és <em>ad hoc</em>: quin llindar? Quin increment? Si el sistema està saturat, tots acaben envellint i les prioritats deixen de voler dir res.</li>
+</ul>
+</section>
+<section id="inversió-de-prioritats" class="slide level2">
+<h2>Inversió de prioritats</h2>
+<div class="definicio udl-component udl-definicio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-definicio"></use></svg><span>Definició</span></div>
+<p>La <strong>inversió de prioritats</strong> (<em>priority inversion</em>) és un problema de planificació que apareix quan tasques amb prioritats diferents comparteixen recursos protegits mitjançant mecanismes de sincronització, com ara els <em>mutex</em>.</p>
+</div>
+<p>Imaginem tres tasques:</p>
+<ul>
+<li class="fragment"><strong>H (High):</strong> tasca d’alta prioritat. Necessita accedir a un recurs compartit.</li>
+<li class="fragment"><strong>M (Medium):</strong> tasca de prioritat mitjana. No utilitza aquest recurs.</li>
+<li class="fragment"><strong>L (Low):</strong> tasca de baixa prioritat. També necessita accedir al mateix recurs.</li>
+</ul>
+<div class="fragment">
+<p>H i L comparteixen un mutex, mentre que M no hi té cap relació. Considerem que les tres tasques competeixen per la CPU i que el planificador utilitza <strong>prioritats preemptives</strong>. Suposem aquestes necessitats de CPU:</p>
+</div>
+<div class="fragment">
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: center;">Tasca</th>
+<th style="text-align: center;">Arriba a</th>
+<th style="text-align: center;">CPU necessària</th>
+<th style="text-align: left;">Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">L</td>
+<td style="text-align: center;">t = 0</td>
+<td style="text-align: center;">3 unitats</td>
+<td style="text-align: left;">Les 3 dins la secció crítica</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">H</td>
+<td style="text-align: center;">t = 2</td>
+<td style="text-align: center;">3 unitats</td>
+<td style="text-align: left;">Intenta agafar el mutex a t = 3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">M</td>
+<td style="text-align: center;">t = 3</td>
+<td style="text-align: center;">5 unitats</td>
+<td style="text-align: left;">No utilitza el mutex</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="què-passa-durant-lexecució" class="slide level2">
+<h2>Què passa durant l’execució?</h2>
+<div class="cell" data-reveal="true" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+
+<pre class="mermaid mermaid-js">gantt
+    title Inversió de prioritats sense herència
+    dateFormat X
+    axisFormat %s
+
+    section H (alta)
+    Executa                 :h1, 2, 1
+    Bloquejada pel mutex    :crit, h2, 3, 6
+    Executa                 :h3, 9, 2
+
+    section M (mitjana)
+    Executa                 :m1, 3, 5
+
+    section L (baixa)
+    Executa amb el mutex    :l1, 0, 2
+    Preemptada              :crit, l2, 2, 6
+    Executa i allibera el mutex :l3, 8, 1
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<p>Seguim l’execució pas a pas:</p>
+<ul>
+<li class="fragment"><strong>Temps 0–2:</strong> L comença a executar-se i adquireix el mutex per accedir al recurs compartit.</li>
+<li class="fragment"><strong>Temps 2–3:</strong> arriba H, que té una prioritat superior, i desplaça L de la CPU. Quan intenta adquirir el mutex, comprova que està ocupat per L i queda <strong>bloquejada</strong>.</li>
+<li class="fragment"><strong>Temps 3–8:</strong> a t = 3 arriba M, que està preparada per executar-se. Com que té més prioritat que L, el planificador li assigna la CPU. Encara que M no utilitza el recurs compartit, impedeix que L continuï executant-se.</li>
+<li class="fragment"><strong>Temps 8–9:</strong> M acaba i L recupera la CPU. Acaba la seva secció crítica i allibera el mutex.</li>
+<li class="fragment"><strong>Temps 9–11:</strong> H es desbloqueja, adquireix el mutex i continua executant-se.</li>
+</ul>
+</section>
+<section id="on-és-el-problema" class="slide level2">
+<h2>On és el problema?</h2>
+<p>Que H esperi L és <strong>inevitable</strong>: H necessita un recurs que L està fent servir, i aquesta espera queda acotada per la durada de la secció crítica de L. Això s’anomena <strong>bloqueig acotat</strong> i no és, per si mateix, un problema greu.</p>
+<div class="fragment reflexio udl-component udl-reflexio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-reflexio"></use></svg><span>Reflexió</span></div>
+<p>H, que és la tasca amb més prioritat, acaba esperant M, que té menys prioritat i ni tan sols utilitza el recurs compartit. Com que M pot executar-se tant de temps com vulgui (o tantes tasques de prioritat intermèdia com n’hi hagi), l’espera de H deixa de tenir un límit previsible.</p>
+</div>
+<div class="fragment">
+<p>La cadena de dependències és:</p>
+<ol type="1">
+<li class="fragment">H necessita el mutex.</li>
+<li class="fragment">L té el mutex i és l’única que pot alliberar-lo.</li>
+<li class="fragment">M impedeix que L avanci perquè té més prioritat que L.</li>
+</ol>
+</div>
+<div class="fragment reflexio udl-component udl-reflexio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-reflexio"></use></svg><span>Reflexió</span></div>
+<p>La <strong>inversió de prioritats</strong> fa que un sistema de temps real incompleixi els seus terminis.</p>
+</div>
+</section>
+<section id="com-es-pot-solucionar" class="slide level2">
+<h2>Com es pot solucionar?</h2>
+<p>Una solució habitual és el mecanisme d’<strong>herència de prioritats</strong> (<em>priority inheritance</em>). La idea és que, quan una tasca d’alta prioritat queda bloquejada esperant un recurs que té una tasca de baixa prioritat, aquesta última <strong>hereta temporalment</strong> la prioritat de la tasca bloquejada.</p>
+<ol type="1">
+<li class="fragment">L té adquirit el mutex.</li>
+<li class="fragment">H intenta adquirir-lo i queda bloquejada.</li>
+<li class="fragment">El sistema detecta que L és qui impedeix que H continuï.</li>
+<li class="fragment">L hereta temporalment la prioritat d’H.</li>
+<li class="fragment">M ja no pot desplaçar L, perquè ara L té una prioritat superior.</li>
+<li class="fragment">L acaba la seva secció crítica i allibera el mutex.</li>
+<li class="fragment">L recupera la seva prioritat original i H es desbloqueja.</li>
+</ol>
+<div class="cell" data-reveal="true" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+
+<pre class="mermaid mermaid-js">gantt
+    title Execució amb herència de prioritats
+    dateFormat X
+    axisFormat %s
+
+    section H (alta)
+    Executa                 :h1, 2, 1
+    Bloquejada pel mutex    :crit, h2, 3, 1
+    Executa                 :h3, 4, 2
+
+    section M (mitjana)
+    Preparada (espera)      :m0, 3, 3
+    Executa                 :m1, 6, 5
+
+    section L (baixa)
+    Executa amb el mutex    :l1, 0, 2
+    Executa amb prioritat heretada :l2, 3, 1
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+<section id="un-cas-real-mars-pathfinder-1997" class="slide level2">
+<h2>Un cas real: Mars Pathfinder (1997)</h2>
+<p>La inversió de prioritats no és només un problema teòric. Un cas molt conegut es va produir durant la missió <strong>Mars Pathfinder</strong> de la NASA, l’any 1997. El programari de vol s’executava sobre el sistema operatiu de temps real <strong>VxWorks</strong>, i les tasques implicades eren:</p>
+<div class="fragment">
+<ul>
+<li class="fragment"><strong>Alta prioritat:</strong> la gestió del bus d’informació.</li>
+<li class="fragment"><strong>Prioritat mitjana:</strong> les tasques de comunicacions.</li>
+<li class="fragment"><strong>Baixa prioritat:</strong> la recollida de dades meteorològiques, que feia servir un mutex compartit amb la tasca del bus.</li>
+</ul>
+</div>
+<div class="fragment">
+<p>Quan la tasca de baixa prioritat tenia el mutex, les tasques de prioritat intermèdia impedien que acabés la seva secció crítica. Com a conseqüència, la tasca del bus d’informació no podia complir els seus terminis i el <em>watchdog</em> del sistema provocava reinicis.</p>
+</div>
+<div class="fragment solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<p>El problema es va solucionar activant l’<strong>herència de prioritats</strong> en el mutex, una modificació que es va poder aplicar remotament enviant el <strong>fix/patch</strong> des de la Terra.</p>
+</div>
+</section></section>
+<section>
+<section id="sjf-i-srtf" class="title-slide slide level1 center">
+<h1>SJF i SRTF</h1>
+
+</section>
+<section id="i-si-coneguéssim-el-futur" class="slide level2">
+<h2>I si coneguéssim el futur?</h2>
+<ul>
+<li class="fragment"><strong>SJF</strong> (<em>Shortest Job First</em>): s’executa el preparat amb la <strong>propera ràfega de CPU</strong> més curta. <strong>No apropiatiu</strong>.</li>
+<li class="fragment"><strong>SRTF</strong> (<em>Shortest Remaining Time First</em>): versió <strong>apropiativa</strong>. Si arriba un procés amb una ràfega més curta que el que <strong>queda</strong> a l’actual, l’expulsa.</li>
+</ul>
+<div class="concepte fragment udl-component udl-concepte">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-concepte"></use></svg><span>Concepte</span></div>
+<p>Treure els curts del sistema com més aviat millor. Els curts en surten molt beneficiats i els llargs, gairebé gens perjudicats.</p>
+</div>
+<div class="errorcomu fragment udl-component udl-errorcomu" title="Noms que canvien segons el llibre">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-errorcomu"></use></svg><span>Error Comú — Noms que canvien segons el llibre</span></div>
+<p>La bibliografia anomena <strong>STCF</strong> (<em>Shortest Time-to-Completion First</em>) la versió <strong>apropiativa</strong>; altres textos usen STCF per a SJF. Aquí només usarem <strong>SJF</strong> (no apropiatiu) i <strong>SRTF</strong> (apropiatiu).</p>
+</div>
+</section>
+<section id="sjf-exemple" class="slide level2">
+<h2>SJF: exemple</h2>
+<div class="columns">
+<div class="column" style="width:35%;">
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: center;"><span class="math inline">\(p\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(T_a\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(T_{cpu}\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">🟢 P1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">10</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">🔵 P2</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">🟣 P3</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">4</td>
+</tr>
+</tbody>
+</table>
+</div><div class="column" style="width:65%;">
+<div class="cell" data-reveal="true" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+
+<pre class="mermaid mermaid-js">gantt
+    title SJF (no apropiatiu)
+    dateFormat X
+    axisFormat %s
+
+    section Execució
+    🔵 P2 : 0, 5
+    🟣 P3 : 5, 9
+    🟢 P1 : 9, 19
+    section Preparats
+    🟢 P1 a la cua : 0, 9
+    🟣 P3 a la cua : 1, 5
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Mètrica</th>
+<th>P1</th>
+<th>P2</th>
+<th>P3</th>
+<th>Mitjana</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(T_{espera}\)</span></td>
+<td>9</td>
+<td>0</td>
+<td>4</td>
+<td>4.33</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(T_{retorn}\)</span></td>
+<td>19</td>
+<td>5</td>
+<td>8</td>
+<td>10.67</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(T_{resposta}\)</span></td>
+<td>9</td>
+<td>0</td>
+<td>4</td>
+<td>4.33</td>
+</tr>
+</tbody>
+</table>
+</div></div>
+<aside class="notes">
+<p>A t=0 P2 (5) és més curt que P1 (10). A t=1 arriba P3 (4), però SJF no és apropiatiu i P2 continua fins a t=5. Bona pregunta per a classe: amb SRTF, P3 expulsaria P2? A t=1 a P2 li queden exactament 4 unitats: és un empat, i el resultat depèn del conveni de desempat.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="srtf-exemple" class="slide level2">
+<h2>SRTF: exemple</h2>
+<div class="columns">
+<div class="column" style="width:35%;">
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: center;"><span class="math inline">\(p\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(T_a\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(T_{cpu}\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">🟢 P1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">20</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">🔵 P2</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">🟣 P3</td>
+<td style="text-align: center;">8</td>
+<td style="text-align: center;">1</td>
+</tr>
+</tbody>
+</table>
+</div><div class="column" style="width:65%;">
+<div class="cell" data-reveal="true" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+
+<pre class="mermaid mermaid-js">gantt
+    title SRTF (apropiatiu)
+    dateFormat X
+    axisFormat %s
+
+    section Execució
+    🟢 P1 : 0, 5
+    🔵 P2 : 5, 8
+    🟣 P3 : 8, 9
+    🔵 P2 : 9, 11
+    🟢 P1 : 11, 26
+    section Preparats
+    🟢 P1 a la cua : 5, 11
+    🔵 P2 a la cua : 8, 9
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Mètrica</th>
+<th>P1</th>
+<th>P2</th>
+<th>P3</th>
+<th>Mitjana</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(T_{espera}\)</span></td>
+<td>6</td>
+<td>1</td>
+<td>0</td>
+<td>2.33</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(T_{retorn}\)</span></td>
+<td>26</td>
+<td>6</td>
+<td>1</td>
+<td>11</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(T_{resposta}\)</span></td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+</div></div>
+<aside class="notes">
+<p>A t=5, a P1 li queden 15 i P2 en necessita 5: expulsió. A t=8, a P2 li queden 2 i P3 en necessita 1: expulsió. Comproveu sempre que l’últim instant del Gantt sigui la suma de totes les ràfegues (20+5+1 = 26) si la CPU no ha estat mai ociosa.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="per-què-srtf-és-la-referència" class="slide level2">
+<h2>Per què SRTF és la referència?</h2>
+<div class="concepte udl-component udl-concepte" title="Optimalitat">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-concepte"></use></svg><span>Concepte — Optimalitat</span></div>
+<p>Si tots els processos arriben alhora, <strong>SJF</strong> minimitza <span class="math inline">\(\bar{T}_{espera}\)</span> i <span class="math inline">\(\bar{T}_{retorn}\)</span> entre les polítiques no apropiatives. Amb arribades arbitràries, <strong>SRTF</strong> ho fa entre totes les polítiques.</p>
+</div>
+<ul>
+<li class="fragment">Intuïció: avançar un procés curt davant d’un de llarg redueix l’espera del curt més del que augmenta la del llarg.</li>
+<li class="fragment">Optimalitat <strong>sota supòsits</strong>: durades conegudes, canvi de context gratuït i una sola CPU.</li>
+<li class="fragment">Com que és òptim, s’usa de <strong>vara de mesurar</strong>: com de lluny queda una política real de SRTF?</li>
+</ul>
+<div class="errorcomu fragment udl-component udl-errorcomu" title="Òptim per al retorn, no per a la resposta">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-errorcomu"></use></svg><span>Error Comú — Òptim per al retorn, no per a la resposta</span></div>
+<p>SRTF optimitza <span class="math inline">\(\bar{T}_{retorn}\)</span> i <span class="math inline">\(\bar{T}_{espera}\)</span>. Per a <span class="math inline">\(T_{resposta}\)</span> (primera execució), RR amb un quantum petit pot ser millor.</p>
+</div>
+</section>
+<section id="un-exemple-que-ho-explica-tot" class="slide level2 smaller">
+<h2>Un exemple que ho explica tot</h2>
+<ul>
+<li class="fragment"><strong>A</strong> i <strong>B</strong>: limitats per CPU, s’executen durant setmanes.</li>
+<li class="fragment"><strong>C</strong>: limitat per E/S, en bucle: 1 ms de CPU i 9 ms de disc.</li>
+<li class="fragment">Sol, C manté el disc ocupat un 90 % del temps.</li>
+</ul>
+<div class="fragment">
+<table class="caption-top">
+<colgroup>
+<col style="width: 18%">
+<col style="width: 57%">
+<col style="width: 23%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Política</th>
+<th>Què passa</th>
+<th>Utilització del disc</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>FCFS</td>
+<td>Si entra A o B, té la CPU durant setmanes</td>
+<td>≈ 0 %</td>
+</tr>
+<tr class="even">
+<td>RR, <span class="math inline">\(q = 100\,ms\)</span></td>
+<td>C fa 1 ms i espera A i B: 9 ms de disc cada 201 ms</td>
+<td>≈ 4.5 %</td>
+</tr>
+<tr class="odd">
+<td>RR, <span class="math inline">\(q = 1\,ms\)</span></td>
+<td>C torna a temps, però amb molts canvis de context</td>
+<td>≈ 90 %</td>
+</tr>
+<tr class="even">
+<td>SRTF</td>
+<td>C sempre té la ràfega més curta i expulsa A o B</td>
+<td>≈ 90 %</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="reflexio fragment udl-component udl-reflexio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-reflexio"></use></svg><span>Reflexió</span></div>
+<p>Donar prioritat a les ràfegues curtes no només beneficia C: manté <strong>ocupats</strong> els dispositius, i A i B gairebé no ho noten.</p>
+</div>
+<aside class="notes">
+<p>Exemple de Kubiatowicz, CS162 Lec 11. Amb RR de 100 ms: C fa 1 ms de CPU, llança l’E/S de 9 ms, però no torna a tenir la CPU fins que A i B han consumit 100 ms cadascun: 9/201 ≈ 4.5 %.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="el-problema-ningú-coneix-el-futur" class="slide level2">
+<h2>El problema: ningú coneix el futur</h2>
+<ul>
+<li class="fragment">Alguns sistemes per lots demanen a l’usuari una <strong>estimació</strong> de durada i maten la tasca si la supera.</li>
+<li class="fragment">Fins i tot un usuari honest ho té molt difícil per a cada ràfega.</li>
+<li class="fragment">SRTF també és <strong>injust</strong>: si arriben curts constantment, els llargs pateixen <strong>inanició</strong>.</li>
+</ul>
+<div class="concepte fragment udl-component udl-concepte" title="Predir a partir del passat">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-concepte"></use></svg><span>Concepte — Predir a partir del passat</span></div>
+<p>Els programes tenen un comportament força estable: si les últimes ràfegues han estat curtes, la propera probablement també ho serà.</p>
+</div>
+</section></section>
+<section>
+<section id="predir-la-propera-ràfega" class="title-slide slide level1 center">
+<h1>Predir la propera ràfega</h1>
+
+</section>
+<section id="mitjana-exponencial" class="slide level2">
+<h2>Mitjana exponencial</h2>
+<p>Siguin <span class="math inline">\(t_n\)</span> la durada <strong>real</strong> de la ràfega <span class="math inline">\(n\)</span> i <span class="math inline">\(\tau_n\)</span> la seva <strong>predicció</strong>:</p>
+<p><span class="math display">\[\tau_{n+1} = \alpha\, t_n + (1-\alpha)\,\tau_n, \qquad 0 \leq \alpha \leq 1\]</span></p>
+<ul>
+<li class="fragment"><span class="math inline">\(\alpha = 0\)</span>: ignorem el present, <span class="math inline">\(\tau\)</span> no canvia mai.</li>
+<li class="fragment"><span class="math inline">\(\alpha = 1\)</span>: només compta l’última ràfega.</li>
+<li class="fragment">En desplegar-la: <span class="math inline">\(\tau_{n+1} = \alpha t_n + (1-\alpha)\alpha t_{n-1} + (1-\alpha)^2 \alpha t_{n-2} + \dots\)</span> El passat pesa <strong>exponencialment</strong> menys.</li>
+</ul>
+</section>
+<section id="mitjana-exponencial-exemple" class="slide level2">
+<h2>Mitjana exponencial: exemple</h2>
+<div class="exemple udl-component udl-exemple" title="α = 1/2, τ₀ = 10">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exemple"></use></svg><span>Exemple — α = 1/2, τ₀ = 10</span></div>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th><span class="math inline">\(n\)</span></th>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Ràfega real <span class="math inline">\(t_n\)</span></td>
+<td>6</td>
+<td>4</td>
+<td>6</td>
+<td>4</td>
+<td>13</td>
+<td>13</td>
+<td>13</td>
+<td>–</td>
+</tr>
+<tr class="even">
+<td>Predicció <span class="math inline">\(\tau_n\)</span></td>
+<td>10</td>
+<td>8</td>
+<td>6</td>
+<td>6</td>
+<td>5</td>
+<td>9</td>
+<td>11</td>
+<td>12</td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li class="fragment">La predicció <strong>segueix</strong> el canvi de comportament (de ≈5 a 13) amb uns quants passos de retard.</li>
+<li class="fragment">Amb <span class="math inline">\(\alpha\)</span> gran segueix més de pressa, però també és més sensible a una ràfega anòmala.</li>
+</ul>
+<aside class="notes">
+<p>τ1 = 0.5·6 + 0.5·10 = 8; τ2 = 0.5·4 + 0.5·8 = 6; τ3 = 6; τ4 = 5; τ5 = 0.5·13 + 0.5·5 = 9; τ6 = 11; τ7 = 12. Exemple clàssic de Silberschatz. SRTF amb predicció és una política implementable; la predicció és tan bona com estable sigui el programa.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="exercici-04-sjf-vs-rr" class="slide level2 smaller">
+<h2>Exercici 04: SJF vs RR</h2>
+<div class="exercici udl-component udl-exercici" title="Ràfegues de CPU i d'E/S">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici — Ràfegues de CPU i d'E/S</span></div>
+<p>Planifica amb <strong>RR (<span class="math inline">\(q = 3\)</span>)</strong> i amb <strong>SJF no apropiatiu</strong> (segons la <strong>propera ràfega</strong> de CPU).</p>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Procés</th>
+<th><span class="math inline">\(T_a\)</span></th>
+<th>Ràfegues</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td>7</td>
+<td><span class="math inline">\(5_{CPU},\ 2_{E/S},\ 4_{CPU}\)</span></td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td>3</td>
+<td><span class="math inline">\(4_{CPU},\ 1_{E/S},\ 1_{CPU},\ 1_{E/S},\ 1_{CPU}\)</span></td>
+</tr>
+<tr class="odd">
+<td>C</td>
+<td>1</td>
+<td><span class="math inline">\(2_{CPU},\ 1_{E/S},\ 3_{CPU},\ 2_{E/S},\ 1_{CPU}\)</span></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li class="fragment">Convenis: cada procés té el seu dispositiu (les E/S no fan cua). Si diversos processos entren alhora a la cua de preparats, l’ordre és <strong>B, A, C</strong>, i a RR els que arriben o tornen d’E/S entren <strong>abans</strong> que l’expulsat en aquell instant.</li>
+<li class="fragment">Calcula <span class="math inline">\(\bar{T}_{espera}\)</span> (temps a la cua de preparats), <span class="math inline">\(\bar{T}_{resposta}\)</span> i <span class="math inline">\(\bar{T}_{retorn}\)</span>, i compara les dues polítiques.</li>
+</ul>
+</div>
+</section>
+<section id="exercici-04-solució" class="slide level2 smaller">
+<h2>Exercici 04: solució</h2>
+<div class="solucio udl-component udl-solucio" title="RR (q = 3) i SJF no apropiatiu">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució — RR (q = 3) i SJF no apropiatiu</span></div>
+<table class="caption-top" style="width:100%;">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><span class="math inline">\(t\)</span></th>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+<th>10</th>
+<th>11</th>
+<th>12</th>
+<th>13</th>
+<th>14</th>
+<th>15</th>
+<th>16</th>
+<th>17</th>
+<th>18</th>
+<th>19</th>
+<th>20</th>
+<th>21</th>
+<th>22</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>RR</td>
+<td>–</td>
+<td>C</td>
+<td>C</td>
+<td>B</td>
+<td>B</td>
+<td>B</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td>B</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>B</td>
+<td>C</td>
+<td>A</td>
+<td>A</td>
+<td>B</td>
+<td>–</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+</tr>
+<tr class="even">
+<td>SJF</td>
+<td>–</td>
+<td>C</td>
+<td>C</td>
+<td>B</td>
+<td>B</td>
+<td>B</td>
+<td>B</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td>B</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>B</td>
+<td>C</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<table class="caption-top">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 17%">
+<col style="width: 13%">
+<col style="width: 13%">
+<col style="width: 15%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Política</th>
+<th><span class="math inline">\(T_{retorn}\)</span> (A, B, C)</th>
+<th><span class="math inline">\(T_{espera}\)</span> (A, B, C)</th>
+<th><span class="math inline">\(T_{resposta}\)</span> (A, B, C)</th>
+<th><span class="math inline">\(\bar{T}_{retorn}\)</span></th>
+<th><span class="math inline">\(\bar{T}_{espera}\)</span></th>
+<th><span class="math inline">\(\bar{T}_{resposta}\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>RR</td>
+<td>16, 15, 14</td>
+<td>5, 7, 5</td>
+<td>3, 0, 0</td>
+<td>15</td>
+<td>5.67</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>SJF</td>
+<td>15, 14, 17</td>
+<td>4, 6, 8</td>
+<td>4, 0, 0</td>
+<td>15.33</td>
+<td>6</td>
+<td>1.33</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li class="fragment">Aquí <strong>RR guanya SJF</strong> en les tres mitjanes. A <span class="math inline">\(t=11\)</span>, SJF dona la CPU a la ràfega de 5 d’A i, a <span class="math inline">\(t=12\)</span>, B i C tornen d’E/S amb ràfegues d’1 unitat i s’han d’esperar: <strong>comboi</strong>.</li>
+<li class="fragment">SJF no apropiatiu és òptim només si tots arriben alhora; amb E/S i arribades escalonades, no hi ha garantia.</li>
+</ul>
+</div>
+<aside class="notes">
+<p>Solució calculada per simulació amb els convenis de l’enunciat. L’únic empat real és a t=11, quan B i C tornen d’E/S alhora: l’ordre B, A, C posa B davant. A SJF hi ha un altre empat a t=16 (B i C, ràfega 1): també guanya B. Exigiu sempre que els estudiants escriguin el conveni. Les solucions en PDF d’anys anteriors poden diferir si usaven altres convenis.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="cues-multinivell" class="title-slide slide level1 center">
+<h1>Cues multinivell</h1>
+
+</section>
+<section id="cues-multinivell-1" class="slide level2">
+<h2>Cues multinivell</h2>
+<p>Separar els processos en diverses cues, cadascuna amb la seva política.</p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><img data-src="./figures/02/cua-sense-retroalimentacio.png" style="width:90.0%"></p>
+<p><strong>Sense retroalimentació</strong>: cada procés queda <strong>fix</strong> en una cua segons el seu tipus (p.&nbsp;ex. interactius en primer pla amb RR, lots en segon pla amb FCFS).</p>
+</div><div class="column" style="width:50%;">
+<p><img data-src="./figures/02/cua-retroalimentacio.png" style="width:90.0%"></p>
+<p><strong>Amb retroalimentació (MLFQ)</strong>: un procés <strong>canvia de cua</strong> segons com es comporta.</p>
+</div></div>
+<ul>
+<li class="fragment">Entre cues: <strong>prioritat estricta</strong> (no se serveix una cua fins que les superiors són buides) o <strong>repartiment</strong> (p.&nbsp;ex. 70 % / 20 % / 10 %).</li>
+</ul>
+</section>
+<section id="mlfq-les-regles-bàsiques" class="slide level2">
+<h2>MLFQ: les regles bàsiques</h2>
+<ol type="1">
+<li>Si <span class="math inline">\(\text{prioritat}(A) &gt; \text{prioritat}(B)\)</span>, s’executa A.</li>
+<li>Si tenen la mateixa prioritat, RR entre ells.</li>
+<li>Un procés nou entra a la cua <strong>més alta</strong>.</li>
+<li>Si <strong>esgota el quantum</strong>, baixa un nivell.</li>
+<li>Si <strong>deixa la CPU abans</strong> (es bloqueja per E/S), es queda al mateix nivell (o puja).</li>
+</ol>
+<ul>
+<li class="fragment">Els quantums <strong>creixen</strong> cap avall (p.&nbsp;ex. 8, 16, FCFS; o 1, 2, 4 ms): als nivells baixos hi ha processos llargs i convé canviar-los poc.</li>
+<li class="fragment">Resultat: els limitats per CPU <strong>cauen com una pedra</strong> i els interactius es queden a dalt. <strong>Aproxima SRTF</strong> sense conèixer el futur: la durada es descobreix executant.</li>
+</ul>
+<aside class="notes">
+<p>L’MLFQ es remunta a CTSS (Corbató, 1962). Fixeu-vos que la regla 5 depèn de si el procés es bloqueja abans d’esgotar el quantum, no de si acaba el procés sencer.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="mlfq-dos-problemes" class="slide level2">
+<h2>MLFQ: dos problemes</h2>
+<div class="errorcomu udl-component udl-errorcomu" title="1. Inanició">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-errorcomu"></use></svg><span>Error Comú — 1. Inanició</span></div>
+<p>Si hi ha prou interactius, els processos dels nivells baixos no s’executen mai.</p>
+<p><strong>Solució</strong>: cada cert temps <span class="math inline">\(S\)</span>, <strong>tots els processos tornen a la cua més alta</strong> (<em>priority boost</em>). Això també recupera un procés que ha passat de càlcul a interactiu.</p>
+</div>
+<div class="errorcomu fragment udl-component udl-errorcomu" title="2. Fer trampa (gaming)">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-errorcomu"></use></svg><span>Error Comú — 2. Fer trampa (gaming)</span></div>
+<p>Un procés pot fer una E/S inútil just abans d’esgotar el quantum i quedar-se sempre a dalt.</p>
+<p><strong>Solució</strong>: comptabilitzar el temps <strong>acumulat</strong> a cada nivell; quan s’esgota el pressupost, baixa, encara que l’hagi gastat en molts trossos.</p>
+</div>
+</section>
+<section id="exemple-real-lothello" class="slide level2">
+<h2>Exemple real: l’Othello</h2>
+<ul>
+<li class="fragment">Un concurs de programes d’Othello en un sistema amb MLFQ.</li>
+<li class="fragment">Un equip va afegir <code>printf()</code> sense cap funció al bucle de càlcul.</li>
+<li class="fragment">Cada <code>printf()</code> era una E/S: el sistema el classificava com a <strong>interactiu</strong>, el mantenia a les cues altes i el seu programa <strong>pensava més ràpid</strong> que el dels rivals.</li>
+</ul>
+<div class="reflexio fragment udl-component udl-reflexio" title="I si tothom ho fes?">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-reflexio"></use></svg><span>Reflexió — I si tothom ho fes?</span></div>
+<p>Si tots els processos fan trampa, tots són a dalt i l’MLFQ torna a ser un RR… amb molta E/S inútil. Qualsevol heurística basada en el comportament es pot manipular; per això cal la comptabilitat de temps acumulat.</p>
+</div>
+</section></section>
+<section>
+<section id="linux" class="title-slide slide level1 center">
+<h1>Linux</h1>
+
+</section>
+<section id="el-planificador-de-debian-bookworm" class="slide level2">
+<h2>El planificador de Debian bookworm</h2>
+<p>Debian bookworm usa el kernel <strong>6.1</strong>, amb <strong>CFS</strong> (<em>Completely Fair Scheduler</em>) per als processos normals.</p>
+<ul>
+<li class="fragment"><strong><code>SCHED_OTHER</code></strong> (CFS): reparteix la CPU en proporció a un <strong>pes</strong> derivat del <code>nice</code> (<span class="math inline">\(-20\)</span> … <span class="math inline">\(19\)</span>). Cada nivell de <code>nice</code> són ≈ 10 % de CPU respecte d’un veí. Tria sempre el procés amb menys temps de CPU <strong>virtual</strong> consumit.</li>
+<li class="fragment"><strong><code>SCHED_FIFO</code></strong> i <strong><code>SCHED_RR</code></strong>: classes de <strong>temps real</strong> amb prioritat estricta 1–99 que sempre expulsen <code>SCHED_OTHER</code>. <code>SCHED_RR</code> usa un quantum (per defecte 100 ms).</li>
+<li class="fragment">Des del kernel 6.6, CFS s’ha substituït per <strong>EEVDF</strong>, que manté la idea de repartiment per pesos.</li>
+</ul>
+<div class="concepte fragment udl-component udl-concepte" title="nice no és una prioritat estricta">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-concepte"></use></svg><span>Concepte — nice no és una prioritat estricta</span></div>
+<p>Amb CFS, un procés amb <code>nice</code> 19 <strong>també</strong> s’executa: rep menys CPU, però no pateix inanició.</p>
+</div>
+</section>
+<section id="resum" class="slide level2">
+<h2>Resum</h2>
+<div class="resum udl-component udl-resum">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-resum"></use></svg><span>Resum</span></div>
+<ul>
+<li class="fragment"><strong>Prioritats</strong>: control explícit de la importància. Problemes: <strong>inanició</strong> (envelliment) i <strong>inversió de prioritats</strong> (herència de prioritat).</li>
+<li class="fragment"><strong>SJF/SRTF</strong>: òptims per a <span class="math inline">\(\bar{T}_{retorn}\)</span> i <span class="math inline">\(\bar{T}_{espera}\)</span> amb durades conegudes. A la pràctica, <strong>injustos</strong> i <strong>impossibles</strong> sense predir.</li>
+<li class="fragment"><strong>Mitjana exponencial</strong>: predicció barata de la propera ràfega.</li>
+<li class="fragment"><strong>MLFQ</strong>: aproxima SRTF observant el comportament. Necessita <strong>boost</strong> contra la inanició i <strong>comptabilitat acumulada</strong> contra les trampes.</li>
+<li class="fragment"><strong>Linux</strong>: CFS reparteix per pesos (<code>nice</code>); les classes de temps real tenen prioritat estricta.</li>
+</ul>
+</div>
+<div class="lectures udl-component udl-lectures" title="Per aprofundir">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-lectures"></use></svg><span>Lectura Addicional — Per aprofundir</span></div>
+<ul>
+<li class="fragment"><code>man 7 sched</code>.</li>
+</ul>
+</div>
+
+
+</section></section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+<p>Sistemes Operatius (SO) &nbsp; <a href="../../../index.html" class="home-link" aria-label="Inici"><svg class="home-icon" viewbox="0 0 120 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 52 C27 43 39 31 60 12 C78 30 93 42 108 51" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"></path><path d="M25 48 C25 64 25 76 24 87 C35 84 45 85 53 87 M95 48 C95 64 95 76 97 87 C87 84 77 85 68 87" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M51 87V70 C51 64 55 60 60 60 C65 60 69 64 69 70V87Z" fill="currentColor"></path><path d="M82 29V17 C82 14 84 13 87 13H94 C96 13 97 15 96 17 C94 20 93 24 94 32Z" fill="currentColor"></path></svg></a></p>
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="../../../site_libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="../../../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="../../../site_libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="../../../site_libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="../../../site_libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="../../../site_libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="../../../site_libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="../../../site_libs/revealjs/plugin/search/search.js"></script>
+  <script src="../../../site_libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="../../../site_libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"\u003ci class=\"fas fa-gear\">\u003c/i>","content":"\u003cul class=\"slide-menu-items\">\n\u003cli class=\"slide-tool-item active\" data-item=\"0\">\u003ca href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\">\u003ckbd>f\u003c/kbd> Fullscreen\u003c/a>\u003c/li>\n\u003cli class=\"slide-tool-item\" data-item=\"1\">\u003ca href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\">\u003ckbd>s\u003c/kbd> Speaker View\u003c/a>\u003c/li>\n\u003cli class=\"slide-tool-item\" data-item=\"2\">\u003ca href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\">\u003ckbd>o\u003c/kbd> Slide Overview\u003c/a>\u003c/li>\n\u003cli class=\"slide-tool-item\" data-item=\"3\">\u003ca href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\">\u003ckbd>e\u003c/kbd> PDF Export Mode\u003c/a>\u003c/li>\n\u003cli class=\"slide-tool-item\" data-item=\"4\">\u003ca href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\">\u003ckbd>r\u003c/kbd> Scroll View Mode\u003c/a>\u003c/li>\n\u003cli class=\"slide-tool-item\" data-item=\"5\">\u003ca href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\">\u003ckbd>?\u003c/kbd> Keyboard Help\u003c/a>\u003c/li>\n\u003c/ul>"}],"openButton":true,"openButtonLabel":"Slide menu"},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'fade',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1600,
+
+        height: 900,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 8.0e-2,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+          const outerScaffold = trigger.parentElement.cloneNode(true);
+          const codeEl = outerScaffold.querySelector('code');
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp("https:\/\/igualada\.os\.udl\.cat");
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+          window.quartoDecorateExternalLinks = function (root) {
+         var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+              if (!link.classList.contains('no-external-icon')) {
+              }
+            }
+          }
+          };
+          window.quartoDecorateExternalLinks(window.document);
+        // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+        // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+        const hideOnEscAndFocusOut = {
+          name: 'hideOnEscAndFocusOut',
+          defaultValue: true,
+          fn(instance) {
+            const dismiss = () => {
+              // A show scheduled by the trigger delay would otherwise reopen it
+              instance.clearDelayTimeouts();
+              instance.hide();
+            };
+            const onKeyDown = (event) => {
+              if (event.key !== 'Escape') {
+                return;
+              }
+              // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+              // except an open reveal.js slide menu, which Esc should close too.
+              // The menu handles keys only when its keyboard option is on.
+              const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+                window.Reveal.getConfig().menu?.keyboard !== false;
+              if (!menuHandlesEsc) {
+                event.stopPropagation();
+              }
+              if (instance.popper.contains(window.document.activeElement)) {
+                // Disabled while refocusing so the focus trigger does not reopen it
+                instance.disable();
+                instance.reference.focus();
+                instance.enable();
+              }
+              dismiss();
+            };
+            const onFocusOut = (event) => {
+              const target = event.relatedTarget;
+              if (target && !instance.reference.contains(target) &&
+                  !instance.popper.contains(target)) {
+                dismiss();
+              }
+            };
+            // On the trigger too: a click trigger (code-annotations: select) has no
+            // blur handling. Attached for the instance's lifetime so leaving the
+            // trigger also cancels a show still pending on the trigger delay.
+            instance.reference.addEventListener('focusout', onFocusOut);
+            return {
+              onShow() {
+                window.document.addEventListener('keydown', onKeyDown, true);
+                instance.popper.addEventListener('focusout', onFocusOut);
+              },
+              onHide() {
+                window.document.removeEventListener('keydown', onKeyDown, true);
+                instance.popper.removeEventListener('focusout', onFocusOut);
+              },
+              onDestroy() {
+                instance.reference.removeEventListener('focusout', onFocusOut);
+              },
+            };
+          },
+        };
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+            plugins: [hideOnEscAndFocusOut],
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>
