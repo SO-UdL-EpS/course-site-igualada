@@ -449,6 +449,6 @@ Compte: A acaba a 13 però només necessita 7, per tant T_N(A) = 13/7 = 1.86, no
 -   **FCFS**: simple, sense inanició, però molt sensible a l'ordre i propens a l'**efecte comboi**.
 -   **RR**: bon temps de resposta i independent de l'ordre; el quantum és un compromís entre resposta i sobrecàrrega, i el seu efecte no és monòton.
 -   Cap de les dues fa servir **informació** sobre els processos.
-
+- Per practicar: [Smart CPU Scheduler](https://smartcpuscheduler.com/) — simulador interactiu de FCFS, SJF, RR i Priority.
 
 
