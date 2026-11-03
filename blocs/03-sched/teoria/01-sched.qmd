@@ -152,7 +152,7 @@ El SO pot **retirar la CPU** a un procés que encara la vol utilitzar, en els pu
 | Temps de retorn        | $T_{retorn} = T_f - T_a$                   |
 | Temps d'espera         | $T_{espera} = T_{retorn} - T_{cpu}$ (sense E/S) |
 | Temps de resposta      | $T_{resposta} = T_{inici} - T_a$           |
-| Retorn normalitzat     | $T_{N} = T_{retorn} / T_{cpu}$ ($\geq 1$)  |
+| Retorn normalitzat     | $T_{N} = T_{cpu}$ / T_{retorn} ($\geq 1$)  |
 :::
 
 :::
