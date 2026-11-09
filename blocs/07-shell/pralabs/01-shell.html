@@ -1,0 +1,1872 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.11.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>shell – Sistemes Operatius</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../../blocs/07-shell/teoria/02-shell.qmd" rel="prev">
+<link href="../../../assets/logo.svg" rel="icon" type="image/svg+xml">
+<script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-447e42e69aaa9833c0ba1b986f430b20.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-d5caab993d939c11b3d2b2c9353cf1ef.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/bootstrap/bootstrap-dark-d4809c4298801c4f26379a4a2e12c858.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../../site_libs/bootstrap/bootstrap-d5caab993d939c11b3d2b2c9353cf1ef.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Skip to main content</a><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          toggle.setAttribute("aria-checked", alternate ? "true" : "false");
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455).
+    // Not run on load: stylesheets are set before first paint there, and
+    // scrolling would undo the scroll to a URL fragment (#14973).
+    // The one pixel nudge keeps the reader where they were.
+    const refreshSafariScrollbar = () => {
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        const scrollY = window.scrollY;
+        window.scrollTo(0, scrollY > 0 ? scrollY - 1 : 1);
+        setTimeout(() => {
+          window.scrollTo(0, scrollY);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const queryPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    const darkModeDefault = queryPrefersDark.matches;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      refreshSafariScrollbar();
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    queryPrefersDark.addEventListener("change", e => {
+      if(window.localStorage.getItem("quarto-color-scheme") !== null)
+        return;
+      const alternate = e.matches
+      toggleColorMode(alternate);
+      refreshSafariScrollbar();
+      localAlternateSentinel = e.matches ? 'alternate' : 'default'; // this is used alongside local storage!
+      toggleGiscusIfUsed(alternate, darkModeDefault);
+    });
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark" aria-label="Site">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">SO</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../../index.html"> 
+<span class="menu-text">Inici</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://guiadocent.udl.cat/html/2026-27_105012"> 
+<span class="menu-text">Guia docent</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/SO-UdL-EpS/course-site"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <button type="button" role="switch" aria-checked="false" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode" aria-label="Toggle dark mode"><i class="bi"></i></button>
+</div>
+            <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav" aria-label="Toolbar">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item">Blocs</li><li class="breadcrumb-item">Bloc 7 · Shell Scripting</li><li class="breadcrumb-item"><a href="../../../blocs/07-shell/pralabs/01-shell.html">Pralabs</a></li><li class="breadcrumb-item"><a href="../../../blocs/07-shell/pralabs/01-shell.html">Introducció</a></li></ol></nav>
+        <a class="flex-grow-1" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto" aria-label="Section">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+      <a href="../../../index.html" class="sidebar-logo-link">
+      <img src="../../../assets/logo.png" alt="AMSA Logo" class="sidebar-logo light-content py-0 d-lg-inline d-none">
+      <img src="../../../assets/logo.png" alt="AMSA Logo" class="sidebar-logo dark-content py-0 d-lg-inline d-none">
+      </a>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../course-info/presentation-slides.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Presentació del curs</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../course-info/contributions/contribute.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Contribueix al curs</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-controls="quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-1-label">Blocs</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-1" aria-labelledby="quarto-sidebar-section-1-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-controls="quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-2-label">Bloc 1 · Desenvolupament de Programari en Espai d’Usuari</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-2" aria-labelledby="quarto-sidebar-section-2-label" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-controls="quarto-sidebar-section-3" aria-expanded="false">
+ <span class="menu-text" id="quarto-sidebar-section-3-label">Teoria</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-3" aria-labelledby="quarto-sidebar-section-3-label" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/teoria/01_rols_funcions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Rols i funcions d’un sistema operatiu</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">L’espai de memòria d’un procés</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Crides de funció: CPU, registres i stack</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/teoria/04_construccio_progama_c.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Com es construeix un programa C?</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/teoria/05_variables_estructures.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">De variables a estructures de dades</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">System calls: del programa C al kernel</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/teoria/07_syscalls_kernel.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">System calls: dins del kernel</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-controls="quarto-sidebar-section-4" aria-expanded="false">
+ <span class="menu-text" id="quarto-sidebar-section-4-label">Pralabs</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-4" aria-labelledby="quarto-sidebar-section-4-label" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/pralabs/01_c_mem.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pralab 01: Del C a la memòria (I)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/pralabs/02_c_mem.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pralab 02: Del <code>v[i]</code> al punter</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/pralabs/03_c_heap.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pralab 03: Memòria dinàmica (I): <code>malloc</code>, <code>free</code> i <code>lifetime</code></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/pralabs/04_c_ptrptr.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pralab 04: Memòria dinàmica (II): Punters a punters</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-controls="quarto-sidebar-section-5" aria-expanded="false">
+ <span class="menu-text" id="quarto-sidebar-section-5-label">Activitats</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-5" aria-labelledby="quarto-sidebar-section-5-label" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/activitats/01_c_punters_arrays.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exercicis amb C · Apuntadors i arrays</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/activitats/01_rols_funcions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">The UNIX Time-Sharing System</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/activitats/02_espai_funcions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Què passa quan faig foo()?</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/01-espai-usuari/activitats/03_pokemon.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exercicis amb C · Pokémon</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-controls="quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-6-label">Bloc 2 · Processos</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-6" aria-labelledby="quarto-sidebar-section-6-label" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-controls="quarto-sidebar-section-7" aria-expanded="false">
+ <span class="menu-text" id="quarto-sidebar-section-7-label">Teoria</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-7" aria-labelledby="quarto-sidebar-section-7-label" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/02-proc/teoria/01-procs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Processos: concepte, estats i PCB</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/02-proc/teoria/02-create.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Processos: Creació</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/02-proc/teoria/03-signals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Processos: Senyals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/02-proc/teoria/04-pipes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Processos: Pipes i redirecció d’entrada/sortida</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/02-proc/teoria/05-fifos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Processos: Pipes amb nom (FIFO)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-controls="quarto-sidebar-section-8" aria-expanded="false">
+ <span class="menu-text" id="quarto-sidebar-section-8-label">Activitats</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-8" aria-labelledby="quarto-sidebar-section-8-label" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/02-proc/activitats/02-create.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exercicis de Creació de processos en C</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/02-proc/activitats/03-exec.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Problemes de classe · zombis, orfes i <code>exec</code></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/02-proc/activitats/01-fork-wait.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Problemes de classe · <code>fork()</code> i <code>wait()</code></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/02-proc/activitats/04-pipes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exercicis de Pipes, FIFOs i dup en C</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/02-proc/activitats/05-loteria.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exercici progressiu basat en un generador de bitllets de loteria</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" aria-controls="quarto-sidebar-section-9" aria-expanded="false">
+ <span class="menu-text" id="quarto-sidebar-section-9-label">Pralabs</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-9" aria-labelledby="quarto-sidebar-section-9-label" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/02-proc/pralabs/01_minishell.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pralab 05: shell (I): <code>getline()</code>,<code>fork()</code>, <code>wait()</code>, <code>execvp()</code></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/02-proc/pralabs/02_minishell.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pralab 05 (II): shell: <code>strtok</code>, <code>;</code> i senyals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/02-proc/pralabs/03_minishell.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pralab 05 (III): shell: redireccions (`&lt;`, `&gt;`, `&gt;&gt;`)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" aria-controls="quarto-sidebar-section-10" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-10-label">Bloc 3 · Planificació</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-10" aria-labelledby="quarto-sidebar-section-10-label" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" aria-controls="quarto-sidebar-section-11" aria-expanded="false">
+ <span class="menu-text" id="quarto-sidebar-section-11-label">Teoria</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-11" aria-labelledby="quarto-sidebar-section-11-label" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/03-sched/teoria/01-sched.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Planificació de processos</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/03-sched/teoria/02-sched.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Planificació de processos (II)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" aria-controls="quarto-sidebar-section-12" aria-expanded="false">
+ <span class="menu-text" id="quarto-sidebar-section-12-label">Activitats</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-12" aria-labelledby="quarto-sidebar-section-12-label" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/03-sched/activitats/01-sched.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FCFS i Round Robin</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/03-sched/activitats/02-sched.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Prioritats, SJF/SRTF, cues multinivell, MLFQ</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" aria-controls="quarto-sidebar-section-13" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-13-label">Bloc 7 · Shell Scripting</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-13" aria-labelledby="quarto-sidebar-section-13-label" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" aria-controls="quarto-sidebar-section-14" aria-expanded="false">
+ <span class="menu-text" id="quarto-sidebar-section-14-label">Teoria</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-14" aria-labelledby="quarto-sidebar-section-14-label" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/07-shell/teoria/01-shell.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Shell scripting (I)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" aria-controls="quarto-sidebar-section-15" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-15-label">Pralabs</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-15" aria-labelledby="quarto-sidebar-section-15-label" class="collapse list-unstyled sidebar-section depth3 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/07-shell/pralabs/01-shell.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Introducció</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introducció" id="toc-introducció" class="nav-link active" data-scroll-target="#introducció">Introducció</a>
+  <ul class="collapse">
+  <li><a href="#part-a-quina-shell-tinc-i-el-meu-primer-script" id="toc-part-a-quina-shell-tinc-i-el-meu-primer-script" class="nav-link" data-scroll-target="#part-a-quina-shell-tinc-i-el-meu-primer-script">Part A · Quina shell tinc i el meu primer script</a></li>
+  <li><a href="#part-b-codis-de-retorn-i-test" id="toc-part-b-codis-de-retorn-i-test" class="nav-link" data-scroll-target="#part-b-codis-de-retorn-i-test">Part B · Codis de retorn i <code>test</code></a></li>
+  <li><a href="#part-c-arguments-i-gestió-derrors" id="toc-part-c-arguments-i-gestió-derrors" class="nav-link" data-scroll-target="#part-c-arguments-i-gestió-derrors">Part C · Arguments i gestió d’errors</a></li>
+  <li><a href="#part-d-interacció-i-tasca-final" id="toc-part-d-interacció-i-tasca-final" class="nav-link" data-scroll-target="#part-d-interacció-i-tasca-final">Part D · Interacció i tasca final</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content" tabindex="-1"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="Breadcrumbs"><ol class="breadcrumb"><li class="breadcrumb-item">Blocs</li><li class="breadcrumb-item">Bloc 7 · Shell Scripting</li><li class="breadcrumb-item"><a href="../../../blocs/07-shell/pralabs/01-shell.html">Pralabs</a></li><li class="breadcrumb-item"><a href="../../../blocs/07-shell/pralabs/01-shell.html">Introducció</a></li></ol></nav></header>
+
+
+
+
+
+<section id="introducció" class="level2">
+<h2 class="anchored" data-anchor-id="introducció">Introducció</h2>
+<p>Fins ara has escrit ordres una a una a la terminal. Però tot el que fas a mà es pot <strong>guardar en un fitxer</strong> i executar quan vulguis: això és un <em>script</em>. I darrere de cada script hi ha el mateix mecanisme que fa servir la teva shell: llançar <strong>processos</strong>, esperar que acabin i <strong>mirar com han acabat</strong>.</p>
+<blockquote class="blockquote">
+<p><strong>Com sap una shell si una ordre ha anat bé o ha fallat? I com ho podem fer servir en el nostre propi codi?</strong></p>
+</blockquote>
+<p>Aquesta sessió construeix la resposta peça a peça:</p>
+<pre class="text"><code>shell → script → permisos → codi de retorn → test → arguments → errors → instal·lació → read → perfil.sh</code></pre>
+<div class="programari udl-component udl-programari">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-programari"></use></svg><span>Programari Necessari</span></div>
+<ul>
+<li><code>bash</code> (<strong>sistema de referència: Debian bookworm, amb bash 5.2</strong>) i un editor de text (<code>nano</code>, <code>vim</code>, <code>code</code>…).</li>
+<li>Eines de diagnòstic: <code>ps</code>, <code>env</code>, <code>type</code> i <code>man</code> (si no tens les pàgines del manual: <code>sudo apt install man-db</code>).</li>
+</ul>
+</div>
+<hr>
+<section id="part-a-quina-shell-tinc-i-el-meu-primer-script" class="level3">
+<h3 class="anchored" data-anchor-id="part-a-quina-shell-tinc-i-el-meu-primer-script">Part A · Quina shell tinc i el meu primer script</h3>
+<section id="a.1-quina-és-la-meva-shell" class="level4">
+<h4 class="anchored" data-anchor-id="a.1-quina-és-la-meva-shell">A.1 — Quina és la meva shell?</h4>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p>Prediu què imprimiran aquestes ordres i comprova-ho:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$SHELL</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> /etc/shells</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$0</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ps</span> <span class="at">-p</span> <span class="va">$$</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Ara entra a una altra shell escrivint-ne el nom (<code>sh</code>, <code>dash</code>, <code>zsh</code>… la que tinguis) i torna a executar <code>echo $SHELL</code> i <code>echo $0</code>. Escriu <code>exit</code> per tornar.</p>
+<ol type="1">
+<li>Quina diferència hi ha entre <code>$SHELL</code> i <code>$0</code>?</li>
+<li>Què és <code>$$</code>?</li>
+</ol>
+</div>
+<details>
+<summary>
+<b>Veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<ol type="1">
+<li><code>$SHELL</code> és una <strong>variable d’entorn</strong> amb la shell de <em>login</em> configurada al teu usuari (<code>/etc/passwd</code>). <strong>No</strong> és la shell que s’està executant ara mateix: si entres a <code>dash</code> escrivint-ne el nom, <code>$SHELL</code> continua mostrant <code>/bin/bash</code>. <code>$0</code> i <code>ps -p $$</code> mostren la shell real (a la terminal, <code>$0</code> pot sortir com <code>bash</code> o <code>-bash</code>; el guió inicial indica que és una shell de <em>login</em>).</li>
+<li><code>$$</code> és el <strong>PID de la shell actual</strong>: una shell és un procés més, i cada shell nova que obres és un procés fill de l’anterior (<code>echo $$ $PPID</code> ho mostra).</li>
+</ol>
+<p>Per canviar la shell de <em>login</em> (afecta sessions futures, no l’actual) existeix <code>chsh -s /bin/zsh</code>.</p>
+</div>
+</details>
+</section>
+<section id="a.2-el-primer-script" class="level4">
+<h4 class="anchored" data-anchor-id="a.2-el-primer-script">A.2 — El primer script</h4>
+<p>Crea <code>hola.sh</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Hola, </span><span class="va">$USER</span><span class="st">! Estàs utilitzant la shell: </span><span class="va">$SHELL</span><span class="st">"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Executa’l amb:</p>
+<div class="terminal">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> hola.sh</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<ol type="1">
+<li>Executa <code>env</code> i localitza <code>USER</code> i <code>SHELL</code>. D’on surten aquestes variables?</li>
+<li>Canvia les cometes dobles per cometes simples: <code>echo 'Hola, $USER!'</code>. Què passa? Per què?</li>
+<li>La primera línia (<code>#!/bin/bash</code>) sembla un comentari. Què fa realment?</li>
+</ol>
+</div>
+<details>
+<summary>
+<b>Veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<ol type="1">
+<li>Són <strong>variables d’entorn</strong>: les hereta el procés de la seva shell pare, que les va rebre del procés de login. (En alguns contenidors <code>USER</code> pot no estar definida.)</li>
+<li>Amb cometes simples la shell <strong>no expandeix</strong> res i imprimeix el text literal <code>Hola, $USER!</code>. Amb dobles, expandeix les variables. Aquesta distinció tornarà a ser clau a la Part B.</li>
+<li>Es diu <strong>shebang</strong>. Quan el kernel executa un fitxer de text, llegeix aquesta línia per saber <strong>quin intèrpret</strong> ha de llançar. Encara no la fem servir (hem escrit <code>bash hola.sh</code>), però la necessitarem a A.3.</li>
+</ol>
+<p>Un detall: el missatge diu “estàs utilitzant la shell: <code>$SHELL</code>”, però ja hem vist a A.1 que <code>$SHELL</code> és la shell de <em>login</em>, no la que executa l’script. En aquest cas l’script s’executa amb <code>bash</code> perquè l’hem cridat així (o pel shebang).</p>
+</div>
+</details>
+</section>
+<section id="a.3-fer-lo-executable" class="level4">
+<h4 class="anchored" data-anchor-id="a.3-fer-lo-executable">A.3 — Fer-lo executable</h4>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p>Prediu què passarà i comprova-ho:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./hola.sh</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-l</span> hola.sh</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> +x hola.sh</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-l</span> hola.sh</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">./hola.sh</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="ex">hola.sh</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<ol type="1">
+<li>Per què falla el primer <code>./hola.sh</code>?</li>
+<li>Per què <code>bash hola.sh</code> funcionava <strong>sense</strong> permís d’execució?</li>
+<li>Per què l’últim intent (<code>hola.sh</code> sol) falla, si ara el fitxer és executable? (Pista: <code>echo $PATH</code>.)</li>
+</ol>
+</div>
+<details>
+<summary>
+<b>Veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<ol type="1">
+<li>Sense el bit <code>x</code> el kernel es nega a executar el fitxer: <code>Permission denied</code>. Després de <code>chmod +x</code> els permisos passen a ser semblants a <code>-rwxr-xr-x</code> (depèn de la <code>umask</code>).</li>
+<li><code>bash hola.sh</code> <strong>no executa el fitxer</strong>: executa <code>bash</code> i li passa l’script com a dada d’entrada. Només cal permís de <strong>lectura</strong>.</li>
+<li>Quan escrius una ordre sense ruta, la shell la busca als directoris de <code>$PATH</code>, i el directori actual normalment <strong>no hi és</strong> (per seguretat). Per això cal <code>./</code>, que indica la ruta explícitament. Ho recuperarem a C.3.</li>
+</ol>
+</div>
+</details>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p><strong>Ampliació (concepte de SO).</strong> Afegeix <code>echo "PID=$$ PARE=$PPID"</code> a <code>hola.sh</code> i compara aquestes dues maneres d’executar-lo:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"shell: </span><span class="va">$$</span><span class="st">"</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./hola.sh</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> hola.sh</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Quin PID mostra cadascuna? Què en dedueixes?</p>
+</div>
+<details>
+<summary>
+<b>Veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<p><code>./hola.sh</code> mostra un PID <strong>diferent</strong>: la shell fa <code>fork</code> i <code>exec</code> d’un procés fill, i el seu pare (<code>PARE</code>) és la teva shell. <code>source hola.sh</code> (o <code>. hola.sh</code>) mostra el <strong>mateix PID</strong> que la shell: les ordres s’executen dins del mateix procés.</p>
+<p>Per això un script executat normalment <strong>no pot canviar el directori ni les variables</strong> de la shell que el crida: viuen en un procés fill que desapareix en acabar. (Prova-ho: afegeix <code>cd /tmp</code> a l’script i compara <code>pwd</code> després de <code>./hola.sh</code> i després de <code>source hola.sh</code>.) És el mateix model <code>fork</code> + <code>exec</code> + <code>wait</code> que implementes al Pralab 05.</p>
+</div>
+</details>
+<hr>
+</section>
+</section>
+<section id="part-b-codis-de-retorn-i-test" class="level3">
+<h3 class="anchored" data-anchor-id="part-b-codis-de-retorn-i-test">Part B · Codis de retorn i <code>test</code></h3>
+<section id="b.1-el-codi-de-retorn" class="level4">
+<h4 class="anchored" data-anchor-id="b.1-el-codi-de-retorn">B.1 — El codi de retorn <code>$?</code></h4>
+<p>Tot procés acaba amb un <strong>codi de sortida</strong>: <code>0</code> vol dir èxit i qualsevol altre valor (1–255) indica error. La shell el guarda a <code>$?</code>.</p>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p>Prediu què imprimiran i comprova-ho:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$?</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> noexisteix</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$?</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$?</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<ol type="1">
+<li>Quins valors surten? Per què el <strong>tercer</strong> <code>echo $?</code> mostra <code>0</code>?</li>
+<li>Si vull conservar el codi de <code>ls noexisteix</code> per fer-lo servir més tard, què he de fer?</li>
+</ol>
+</div>
+<details>
+<summary>
+<b>Veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<ol type="1">
+<li>Surten <code>0</code>, <code>2</code> i <code>0</code>. <code>$?</code> conté <strong>només el codi de l’última ordre executada</strong>, i el segon <code>echo</code> (que va anar bé) ha sobreescrit el <code>2</code>. Qualsevol ordre, fins i tot <code>echo</code>, canvia <code>$?</code>.</li>
+<li>Guardar-lo <strong>immediatament</strong> en una variable:</li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> noexisteix</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="va">rc</span><span class="op">=</span><span class="va">$?</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"ls ha retornat </span><span class="va">$rc</span><span class="st">"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Les variables es creen amb <code>nom=valor</code> <strong>sense espais</strong> (<code>rc = $?</code> falla perquè la shell interpreta <code>rc</code> com una ordre) i es llegeixen amb <code>$nom</code>.</p>
+</div>
+</details>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p>Crea <code>test_retorn.sh</code> que executi una ordre correcta i una d’incorrecta i mostri <strong>els dos</strong> codis de retorn.</p>
+</div>
+<details>
+<summary>
+<b>Veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="va">rc1</span><span class="op">=</span><span class="va">$?</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> noexisteix</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="va">rc2</span><span class="op">=</span><span class="va">$?</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Codi de retorn de ls: </span><span class="va">$rc1</span><span class="st">"</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Codi de retorn de ls noexisteix: </span><span class="va">$rc2</span><span class="st">"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Si féssim <code>echo "...: $?"</code> just després de cada <code>ls</code> també funcionaria, però guardar-lo en una variable és la pràctica segura.</p>
+</div>
+</details>
+</section>
+<section id="b.2-test-i" class="level4">
+<h4 class="anchored" data-anchor-id="b.2-test-i">B.2 — <code>test</code> i <code>[ ]</code></h4>
+<p>Per decidir qüestions com “existeix aquest fitxer?” la shell té <code>test</code>, que <strong>no imprimeix res</strong>: només retorna <code>0</code> (cert) o <code>1</code> (fals).</p>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p>Llegeix <code>man test</code> (seccions <strong>DESCRIPTION</strong> i <strong>EXIT STATUS</strong>) i comprova:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="bu">test</span> <span class="at">-f</span> /etc/passwd <span class="kw">;</span> <span class="bu">echo</span> <span class="va">$?</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> <span class="ot">-d</span> /etc/passwd <span class="bu">]</span> <span class="kw">;</span> <span class="bu">echo</span> <span class="va">$?</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> <span class="ot">-e</span> /noexisteix <span class="bu">]</span> <span class="kw">;</span> <span class="bu">echo</span> <span class="va">$?</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<ol type="1">
+<li>Quina diferència hi ha entre <code>-f</code>, <code>-d</code> i <code>-e</code>?</li>
+<li>Què imprimeix <code>type [</code>? Què implica això sobre els <strong>espais</strong> a <code>[ -f fitxer ]</code>?</li>
+</ol>
+</div>
+<details>
+<summary>
+<b>Veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<p>Els valors són <code>0</code>, <code>1</code> i <code>1</code>.</p>
+<ol type="1">
+<li><code>-f</code>: existeix i és un fitxer regular. <code>-d</code>: existeix i és un directori. <code>-e</code>: existeix, sigui del tipus que sigui.</li>
+<li><code>type [</code> mostra que <code>[</code> <strong>és una ordre</strong> (un builtin, equivalent a <code>test</code>) i <code>]</code> n’és l’últim argument. Per això calen espais: <code>[ -f x ]</code> funciona i <code>[-f x]</code> dona <em>command not found</em>.</li>
+</ol>
+</div>
+</details>
+</section>
+<section id="b.3-i" class="level4">
+<h4 class="anchored" data-anchor-id="b.3-i">B.3 — <code>&amp;&amp;</code> i <code>||</code></h4>
+<p>Aquests operadors usen <strong>el codi de retorn</strong> de l’ordre anterior:</p>
+<ul>
+<li><code>A &amp;&amp; B</code> executa <code>B</code> només si <code>A</code> retorna <code>0</code>.</li>
+<li><code>A || B</code> executa <code>B</code> només si <code>A</code> retorna <strong>≠ 0</strong>.</li>
+</ul>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p><strong>Prediu abans de provar.</strong> Què imprimeix cadascuna d’aquestes línies?</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">true</span>  <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"A"</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">false</span> <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"B"</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">false</span> <span class="kw">||</span> <span class="bu">echo</span> <span class="st">"C"</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="fu">true</span>  <span class="kw">&amp;&amp;</span> <span class="fu">false</span> <span class="kw">||</span> <span class="bu">echo</span> <span class="st">"D"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>L’última és la important: <code>A &amp;&amp; B || C</code>, <strong>és un <code>if/else</code>?</strong></p>
+</div>
+<details>
+<summary>
+<b>Veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<p>Imprimeix <code>A</code>, <code>C</code> i <code>D</code> (la <code>B</code> no surt mai).</p>
+<p>L’última línia mostra la trampa: <code>true &amp;&amp; false || echo "D"</code> executa <code>D</code> encara que la condició era certa, perquè el <code>B</code> (aquí <code>false</code>) ha <strong>fallat</strong>, i llavors s’activa el <code>||</code>. Per tant <code>A &amp;&amp; B || C</code> <strong>no és</strong> un <code>if/else</code>: és “si <code>A</code> va bé, fes <code>B</code>; si <strong>qualsevol dels dos</strong> falla, fes <code>C</code>”. Serà segur mentre <code>B</code> no pugui fallar (com un <code>echo</code>), però convé saber-ho abans de veure l’<code>if</code>.</p>
+</div>
+</details>
+</section>
+<section id="b.4-existeix.sh" class="level4">
+<h4 class="anchored" data-anchor-id="b.4-existeix.sh">B.4 — <code>existeix.sh</code></h4>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p>Crea <code>existeix.sh</code>: rep <strong>un nom de fitxer com a argument</strong> i mostra un missatge indicant si existeix o no. Encara <strong>no</strong> podem usar <code>if</code>: fes servir <code>[ ]</code> amb <code>&amp;&amp;</code> i <code>||</code>.</p>
+<p>Després prova-ho amb un fitxer que tingui un espai al nom:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">touch</span> <span class="st">"el meu fitxer"</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./existeix.sh</span> <span class="st">"el meu fitxer"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>I repeteix-ho treient les cometes de <code>"$1"</code> dins de l’script. Què passa? Per què?</p>
+</div>
+<details>
+<summary>
+<b>Veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> <span class="ot">-f</span> <span class="st">"</span><span class="va">$1</span><span class="st">"</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"El fitxer </span><span class="va">$1</span><span class="st"> existeix."</span> <span class="kw">||</span> <span class="bu">echo</span> <span class="st">"El fitxer </span><span class="va">$1</span><span class="st"> no existeix."</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Sense cometes, la shell <strong>divideix</strong> <code>$1</code> en paraules en expandir-lo: <code>[ -f el meu fitxer ]</code> són quatre arguments i <code>[</code> es queixa (<code>binary operator expected</code> o <code>too many arguments</code>). Amb cometes, <code>"$1"</code> és <strong>un únic argument</strong>, tingui els espais que tingui. Regla pràctica: <strong>cita sempre les variables</strong> (<code>"$1"</code>, <code>"$nom"</code>).</p>
+<p>Si <code>$1</code> està buit, <code>[ -f ]</code> sense cometes també canvia de significat (només té un argument, i <code>[</code> el tracta com un text no buit: és cert!). Amb <code>"$1"</code>, <code>[ -f "" ]</code> és simplement fals.</p>
+</div>
+</details>
+</section>
+<section id="b.5-encadenar-ho-tot-fitxer-directori-o-una-altra-cosa" class="level4">
+<h4 class="anchored" data-anchor-id="b.5-encadenar-ho-tot-fitxer-directori-o-una-altra-cosa">B.5 — Encadenar-ho tot: fitxer, directori o una altra cosa</h4>
+<p>Ara volem distingir <strong>tres casos més un d’error</strong>: fitxer regular, directori, un altre tipus d’element (un dispositiu, un <em>socket</em>…) o que no existeixi.</p>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p>Crea <code>tipus.sh</code> amb aquest primer intent. Les línies acaben en <code>||</code>, així que la shell continua llegint la línia següent com si fos una de sola.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> <span class="ot">-f</span> <span class="st">"</span><span class="va">$1</span><span class="st">"</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"El fitxer </span><span class="va">$1</span><span class="st"> existeix."</span> <span class="kw">||</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> <span class="ot">-d</span> <span class="st">"</span><span class="va">$1</span><span class="st">"</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"El directori </span><span class="va">$1</span><span class="st"> existeix."</span> <span class="kw">||</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> <span class="ot">-e</span> <span class="st">"</span><span class="va">$1</span><span class="st">"</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"L'element </span><span class="va">$1</span><span class="st"> existeix, però no és ni un fitxer regular ni un directori."</span> <span class="kw">||</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"L'element </span><span class="va">$1</span><span class="st"> no existeix."</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Prediu</strong> què imprimirà amb cadascun d’aquests arguments i després comprova-ho:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./tipus.sh</span> /etc/passwd</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./tipus.sh</span> /etc</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="ex">./tipus.sh</span> /dev/null</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="ex">./tipus.sh</span> /noexisteix</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Funciona sempre? Per què?</p>
+</div>
+<details>
+<summary>
+<b>Veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<p>Només funciona bé per a <code>/dev/null</code> i <code>/noexisteix</code>. Amb <code>/etc/passwd</code> imprimeix <strong>tres</strong> línies (fitxer, directori i element) i amb <code>/etc</code> en imprimeix <strong>dues</strong> (directori i element).</p>
+<p>El motiu és que <code>&amp;&amp;</code> i <code>||</code> tenen <strong>la mateixa prioritat</strong> i s’avaluen <strong>d’esquerra a dreta</strong> (això és diferent de C, on <code>&amp;&amp;</code> va abans que <code>||</code>). La shell ho llegeix així:</p>
+<pre class="text"><code>((((T1 &amp;&amp; M1) || T2) &amp;&amp; M2) || T3) &amp;&amp; M3) || M4</code></pre>
+<p>Amb <code>/etc/passwd</code>: <code>T1 &amp;&amp; M1</code> dona <code>0</code>, el <code>|| T2</code> se salta, però el resultat segueix sent <code>0</code>, de manera que el <code>&amp;&amp; M2</code> <strong>s’executa igualment</strong>, i el mateix passa amb <code>M3</code>. El codi de retorn “arrossega” cap a la dreta.</p>
+<p><strong>Solució: agrupar.</strong> Volem que el <code>||</code> salti <strong>tot el bloc</strong> següent, no només la propera ordre. Cal imbricar amb claus:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> <span class="ot">-f</span> <span class="st">"</span><span class="va">$1</span><span class="st">"</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"El fitxer </span><span class="va">$1</span><span class="st"> existeix."</span> <span class="kw">||</span> <span class="kw">{</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="bu">[</span> <span class="ot">-d</span> <span class="st">"</span><span class="va">$1</span><span class="st">"</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"El directori </span><span class="va">$1</span><span class="st"> existeix."</span> <span class="kw">||</span> <span class="kw">{</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">[</span> <span class="ot">-e</span> <span class="st">"</span><span class="va">$1</span><span class="st">"</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"L'element </span><span class="va">$1</span><span class="st"> existeix, però no és ni un fitxer regular ni un directori."</span> <span class="kw">||</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"L'element </span><span class="va">$1</span><span class="st"> no existeix."</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">}</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Ara, si el primer cas es compleix, el <code>||</code> salta el bloc sencer i no s’avalua res més. Recorda les regles de les claus: <strong>espai</strong> després de <code>{</code> i <code>;</code> o salt de línia abans de <code>}</code>.</p>
+<p>La imbricació té un cost evident: costa de llegir. Aquest és el motiu pel qual existeix <code>if</code>.</p>
+</div>
+</details>
+<div class="concepte udl-component udl-concepte" title="Claus `{ }` o parèntesis `( )`?">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-concepte"></use></svg><span>Concepte — Claus `{ }` o parèntesis `( )`?</span></div>
+<p>Les dues formes agrupen ordres, però no són equivalents:</p>
+<ul>
+<li><code>{ ordres; }</code> s’executa <strong>dins de la shell actual</strong>.</li>
+<li><code>( ordres )</code> s’executa en un <strong>subshell</strong> (un procés fill, com a A.3): els canvis de variables, de directori i els <code>exit</code> <strong>hi moren</strong>.</li>
+</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span> <span class="va">x</span><span class="op">=</span>1 <span class="kw">);</span> <span class="bu">echo</span> <span class="st">"x=</span><span class="va">$x</span><span class="st">"</span>     <span class="co"># x=   (el subshell ha desaparegut amb la variable)</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="kw">{</span> <span class="va">x</span><span class="op">=</span>1<span class="kw">;</span> <span class="kw">};</span> <span class="bu">echo</span> <span class="st">"x=</span><span class="va">$x</span><span class="st">"</span>    <span class="co"># x=1</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Per això a C.2 fem servir <code>{ ...; exit 1; }</code>: amb parèntesis, l’<code>exit</code> només sortiria del subshell i l’script continuaria. Per a un simple agrupament dins d’un script, fes servir <strong>claus</strong>.</p>
+</div>
+<div class="concepte udl-component udl-concepte" title="Avançament: la mateixa lògica amb `if`">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-concepte"></use></svg><span>Concepte — Avançament: la mateixa lògica amb `if`</span></div>
+<p>El comportament que hem buscat amb <code>&amp;&amp;</code>, <code>||</code> i claus s’escriu molt més net amb <code>if</code>, i <strong>no</strong> té el problema de l’ordre. Encara no l’expliquem (és el tema de la sessió següent), però pots llegir-lo i comprovar que fa el mateix:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">-f</span> <span class="st">"</span><span class="va">$1</span><span class="st">"</span> <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"El fitxer </span><span class="va">$1</span><span class="st"> existeix."</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="cf">elif</span> <span class="bu">[</span> <span class="ot">-d</span> <span class="st">"</span><span class="va">$1</span><span class="st">"</span> <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"El directori </span><span class="va">$1</span><span class="st"> existeix."</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="cf">elif</span> <span class="bu">[</span> <span class="ot">-e</span> <span class="st">"</span><span class="va">$1</span><span class="st">"</span> <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"L'element </span><span class="va">$1</span><span class="st"> existeix, però no és ni un fitxer regular ni un directori."</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"L'element </span><span class="va">$1</span><span class="st"> no existeix."</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Fixa’t que cada branca és exclusiva per construcció: això és exactament el que calia forçar a mà amb les claus.</p>
+</div>
+<hr>
+</section>
+</section>
+<section id="part-c-arguments-i-gestió-derrors" class="level3">
+<h3 class="anchored" data-anchor-id="part-c-arguments-i-gestió-derrors">Part C · Arguments i gestió d’errors</h3>
+<section id="c.1-arguments-posicionals" class="level4">
+<h4 class="anchored" data-anchor-id="c.1-arguments-posicionals">C.1 — Arguments posicionals</h4>
+<p>Quan crides <code>./script.sh a b c</code>, la shell guarda els valors en variables especials:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Significat</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>$0</code></td>
+<td>nom de l’script</td>
+</tr>
+<tr class="even">
+<td><code>$1</code>, <code>$2</code>…</td>
+<td>primer, segon… argument</td>
+</tr>
+<tr class="odd">
+<td><code>$#</code></td>
+<td>nombre d’arguments</td>
+</tr>
+<tr class="even">
+<td><code>$@</code></td>
+<td>tots els arguments</td>
+</tr>
+</tbody>
+</table>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p>Crea <code>arguments.sh</code> que mostri el primer argument, el nombre total i tots els arguments. Prediu què imprimirà cadascuna d’aquestes crides i comprova-ho:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./arguments.sh</span> hola mon</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./arguments.sh</span> <span class="st">"hola mon"</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="ex">./arguments.sh</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Quina diferència veus entre la primera i la segona? Què passa a la tercera?</p>
+</div>
+<details>
+<summary>
+<b>Veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Primer argument: </span><span class="va">$1</span><span class="st">"</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Total arguments: </span><span class="va">$#</span><span class="st">"</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Tots: </span><span class="va">$@</span><span class="st">"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<ul>
+<li><code>hola mon</code> → primer: <code>hola</code>, total: <code>2</code>.</li>
+<li><code>"hola mon"</code> → primer: <code>hola mon</code>, total: <code>1</code>. Les cometes <strong>agrupen</strong> en un sol argument (el mateix motiu pel qual a B.4 calia <code>"$1"</code>).</li>
+<li>Sense arguments → <code>$1</code> és buit i <code>$#</code> val <code>0</code>. L’script no es queixa de res, però això en un script real seria un problema: és el que arreglem a C.2.</li>
+</ul>
+<p>Quan hagis de <strong>passar</strong> tots els arguments a una altra ordre, fes servir <code>"$@"</code> (amb cometes): conserva cada argument com a element separat, fins i tot si conté espais.</p>
+</div>
+</details>
+</section>
+<section id="c.2-gestionar-lerror-exit-i-stderr" class="level4">
+<h4 class="anchored" data-anchor-id="c.2-gestionar-lerror-exit-i-stderr">C.2 — Gestionar l’error: <code>exit</code> i stderr</h4>
+<p>Fins ara els nostres scripts acaben sempre amb codi <code>0</code>, <strong>encara que hi hagi hagut un error</strong>. Un altre programa que el cridés no s’adonaria que ha fallat.</p>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p>Modifica <code>arguments.sh</code> perquè:</p>
+<ul>
+<li>Si <strong>no</strong> hi ha arguments, mostri un missatge d’error i acabi amb un codi diferent de <code>0</code>.</li>
+<li>Si n’hi ha, mostri el primer i el total.</li>
+</ul>
+<p>Comprova el resultat amb:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./arguments.sh</span> <span class="kw">;</span> <span class="bu">echo</span> <span class="va">$?</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./arguments.sh</span> a b <span class="kw">;</span> <span class="bu">echo</span> <span class="va">$?</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="ex">./arguments.sh</span> <span class="op">&gt;</span> sortida.txt</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> sortida.txt</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Pistes:</em> <code>man bash</code>, secció <strong>SHELL BUILTIN COMMANDS</strong>, <code>exit</code>. Compara <code>$#</code> amb <code>0</code> usant <code>[ ]</code> i <code>-eq</code>. Busca què fa <code>&gt;&amp;2</code>.</p>
+</div>
+<details>
+<summary>
+<b>Veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> <span class="va">$#</span> <span class="ot">-eq</span> 0 <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="kw">{</span> <span class="bu">echo</span> <span class="st">"Error: no s'han passat arguments."</span> <span class="op">&gt;&amp;</span><span class="dv">2</span><span class="kw">;</span> <span class="bu">exit</span> 1<span class="kw">;</span> <span class="kw">}</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Primer argument: </span><span class="va">$1</span><span class="st">, Total arguments: </span><span class="va">$#</span><span class="st">"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<ul>
+<li><code>exit 1</code> acaba l’script amb codi <code>1</code>: aquest és el <code>$?</code> que veurà qui l’hagi cridat. Tanquem el cercle amb B.1: <strong>ara som nosaltres qui defineix codis de retorn.</strong> La convenció és <code>0</code> èxit i <code>1</code>–<code>255</code> errors. Sense <code>exit</code>, l’script retorna el codi de l’última ordre executada.</li>
+<li><code>&gt;&amp;2</code> redirigeix la sortida al <strong>descriptor 2 (stderr)</strong>. Els errors han d’anar a stderr perquè es puguin separar de la sortida normal: <code>./arguments.sh &gt; sortida.txt</code> mostra l’error per pantalla en lloc d’amagar-lo dins del fitxer, i <code>sortida.txt</code> queda buit.</li>
+<li><code>{ ...; }</code> agrupa ordres <strong>sense crear un subshell</strong> (vegeu el requadre de B.5). Calen <strong>espais</strong> després de <code>{</code> i un <code>;</code> abans de <code>}</code>.</li>
+<li>Resultats: el primer cas retorna <code>1</code>, el segon <code>0</code>.</li>
+</ul>
+</div>
+</details>
+<div class="reflexio udl-component udl-reflexio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-reflexio"></use></svg><span>Reflexió</span></div>
+<p>La versió que només feia <code>[ $# -eq 0 ] &amp;&amp; echo "Error..." || echo "..."</code> també mostrava el missatge, però acabava amb <code>0</code>. <strong>Un missatge d’error no és el mateix que un error</strong>: el segon ho ha de dir el codi de retorn.</p>
+</div>
+</section>
+<section id="c.3-un-script-que-crea-scripts-i-installar-lo" class="level4">
+<h4 class="anchored" data-anchor-id="c.3-un-script-que-crea-scripts-i-installar-lo">C.3 — Un script que crea scripts, i instal·lar-lo</h4>
+<p>Fins ara hem hagut d’escriure el <em>shebang</em> a mà a cada script. Automatitzem-ho, i de passada tanquem el cercle amb el <code>$PATH</code> de A.3.</p>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p>Crea <code>crea_script.sh</code>: rep <strong>un nom</strong> com a argument, crea un fitxer amb aquest nom que només conté la línia <code>#!/bin/bash</code> i el fa executable.</p>
+<ol type="1">
+<li>Ha de comprovar que se li passa <strong>exactament un argument</strong> (error a stderr i codi <code>1</code> si no).</li>
+<li>Ha de <strong>negar-se a sobreescriure</strong> un fitxer que ja existeix (error i codi <code>2</code>).</li>
+<li>Prova-ho: <code>./crea_script.sh nou.sh</code>, mira’n el contingut amb <code>cat</code> i executa’l.</li>
+</ol>
+<p>Després <strong>instal·la’l</strong> i compara:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> install <span class="at">-m</span> 0755 crea_script.sh /usr/local/bin/crea_script</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Equivalent (dos passos):</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="co">#   sudo mv crea_script.sh /usr/local/bin/crea_script</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="co">#   sudo chmod 0755 /usr/local/bin/crea_script</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> /tmp</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="ex">crea_script</span> prova.sh</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="ex">crea_script.sh</span> prova2.sh</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<ul>
+<li>Quina de les dues ordres de <code>/tmp</code> funciona? Per què?</li>
+<li>Què hauries hagut de fer <strong>sense</strong> instal·lar-lo per cridar-lo des de <code>/tmp</code>?</li>
+</ul>
+</div>
+<details>
+<summary>
+<b>Veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> <span class="va">$#</span> <span class="ot">-eq</span> 1 <span class="bu">]</span> <span class="kw">||</span> <span class="kw">{</span> <span class="bu">echo</span> <span class="st">"Ús: </span><span class="va">$0</span><span class="st"> nom_script"</span> <span class="op">&gt;&amp;</span><span class="dv">2</span><span class="kw">;</span> <span class="bu">exit</span> 1<span class="kw">;</span> <span class="kw">}</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> <span class="ot">-e</span> <span class="st">"</span><span class="va">$1</span><span class="st">"</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="kw">{</span> <span class="bu">echo</span> <span class="st">"Error: </span><span class="va">$1</span><span class="st"> ja existeix."</span> <span class="op">&gt;&amp;</span><span class="dv">2</span><span class="kw">;</span> <span class="bu">exit</span> 2<span class="kw">;</span> <span class="kw">}</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'#!/bin/bash'</span> <span class="op">&gt;</span> <span class="st">"</span><span class="va">$1</span><span class="st">"</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> +x <span class="st">"</span><span class="va">$1</span><span class="st">"</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Script </span><span class="va">$1</span><span class="st"> creat."</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<ul>
+<li><strong>Cometes simples</strong> a <code>'#!/bin/bash'</code>: a la terminal interactiva, amb cometes dobles bash intentaria expandir <code>!</code> com a història d’ordres (<code>event not found</code>). Dins d’un script no passaria, però és un bon hàbit.</li>
+<li><code>&gt;</code> <strong>sobreescriu</strong>: per això comprovem <code>[ -e "$1" ]</code> abans, o perdríem el contingut d’un script existent (tornarem a veure <code>&gt;</code> vs <code>&gt;&gt;</code> a D.2).</li>
+<li><code>[ $# -eq 1 ] || { ...; }</code> és el mateix patró que C.2 invertit: “o bé hi ha un argument, o bé error”.</li>
+</ul>
+<p><strong>Instal·lat vs no instal·lat:</strong></p>
+<ul>
+<li><code>crea_script prova.sh</code> <strong>funciona des de qualsevol directori</strong>: <code>/usr/local/bin</code> és al <code>$PATH</code> (comprova-ho amb <code>echo $PATH</code>), i la shell la troba allà. <code>type crea_script</code> mostra la ruta.</li>
+<li><code>crea_script.sh prova2.sh</code> falla amb <em>command not found</em>: no hi ha cap fitxer amb aquest nom a cap directori del <code>$PATH</code>.</li>
+<li>Sense instal·lar-lo, cal donar la <strong>ruta</strong> (<code>~/pralab04/crea_script.sh</code>, o <code>./crea_script.sh</code> si hi ets al costat), o afegir el seu directori al <code>$PATH</code>.</li>
+</ul>
+<p><code>/usr/local/bin</code> és el lloc pensat per al programari instal·lat <strong>a mà</strong> per l’administrador (no gestionat per <code>apt</code>), i només root hi pot escriure: per això cal <code>sudo</code>. Si no vols o no pots fer servir <code>sudo</code>, una alternativa és <code>~/.local/bin</code>, que Debian afegeix al <code>$PATH</code> en iniciar sessió si el directori existeix (cal tancar i tornar a obrir sessió, o <code>source ~/.profile</code>).</p>
+</div>
+</details>
+<hr>
+</section>
+</section>
+<section id="part-d-interacció-i-tasca-final" class="level3">
+<h3 class="anchored" data-anchor-id="part-d-interacció-i-tasca-final">Part D · Interacció i tasca final</h3>
+<section id="d.1-read" class="level4">
+<h4 class="anchored" data-anchor-id="d.1-read">D.1 — <code>read</code></h4>
+<p><code>read</code> llegeix una línia de l’<strong>entrada estàndard</strong> i la desa en una variable.</p>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p>Crea <code>saluda.sh</code> que pregunti el nom de l’usuari, el llegeixi i mostri una benvinguda personalitzada. Després:</p>
+<ol type="1">
+<li>Executa’l normalment.</li>
+<li>Executa’l amb <code>echo Anna | ./saluda.sh</code>. Què passa? Per què?</li>
+<li><em>Ampliació:</em> simplifica’l usant <code>read -p</code> (<code>help read</code>).</li>
+</ol>
+</div>
+<details>
+<summary>
+<b>Veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Quin és el teu nom?"</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="bu">read</span> <span class="at">-r</span> <span class="va">nom</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Hola, </span><span class="va">$nom</span><span class="st">! Benvingut/da!"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Variant amb <code>-p</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="bu">read</span> <span class="at">-r</span> <span class="at">-p</span> <span class="st">"Quin és el teu nom? "</span> <span class="va">nom</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Hola, </span><span class="va">$nom</span><span class="st">! Benvingut/da!"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Amb <code>echo Anna | ./saluda.sh</code>, <code>read</code> llegeix d’<strong>stdin</strong>, que ara és el pipe, no el teclat: no espera ningú i funciona igualment. <code>read</code> <strong>no és interactiu per definició</strong>, sinó que depèn d’on vingui l’entrada. Un detall: amb <code>read -p</code>, quan stdin <strong>no és un terminal</strong>, bash no mostra la pregunta. Això serà important a D.3.</p>
+<p><code>-r</code> evita que <code>read</code> interpreti les barres invertides (<code>\</code>) com a caràcters d’escapada; és el costum recomanat. <code>read -s</code> amaga el que s’escriu (útil per contrasenyes).</p>
+</div>
+</details>
+</section>
+<section id="d.2-tasca-final-perfil.sh" class="level4">
+<h4 class="anchored" data-anchor-id="d.2-tasca-final-perfil.sh">D.2 — Tasca final: <code>perfil.sh</code></h4>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<p>Crea <code>perfil.sh</code> (al teu directori personal, <code>~</code>) que:</p>
+<ol type="1">
+<li>Mostri un missatge de benvinguda.</li>
+<li>Demani <strong>nom</strong> i <strong>cognom</strong>.</li>
+<li>Mostri el directori actual (<code>pwd</code>) i la shell (<code>$SHELL</code>).</li>
+<li>Guardi tota aquesta informació a <code>~/perfil.txt</code>.</li>
+</ol>
+<p>Executa’l <strong>dues vegades</strong> i observa <code>perfil.txt</code>. Després canvia <code>&gt;</code> per <code>&gt;&gt;</code> i torna-ho a provar: quina diferència hi ha?</p>
+</div>
+<details>
+<summary>
+<b>Veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Benvingut/da al sistema!"</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="bu">read</span> <span class="at">-r</span> <span class="at">-p</span> <span class="st">"Nom: "</span> <span class="va">nom</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="bu">read</span> <span class="at">-r</span> <span class="at">-p</span> <span class="st">"Cognom: "</span> <span class="va">cognom</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="kw">{</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">"Nom: </span><span class="va">$nom</span><span class="st"> </span><span class="va">$cognom</span><span class="st">"</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">"Directori: </span><span class="va">$(</span><span class="bu">pwd</span><span class="va">)</span><span class="st">"</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">"Shell: </span><span class="va">$SHELL</span><span class="st">"</span></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span> <span class="op">&gt;</span> ~/perfil.txt</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Perfil desat a ~/perfil.txt"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Recorda <code>chmod +x perfil.sh</code> (A.3).</p>
+<ul>
+<li><code>&gt;</code> <strong>sobreescriu</strong> el fitxer a cada execució; <code>&gt;&gt;</code> <strong>hi afegeix</strong> al final (s’acumula). Amb <code>&gt;&gt;</code> pots afegir <code>date</code> per tenir un registre.</li>
+<li>El bloc <code>{ ...; } &gt; fitxer</code> redirigeix la sortida de totes les ordres alhora.</li>
+<li><code>$(pwd)</code> és <strong>substitució d’ordres</strong>: executa <code>pwd</code> i n’insereix la sortida.</li>
+</ul>
+</div>
+</details>
+</section>
+<section id="d.3-executar-lo-en-iniciar-sessió" class="level4">
+<h4 class="anchored" data-anchor-id="d.3-executar-lo-en-iniciar-sessió">D.3 — Executar-lo en iniciar sessió</h4>
+<div class="bonapractica udl-component udl-bonapractica">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-bonapractica"></use></svg><span>Bona Pràctica</span></div>
+<p><strong>Prova primer a mà.</strong> Abans de tocar res de configuració, assegura’t que <code>./perfil.sh</code> funciona perfectament. I fes aquest apartat en una <strong>VM</strong> o amb una <strong>segona sessió oberta</strong>: un error a <code>~/.profile</code> pot fer incòmode iniciar sessió, i la segona sessió et permet desfer-ho.</p>
+</div>
+<p>Afegeix <strong>al final</strong> de <code>~/.profile</code> la línia:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="ex">~/perfil.sh</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Tanca la sessió (<code>exit</code>) i torna a entrar.</p>
+<div class="exercici udl-component udl-exercici">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
+<ol type="1">
+<li>Si fas la prova en un terminal gràfic i no passa res, per què? Com pots provar-ho <strong>sense</strong> tancar la sessió? (Pista: <code>man bash</code>, secció <strong>INVOCATION</strong>, i <code>bash -l</code>.)</li>
+<li>Què creus que passarà si <code>.profile</code> s’executa en una sessió de login <strong>sense terminal</strong> (per exemple, <code>bash -l &lt; /dev/null</code>) i l’script fa un <code>read</code>?</li>
+<li>Com ho desfaries si alguna cosa falla?</li>
+</ol>
+</div>
+<details>
+<summary>
+<b>Veure el raonament</b>
+</summary>
+<div class="solucio udl-component udl-solucio">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
+<ol type="1">
+<li><code>~/.profile</code> només el llegeix una <strong>shell de login</strong>. Hi entres per TTY (<code>Ctrl+Alt+F3</code>), per SSH o amb <code>bash -l</code>; els terminals gràfics nous normalment <strong>no</strong> són shells de login, i <code>exit</code> només tanca la finestra. Per provar-ho sense tancar la sessió: <code>bash -l</code> o <code>ssh localhost</code>. A més, si existeix <code>~/.bash_profile</code>, bash el llegeix <strong>en lloc de</strong> <code>.profile</code>; i amb zsh el fitxer és <code>~/.zprofile</code>.</li>
+<li>El <code>read</code> no té teclat del qual llegir: rep final d’entrada (EOF) o es queda <strong>bloquejat</strong> esperant, i l’script desa un <code>perfil.txt</code> buit o incomplet. Una versió segura executa l’script només si l’entrada és un terminal:</li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> <span class="ot">-t</span> 0 <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="ex">~/perfil.sh</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>(<code>-t 0</code> és cert si el descriptor 0, stdin, és un terminal. Fixa’t que torna a ser <code>[ ]</code> + <code>&amp;&amp;</code>.) 3. Des de l’altra sessió, comenta la línia (<code>#</code>) o elimina-la amb un editor. En una VM, sempre queda el mode de recuperació.</p>
+<p>Aquest és un bon exemple de com <strong>el procés de login</strong> (<code>login</code> o <code>sshd</code>) llança la shell, que llegeix <code>/etc/profile</code> i després <code>~/.profile</code>: així es configura l’entorn d’un procés.</p>
+</div>
+</details>
+
+
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const toggle = window.document.createElement('button');
+      toggle.type = "button";
+      toggle.setAttribute("role", "switch");
+      toggle.setAttribute("aria-checked", "false");
+      toggle.classList.add('top-right');
+      toggle.classList.add('quarto-color-scheme-toggle');
+      toggle.setAttribute("aria-label", "Toggle dark mode");
+      toggle.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      toggle.appendChild(i);
+      // Put the toggle in a landmark of its own, so that landmark navigation
+      // can reach it.
+      //
+      // The container is always a fresh direct child of body, and the toggle is
+      // never moved into page furniture that the theme or the author controls.
+      // The toggle is positioned against the page, so any ancestor that
+      // establishes a containing block captures it: a positioned element or a
+      // grid for position: absolute, and transform, filter, will-change or
+      // contain for position: fixed. A direct child of body has none of these
+      // to inherit, and the shift when one appears is silent and visual.
+      //
+      // ARIA says a document should have at most one banner, and axe reports a
+      // duplicate whether or not the banners carry distinct labels. So use a
+      // header when the page has no banner yet, and a named region otherwise.
+      //
+      // A header is a banner wherever it sits, unless it is inside sectioning
+      // content, so this cannot just look at the children of body: a custom
+      // page layout wraps the title block header in a plain div. An explicit
+      // role="banner" always counts.
+      const sectioning = 'article, aside, main, nav, section, [role="article"], [role="complementary"], [role="main"], [role="navigation"], [role="region"]';
+      const hasBanner = Array.from(
+        window.document.querySelectorAll('header:not([role]), [role="banner"]')
+      ).some(function(el) {
+        return el.hasAttribute("role") || el.closest(sectioning) === null;
+      });
+      const container = window.document.createElement(hasBanner ? "div" : "header");
+      if (hasBanner) {
+        container.setAttribute("role", "region");
+        container.setAttribute("aria-label", "Toggle dark mode");
+      }
+      container.classList.add('quarto-color-scheme-toggle-container');
+      container.appendChild(toggle);
+      window.document.body.appendChild(container);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/igualada\.os\.udl\.cat");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+          if (!link.classList.contains('no-external-icon')) {
+          }
+        }
+      }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          // Each band is positioned against its own containing block, which is
+          // not the offsetParent of the lines, so place it from client rects.
+          const placeBand = (band, firstEl, lastEl, codeBlock) => {
+            const container = band.offsetParent;
+            if (container === null) {
+              return;
+            }
+            const containerRect = container.getBoundingClientRect();
+            // Reveal.js scales slides with a transform, so convert client
+            // pixels back to the CSS pixels of the container.
+            const scale = containerRect.height / container.offsetHeight || 1;
+            const firstRect = firstEl.getBoundingClientRect();
+            const lastRect = lastEl.getBoundingClientRect();
+            const top = (firstRect.top - containerRect.top) / scale - container.clientTop + container.scrollTop;
+            const height = (lastRect.bottom - firstRect.top) / scale;
+            band.style.top = top - 2 + "px";
+            band.style.height = height + 4 + "px";
+            if (codeBlock) {
+              // Without the copy button wrapper, the containing block is wider
+              // than the code block, so span the code block explicitly.
+              const blockRect = codeBlock.getBoundingClientRect();
+              band.style.left = (blockRect.left - containerRect.left) / scale - container.clientLeft + container.scrollLeft + "px";
+              band.style.width = blockRect.width / scale + "px";
+            }
+          };
+          if (lineIds.length > 0) {
+            const el = window.document.getElementById(lineIds[0]);
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const parent = el.parentElement.parentElement;
+            // cook up a div (if necessary) and position it
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            placeBand(div, el, lastEl, parent.closest("div.sourceCode") || parent);
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            placeBand(gutterDiv, el, lastEl);
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"Scrollable code","output":"Scrollable output"};
+  </script>
+<nav class="page-navigation" aria-label="Page">
+  <div class="nav-page nav-page-previous">
+      <a href="../../../blocs/07-shell/teoria/02-shell.qmd" class="pagination-link" aria-label="">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Universitat de Lleida · Departament d’Enginyeria Informàtica i Disseny Digital</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>Construït amb Quarto</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

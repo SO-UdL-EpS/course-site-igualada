@@ -37,6 +37,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="../../../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../../../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../../../">
+<link href="../../../blocs/07-shell/teoria/01-shell.html" rel="next">
 <link href="../../../blocs/03-sched/activitats/01-sched.html" rel="prev">
 <link href="../../../assets/logo.svg" rel="icon" type="image/svg+xml">
 <script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
@@ -51,9 +52,9 @@ ul.task-list li input[type="checkbox"] {
 <link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../../site_libs/bootstrap/bootstrap-dd882c2c5e893d9b3ad72f6028806143.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../../site_libs/bootstrap/bootstrap-dark-e38fee5ca54dba06a0760ff8132d3069.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../../../site_libs/bootstrap/bootstrap-dd882c2c5e893d9b3ad72f6028806143.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/bootstrap/bootstrap-d5caab993d939c11b3d2b2c9353cf1ef.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/bootstrap/bootstrap-dark-d4809c4298801c4f26379a4a2e12c858.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../../site_libs/bootstrap/bootstrap-d5caab993d939c11b3d2b2c9353cf1ef.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -654,6 +655,42 @@ window.Quarto = {
   </li>
       </ul>
   </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" aria-controls="quarto-sidebar-section-13" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-13-label">Bloc 7 · Shell Scripting</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-13" aria-labelledby="quarto-sidebar-section-13-label" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" aria-controls="quarto-sidebar-section-14" aria-expanded="false">
+ <span class="menu-text" id="quarto-sidebar-section-14-label">Teoria</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-14" aria-labelledby="quarto-sidebar-section-14-label" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/07-shell/teoria/01-shell.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Shell scripting (I)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" aria-controls="quarto-sidebar-section-15" aria-expanded="false">
+ <span class="menu-text" id="quarto-sidebar-section-15-label">Pralabs</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-15" aria-labelledby="quarto-sidebar-section-15-label" class="collapse list-unstyled sidebar-section depth3 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/07-shell/pralabs/01-shell.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Introducció</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
       </ul>
   </li>
     </ul>
@@ -899,6 +936,523 @@ window.Quarto = {
 <li>Calcula totes les mètriques per a cada procés.</li>
 <li>Analitza l’impacte de la planificació multinivell sobre cada classe de procés i sobre el rendiment del sistema.</li>
 </ol>
+<details>
+<summary>
+<strong>Solució: planificació multinivell</strong>
+</summary>
+<div class="solucio udl-component udl-solucio" title="planificació multinivell">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució — planificació multinivell</span></div>
+<div class="table-responsive">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Procés</th>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+<th>10</th>
+<th>11</th>
+<th>12</th>
+<th>13</th>
+<th>14</th>
+<th>15</th>
+<th>16</th>
+<th>17</th>
+<th>18</th>
+<th>19</th>
+<th>20</th>
+<th>21</th>
+<th>22</th>
+<th>23</th>
+<th>24</th>
+<th>25</th>
+<th>26</th>
+<th>27</th>
+<th>28</th>
+<th>29</th>
+<th>30</th>
+<th>31</th>
+<th>32</th>
+<th>33</th>
+<th>34</th>
+<th>35</th>
+<th>36</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>A</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>E</td>
+<td>W</td>
+<td>E</td>
+<td>E</td>
+<td>W</td>
+<td>W</td>
+<td>W</td>
+<td>E</td>
+<td>F</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><strong>B</strong></td>
+<td>E</td>
+<td>E</td>
+<td>W</td>
+<td>W</td>
+<td>W</td>
+<td>P</td>
+<td>E</td>
+<td>W</td>
+<td>W</td>
+<td>W</td>
+<td>E</td>
+<td>F</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><strong>C</strong></td>
+<td></td>
+<td></td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>W</td>
+<td>W</td>
+<td>W</td>
+<td>W</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>W</td>
+<td>W</td>
+<td>E</td>
+<td>F</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><strong>D</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>W</td>
+<td>W</td>
+<td>W</td>
+<td>W</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>W</td>
+<td>W</td>
+<td>W</td>
+<td>W</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>F</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><strong>E</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>W</td>
+<td>W</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>W</td>
+<td>E</td>
+<td>E</td>
+<td>F</td>
+</tr>
+<tr class="even">
+<td><strong>F</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>W</td>
+<td>E</td>
+<td>E</td>
+<td>F</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><em>CPU</em></td>
+<td>B</td>
+<td>B</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td>A</td>
+<td>B</td>
+<td>A</td>
+<td>A</td>
+<td>D</td>
+<td>B</td>
+<td>C</td>
+<td>A</td>
+<td>E</td>
+<td>D</td>
+<td>D</td>
+<td>D</td>
+<td>C</td>
+<td>C</td>
+<td>E</td>
+<td>F</td>
+<td>C</td>
+<td>D</td>
+<td>D</td>
+<td>F</td>
+<td>F</td>
+<td>F</td>
+<td>E</td>
+<td>F</td>
+<td>F</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>–</td>
+<td>E</td>
+<td>E</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 12%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Mètrica</th>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+<th>D</th>
+<th>E</th>
+<th>F</th>
+<th>Mitjana</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(T_f\)</span></td>
+<td>13</td>
+<td>11</td>
+<td>22</td>
+<td>24</td>
+<td>36</td>
+<td>30</td>
+<td>–</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(T_{espera}\)</span></td>
+<td>0</td>
+<td>1</td>
+<td>7</td>
+<td>7</td>
+<td>21</td>
+<td>19</td>
+<td>9.17</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(T_{resposta}\)</span></td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>6</td>
+<td>9</td>
+<td>16</td>
+<td>5.17</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(T_{retorn}\)</span></td>
+<td>8</td>
+<td>11</td>
+<td>20</td>
+<td>21</td>
+<td>32</td>
+<td>26</td>
+<td>19.67</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(T_N\)</span></td>
+<td>8/8 = 1</td>
+<td>11/10 = 1.1</td>
+<td>20/13 = 1.54</td>
+<td>21/14 = 1.5</td>
+<td>32/11 = 2.91</td>
+<td>26/7 = 3.71</td>
+<td>1.96</td>
+</tr>
+</tbody>
+</table>
+<p>Utilització de la CPU <span class="math inline">\(= 35/36 \approx 97\,\%\)</span> · Productivitat <span class="math inline">\(= 6/36 \approx 0.17\)</span> processos/u.t. · Final: <span class="math inline">\(t = 36\)</span>.</p>
+<p>Instants clau:</p>
+<ul>
+<li><span class="math inline">\(t=5\)</span>: C esgota el quantum alhora que A arriba (cua 1) i B torna d’E/S (cua 2). S’executa A; C passa al final de la cua 3, darrere de D.</li>
+<li><span class="math inline">\(t=13\)</span>: les cues 1–3 són buides. SRTF tria E (ràfega 2) davant de F (4).</li>
+<li><span class="math inline">\(t=14\)</span>: D torna d’E/S (cua 3) i <strong>expulsa E</strong> (cua 4).</li>
+<li><span class="math inline">\(t=21\)</span>: C i D tornen d’E/S alhora; entra primer C per prioritat. F és expulsat.</li>
+<li><span class="math inline">\(t=28\)</span>: F torna d’E/S amb una ràfega de 2, menys que les 3 que li queden a E: <strong>F expulsa E</strong> dins la cua 4.</li>
+<li><span class="math inline">\(t=33\)</span>: CPU ociosa. E fa E/S i tots els altres han acabat.</li>
+</ul>
+</div>
+</details>
+<details>
+<summary>
+<strong>Solució: anàlisi</strong>
+</summary>
+<div class="solucio udl-component udl-solucio" title="anàlisi">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució — anàlisi</span></div>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 21%">
+<col style="width: 29%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Classe</th>
+<th>Processos</th>
+<th><span class="math inline">\(\bar{T}_{espera}\)</span></th>
+<th><span class="math inline">\(\bar{T}_{resposta}\)</span></th>
+<th><span class="math inline">\(\bar{T}_N\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Temps real</td>
+<td>A, B</td>
+<td>0.5</td>
+<td>0</td>
+<td>1.05</td>
+</tr>
+<tr class="even">
+<td>Interactius</td>
+<td>C, D</td>
+<td>7</td>
+<td>3</td>
+<td>1.52</td>
+</tr>
+<tr class="odd">
+<td>Batch</td>
+<td>E, F</td>
+<td>20</td>
+<td>12.5</td>
+<td>3.31</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>La planificació multinivell <strong>fa exactament el que promet</strong>: A i B no esperen gairebé mai i C i D tenen resposta acceptable. Tot el cost el paguen E i F: F no s’executa fins a <span class="math inline">\(t=20\)</span>, 16 unitats després d’arribar, i el seu <span class="math inline">\(T_N\)</span> és 3.71.</li>
+<li>El sistema en conjunt va bé: utilització del 97 % i una sola unitat ociosa. La prioritat estricta <strong>no malbarata CPU</strong>; només decideix <strong>qui</strong> espera.</li>
+<li><strong>Risc</strong>: amb una mica més de càrrega a les cues 1–3, els batch patirien <strong>inanició</strong>. La cua 4 no té cap garantia. Solucions: repartir la CPU per percentatges entre cues (p.&nbsp;ex. 60/25/10/5), envellir els processos que esperen o fer servir una MLFQ.</li>
+<li><strong>Atenció a la cua 1</strong>: és FCFS sense expulsió interna. Si A tingués una ràfega llarga, bloquejaria tot el sistema. Una cua de màxima prioritat només és segura si els seus processos tenen ràfegues <strong>curtes i acotades</strong>.</li>
+</ul>
+</div>
+</details>
 </section>
 <section id="problema-4-prioritats-amb-es-apropiativa-o-no" class="level2">
 <h2 class="anchored" data-anchor-id="problema-4-prioritats-amb-es-apropiativa-o-no">Problema 4 · Prioritats amb E/S: apropiativa o no?</h2>
@@ -943,6 +1497,430 @@ window.Quarto = {
 <li>Calcula totes les mètriques.</li>
 <li>Quin procés guanya més amb l’apropiació? Quin no hi guanya res? Per què?</li>
 </ol>
+<details>
+<summary>
+<strong>Solució: a) prioritats no apropiatives</strong>
+</summary>
+<div class="solucio udl-component udl-solucio" title="a) prioritats no apropiatives">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució — a) prioritats no apropiatives</span></div>
+<div class="table-responsive">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Procés</th>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+<th>10</th>
+<th>11</th>
+<th>12</th>
+<th>13</th>
+<th>14</th>
+<th>15</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>A</strong></td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>W</td>
+<td>W</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>F</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><strong>B</strong></td>
+<td></td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>W</td>
+<td>W</td>
+<td>W</td>
+<td>E</td>
+<td>F</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><strong>C</strong></td>
+<td></td>
+<td></td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>F</td>
+</tr>
+<tr class="even">
+<td><strong>D</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>W</td>
+<td>W</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>F</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><em>CPU</em></td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>B</td>
+<td>B</td>
+<td>D</td>
+<td>A</td>
+<td>A</td>
+<td>B</td>
+<td>D</td>
+<td>D</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Mètrica</th>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+<th>D</th>
+<th>Mitjana</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(T_f\)</span></td>
+<td>8</td>
+<td>9</td>
+<td>15</td>
+<td>11</td>
+<td>–</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(T_{espera}\)</span></td>
+<td>1</td>
+<td>2</td>
+<td>9</td>
+<td>3</td>
+<td>3.75</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(T_{resposta}\)</span></td>
+<td>0</td>
+<td>2</td>
+<td>9</td>
+<td>2</td>
+<td>3.25</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(T_{retorn}\)</span></td>
+<td>8</td>
+<td>8</td>
+<td>13</td>
+<td>8</td>
+<td>9.25</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(T_N\)</span></td>
+<td>8/7 = 1.14</td>
+<td>8/6 = 1.33</td>
+<td>13/4 = 3.25</td>
+<td>8/5 = 1.6</td>
+<td>1.83</td>
+</tr>
+</tbody>
+</table>
+<p>Utilització de la CPU <span class="math inline">\(= 15/15 \approx 100\,\%\)</span> · Productivitat <span class="math inline">\(= 4/15 \approx 0.27\)</span> processos/u.t. · Final: <span class="math inline">\(t = 15\)</span>.</p>
+<p>A <span class="math inline">\(t=1\)</span> arriba B (prioritat 1), però A no deixa la CPU fins que es bloqueja a <span class="math inline">\(t=3\)</span>.</p>
+</div>
+</details>
+<details>
+<summary>
+<strong>Solució: b) prioritats apropiatives</strong>
+</summary>
+<div class="solucio udl-component udl-solucio" title="b) prioritats apropiatives">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució — b) prioritats apropiatives</span></div>
+<div class="table-responsive">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Procés</th>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+<th>10</th>
+<th>11</th>
+<th>12</th>
+<th>13</th>
+<th>14</th>
+<th>15</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>A</strong></td>
+<td>E</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>W</td>
+<td>W</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>F</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><strong>B</strong></td>
+<td></td>
+<td>E</td>
+<td>E</td>
+<td>W</td>
+<td>W</td>
+<td>W</td>
+<td>E</td>
+<td>F</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><strong>C</strong></td>
+<td></td>
+<td></td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>F</td>
+</tr>
+<tr class="even">
+<td><strong>D</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td>E</td>
+<td>W</td>
+<td>W</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>F</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><em>CPU</em></td>
+<td>A</td>
+<td>B</td>
+<td>B</td>
+<td>D</td>
+<td>A</td>
+<td>A</td>
+<td>B</td>
+<td>D</td>
+<td>D</td>
+<td>A</td>
+<td>A</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Mètrica</th>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+<th>D</th>
+<th>Mitjana</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(T_f\)</span></td>
+<td>11</td>
+<td>7</td>
+<td>15</td>
+<td>9</td>
+<td>–</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(T_{espera}\)</span></td>
+<td>4</td>
+<td>0</td>
+<td>9</td>
+<td>1</td>
+<td>3.5</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(T_{resposta}\)</span></td>
+<td>0</td>
+<td>0</td>
+<td>9</td>
+<td>0</td>
+<td>2.25</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(T_{retorn}\)</span></td>
+<td>11</td>
+<td>6</td>
+<td>13</td>
+<td>6</td>
+<td>9</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(T_N\)</span></td>
+<td>11/7 = 1.57</td>
+<td>6/6 = 1</td>
+<td>13/4 = 3.25</td>
+<td>6/5 = 1.2</td>
+<td>1.76</td>
+</tr>
+</tbody>
+</table>
+<p>Utilització de la CPU <span class="math inline">\(= 15/15 \approx 100\,\%\)</span> · Productivitat <span class="math inline">\(= 4/15 \approx 0.27\)</span> processos/u.t. · Final: <span class="math inline">\(t = 15\)</span>.</p>
+<p>B expulsa A a <span class="math inline">\(t=1\)</span>. A <span class="math inline">\(t=3\)</span> B es bloqueja i D (2) passa davant d’A (3). A <span class="math inline">\(t=6\)</span> B i D tornen d’E/S alhora: primer B i després D. A torna a <span class="math inline">\(t=8\)</span>, però D encara s’executa i és més prioritari.</p>
+</div>
+</details>
+<details>
+<summary>
+<strong>Solució: discussió</strong>
+</summary>
+<div class="solucio udl-component udl-solucio" title="discussió">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució — discussió</span></div>
+<ul>
+<li><strong>Guanyen B i D</strong>, els més prioritaris: amb apropiació, el seu <span class="math inline">\(T_{resposta}\)</span> passa de 2 a 0 i el <span class="math inline">\(T_{retorn}\)</span> de 8 a 6.</li>
+<li><strong>A hi perd</strong> (de 8 a 11): és expulsat a <span class="math inline">\(t=1\)</span> i, en tornar d’E/S, ha d’esperar D.</li>
+<li><strong>C no hi guanya res</strong>: en tots dos casos espera 9 unitats i acaba a <span class="math inline">\(t=15\)</span>. Té la prioritat més baixa i només s’executa quan tots els altres han acabat. Amb uns quants processos prioritaris més, patiria <strong>inanició</strong> (Problema 7).</li>
+<li>La mitjana millora poc (9.25 → 9). L’apropiació <strong>redistribueix</strong> l’espera cap als menys prioritaris; no la redueix gaire.</li>
+</ul>
+</div>
+</details>
 </section>
 <section id="problema-5-sjf-srtf-i-loptimalitat" class="level2">
 <h2 class="anchored" data-anchor-id="problema-5-sjf-srtf-i-loptimalitat">Problema 5 · SJF, SRTF i l’optimalitat</h2>
@@ -988,6 +1966,1479 @@ window.Quarto = {
 <li>Comprova que SRTF dona el mínim <span class="math inline">\(\bar{T}_{retorn}\)</span>. Dona també el mínim <span class="math inline">\(\bar{T}_{resposta}\)</span>?</li>
 <li>Quin procés surt més perjudicat amb SRTF respecte de FCFS? Què passaria si arribessin processos curts contínuament?</li>
 </ol>
+<details>
+<summary>
+<strong>Solució: a) FCFS</strong>
+</summary>
+<div class="solucio udl-component udl-solucio" title="a) FCFS">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució — a) FCFS</span></div>
+<div class="table-responsive">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Procés</th>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+<th>10</th>
+<th>11</th>
+<th>12</th>
+<th>13</th>
+<th>14</th>
+<th>15</th>
+<th>16</th>
+<th>17</th>
+<th>18</th>
+<th>19</th>
+<th>20</th>
+<th>21</th>
+<th>22</th>
+<th>23</th>
+<th>24</th>
+<th>25</th>
+<th>26</th>
+<th>27</th>
+<th>28</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>A</strong></td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>F</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><strong>B</strong></td>
+<td></td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>F</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><strong>C</strong></td>
+<td></td>
+<td></td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>F</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><strong>D</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>F</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><strong>E</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>F</td>
+</tr>
+<tr class="even">
+<td><em>CPU</em></td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>B</td>
+<td>B</td>
+<td>B</td>
+<td>B</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td>D</td>
+<td>D</td>
+<td>D</td>
+<td>D</td>
+<td>D</td>
+<td>E</td>
+<td>E</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Mètrica</th>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+<th>D</th>
+<th>E</th>
+<th>Mitjana</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(T_f\)</span></td>
+<td>8</td>
+<td>12</td>
+<td>21</td>
+<td>26</td>
+<td>28</td>
+<td>–</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(T_{espera}\)</span></td>
+<td>0</td>
+<td>7</td>
+<td>10</td>
+<td>18</td>
+<td>21</td>
+<td>11.2</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(T_{resposta}\)</span></td>
+<td>0</td>
+<td>7</td>
+<td>10</td>
+<td>18</td>
+<td>21</td>
+<td>11.2</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(T_{retorn}\)</span></td>
+<td>8</td>
+<td>11</td>
+<td>19</td>
+<td>23</td>
+<td>23</td>
+<td>16.8</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(T_N\)</span></td>
+<td>8/8 = 1</td>
+<td>11/4 = 2.75</td>
+<td>19/9 = 2.11</td>
+<td>23/5 = 4.6</td>
+<td>23/2 = 11.5</td>
+<td>4.39</td>
+</tr>
+</tbody>
+</table>
+<p>Utilització de la CPU <span class="math inline">\(= 28/28 \approx 100\,\%\)</span> · Productivitat <span class="math inline">\(= 5/28 \approx 0.18\)</span> processos/u.t. · Final: <span class="math inline">\(t = 28\)</span>.</p>
+<p>E necessita 2 unitats i n’espera 21: és el <span class="math inline">\(T_N\)</span> més alt de tot el problema (11.5).</p>
+</div>
+</details>
+<details>
+<summary>
+<strong>Solució: b) SJF</strong>
+</summary>
+<div class="solucio udl-component udl-solucio" title="b) SJF">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució — b) SJF</span></div>
+<div class="table-responsive">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Procés</th>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+<th>10</th>
+<th>11</th>
+<th>12</th>
+<th>13</th>
+<th>14</th>
+<th>15</th>
+<th>16</th>
+<th>17</th>
+<th>18</th>
+<th>19</th>
+<th>20</th>
+<th>21</th>
+<th>22</th>
+<th>23</th>
+<th>24</th>
+<th>25</th>
+<th>26</th>
+<th>27</th>
+<th>28</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>A</strong></td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>F</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><strong>B</strong></td>
+<td></td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>F</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><strong>C</strong></td>
+<td></td>
+<td></td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>F</td>
+</tr>
+<tr class="even">
+<td><strong>D</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>F</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><strong>E</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>F</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><em>CPU</em></td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>E</td>
+<td>E</td>
+<td>B</td>
+<td>B</td>
+<td>B</td>
+<td>B</td>
+<td>D</td>
+<td>D</td>
+<td>D</td>
+<td>D</td>
+<td>D</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Mètrica</th>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+<th>D</th>
+<th>E</th>
+<th>Mitjana</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(T_f\)</span></td>
+<td>8</td>
+<td>14</td>
+<td>28</td>
+<td>19</td>
+<td>10</td>
+<td>–</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(T_{espera}\)</span></td>
+<td>0</td>
+<td>9</td>
+<td>17</td>
+<td>11</td>
+<td>3</td>
+<td>8</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(T_{resposta}\)</span></td>
+<td>0</td>
+<td>9</td>
+<td>17</td>
+<td>11</td>
+<td>3</td>
+<td>8</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(T_{retorn}\)</span></td>
+<td>8</td>
+<td>13</td>
+<td>26</td>
+<td>16</td>
+<td>5</td>
+<td>13.6</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(T_N\)</span></td>
+<td>8/8 = 1</td>
+<td>13/4 = 3.25</td>
+<td>26/9 = 2.89</td>
+<td>16/5 = 3.2</td>
+<td>5/2 = 2.5</td>
+<td>2.57</td>
+</tr>
+</tbody>
+</table>
+<p>Utilització de la CPU <span class="math inline">\(= 28/28 \approx 100\,\%\)</span> · Productivitat <span class="math inline">\(= 5/28 \approx 0.18\)</span> processos/u.t. · Final: <span class="math inline">\(t = 28\)</span>.</p>
+<p>A <span class="math inline">\(t=1\)</span> arriba B, més curt, però SJF no expulsa A. A <span class="math inline">\(t=8\)</span> s’escull E (2), després B (4) i després D (5).</p>
+</div>
+</details>
+<details>
+<summary>
+<strong>Solució: c) SRTF</strong>
+</summary>
+<div class="solucio udl-component udl-solucio" title="c) SRTF">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució — c) SRTF</span></div>
+<div class="table-responsive">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Procés</th>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+<th>10</th>
+<th>11</th>
+<th>12</th>
+<th>13</th>
+<th>14</th>
+<th>15</th>
+<th>16</th>
+<th>17</th>
+<th>18</th>
+<th>19</th>
+<th>20</th>
+<th>21</th>
+<th>22</th>
+<th>23</th>
+<th>24</th>
+<th>25</th>
+<th>26</th>
+<th>27</th>
+<th>28</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>A</strong></td>
+<td>E</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>F</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><strong>B</strong></td>
+<td></td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>F</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><strong>C</strong></td>
+<td></td>
+<td></td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>F</td>
+</tr>
+<tr class="even">
+<td><strong>D</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>F</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><strong>E</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>E</td>
+<td>E</td>
+<td>F</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><em>CPU</em></td>
+<td>A</td>
+<td>B</td>
+<td>B</td>
+<td>B</td>
+<td>B</td>
+<td>E</td>
+<td>E</td>
+<td>D</td>
+<td>D</td>
+<td>D</td>
+<td>D</td>
+<td>D</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Mètrica</th>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+<th>D</th>
+<th>E</th>
+<th>Mitjana</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(T_f\)</span></td>
+<td>19</td>
+<td>5</td>
+<td>28</td>
+<td>12</td>
+<td>7</td>
+<td>–</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(T_{espera}\)</span></td>
+<td>11</td>
+<td>0</td>
+<td>17</td>
+<td>4</td>
+<td>0</td>
+<td>6.4</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(T_{resposta}\)</span></td>
+<td>0</td>
+<td>0</td>
+<td>17</td>
+<td>4</td>
+<td>0</td>
+<td>4.2</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(T_{retorn}\)</span></td>
+<td>19</td>
+<td>4</td>
+<td>26</td>
+<td>9</td>
+<td>2</td>
+<td>12</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(T_N\)</span></td>
+<td>19/8 = 2.38</td>
+<td>4/4 = 1</td>
+<td>26/9 = 2.89</td>
+<td>9/5 = 1.8</td>
+<td>2/2 = 1</td>
+<td>1.81</td>
+</tr>
+</tbody>
+</table>
+<p>Utilització de la CPU <span class="math inline">\(= 28/28 \approx 100\,\%\)</span> · Productivitat <span class="math inline">\(= 5/28 \approx 0.18\)</span> processos/u.t. · Final: <span class="math inline">\(t = 28\)</span>.</p>
+<p>B expulsa A a <span class="math inline">\(t=1\)</span> (4 &lt; 7). A <span class="math inline">\(t=5\)</span> acaba B i arriba E (2), que passa per davant de tothom. D no expulsa B a <span class="math inline">\(t=3\)</span> perquè a B només li queden 2.</p>
+</div>
+</details>
+<details>
+<summary>
+<strong>Solució: d) RR <span class="math inline">\(q = 2\)</span></strong>
+</summary>
+<div class="solucio udl-component udl-solucio" title="d) RR $q = 2$">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució — d) RR $q = 2$</span></div>
+<div class="table-responsive">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Procés</th>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+<th>10</th>
+<th>11</th>
+<th>12</th>
+<th>13</th>
+<th>14</th>
+<th>15</th>
+<th>16</th>
+<th>17</th>
+<th>18</th>
+<th>19</th>
+<th>20</th>
+<th>21</th>
+<th>22</th>
+<th>23</th>
+<th>24</th>
+<th>25</th>
+<th>26</th>
+<th>27</th>
+<th>28</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>A</strong></td>
+<td>E</td>
+<td>E</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>F</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><strong>B</strong></td>
+<td></td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>F</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><strong>C</strong></td>
+<td></td>
+<td></td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>F</td>
+</tr>
+<tr class="even">
+<td><strong>D</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>F</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><strong>E</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>F</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><em>CPU</em></td>
+<td>A</td>
+<td>A</td>
+<td>B</td>
+<td>B</td>
+<td>C</td>
+<td>C</td>
+<td>A</td>
+<td>A</td>
+<td>D</td>
+<td>D</td>
+<td>B</td>
+<td>B</td>
+<td>E</td>
+<td>E</td>
+<td>C</td>
+<td>C</td>
+<td>A</td>
+<td>A</td>
+<td>D</td>
+<td>D</td>
+<td>C</td>
+<td>C</td>
+<td>A</td>
+<td>A</td>
+<td>D</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Mètrica</th>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+<th>D</th>
+<th>E</th>
+<th>Mitjana</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(T_f\)</span></td>
+<td>24</td>
+<td>12</td>
+<td>28</td>
+<td>25</td>
+<td>14</td>
+<td>–</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(T_{espera}\)</span></td>
+<td>16</td>
+<td>7</td>
+<td>17</td>
+<td>17</td>
+<td>7</td>
+<td>12.8</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(T_{resposta}\)</span></td>
+<td>0</td>
+<td>1</td>
+<td>2</td>
+<td>5</td>
+<td>7</td>
+<td>3</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(T_{retorn}\)</span></td>
+<td>24</td>
+<td>11</td>
+<td>26</td>
+<td>22</td>
+<td>9</td>
+<td>18.4</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(T_N\)</span></td>
+<td>24/8 = 3</td>
+<td>11/4 = 2.75</td>
+<td>26/9 = 2.89</td>
+<td>22/5 = 4.4</td>
+<td>9/2 = 4.5</td>
+<td>3.51</td>
+</tr>
+</tbody>
+</table>
+<p>Utilització de la CPU <span class="math inline">\(= 28/28 \approx 100\,\%\)</span> · Productivitat <span class="math inline">\(= 5/28 \approx 0.18\)</span> processos/u.t. · Final: <span class="math inline">\(t = 28\)</span>.</p>
+<p>Cap procés espera més de 7 unitats abans de la primera execució.</p>
+</div>
+</details>
+<details>
+<summary>
+<strong>Solució: discussió</strong>
+</summary>
+<div class="solucio udl-component udl-solucio" title="discussió">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució — discussió</span></div>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 35%">
+<col style="width: 21%">
+<col style="width: 21%">
+<col style="width: 21%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Política</th>
+<th><span class="math inline">\(\bar{T}_{espera}\)</span></th>
+<th><span class="math inline">\(\bar{T}_{resposta}\)</span></th>
+<th><span class="math inline">\(\bar{T}_{retorn}\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>FCFS</td>
+<td>11.2</td>
+<td>11.2</td>
+<td>16.8</td>
+</tr>
+<tr class="even">
+<td>SJF</td>
+<td>8</td>
+<td>8</td>
+<td>13.6</td>
+</tr>
+<tr class="odd">
+<td><strong>SRTF</strong></td>
+<td><strong>6.4</strong></td>
+<td>4.2</td>
+<td><strong>12</strong></td>
+</tr>
+<tr class="even">
+<td>RR <span class="math inline">\(q=2\)</span></td>
+<td>12.8</td>
+<td><strong>3</strong></td>
+<td>18.4</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>SRTF dona el mínim <span class="math inline">\(\bar{T}_{retorn}\)</span> i <span class="math inline">\(\bar{T}_{espera}\)</span>, com diu la teoria.</li>
+<li><strong>No</strong> dona el mínim <span class="math inline">\(\bar{T}_{resposta}\)</span>: RR, amb 3, el millora. L’optimalitat de SRTF és respecte del <strong>retorn</strong>.</li>
+<li><strong>Qui més perd respecte de FCFS és A</strong>: l’espera li passa de 0 a 11 i el retorn de 8 a 19. A comença primer, SRTF l’expulsa a <span class="math inline">\(t=1\)</span> i no torna a la CPU fins a <span class="math inline">\(t=12\)</span>: B, E i D, més curts, li passen davant. El seu <span class="math inline">\(T_{resposta}\)</span>, en canvi, no empitjora: continua sent 0.</li>
+</ul>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">Procés</th>
+<th style="text-align: center;"><span class="math inline">\(T_{espera}\)</span> FCFS</th>
+<th style="text-align: center;"><span class="math inline">\(T_{espera}\)</span> SRTF</th>
+<th style="text-align: center;">Diferència</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">A</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">11</td>
+<td style="text-align: center;"><strong>+11</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">B</td>
+<td style="text-align: center;">7</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">−7</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">C</td>
+<td style="text-align: center;">10</td>
+<td style="text-align: center;">17</td>
+<td style="text-align: center;">+7</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">D</td>
+<td style="text-align: center;">18</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">−14</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">E</td>
+<td style="text-align: center;">21</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">−21</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Qui té risc d’inanició és C</strong>, el més llarg: si arribessin processos curts contínuament, no s’executaria mai.</li>
+<li>RR és el pitjor en retorn i el millor en resposta: és la mateixa tensió que a la sessió 04a.</li>
+</ul>
+</div>
+</details>
 </section>
 <section id="problema-6-srtf-amb-es-per-a-qui-és-bo" class="level2">
 <h2 class="anchored" data-anchor-id="problema-6-srtf-amb-es-per-a-qui-és-bo">Problema 6 · SRTF amb E/S: per a qui és bo?</h2>
@@ -1021,9 +3472,593 @@ window.Quarto = {
 <ol type="1">
 <li>Planifica amb <strong>a) FCFS</strong>, <strong>b) RR <span class="math inline">\(q=2\)</span></strong> i <strong>c) SRTF</strong> (per ràfega).</li>
 <li>Calcula totes les mètriques.</li>
-<li>B és un procés limitat per E/S. Quan acaba B en cada cas? Què li passa al dispositiu de B?</li>
+<li>B és un procés limitat per E/S (com el procés C de l’exemple de Berkeley a la sessió 04b). Quan acaba B en cada cas? Què li passa al dispositiu de B?</li>
 <li>SRTF té el millor <span class="math inline">\(\bar{T}_{retorn}\)</span> però el <span class="math inline">\(T_{final}\)</span> més gran. Per què?</li>
 </ol>
+<details>
+<summary>
+<strong>Solució: a) FCFS</strong>
+</summary>
+<div class="solucio udl-component udl-solucio" title="a) FCFS">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució — a) FCFS</span></div>
+<div class="table-responsive">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Procés</th>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+<th>10</th>
+<th>11</th>
+<th>12</th>
+<th>13</th>
+<th>14</th>
+<th>15</th>
+<th>16</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>A</strong></td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>W</td>
+<td>W</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>F</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><strong>B</strong></td>
+<td></td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>W</td>
+<td>W</td>
+<td>W</td>
+<td>P</td>
+<td>E</td>
+<td>W</td>
+<td>W</td>
+<td>W</td>
+<td>E</td>
+<td>F</td>
+</tr>
+<tr class="odd">
+<td><strong>C</strong></td>
+<td></td>
+<td></td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>W</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>F</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><em>CPU</em></td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>B</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td>A</td>
+<td>B</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td>B</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Mètrica</th>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+<th>Mitjana</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(T_f\)</span></td>
+<td>11</td>
+<td>16</td>
+<td>15</td>
+<td>–</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(T_{espera}\)</span></td>
+<td>2</td>
+<td>6</td>
+<td>6</td>
+<td>4.67</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(T_{resposta}\)</span></td>
+<td>0</td>
+<td>5</td>
+<td>5</td>
+<td>3.33</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(T_{retorn}\)</span></td>
+<td>11</td>
+<td>15</td>
+<td>13</td>
+<td>13</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(T_N\)</span></td>
+<td>11/9 = 1.22</td>
+<td>15/9 = 1.67</td>
+<td>13/7 = 1.86</td>
+<td>1.58</td>
+</tr>
+</tbody>
+</table>
+<p>Utilització de la CPU <span class="math inline">\(= 16/16 \approx 100\,\%\)</span> · Productivitat <span class="math inline">\(= 3/16 \approx 0.19\)</span> processos/u.t. · Final: <span class="math inline">\(t = 16\)</span>.</p>
+<p>B arriba a <span class="math inline">\(t=1\)</span> i no pot fer la seva ràfega d’1 unitat fins a <span class="math inline">\(t=6\)</span>, darrere de les 6 d’A.</p>
+</div>
+</details>
+<details>
+<summary>
+<strong>Solució: b) RR <span class="math inline">\(q = 2\)</span></strong>
+</summary>
+<div class="solucio udl-component udl-solucio" title="b) RR $q = 2$">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució — b) RR $q = 2$</span></div>
+<div class="table-responsive">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Procés</th>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+<th>10</th>
+<th>11</th>
+<th>12</th>
+<th>13</th>
+<th>14</th>
+<th>15</th>
+<th>16</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>A</strong></td>
+<td>E</td>
+<td>E</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>W</td>
+<td>W</td>
+<td>P</td>
+<td>E</td>
+<td>F</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><strong>B</strong></td>
+<td></td>
+<td>P</td>
+<td>E</td>
+<td>W</td>
+<td>W</td>
+<td>W</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>W</td>
+<td>W</td>
+<td>W</td>
+<td>P</td>
+<td>E</td>
+<td>F</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><strong>C</strong></td>
+<td></td>
+<td></td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>W</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>F</td>
+</tr>
+<tr class="even">
+<td><em>CPU</em></td>
+<td>A</td>
+<td>A</td>
+<td>B</td>
+<td>C</td>
+<td>C</td>
+<td>A</td>
+<td>A</td>
+<td>C</td>
+<td>B</td>
+<td>A</td>
+<td>A</td>
+<td>C</td>
+<td>C</td>
+<td>B</td>
+<td>A</td>
+<td>C</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Mètrica</th>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+<th>Mitjana</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(T_f\)</span></td>
+<td>15</td>
+<td>14</td>
+<td>16</td>
+<td>–</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(T_{espera}\)</span></td>
+<td>6</td>
+<td>4</td>
+<td>7</td>
+<td>5.67</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(T_{resposta}\)</span></td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>0.67</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(T_{retorn}\)</span></td>
+<td>15</td>
+<td>13</td>
+<td>14</td>
+<td>14</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(T_N\)</span></td>
+<td>15/9 = 1.67</td>
+<td>13/9 = 1.44</td>
+<td>14/7 = 2</td>
+<td>1.7</td>
+</tr>
+</tbody>
+</table>
+<p>Utilització de la CPU <span class="math inline">\(= 16/16 \approx 100\,\%\)</span> · Productivitat <span class="math inline">\(= 3/16 \approx 0.19\)</span> processos/u.t. · Final: <span class="math inline">\(t = 16\)</span>.</p>
+<p>A <span class="math inline">\(t=2\)</span> arriba C i A és expulsat: C entra abans que A.</p>
+</div>
+</details>
+<details>
+<summary>
+<strong>Solució: c) SRTF</strong>
+</summary>
+<div class="solucio udl-component udl-solucio" title="c) SRTF">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució — c) SRTF</span></div>
+<div class="table-responsive">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Procés</th>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+<th>10</th>
+<th>11</th>
+<th>12</th>
+<th>13</th>
+<th>14</th>
+<th>15</th>
+<th>16</th>
+<th>17</th>
+<th>18</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>A</strong></td>
+<td>E</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>W</td>
+<td>W</td>
+<td>E</td>
+<td>F</td>
+</tr>
+<tr class="even">
+<td><strong>B</strong></td>
+<td></td>
+<td>E</td>
+<td>W</td>
+<td>W</td>
+<td>W</td>
+<td>E</td>
+<td>W</td>
+<td>W</td>
+<td>W</td>
+<td>E</td>
+<td>F</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><strong>C</strong></td>
+<td></td>
+<td></td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>W</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>F</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><em>CPU</em></td>
+<td>A</td>
+<td>B</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td>B</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td>B</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>–</td>
+<td>–</td>
+<td>A</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Mètrica</th>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+<th>Mitjana</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(T_f\)</span></td>
+<td>18</td>
+<td>10</td>
+<td>9</td>
+<td>–</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(T_{espera}\)</span></td>
+<td>9</td>
+<td>0</td>
+<td>0</td>
+<td>3</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(T_{resposta}\)</span></td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(T_{retorn}\)</span></td>
+<td>18</td>
+<td>9</td>
+<td>7</td>
+<td>11.33</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(T_N\)</span></td>
+<td>18/9 = 2</td>
+<td>9/9 = 1</td>
+<td>7/7 = 1</td>
+<td>1.33</td>
+</tr>
+</tbody>
+</table>
+<p>Utilització de la CPU <span class="math inline">\(= 16/18 \approx 89\,\%\)</span> · Productivitat <span class="math inline">\(= 3/18 \approx 0.17\)</span> processos/u.t. · Final: <span class="math inline">\(t = 18\)</span>.</p>
+<p>B i C expulsen A sempre que estan preparats. A no torna a la CPU fins a <span class="math inline">\(t=10\)</span> i acaba la seva E/S quan ja no queda ningú: la CPU està ociosa a <span class="math inline">\(t=15\)</span>–<span class="math inline">\(16\)</span>.</p>
+</div>
+</details>
+<details>
+<summary>
+<strong>Solució: discussió</strong>
+</summary>
+<div class="solucio udl-component udl-solucio" title="discussió">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució — discussió</span></div>
+<ul>
+<li>B acaba a <span class="math inline">\(t=16\)</span> (FCFS), <span class="math inline">\(t=14\)</span> (RR) i <span class="math inline">\(t=10\)</span> (SRTF). Amb SRTF, B <strong>no espera mai</strong> (<span class="math inline">\(T_N = 1\)</span>) i el seu dispositiu treballa sense interrupcions: és el comportament que volíem a l’exemple de Berkeley.</li>
+<li>SRTF té el millor <span class="math inline">\(\bar{T}_{retorn}\)</span> (11.33 contra 13 i 14) i <span class="math inline">\(\bar{T}_{resposta} = 0\)</span>.</li>
+<li>El <span class="math inline">\(T_{final}\)</span> és el més gran (18 contra 16) perquè A, el procés llarg, <strong>queda per al final</strong>. Quan fa l’E/S ja no hi ha ningú amb qui solapar-la i la CPU queda ociosa. SRTF optimitza la mitjana, no el temps total de la càrrega.</li>
+<li>A és qui ho paga: espera 9 unitats amb SRTF, contra 2 amb FCFS.</li>
+</ul>
+</div>
+</details>
 </section>
 <section id="problema-7-inanició-i-envelliment" class="level2">
 <h2 class="anchored" data-anchor-id="problema-7-inanició-i-envelliment">Problema 7 · Inanició i envelliment</h2>
@@ -1034,6 +4069,448 @@ window.Quarto = {
 <li>Calcula el <span class="math inline">\(T_{espera}\)</span> de L i dels <span class="math inline">\(J_i\)</span> en cada cas.</li>
 <li>Quin és el cost de l’envelliment? Qui el paga?</li>
 </ol>
+<details>
+<summary>
+<strong>Solució: a) sense envelliment</strong>
+</summary>
+<div class="solucio udl-component udl-solucio" title="a) sense envelliment">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució — a) sense envelliment</span></div>
+<div class="table-responsive">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><span class="math inline">\(t\)</span></th>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+<th>10</th>
+<th>11</th>
+<th>12</th>
+<th>13</th>
+<th>14</th>
+<th>15</th>
+<th>16</th>
+<th>17</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><em>CPU</em></td>
+<td>J1</td>
+<td>J1</td>
+<td>J2</td>
+<td>J2</td>
+<td>J3</td>
+<td>J3</td>
+<td>J4</td>
+<td>J4</td>
+<td>J5</td>
+<td>J5</td>
+<td>J6</td>
+<td>J6</td>
+<td>J7</td>
+<td>J7</td>
+<td>J8</td>
+<td>J8</td>
+<td>L</td>
+<td>L</td>
+</tr>
+<tr class="even">
+<td>Prioritat de L</td>
+<td>5</td>
+<td>5</td>
+<td>5</td>
+<td>5</td>
+<td>5</td>
+<td>5</td>
+<td>5</td>
+<td>5</td>
+<td>5</td>
+<td>5</td>
+<td>5</td>
+<td>5</td>
+<td>5</td>
+<td>5</td>
+<td>5</td>
+<td>5</td>
+<td>5</td>
+<td>5</td>
+</tr>
+</tbody>
+</table>
+</div>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th></th>
+<th>J1</th>
+<th>J2</th>
+<th>J3</th>
+<th>J4</th>
+<th>J5</th>
+<th>J6</th>
+<th>J7</th>
+<th>J8</th>
+<th>L</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(T_f\)</span></td>
+<td>2</td>
+<td>4</td>
+<td>6</td>
+<td>8</td>
+<td>10</td>
+<td>12</td>
+<td>14</td>
+<td>16</td>
+<td>18</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(T_{espera}\)</span></td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>16</td>
+</tr>
+</tbody>
+</table>
+<p>L només s’executa quan ja no queda cap <span class="math inline">\(J_i\)</span>: espera 16 unitats. Si els <span class="math inline">\(J_i\)</span> no s’aturessin, L no s’executaria <strong>mai</strong>.</p>
+</div>
+</details>
+<details>
+<summary>
+<strong>Solució: b) <span class="math inline">\(K = 2\)</span></strong>
+</summary>
+<div class="solucio udl-component udl-solucio" title="b) $K = 2$">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució — b) $K = 2$</span></div>
+<div class="table-responsive">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><span class="math inline">\(t\)</span></th>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+<th>10</th>
+<th>11</th>
+<th>12</th>
+<th>13</th>
+<th>14</th>
+<th>15</th>
+<th>16</th>
+<th>17</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><em>CPU</em></td>
+<td>J1</td>
+<td>J1</td>
+<td>J2</td>
+<td>J2</td>
+<td>J3</td>
+<td>J3</td>
+<td>L</td>
+<td>L</td>
+<td>J4</td>
+<td>J4</td>
+<td>J5</td>
+<td>J5</td>
+<td>J6</td>
+<td>J6</td>
+<td>J7</td>
+<td>J7</td>
+<td>J8</td>
+<td>J8</td>
+</tr>
+<tr class="even">
+<td>Prioritat de L</td>
+<td>5</td>
+<td>5</td>
+<td>4</td>
+<td>4</td>
+<td>3</td>
+<td>3</td>
+<td>2</td>
+<td>2</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th></th>
+<th>J1</th>
+<th>J2</th>
+<th>J3</th>
+<th>J4</th>
+<th>J5</th>
+<th>J6</th>
+<th>J7</th>
+<th>J8</th>
+<th>L</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(T_f\)</span></td>
+<td>2</td>
+<td>4</td>
+<td>6</td>
+<td>10</td>
+<td>12</td>
+<td>14</td>
+<td>16</td>
+<td>18</td>
+<td>8</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(T_{espera}\)</span></td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>2</td>
+<td>2</td>
+<td>2</td>
+<td>2</td>
+<td>2</td>
+<td>6</td>
+</tr>
+</tbody>
+</table>
+<p>A <span class="math inline">\(t=6\)</span> la prioritat de L ha arribat a 2, la mateixa que <span class="math inline">\(J_4\)</span>, que acaba d’arribar. Com que L fa més temps que espera, guanya.</p>
+</div>
+</details>
+<details>
+<summary>
+<strong>Solució: c) <span class="math inline">\(K = 4\)</span></strong>
+</summary>
+<div class="solucio udl-component udl-solucio" title="c) $K = 4$">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució — c) $K = 4$</span></div>
+<div class="table-responsive">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><span class="math inline">\(t\)</span></th>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+<th>10</th>
+<th>11</th>
+<th>12</th>
+<th>13</th>
+<th>14</th>
+<th>15</th>
+<th>16</th>
+<th>17</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><em>CPU</em></td>
+<td>J1</td>
+<td>J1</td>
+<td>J2</td>
+<td>J2</td>
+<td>J3</td>
+<td>J3</td>
+<td>J4</td>
+<td>J4</td>
+<td>J5</td>
+<td>J5</td>
+<td>J6</td>
+<td>J6</td>
+<td>L</td>
+<td>L</td>
+<td>J7</td>
+<td>J7</td>
+<td>J8</td>
+<td>J8</td>
+</tr>
+<tr class="even">
+<td>Prioritat de L</td>
+<td>5</td>
+<td>5</td>
+<td>5</td>
+<td>5</td>
+<td>4</td>
+<td>4</td>
+<td>4</td>
+<td>4</td>
+<td>3</td>
+<td>3</td>
+<td>3</td>
+<td>3</td>
+<td>2</td>
+<td>2</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th></th>
+<th>J1</th>
+<th>J2</th>
+<th>J3</th>
+<th>J4</th>
+<th>J5</th>
+<th>J6</th>
+<th>J7</th>
+<th>J8</th>
+<th>L</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(T_f\)</span></td>
+<td>2</td>
+<td>4</td>
+<td>6</td>
+<td>8</td>
+<td>10</td>
+<td>12</td>
+<td>16</td>
+<td>18</td>
+<td>14</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(T_{espera}\)</span></td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>2</td>
+<td>2</td>
+<td>12</td>
+</tr>
+</tbody>
+</table>
+<p>L arriba a prioritat 2 a <span class="math inline">\(t=12\)</span> i passa davant de <span class="math inline">\(J_7\)</span>.</p>
+</div>
+</details>
+<details>
+<summary>
+<strong>Solució: discussió</strong>
+</summary>
+<div class="solucio udl-component udl-solucio" title="discussió">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució — discussió</span></div>
+<ul>
+<li>L passa d’esperar 16 a esperar 6 (<span class="math inline">\(K=2\)</span>) o 12 (<span class="math inline">\(K=4\)</span>). Amb envelliment, el temps d’espera de L queda <strong>acotat</strong> independentment de quants processos prioritaris arribin.</li>
+<li><strong>El cost</strong> el paguen els <span class="math inline">\(J_i\)</span> posteriors: cadascun espera 2 unitats que abans no esperava. El temps total no canvia (18): l’envelliment <strong>redistribueix</strong> l’espera.</li>
+<li>Triar <span class="math inline">\(K\)</span> és un compromís: un <span class="math inline">\(K\)</span> petit desvirtua les prioritats; un <span class="math inline">\(K\)</span> gran deixa esperar molt els processos poc prioritaris.</li>
+</ul>
+</div>
+</details>
 </section>
 <section id="problema-8-inversió-de-prioritats" class="level2">
 <h2 class="anchored" data-anchor-id="problema-8-inversió-de-prioritats">Problema 8 · Inversió de prioritats</h2>
@@ -1080,6 +4557,226 @@ window.Quarto = {
 <li>Calcula <span class="math inline">\(T_{retorn}\)</span> de cada procés en tots dos casos.</li>
 <li>Per què es diu que, sense herència, el bloqueig de H és <strong>no acotat</strong>? Hi hauria inversió de prioritats si M no existís?</li>
 </ol>
+<details>
+<summary>
+<strong>Solució: a) sense herència</strong>
+</summary>
+<div class="solucio udl-component udl-solucio" title="a) sense herència">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució — a) sense herència</span></div>
+<div class="table-responsive">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Procés</th>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+<th>10</th>
+<th>11</th>
+<th>12</th>
+<th>13</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>H</strong></td>
+<td></td>
+<td></td>
+<td>E</td>
+<td>B</td>
+<td>B</td>
+<td>B</td>
+<td>B</td>
+<td>B</td>
+<td>B</td>
+<td>C</td>
+<td>C</td>
+<td>E</td>
+<td>F</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><strong>M</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>F</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><strong>L</strong></td>
+<td>E</td>
+<td>C</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>C</td>
+<td>C</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>F</td>
+</tr>
+<tr class="even">
+<td><em>CPU</em></td>
+<td>L</td>
+<td>L</td>
+<td>H</td>
+<td>M</td>
+<td>M</td>
+<td>M</td>
+<td>M</td>
+<td>L</td>
+<td>L</td>
+<td>H</td>
+<td>H</td>
+<td>H</td>
+<td>L</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>A <span class="math inline">\(t=3\)</span> H demana <span class="math inline">\(S\)</span>, que té L, i es bloqueja. M arriba i, com que és més prioritari que L, s’executa durant 4 unitats. <strong>H espera M</strong>, un procés menys prioritari que ni tan sols usa <span class="math inline">\(S\)</span>.</p>
+<p><span class="math inline">\(T_{retorn}\)</span>: H = 10, M = 4, L = 13.</p>
+</div>
+</details>
+<details>
+<summary>
+<strong>Solució: b) amb herència</strong>
+</summary>
+<div class="solucio udl-component udl-solucio" title="b) amb herència">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució — b) amb herència</span></div>
+<div class="table-responsive">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Procés</th>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+<th>10</th>
+<th>11</th>
+<th>12</th>
+<th>13</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>H</strong></td>
+<td></td>
+<td></td>
+<td>E</td>
+<td>B</td>
+<td>B</td>
+<td>C</td>
+<td>C</td>
+<td>E</td>
+<td>F</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><strong>M</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>E</td>
+<td>F</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><strong>L</strong></td>
+<td>E</td>
+<td>C</td>
+<td>P</td>
+<td>C</td>
+<td>C</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>P</td>
+<td>E</td>
+<td>F</td>
+</tr>
+<tr class="even">
+<td><em>CPU</em></td>
+<td>L</td>
+<td>L</td>
+<td>H</td>
+<td>L</td>
+<td>L</td>
+<td>H</td>
+<td>H</td>
+<td>H</td>
+<td>M</td>
+<td>M</td>
+<td>M</td>
+<td>M</td>
+<td>L</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>A <span class="math inline">\(t=3\)</span> H es bloqueja a <span class="math inline">\(S\)</span> i L <strong>hereta la prioritat 1</strong>. M arriba però no pot expulsar L. L acaba la secció crítica a <span class="math inline">\(t=5\)</span>, allibera <span class="math inline">\(S\)</span> i recupera la prioritat 3. H continua.</p>
+<p><span class="math inline">\(T_{retorn}\)</span>: H = 6, M = 9, L = 13.</p>
+</div>
+</details>
+<details>
+<summary>
+<strong>Solució: discussió</strong>
+</summary>
+<div class="solucio udl-component udl-solucio" title="discussió">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució — discussió</span></div>
+<ul>
+<li>Sense herència, el temps que H passa bloquejat depèn de <strong>quanta feina tinguin els processos de prioritat intermèdia</strong>. Amb deu processos com M, H esperaria deu vegades més: el bloqueig no té cota.</li>
+<li>Amb herència, H espera <strong>com a màxim</strong> el que queda de la secció crítica de L (aquí, 2 unitats). El bloqueig queda acotat per la durada de la secció crítica.</li>
+<li>Sense M, H també esperaria L (2 unitats), però això és <strong>inevitable i acotat</strong>: és el preu d’una exclusió mútua, no una inversió. La inversió és que un procés de prioritat <strong>intermèdia</strong> retardi H.</li>
+<li>M ho paga (de 4 a 9) i és correcte: M és menys prioritari que H.</li>
+</ul>
+</div>
+</details>
 </section>
 <section id="problema-9-mitjana-exponencial" class="level2">
 <h2 class="anchored" data-anchor-id="problema-9-mitjana-exponencial">Problema 9 · Mitjana exponencial</h2>
@@ -1094,6 +4791,143 @@ window.Quarto = {
 <li>Calcula l’error total <span class="math inline">\(\sum_n |\tau_n - t_n|\)</span> (per a <span class="math inline">\(n = 0, \dots, 5\)</span>) en cada cas.</li>
 <li>Quin <span class="math inline">\(\alpha\)</span> és millor per a cada sèrie? Què en dedueixes?</li>
 </ol>
+<details>
+<summary>
+<strong>Solució: prediccions i error</strong>
+</summary>
+<div class="solucio udl-component udl-solucio" title="prediccions i error">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució — prediccions i error</span></div>
+<p><strong>Sèrie 1</strong>: <span class="math inline">\(t = 4, 4, 4, 10, 10, 10\)</span></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><span class="math inline">\(n\)</span></th>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>Error total</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(t_n\)</span></td>
+<td>4</td>
+<td>4</td>
+<td>4</td>
+<td>10</td>
+<td>10</td>
+<td>10</td>
+<td>–</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\tau_n\)</span>, <span class="math inline">\(\alpha = 1/2\)</span></td>
+<td>6</td>
+<td>5</td>
+<td>4.5</td>
+<td>4.25</td>
+<td>7.125</td>
+<td>8.5625</td>
+<td>9.28</td>
+<td><strong>13.56</strong></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\tau_n\)</span>, <span class="math inline">\(\alpha = 1\)</span></td>
+<td>6</td>
+<td>4</td>
+<td>4</td>
+<td>4</td>
+<td>10</td>
+<td>10</td>
+<td>10</td>
+<td><strong>8</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Sèrie 2</strong>: <span class="math inline">\(t = 8, 4, 8, 4, 8, 4\)</span></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><span class="math inline">\(n\)</span></th>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>Error total</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(t_n\)</span></td>
+<td>8</td>
+<td>4</td>
+<td>8</td>
+<td>4</td>
+<td>8</td>
+<td>4</td>
+<td>–</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\tau_n\)</span>, <span class="math inline">\(\alpha = 1/2\)</span></td>
+<td>6</td>
+<td>7</td>
+<td>5.5</td>
+<td>6.75</td>
+<td>5.375</td>
+<td>6.6875</td>
+<td>5.34</td>
+<td><strong>15.56</strong></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\tau_n\)</span>, <span class="math inline">\(\alpha = 1\)</span></td>
+<td>6</td>
+<td>8</td>
+<td>4</td>
+<td>8</td>
+<td>4</td>
+<td>8</td>
+<td>4</td>
+<td><strong>22</strong></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Amb un <strong>canvi de fase</strong> (sèrie 1), <span class="math inline">\(\alpha = 1\)</span> s’adapta de seguida i guanya.</li>
+<li>Amb <strong>soroll</strong> (sèrie 2), <span class="math inline">\(\alpha = 1\)</span> sempre prediu la ràfega anterior, que és justament la contrària. La mitjana amb <span class="math inline">\(\alpha = 1/2\)</span> filtra el soroll i s’acosta a la mitjana real (6).</li>
+<li>No hi ha un <span class="math inline">\(\alpha\)</span> òptim universal: <span class="math inline">\(\alpha\)</span> fixa el compromís entre <strong>rapidesa d’adaptació</strong> i <strong>robustesa al soroll</strong>. Valors habituals: <span class="math inline">\(\alpha \approx 1/2\)</span>.</li>
+</ul>
+</div>
+</details>
 </section>
 <section id="problema-10-mlfq" class="level2">
 <h2 class="anchored" data-anchor-id="problema-10-mlfq">Problema 10 · MLFQ</h2>
@@ -1144,6 +4978,473 @@ window.Quarto = {
 <li>Calcula les mètriques i indica en quin nivell és cada procés a cada instant.</li>
 <li>En aquest cas, el <em>boost</em> millora o empitjora? Quan és imprescindible?</li>
 </ol>
+<details>
+<summary>
+<strong>Solució: a) regles 1–4</strong>
+</summary>
+<div class="solucio udl-component udl-solucio" title="a) regles 1–4">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució — a) regles 1–4</span></div>
+<div class="table-responsive">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Procés</th>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+<th>10</th>
+<th>11</th>
+<th>12</th>
+<th>13</th>
+<th>14</th>
+<th>15</th>
+<th>16</th>
+<th>17</th>
+<th>18</th>
+<th>19</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>A</strong></td>
+<td>E0</td>
+<td>E0</td>
+<td>P1</td>
+<td>P1</td>
+<td>P1</td>
+<td>P1</td>
+<td>E1</td>
+<td>E1</td>
+<td>P1</td>
+<td>P1</td>
+<td>E1</td>
+<td>E1</td>
+<td>P2</td>
+<td>P2</td>
+<td>P2</td>
+<td>P2</td>
+<td>E2</td>
+<td>E2</td>
+<td>F</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><strong>B</strong></td>
+<td></td>
+<td>P0</td>
+<td>E0</td>
+<td>W</td>
+<td>W</td>
+<td>E0</td>
+<td>W</td>
+<td>W</td>
+<td>E0</td>
+<td>F</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><strong>C</strong></td>
+<td></td>
+<td></td>
+<td>P0</td>
+<td>E0</td>
+<td>E0</td>
+<td>P1</td>
+<td>P1</td>
+<td>P1</td>
+<td>P1</td>
+<td>E1</td>
+<td>W</td>
+<td>P1</td>
+<td>E1</td>
+<td>E1</td>
+<td>E1</td>
+<td>E1</td>
+<td>P2</td>
+<td>P2</td>
+<td>E2</td>
+<td>F</td>
+</tr>
+<tr class="even">
+<td><em>CPU</em></td>
+<td>A</td>
+<td>A</td>
+<td>B</td>
+<td>C</td>
+<td>C</td>
+<td>B</td>
+<td>A</td>
+<td>A</td>
+<td>B</td>
+<td>C</td>
+<td>A</td>
+<td>A</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td>A</td>
+<td>A</td>
+<td>C</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Mètrica</th>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+<th>Mitjana</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(T_f\)</span></td>
+<td>18</td>
+<td>9</td>
+<td>19</td>
+<td>–</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(T_{espera}\)</span></td>
+<td>10</td>
+<td>1</td>
+<td>8</td>
+<td>6.33</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(T_{resposta}\)</span></td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>0.67</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(T_{retorn}\)</span></td>
+<td>18</td>
+<td>8</td>
+<td>17</td>
+<td>14.33</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(T_N\)</span></td>
+<td>18/8 = 2.25</td>
+<td>8/7 = 1.14</td>
+<td>17/9 = 1.89</td>
+<td>1.76</td>
+</tr>
+</tbody>
+</table>
+<p>Utilització de la CPU <span class="math inline">\(= 19/19 \approx 100\,\%\)</span> · Productivitat <span class="math inline">\(= 3/19 \approx 0.16\)</span> processos/u.t. · Final: <span class="math inline">\(t = 19\)</span>.</p>
+<ul>
+<li>A i C baixen al nivell 1 en esgotar el primer quantum de 2.</li>
+<li>B, que sempre es bloqueja abans, es queda al nivell 0 i expulsa A a <span class="math inline">\(t=8\)</span>. En aquell moment A ha gastat 2 dels 4 del seu quantum de nivell 1: <strong>en conserva 2</strong>.</li>
+<li>A <span class="math inline">\(t=9\)</span>, C executa la unitat que li quedava de la primera ràfega i es bloqueja: es queda al nivell 1.</li>
+<li>A <span class="math inline">\(t=10\)</span>, A reprèn amb el restant de 2. L’esgota a <span class="math inline">\(t=12\)</span> i baixa al nivell 2.</li>
+<li>C torna a <span class="math inline">\(t=11\)</span> al nivell 1, s’executa a <span class="math inline">\(t=12\)</span>–<span class="math inline">\(15\)</span>, esgota el quantum de 4 i també baixa al nivell 2, darrere d’A.</li>
+</ul>
+</div>
+</details>
+<details>
+<summary>
+<strong>Solució: b) <em>boost</em> a <span class="math inline">\(t=10\)</span></strong>
+</summary>
+<div class="solucio udl-component udl-solucio" title="b) *boost* a $t=10$">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució — b) *boost* a $t=10$</span></div>
+<div class="table-responsive">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Procés</th>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+<th>10</th>
+<th>11</th>
+<th>12</th>
+<th>13</th>
+<th>14</th>
+<th>15</th>
+<th>16</th>
+<th>17</th>
+<th>18</th>
+<th>19</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>A</strong></td>
+<td>E0</td>
+<td>E0</td>
+<td>P1</td>
+<td>P1</td>
+<td>P1</td>
+<td>P1</td>
+<td>E1</td>
+<td>E1</td>
+<td>P1</td>
+<td>P1</td>
+<td>E0</td>
+<td>E0</td>
+<td>P1</td>
+<td>P1</td>
+<td>E1</td>
+<td>E1</td>
+<td>F</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><strong>B</strong></td>
+<td></td>
+<td>P0</td>
+<td>E0</td>
+<td>W</td>
+<td>W</td>
+<td>E0</td>
+<td>W</td>
+<td>W</td>
+<td>E0</td>
+<td>F</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><strong>C</strong></td>
+<td></td>
+<td></td>
+<td>P0</td>
+<td>E0</td>
+<td>E0</td>
+<td>P1</td>
+<td>P1</td>
+<td>P1</td>
+<td>P1</td>
+<td>E1</td>
+<td>W</td>
+<td>P0</td>
+<td>E0</td>
+<td>E0</td>
+<td>P1</td>
+<td>P1</td>
+<td>E1</td>
+<td>E1</td>
+<td>E1</td>
+<td>F</td>
+</tr>
+<tr class="even">
+<td><em>CPU</em></td>
+<td>A</td>
+<td>A</td>
+<td>B</td>
+<td>C</td>
+<td>C</td>
+<td>B</td>
+<td>A</td>
+<td>A</td>
+<td>B</td>
+<td>C</td>
+<td>A</td>
+<td>A</td>
+<td>C</td>
+<td>C</td>
+<td>A</td>
+<td>A</td>
+<td>C</td>
+<td>C</td>
+<td>C</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Mètrica</th>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+<th>Mitjana</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(T_f\)</span></td>
+<td>16</td>
+<td>9</td>
+<td>19</td>
+<td>–</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(T_{espera}\)</span></td>
+<td>8</td>
+<td>1</td>
+<td>8</td>
+<td>5.67</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(T_{resposta}\)</span></td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>0.67</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(T_{retorn}\)</span></td>
+<td>16</td>
+<td>8</td>
+<td>17</td>
+<td>13.67</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(T_N\)</span></td>
+<td>16/8 = 2</td>
+<td>8/7 = 1.14</td>
+<td>17/9 = 1.89</td>
+<td>1.68</td>
+</tr>
+</tbody>
+</table>
+<p>Utilització de la CPU <span class="math inline">\(= 19/19 \approx 100\,\%\)</span> · Productivitat <span class="math inline">\(= 3/19 \approx 0.16\)</span> processos/u.t. · Final: <span class="math inline">\(t = 19\)</span>.</p>
+<ul>
+<li>Fins a <span class="math inline">\(t=10\)</span> és idèntic a l’apartat a.</li>
+<li>A <span class="math inline">\(t=10\)</span>, A (que era preparat al nivell 1 amb 2 de quantum restant) i C (que fa E/S) passen al nivell 0 amb quantum nou.</li>
+<li>A gasta un quantum de 2 al nivell 0 i torna al nivell 1. C torna d’E/S a <span class="math inline">\(t=11\)</span> directament al nivell 0, gasta el quantum de 2 a <span class="math inline">\(t=12\)</span>–<span class="math inline">\(13\)</span> i també baixa al nivell 1.</li>
+<li>A acaba els 2 que li queden a <span class="math inline">\(t=14\)</span>–<span class="math inline">\(15\)</span>, abans que C.</li>
+</ul>
+</div>
+</details>
+<details>
+<summary>
+<strong>Solució: discussió</strong>
+</summary>
+<div class="solucio udl-component udl-solucio" title="discussió">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució — discussió</span></div>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><span class="math inline">\(T_{retorn}\)</span> A</th>
+<th><span class="math inline">\(T_{retorn}\)</span> B</th>
+<th><span class="math inline">\(T_{retorn}\)</span> C</th>
+<th><span class="math inline">\(\bar{T}_{retorn}\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Regles 1–4</td>
+<td>18</td>
+<td>8</td>
+<td>17</td>
+<td>14.33</td>
+</tr>
+<tr class="even">
+<td>Amb <em>boost</em></td>
+<td>16</td>
+<td>8</td>
+<td>17</td>
+<td>13.67</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Regles 1–4</strong>: B, l’interactiu, té <span class="math inline">\(T_N = 1.14\)</span> i <span class="math inline">\(T_{resposta} = 1\)</span>. L’MLFQ l’ha identificat sense saber res d’ell. A i C, limitats per CPU, baixen de nivell: l’MLFQ <strong>aproxima SRTF</strong>.</li>
+<li><strong>Amb <em>boost</em></strong>, A millora (18 → 16) i els altres no hi perden. Sense <em>boost</em>, A acaba al nivell 2, darrere de la tanda de 4 de C al nivell 1. El <em>boost</em> li dona una segona oportunitat als nivells alts, just quan li queda poca feina.</li>
+<li>El <em>boost</em> és imprescindible quan hi ha <strong>prou processos interactius per ocupar sempre els nivells alts</strong>: sense <em>boost</em>, els dels nivells baixos no s’executarien mai. També permet que un procés que <strong>ha canviat de comportament</strong> (de càlcul a interactiu) recuperi la prioritat.</li>
+<li>El <em>boost</em> no és gratuït: si es fa massa sovint, els processos de càlcul tornen a competir amb els interactius i l’MLFQ s’assembla a un RR.</li>
+</ul>
+</div>
+</details>
 </section>
 <section id="problema-11-mlfq-fer-trampa" class="level2">
 <h2 class="anchored" data-anchor-id="problema-11-mlfq-fer-trampa">Problema 11 · MLFQ: fer trampa</h2>
@@ -1176,13 +5477,13 @@ window.Quarto = {
 <td><span class="math inline">\(8_{CPU}\)</span></td>
 </tr>
 <tr class="even">
-<td style="text-align: center;">T (trampos)</td>
+<td style="text-align: center;">T (tramposo)</td>
 <td style="text-align: center;">0</td>
 <td><span class="math inline">\(2_{CPU},\ 1_{E/S},\ 2_{CPU},\ 1_{E/S},\ 2_{CPU},\ 1_{E/S},\ 2_{CPU}\)</span></td>
 </tr>
 </tbody>
 </table>
-<p>T fa una E/S inútil just abans d’esgotar el quantum, com el programa d’Othello de la sessió. Empats: N &gt; T.</p>
+<p>T fa una E/S inútil just abans d’esgotar el quantum, com el programa d’Othello de la sessió 04b. Empats: N &gt; T.</p>
 <ol type="1">
 <li><strong>a) Regles bàsiques.</strong> Un procés baixa de nivell si esgota el quantum de 3 en una sola tornada.</li>
 <li><strong>b) Comptabilitat acumulada.</strong> Quantum de 3 i <strong>allotment de 5</strong> al nivell 0.
@@ -1194,6 +5495,391 @@ window.Quarto = {
 <li>Compara <span class="math inline">\(T_{retorn}\)</span> de N i de T en tots dos casos.</li>
 <li>Compara-ho amb el cas en què T és <strong>honest</strong>: una sola ràfega de 8 unitats de CPU i cap E/S. La trampa li surt a compte?</li>
 </ol>
+<details>
+<summary>
+<strong>Solució: a) regles bàsiques</strong>
+</summary>
+<div class="solucio udl-component udl-solucio" title="a) regles bàsiques">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució — a) regles bàsiques</span></div>
+<div class="table-responsive">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Procés</th>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+<th>10</th>
+<th>11</th>
+<th>12</th>
+<th>13</th>
+<th>14</th>
+<th>15</th>
+<th>16</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>N</strong></td>
+<td>E0</td>
+<td>E0</td>
+<td>E0</td>
+<td>P1</td>
+<td>P1</td>
+<td>E1</td>
+<td>P1</td>
+<td>P1</td>
+<td>E1</td>
+<td>P1</td>
+<td>P1</td>
+<td>E1</td>
+<td>P1</td>
+<td>P1</td>
+<td>E1</td>
+<td>E1</td>
+<td>F</td>
+</tr>
+<tr class="even">
+<td><strong>T</strong></td>
+<td>P0</td>
+<td>P0</td>
+<td>P0</td>
+<td>E0</td>
+<td>E0</td>
+<td>W</td>
+<td>E0</td>
+<td>E0</td>
+<td>W</td>
+<td>E0</td>
+<td>E0</td>
+<td>W</td>
+<td>E0</td>
+<td>E0</td>
+<td>F</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><em>CPU</em></td>
+<td>N</td>
+<td>N</td>
+<td>N</td>
+<td>T</td>
+<td>T</td>
+<td>N</td>
+<td>T</td>
+<td>T</td>
+<td>N</td>
+<td>T</td>
+<td>T</td>
+<td>N</td>
+<td>T</td>
+<td>T</td>
+<td>N</td>
+<td>N</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Mètrica</th>
+<th>N</th>
+<th>T</th>
+<th>Mitjana</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(T_f\)</span></td>
+<td>16</td>
+<td>14</td>
+<td>–</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(T_{espera}\)</span></td>
+<td>8</td>
+<td>3</td>
+<td>5.5</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(T_{resposta}\)</span></td>
+<td>0</td>
+<td>3</td>
+<td>1.5</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(T_{retorn}\)</span></td>
+<td>16</td>
+<td>14</td>
+<td>15</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(T_N\)</span></td>
+<td>16/8 = 2</td>
+<td>14/11 = 1.27</td>
+<td>1.64</td>
+</tr>
+</tbody>
+</table>
+<p>Utilització de la CPU <span class="math inline">\(= 16/16 \approx 100\,\%\)</span> · Productivitat <span class="math inline">\(= 2/16 \approx 0.12\)</span> processos/u.t. · Final: <span class="math inline">\(t = 16\)</span>.</p>
+<p>N esgota el quantum a <span class="math inline">\(t=3\)</span> i baixa al nivell 1. T es bloqueja sempre després de 2 unitats, <strong>no esgota mai el quantum</strong> i no baixa mai: cada vegada que torna d’E/S expulsa N.</p>
+</div>
+</details>
+<details>
+<summary>
+<strong>Solució: b) comptabilitat acumulada (allotment 5)</strong>
+</summary>
+<div class="solucio udl-component udl-solucio" title="b) comptabilitat acumulada (allotment 5)">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució — b) comptabilitat acumulada (allotment 5)</span></div>
+<div class="table-responsive">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 5%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Procés</th>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+<th>10</th>
+<th>11</th>
+<th>12</th>
+<th>13</th>
+<th>14</th>
+<th>15</th>
+<th>16</th>
+<th>17</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>N</strong></td>
+<td>E0</td>
+<td>E0</td>
+<td>E0</td>
+<td>P0</td>
+<td>P0</td>
+<td>E0</td>
+<td>E0</td>
+<td>P1</td>
+<td>P1</td>
+<td>E1</td>
+<td>P1</td>
+<td>E1</td>
+<td>E1</td>
+<td>F</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><strong>T</strong></td>
+<td>P0</td>
+<td>P0</td>
+<td>P0</td>
+<td>E0</td>
+<td>E0</td>
+<td>W</td>
+<td>P0</td>
+<td>E0</td>
+<td>E0</td>
+<td>W</td>
+<td>E0</td>
+<td>P1</td>
+<td>P1</td>
+<td>E1</td>
+<td>W</td>
+<td>E1</td>
+<td>E1</td>
+<td>F</td>
+</tr>
+<tr class="odd">
+<td><em>CPU</em></td>
+<td>N</td>
+<td>N</td>
+<td>N</td>
+<td>T</td>
+<td>T</td>
+<td>N</td>
+<td>N</td>
+<td>T</td>
+<td>T</td>
+<td>N</td>
+<td>T</td>
+<td>N</td>
+<td>N</td>
+<td>T</td>
+<td>–</td>
+<td>T</td>
+<td>T</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Mètrica</th>
+<th>N</th>
+<th>T</th>
+<th>Mitjana</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(T_f\)</span></td>
+<td>13</td>
+<td>17</td>
+<td>–</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(T_{espera}\)</span></td>
+<td>5</td>
+<td>6</td>
+<td>5.5</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(T_{resposta}\)</span></td>
+<td>0</td>
+<td>3</td>
+<td>1.5</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(T_{retorn}\)</span></td>
+<td>13</td>
+<td>17</td>
+<td>15</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(T_N\)</span></td>
+<td>13/8 = 1.62</td>
+<td>17/11 = 1.55</td>
+<td>1.59</td>
+</tr>
+</tbody>
+</table>
+<p>Utilització de la CPU <span class="math inline">\(= 16/17 \approx 94\,\%\)</span> · Productivitat <span class="math inline">\(= 2/17 \approx 0.12\)</span> processos/u.t. · Final: <span class="math inline">\(t = 17\)</span>.</p>
+<ul>
+<li>N esgota el quantum a <span class="math inline">\(t=3\)</span> amb 3 unitats d’allotment gastades: es queda al nivell 0, al final de la cua.</li>
+<li>N acumula 5 unitats a <span class="math inline">\(t=7\)</span> (3 + 2) i baixa al nivell 1.</li>
+<li>T arriba a 5 a <span class="math inline">\(t=11\)</span> (2 + 2 + 1) <strong>sense haver esgotat mai el quantum</strong>: baixa al nivell 1 a mitja ràfega, darrere de N.</li>
+<li>A partir d’aquí, tots dos són al nivell 1 (FCFS) i competeixen en igualtat de condicions.</li>
+</ul>
+</div>
+</details>
+<details>
+<summary>
+<strong>Solució: discussió</strong>
+</summary>
+<div class="solucio udl-component udl-solucio" title="discussió">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució — discussió</span></div>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Cas</th>
+<th><span class="math inline">\(T_{retorn}\)</span> N</th>
+<th><span class="math inline">\(T_{retorn}\)</span> T</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Regles bàsiques, T tramposo</td>
+<td>16</td>
+<td>14</td>
+</tr>
+<tr class="even">
+<td>Regles bàsiques, T honest</td>
+<td>11</td>
+<td>16</td>
+</tr>
+<tr class="odd">
+<td>Allotment 5, T tramposo</td>
+<td>13</td>
+<td>17</td>
+</tr>
+<tr class="even">
+<td>Allotment 5, T honest</td>
+<td>13</td>
+<td>16</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Amb les regles bàsiques, la trampa funciona.</strong> T passa de 16 a 14 tot i fer 3 unitats d’E/S de més, i ho paga N, que passa d’11 a 16.</li>
+<li><strong>Amb allotment, la trampa no funciona.</strong> N obté 13 tant si T fa trampa com si no: el comportament de T ja no l’afecta. T tramposo acaba a 17, pitjor que T honest (16), perquè les E/S inútils ara només li fan perdre temps.</li>
+<li>La clau és la diferència entre els dos conceptes. El <strong>quantum</strong> limita una tornada i un bloqueig el reinicia: es pot esquivar. L’<strong>allotment</strong> suma totes les tornades: no es pot esquivar bloquejant-se.</li>
+<li>És la regla que proposa OSTEP (cap. 8) per tancar aquest forat.</li>
+</ul>
+</div>
+</details>
+<div class="errorcomu udl-component udl-errorcomu" title="Errors freqüents">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-errorcomu"></use></svg><span>Error Comú — Errors freqüents</span></div>
+<ul>
+<li><strong>SJF sobre el total</strong>: SJF i SRTF comparen la <strong>ràfega actual</strong> (o el que en queda), no la suma de totes les ràfegues del procés.</li>
+<li><strong>SRTF amb empats</strong>: un procés que arriba amb el mateix temps restant <strong>no</strong> expulsa l’actual.</li>
+<li><strong>Comptar el bloqueig per un lock com a espera</strong>: les caselles <strong>B</strong> no són temps a la cua de preparats.</li>
+<li><strong>MLFQ</strong>: baixar de nivell en bloquejar-se. Amb les regles bàsiques només es baixa en <strong>esgotar</strong> el quantum.</li>
+<li><strong>Multinivell sense retroalimentació</strong>: canviar un procés de cua. A les cues fixes, cada procés es queda sempre a la seva.</li>
+</ul>
+</div>
 
 
 </section>
@@ -1730,6 +6416,9 @@ window.Quarto = {
       </a>          
   </div>
   <div class="nav-page nav-page-next">
+      <a href="../../../blocs/07-shell/teoria/01-shell.html" class="pagination-link" aria-label="Shell scripting (I)">
+        <span class="nav-page-text">Shell scripting (I)</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
   </div>
 </nav>
 </div> <!-- /content -->
