@@ -243,7 +243,7 @@ int processa_linia(char *linia, int *estat)
 }
 ```
 
-I `executa` aplica les redireccions al fill, **després dels senyals i abans de l'`execvp`**. Canvia el prototipus a `int executa(const struct etapa *e,);` i afegeix el de `analitza_etapa`:
+I `executa` aplica les redireccions al fill, **després dels senyals i abans de l'`execvp`**. Canvia el prototipus a `int executa(const struct etapa *e);` i afegeix el de `analitza_etapa`:
 
 ```{.c}
 int executa(const struct etapa *e)

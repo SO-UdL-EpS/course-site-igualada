@@ -7,21 +7,211 @@
 // automatically). Everything in _colors.scss already reacts to
 // that via `body.quarto-dark { --udl-*: ... }`.
 //
-// This file only handles the handful of things CSS variables
-// alone don't fix: raster images/diagrams that were drawn for a
-// light background, and code-highlighting edge cases.
+// This file handles everything CSS token swaps alone don't fix:
+// Mermaid SVG diagrams, transparent-background raster diagrams,
+// hero/button contrast, Bootstrap tables/tabs/callouts, and
+// search overlay legibility.
 // ============================================================
 
 body.quarto-dark {
-  // SVG diagrams drawn on a white background (most of this course's
-  // figures) get a soft dim + slight desaturation instead of glaring
-  // white boxes on a dark page. Diagrams using CSS variables already
-  // adapt for free and don't need this.
-  figure img:not([data-udl-no-dim]) {
-    filter: brightness(0.92) contrast(0.95);
+  // 1. High-contrast Mermaid palette (overrides Quarto Bootstrap Dark's
+  //    #343a40 near-black edges and pure white cluster fills)
+  --mermaid-bg-color:            #182233;
+  --mermaid-edge-color:          #cbd5e1;
+  --mermaid-node-fg-color:       #7ea3c9;
+  --mermaid-fg-color:            #f1f5f9;
+  --mermaid-fg-color--lighter:   #475569;
+  --mermaid-fg-color--lightest:  #162032;
+  --mermaid-label-bg-color:      #182233;
+  --mermaid-label-fg-color:      #f1f5f9;
+  --mermaid-node-bg-color:       #1e293b;
+
+  svg.mermaid-js {
+    background: #182233;
+    border: 1px solid #2c3a52;
+    border-radius: var(--udl-radius-sm);
+    padding: 0.65rem;
+
+    .node rect, .node circle, .node ellipse, .node polygon, .node path {
+      fill: #1e293b !important;
+      stroke: #7ea3c9 !important;
+    }
+    .cluster rect {
+      fill: #131c2e !important;
+      stroke: #475569 !important;
+    }
+    .actor, rect.actor {
+      fill: #1e293b !important;
+      stroke: #7ea3c9 !important;
+    }
+    .label, .nodeLabel, .edgeLabel, .cluster-label, .cluster span,
+    .label text, text.actor > tspan, .messageText, .loopText, .loopText > tspan,
+    .labelText, .labelText > tspan, .labelText > span {
+      fill: #f1f5f9 !important;
+      color: #f1f5f9 !important;
+    }
+    .edgeLabel, .edgeLabel rect, .label div .edgeLabel, .labelBkg {
+      fill: #182233 !important;
+      background-color: #182233 !important;
+      color: #f1f5f9 !important;
+    }
+    .edgePath .path, .flowchart-link, .messageLine0, .messageLine1, .loopLine, line {
+      stroke: #cbd5e1 !important;
+    }
+    marker, marker path, #arrowhead path, .arrowheadPath {
+      fill: #cbd5e1 !important;
+      stroke: #cbd5e1 !important;
+    }
+    .note, rect.note {
+      fill: #fef08a !important;
+      stroke: #ca8a04 !important;
+    }
+    .noteText, .noteText > tspan {
+      fill: #0f172a !important;
+      color: #0f172a !important;
+    }
+  }
+
+  // 2. Raster diagrams (many drawn with black ink on transparent PNGs):
+  //    give them a soft off-white card backdrop so black lines & labels
+  //    never disappear against the #10182a dark background.
+  main.content img:not([data-udl-no-card]) {
+    background: #f1f5f9;
+    padding: 0.55rem;
+    border-radius: var(--udl-radius-sm);
+    filter: brightness(0.95) contrast(0.98);
+  }
+
+  // 3. Hero banner, buttons, badges & reading bar contrast
+  .udl-hero {
+    background:
+      url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgNDAwIDQwMCI+CiAgPGRlZnM+CiAgICA8cGF0dGVybiBpZD0idWRsLWhlcm8tZG90cyIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPGNpcmNsZSBjeD0iNCIgY3k9IjQiIHI9IjEuNiIgZmlsbD0iI2ZmZmZmZiIgZmlsbC1vcGFjaXR5PSIwLjE2Ii8+CiAgICA8L3BhdHRlcm4+CiAgICA8cGF0dGVybiBpZD0idWRsLWhlcm8tbGluZXMiIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgcGF0dGVyblRyYW5zZm9ybT0icm90YXRlKDQ1KSI+CiAgICAgIDxsaW5lIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSI4MCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utb3BhY2l0eT0iMC4wNiIgc3Ryb2tlLXdpZHRoPSI0MCIvPgogICAgPC9wYXR0ZXJuPgogIDwvZGVmcz4KICA8cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0idXJsKCN1ZGwtaGVyby1saW5lcykiLz4KICA8cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0idXJsKCN1ZGwtaGVyby1kb3RzKSIvPgo8L3N2Zz4K"),
+      linear-gradient(135deg, #6e1f3f, #182b49);
+    background-size: cover;
+    background-blend-mode: overlay;
+    border: 1px solid #3b4b68;
+
+    h2, p, .udl-hero-eyebrow {
+      color: #ffffff !important;
+    }
+
+    .udl-button:not(.udl-hero-btn-ghost) {
+      background: #ffffff;
+      color: #141e2f !important;
+    }
+    .udl-button:not(.udl-hero-btn-ghost):hover {
+      background: #f1f5f9;
+      color: #141e2f !important;
+    }
+  }
+
+  .udl-button:not(.udl-button-outline):not(.udl-hero-btn-ghost) {
+    background: #9c2d5b;
+    border-color: #b83b6e;
+    color: #ffffff !important;
+
+    &:hover, &:focus-visible {
+      background: #b83b6e;
+      border-color: #d98bb0;
+      color: #ffffff !important;
+    }
+  }
+
+  .udl-button.udl-button-outline {
+    background: rgba(217, 139, 176, 0.06);
+    color: #f0d5e4 !important;
+    border-color: rgba(217, 139, 176, 0.55);
+
+    &:hover, &:focus-visible {
+      background: rgba(217, 139, 176, 0.18);
+      color: #ffffff !important;
+      border-color: #d98bb0;
+    }
+  }
+
+  .udl-a11y-bar button.active {
+    background: #9c2d5b;
+    color: #ffffff;
+  }
+
+  .udl-badge-exam {
+    color: var(--udl-exam);
+  }
+
+  // 4. Bootstrap Callouts, Tabsets (.panel-tabset), Tables, Forms & Search
+  .callout {
+    background-color: var(--udl-surface) !important;
+    border-color: var(--udl-border) !important;
+    color: var(--udl-text) !important;
+
+    .callout-header {
+      background-color: var(--udl-surface-sunken) !important;
+      color: var(--udl-primary-dark) !important;
+    }
+    .callout-body, .callout-body-container {
+      color: var(--udl-text) !important;
+    }
+  }
+
+  .panel-tabset .nav-tabs {
+    border-bottom-color: var(--udl-border);
+
+    .nav-link {
+      color: var(--udl-text-muted);
+      border-color: transparent;
+
+      &:hover {
+        color: var(--udl-text);
+        border-color: var(--udl-border);
+      }
+      &.active {
+        background-color: var(--udl-surface);
+        color: var(--udl-primary-dark);
+        border-color: var(--udl-border) var(--udl-border) var(--udl-surface);
+      }
+    }
+  }
+
+  .panel-tabset .tab-content {
+    background-color: var(--udl-surface);
+    border-color: var(--udl-border);
+    color: var(--udl-text);
+  }
+
+  input, select, textarea, .form-control, .form-select {
+    background-color: var(--udl-surface);
+    color: var(--udl-text);
+    border-color: var(--udl-border);
+  }
+
+  // Algolia / Quarto autocomplete search overlay
+  .aa-Panel,
+  .aa-DetachedContainer,
+  .aa-DetachedFormContainer {
+    background-color: var(--udl-surface) !important;
+    color: var(--udl-text) !important;
+    border-color: var(--udl-border) !important;
+  }
+  .aa-Item,
+  .aa-ItemLink,
+  .aa-ItemContentTitle,
+  .aa-ItemContentSubtitle,
+  .search-result-title,
+  .search-result-text,
+  .search-result-section {
+    color: var(--udl-text) !important;
+  }
+  .aa-Item[aria-selected="true"] {
+    background-color: var(--udl-surface-sunken) !important;
+  }
+
+  // Right TOC & pagination links
+  #TOC a, .nav-page a {
+    color: var(--udl-text-muted);
+    &:hover, &.active { color: var(--udl-primary); }
   }
 
   .udl-card, .udl-widget {
-    box-shadow: none; // heavy box-shadows read as "muddy" on dark surfaces
+    box-shadow: none;
   }
 }

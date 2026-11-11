@@ -1,0 +1,790 @@
+<!--
+  Eines d'estudi i accessibilitat per a totes les pàgines normals del web.
+  Tot es calcula en temps d'execució a partir del DOM de la pàgina (main.content,
+  encapçalaments, recompte de paraules): no hi ha cap llista de temes ni de fitxers.
+  Si una pàgina no té algun element (taules, desplegables, targetes...), el mòdul
+  corresponent simplement no fa res i la resta continua funcionant.
+-->
+<div id="udl-reading-progress" aria-hidden="true"></div>
+<div id="udl-reading-ruler" aria-hidden="true"></div>
+
+<div class="udl-a11y-bar" id="udl-a11y-bar" role="region" aria-label="Preferències de lectura i estudi">
+  <button type="button" id="udl-btn-prefs" aria-expanded="false" aria-controls="udl-prefs-panel">Preferències de lectura</button>
+</div>
+
+<div id="udl-prefs-panel" role="dialog" aria-label="Preferències de lectura" hidden>
+  <div class="udl-pp-group">
+    <div class="udl-pp-title">Text</div>
+    <button type="button" id="udl-btn-easyread" class="udl-pp-toggle" aria-pressed="false" title="Tipografia d'alta llegibilitat, també als títols, i espaiat ampli">Lectura fàcil</button>
+    <label class="udl-pp-row">Tipus de lletra
+      <select id="udl-sel-font">
+        <option value="default">Estàndard</option>
+        <option value="atkinson">Atkinson Hyperlegible</option>
+        <option value="lexend">Lexend</option>
+        <option value="opendyslexic">OpenDyslexic</option>
+      </select>
+    </label>
+    <label class="udl-pp-row">Mida del text
+      <select id="udl-sel-size">
+        <option value="100">Normal</option>
+        <option value="115">Gran</option>
+        <option value="130">Molt gran</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="udl-pp-group" id="udl-pp-guide">
+    <div class="udl-pp-title">Guia visual</div>
+    <label class="udl-pp-row">Regle de lectura
+      <select id="udl-sel-ruler">
+        <option value="off">Sense guia</option>
+        <option value="line">Línia de lectura</option>
+        <option value="mask">Màscara de lectura</option>
+      </select>
+    </label>
+    <p class="udl-pp-hint">Segueix el ratolí i també l'element que rep el focus amb el teclat.</p>
+  </div>
+
+  <div class="udl-pp-group">
+    <div class="udl-pp-title">Concentració i estudi</div>
+    <button type="button" id="udl-btn-focus" class="udl-pp-toggle" aria-pressed="false" title="Amaga els menús laterals i centra el text a la finestra actual">Mode concentració</button>
+    <button type="button" id="udl-btn-details" class="udl-pp-toggle" aria-pressed="false" title="Desplega o plega totes les solucions i respostes de la pàgina">Mostra les solucions</button>
+    <button type="button" id="udl-btn-tts" class="udl-pp-toggle" aria-pressed="false" title="Llegeix en veu alta el text seleccionat o l'apartat actual">Escolta l'apartat</button>
+  </div>
+</div>
+
+<div id="udl-focus-exit" hidden>
+  <span id="udl-focus-where">Mode concentració</span>
+  <button type="button" id="udl-btn-focus-exit">Restaura vista normal</button>
+</div>
+<div id="udl-live" class="visually-hidden" role="status" aria-live="polite"></div>
+
+<script>
+(function() {
+  'use strict';
+
+  // Cada mòdul s'executa aïllat: si un falla, la resta del web continua igual.
+  function safe(name, fn) {
+    try { fn(); } catch (e) { if (window.console) console.debug('[udl] ' + name + ' desactivat:', e); }
+  }
+  function store(key, val) {
+    try { if (val === undefined) return localStorage.getItem(key); localStorage.setItem(key, val); } catch (e) {}
+    return null;
+  }
+  var $ = function(id) { return document.getElementById(id); };
+  var main = document.querySelector('main.content');
+  var live = $('udl-live');
+  function say(msg) { if (live) { live.textContent = ''; setTimeout(function() { live.textContent = msg; }, 30); } }
+
+  var state = { focus: false, allOpen: false };
+
+  // 0. Navbar: Quarto marca com a activa la mateixa pàgina a tot el menú lateral.
+  safe('navbar', function() {
+    var header = $('quarto-header');
+    if (!header) return;
+    var curPath = (window.location.pathname || '').replace(/\/index\.html$/, '/');
+    header.querySelectorAll('.navbar-nav .nav-link, .navbar-nav .dropdown-item').forEach(function(a) {
+      a.classList.remove('active');
+      a.removeAttribute('aria-current');
+    });
+    var matched = false;
+    header.querySelectorAll('.navbar-nav > .nav-item:not(.dropdown) > .nav-link').forEach(function(a) {
+      var raw = a.getAttribute('href') || '';
+      if (!raw || /^https?:\/\//i.test(raw)) return;
+      var p = new URL(raw, window.location.href).pathname.replace(/\/index\.html$/, '/');
+      if (p === curPath) { a.classList.add('active'); a.setAttribute('aria-current', 'page'); matched = true; }
+    });
+    if (!matched && curPath.indexOf('/blocs/') !== -1) {
+      var drop = header.querySelector('.navbar-nav .nav-item.dropdown > .nav-link.dropdown-toggle');
+      if (drop) drop.classList.add('active');
+      // El bloc actiu es detecta pel nom de carpeta de la ruta, sense llistes fixes
+      var m = curPath.match(/\/blocs\/([^/]+)\//);
+      if (m) {
+        header.querySelectorAll('.navbar-nav .dropdown-menu .dropdown-item').forEach(function(di) {
+          if ((di.getAttribute('href') || '').indexOf('/' + m[1] + '/') !== -1) di.classList.add('active');
+        });
+      }
+    }
+  });
+
+  // 1. Mermaid dins de <details> plegats o pestanyes inactives: es mesuren abans de tallar-se.
+  var allDetailsOpen = false;
+  safe('mermaid', function() {
+    var hiddenDetails = [], hiddenTabs = [];
+    document.querySelectorAll('details:not([open])').forEach(function(d) {
+      if (d.querySelector('pre.mermaid-js')) { d.classList.add('udl-mermaid-measuring'); d.open = true; hiddenDetails.push(d); }
+    });
+    document.querySelectorAll('.tab-pane:not(.active)').forEach(function(tp) {
+      if (tp.querySelector('pre.mermaid-js')) { tp.classList.add('udl-mermaid-measuring'); hiddenTabs.push(tp); }
+    });
+    if (!hiddenDetails.length && !hiddenTabs.length) return;
+    window.addEventListener('load', function() {
+      var tries = 0;
+      var t = setInterval(function() {
+        tries++;
+        if (document.querySelectorAll('pre.mermaid-js').length === 0 || tries > 45) {
+          clearInterval(t);
+          hiddenDetails.forEach(function(d) { if (!allDetailsOpen) d.open = false; d.classList.remove('udl-mermaid-measuring'); });
+          hiddenTabs.forEach(function(tp) { tp.classList.remove('udl-mermaid-measuring'); });
+        }
+      }, 80);
+    });
+  });
+
+  // 2. Taules amples dins d'un contenidor amb desplaçament horitzontal.
+  safe('taules', function() {
+    document.querySelectorAll('main.content table').forEach(function(tbl) {
+      var p = tbl.parentElement;
+      if (!p || p.classList.contains('udl-table-scroll')) return;
+      var wrap = document.createElement('div');
+      wrap.className = 'udl-table-scroll';
+      p.insertBefore(wrap, tbl);
+      wrap.appendChild(tbl);
+    });
+  });
+
+  // 2b. Optimització de rendiment d'imatges: descodificació asíncrona i càrrega diferida nativa
+  safe('optimitzacio-imatges', function() {
+    document.querySelectorAll('main.content img').forEach(function(img, idx) {
+      if (!img.hasAttribute('loading') && idx > 0 && !img.closest('.udl-hero')) {
+        img.setAttribute('loading', 'lazy');
+      }
+      if (!img.hasAttribute('decoding')) {
+        img.setAttribute('decoding', 'async');
+      }
+    });
+  });
+
+  // 3. Salt ràpid d'apartats i temps de lectura: ambdós es calculen sobre el contingut real.
+  safe('temps-lectura', function() {
+    if (!main) return;
+    var clone = main.cloneNode(true);
+    clone.querySelectorAll('pre, script, style, svg, nav, .udl-inline-toc, .udl-readtime, .code-copy-button').forEach(function(n) { n.remove(); });
+    var words = (clone.textContent || '').trim().split(/\s+/).filter(Boolean).length;
+    if (words < 40 || document.querySelector('.udl-hero')) return;
+    var minutes = Math.max(1, Math.round(words / 190));
+    var el = document.createElement('p');
+    el.className = 'udl-readtime';
+    el.textContent = 'Temps de lectura: uns ' + minutes + ' min (' + words + ' paraules)';
+    var anchor = document.querySelector('main.content .quarto-title-block') || main.firstElementChild;
+    if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(el, anchor.nextSibling);
+    else main.insertBefore(el, main.firstChild);
+  });
+
+  safe('salt-apartats', function() {
+    var titleBlock = document.querySelector('main.content .quarto-title-block');
+    var h2s = Array.from(document.querySelectorAll('main.content section.level2 > h2, main.content > h2'));
+    if (!titleBlock || h2s.length < 3 || document.querySelector('.udl-hero')) return;
+    var detailsCount = document.querySelectorAll('main.content details').length;
+    var nav = document.createElement('nav');
+    nav.className = 'udl-inline-toc';
+    nav.setAttribute('aria-label', 'Accés ràpid als apartats');
+    var head = document.createElement('div');
+    head.className = 'udl-itoc-head';
+    var l = document.createElement('span'); l.textContent = 'Salt ràpid d\'apartats';
+    var r = document.createElement('span');
+    r.textContent = detailsCount > 0 ? (h2s.length + ' apartats · ' + detailsCount + ' blocs desplegables') : (h2s.length + ' apartats');
+    head.appendChild(l); head.appendChild(r);
+    var pills = document.createElement('div');
+    pills.className = 'udl-itoc-pills';
+    h2s.forEach(function(h, i) {
+      var sec = h.closest('section[id]') || h;
+      if (!sec.id) sec.id = 'apartat-' + (i + 1);
+      var a = document.createElement('a');
+      a.href = '#' + sec.id;
+      a.textContent = (h.textContent || '').trim();
+      pills.appendChild(a);
+    });
+    nav.appendChild(head); nav.appendChild(pills);
+    // Es col·loca després del temps de lectura si existeix, per no trencar l'ordre
+    var rt = document.querySelector('main.content .udl-readtime');
+    (rt || titleBlock).insertAdjacentElement('afterend', nav);
+  });
+
+  // 4. Preferències de lectura (panell únic)
+  var panel = $('udl-prefs-panel');
+  var prefsBtn = $('udl-btn-prefs');
+  var bar = $('udl-a11y-bar');
+
+  function loadFont(href) {
+    if (document.querySelector('link[data-udl-font="' + href + '"]')) return;
+    var l = document.createElement('link');
+    l.rel = 'stylesheet'; l.href = href; l.setAttribute('data-udl-font', href);
+    document.head.appendChild(l);
+  }
+  var FONT_SRC = {
+    atkinson: 'https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap',
+    lexend: 'https://fonts.googleapis.com/css2?family=Lexend:wght@400;600&display=swap',
+    opendyslexic: 'https://cdn.jsdelivr.net/npm/@fontsource/opendyslexic@5/400.css'
+  };
+
+  function applyPrefs() {
+    var easy = store('udl_easy_read') === '1';
+    var font = store('udl_font') || 'default';
+    var size = store('udl_text_size') || '100';
+    var ruler = store('udl_ruler_mode');
+    if (!ruler) ruler = store('udl_reading_ruler') === '1' ? 'line' : 'off';
+
+    if (easy) loadFont(FONT_SRC.atkinson);
+    if (FONT_SRC[font]) loadFont(FONT_SRC[font]);
+
+    var b = document.body;
+    b.classList.toggle('udl-easy-read', easy);
+    ['atkinson', 'lexend', 'opendyslexic'].forEach(function(f) { b.classList.toggle('udl-font-' + f, font === f); });
+    document.documentElement.style.fontSize = size === '100' ? '' : (size + '%');
+    b.classList.toggle('udl-ruler-active', ruler !== 'off');
+    b.classList.toggle('udl-ruler-mask', ruler === 'mask');
+    b.classList.toggle('udl-focus-mode', state.focus);
+
+    var e = $('udl-btn-easyread'); if (e) e.setAttribute('aria-pressed', easy ? 'true' : 'false'), e.classList.toggle('active', easy);
+    var f = $('udl-btn-focus'); if (f) f.setAttribute('aria-pressed', state.focus ? 'true' : 'false'), f.classList.toggle('active', state.focus);
+    var sf = $('udl-sel-font'); if (sf) sf.value = font;
+    var ss = $('udl-sel-size'); if (ss) ss.value = size;
+    var sr = $('udl-sel-ruler'); if (sr) sr.value = ruler;
+    var fx = $('udl-focus-exit'); if (fx) fx.hidden = !state.focus;
+    if (prefsBtn) prefsBtn.classList.toggle('active', easy || font !== 'default' || size !== '100' || ruler !== 'off' || state.focus);
+  }
+
+  safe('preferencies', function() {
+    if (!panel || !prefsBtn) return;
+    function togglePanel(open) {
+      var show = open === undefined ? panel.hidden : open;
+      panel.hidden = !show;
+      prefsBtn.setAttribute('aria-expanded', show ? 'true' : 'false');
+      if (show) { var first = panel.querySelector('button, select'); if (first) first.focus(); }
+    }
+    prefsBtn.addEventListener('click', function(ev) { ev.stopPropagation(); togglePanel(); });
+    document.addEventListener('click', function(ev) {
+      if (!panel.hidden && !panel.contains(ev.target) && ev.target !== prefsBtn) togglePanel(false);
+    });
+    document.addEventListener('keydown', function(ev) {
+      if (ev.key !== 'Escape') return;
+      if (state.focus) { setFocus(false); return; }
+      if (!panel.hidden) { togglePanel(false); prefsBtn.focus(); }
+    });
+
+    $('udl-btn-easyread').addEventListener('click', function() {
+      store('udl_easy_read', store('udl_easy_read') === '1' ? '0' : '1'); applyPrefs();
+    });
+    $('udl-sel-font').addEventListener('change', function(ev) { store('udl_font', ev.target.value); applyPrefs(); });
+    $('udl-sel-size').addEventListener('change', function(ev) { store('udl_text_size', ev.target.value); applyPrefs(); });
+    $('udl-sel-ruler').addEventListener('change', function(ev) {
+      store('udl_ruler_mode', ev.target.value);
+      store('udl_reading_ruler', ev.target.value === 'off' ? '0' : '1');
+      applyPrefs();
+    });
+  });
+
+  // 5. Mode concentració: només amaga distraccions dins la finestra actual (sense pantalla completa)
+  function setFocus(on) {
+    state.focus = !!on;
+    applyPrefs();
+    say(on ? 'Mode concentració activat. Prem Escape per restaurar la vista normal.' : 'Vista normal restaurada.');
+    if (on) { var x = $('udl-btn-focus-exit'); if (x) x.focus(); }
+    else if (prefsBtn) prefsBtn.focus();
+  }
+  safe('focus', function() {
+    $('udl-btn-focus').addEventListener('click', function() { setFocus(!state.focus); if (panel) { panel.hidden = true; prefsBtn.setAttribute('aria-expanded', 'false'); } });
+    $('udl-btn-focus-exit').addEventListener('click', function() { setFocus(false); });
+  });
+
+  // 6. Solucions: desplega tots els <details> i les respostes de targetes, si n'hi ha
+  safe('solucions', function() {
+    var btn = $('udl-btn-details');
+    if (!btn) return;
+    var details = document.querySelectorAll('main.content details');
+    if (!details.length && !document.querySelector('main.content .fc-a')) { btn.style.display = 'none'; return; }
+    btn.addEventListener('click', function() {
+      allDetailsOpen = !allDetailsOpen;
+      document.querySelectorAll('main.content details').forEach(function(d) { d.classList.remove('udl-mermaid-measuring'); d.open = allDetailsOpen; });
+      document.querySelectorAll('main.content .fc-a').forEach(function(a) { a.style.display = allDetailsOpen ? 'block' : 'none'; });
+      btn.classList.toggle('active', allDetailsOpen);
+      btn.setAttribute('aria-pressed', allDetailsOpen ? 'true' : 'false');
+      btn.textContent = allDetailsOpen ? 'Amaga les solucions' : 'Mostra les solucions';
+    });
+  });
+
+  // 7. Regle de lectura: segueix el ratolí i l'element amb el focus de teclat (amb requestAnimationFrame sense reflow)
+  safe('regle', function() {
+    var ruler = $('udl-reading-ruler');
+    if (!ruler) return;
+    var rTick = false, lastY = 0;
+    function active() { return document.body.classList.contains('udl-ruler-active'); }
+    function place(y) {
+      var h = ruler.offsetHeight || 38;
+      ruler.style.top = Math.max(0, y - h / 2) + 'px';
+    }
+    window.addEventListener('mousemove', function(e) {
+      if (!active()) return;
+      lastY = e.clientY;
+      if (!rTick) {
+        rTick = true;
+        requestAnimationFrame(function() { rTick = false; place(lastY); });
+      }
+    }, { passive: true });
+    document.addEventListener('focusin', function(e) {
+      if (!active() || !e.target || !e.target.getBoundingClientRect) return;
+      if (panel && panel.contains(e.target)) return;
+      var r = e.target.getBoundingClientRect();
+      if (r.height === 0) return;
+      place(r.top + Math.min(r.height, 60) / 2);
+    });
+    // Mentre es llegeix amb el teclat (fletxes, tabulador) la guia es queda al centre visible
+    window.addEventListener('keydown', function(e) {
+      if (!active()) return;
+      if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Tab'].indexOf(e.key) !== -1 && !(document.activeElement && /INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName))) {
+        if (e.key !== 'Tab') place(window.innerHeight * 0.4);
+      }
+    });
+  });
+
+  // 8. Lectura en veu alta (API estàndard del navegador)
+  safe('tts', function() {
+    var btn = $('udl-btn-tts');
+    if (!btn) return;
+    if (!('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') { btn.style.display = 'none'; return; }
+    var token = 0, speaking = false;
+
+    function currentSectionText() {
+      var sel = window.getSelection && window.getSelection().toString().trim();
+      if (sel) return sel;
+      if (!main) return '';
+      var heads = Array.from(main.querySelectorAll('h2, h3'));
+      var cur = null;
+      heads.forEach(function(h) { if (h.getBoundingClientRect().top <= 140) cur = h; });
+      var container = (cur && (cur.closest('section') || cur.parentElement)) || main;
+      var c = container.cloneNode(true);
+      c.querySelectorAll('pre, script, style, svg, button, nav, .code-copy-button, .udl-readtime').forEach(function(n) { n.remove(); });
+      return (c.textContent || '').replace(/\s+/g, ' ').trim();
+    }
+    function chunks(text) {
+      var parts = text.match(/[^.!?;:]+[.!?;:]?\s*/g) || [text];
+      var out = [], cur = '';
+      parts.forEach(function(p) {
+        if ((cur + p).length > 220) { if (cur) out.push(cur); cur = p; } else cur += p;
+      });
+      if (cur) out.push(cur);
+      return out;
+    }
+    function pickVoice() {
+      var vs = window.speechSynthesis.getVoices() || [];
+      return vs.filter(function(v) { return /^ca/i.test(v.lang); })[0] || null;
+    }
+    function stop() {
+      token++; speaking = false;
+      window.speechSynthesis.cancel();
+      btn.setAttribute('aria-pressed', 'false'); btn.classList.remove('active');
+      btn.textContent = 'Escolta l\'apartat';
+    }
+    btn.addEventListener('click', function() {
+      if (speaking) { stop(); return; }
+      var text = currentSectionText();
+      if (!text) return;
+      var list = chunks(text), my = ++token, i = 0, voice = pickVoice();
+      speaking = true;
+      btn.setAttribute('aria-pressed', 'true'); btn.classList.add('active'); btn.textContent = 'Atura la lectura';
+      if (!voice) say('No s\'ha trobat cap veu en català al dispositiu: es farà servir la veu per defecte.');
+      (function next() {
+        if (my !== token || i >= list.length) { if (my === token) stop(); return; }
+        var u = new SpeechSynthesisUtterance(list[i++]);
+        u.lang = 'ca-ES';
+        if (voice) u.voice = voice;
+        u.onend = next;
+        u.onerror = function() { if (my === token) stop(); };
+        window.speechSynthesis.speak(u);
+      })();
+    });
+    window.addEventListener('beforeunload', function() { window.speechSynthesis.cancel(); });
+  });
+
+  // 9. Barra de progrés de lectura i indicador d'apartat actual (al mode concentració)
+  safe('progres', function() {
+    var prog = $('udl-reading-progress');
+    var where = $('udl-focus-where');
+    var heads = main ? Array.from(main.querySelectorAll('h2')) : [];
+    var ticking = false;
+    function update() {
+      ticking = false;
+      var doc = document.documentElement;
+      var total = doc.scrollHeight - doc.clientHeight;
+      if (prog) prog.style.width = (total > 0 ? Math.min(100, Math.max(0, doc.scrollTop / total * 100)) : 0) + '%';
+      if (where && state.focus) {
+        var cur = null;
+        heads.forEach(function(h) { if (h.getBoundingClientRect().top <= 140) cur = h; });
+        where.textContent = 'Mode concentració' + (cur ? ' · ' + (cur.textContent || '').trim() : '');
+      }
+    }
+    window.addEventListener('scroll', function() { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+    update();
+  });
+
+  // 10. Mode de pràctica guiada i connexió amb la Guia d'estudi per a activitats i laboratoris
+  safe('mode-interactiu-activitats', function() {
+    if (!main) return;
+
+    var curPath = (window.location.pathname || '').replace(/\\/g, '/');
+    var isBlocPage = curPath.indexOf('/blocs/') !== -1;
+    if (!isBlocPage) return;
+
+    // Detectem l'enllaç a la Guia d'estudi i al Laboratori interactiu des de la barra de navegació
+    var guiaLink = '';
+    var labLink = '';
+    document.querySelectorAll('#quarto-header a[href], #quarto-sidebar a[href]').forEach(function(a) {
+      var h = a.getAttribute('href') || '';
+      if (!guiaLink && h.indexOf('guia-estudi') !== -1) guiaLink = h;
+      if (!labLink && h.indexOf('entrenament-interactiu') !== -1) labLink = h;
+    });
+    var blocHash = '';
+    if (curPath.indexOf('/01-espai-usuari/') !== -1) blocHash = '#bloc-1';
+    else if (curPath.indexOf('/02-proc/') !== -1) blocHash = '#bloc-2';
+    else if (curPath.indexOf('/03-sched/') !== -1) blocHash = '#bloc-3';
+
+    // Targeta final de connexió d'estudi al peu de qualsevol Pralab o Activitat
+    if (guiaLink && !main.querySelector('.udl-topic-bridge')) {
+      var bridge = document.createElement('div');
+      bridge.className = 'udl-widget udl-topic-bridge';
+      bridge.style.cssText = 'margin-top:2.2rem; border-left:4px solid var(--udl-primary); display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:0.85rem;';
+      bridge.innerHTML =
+        '<div style="flex:1; min-width:240px;">' +
+          '<div style="font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--udl-primary); margin-bottom:0.2rem;">Connexió i repàs d\'arrel</div>' +
+          '<div style="font-size:0.86rem; color:var(--udl-text);">Si algun concepte, crida al sistema o pas d\'aquesta sessió no t\'ha quedat del tot clar, pots consultar l\'esquema pas a pas i el diagnòstic d\'errors d\'aquest bloc.</div>' +
+        '</div>' +
+        '<div style="display:flex; flex-wrap:wrap; gap:0.5rem;">' +
+          '<a href="' + guiaLink + blocHash + '" class="udl-button" style="font-size:0.8rem; padding:0.4rem 0.85rem; text-decoration:none;">📖 Guia d\'estudi d\'aquest bloc</a>' +
+          (labLink ? '<a href="' + labLink + '" class="udl-button udl-button-outline" style="font-size:0.8rem; padding:0.4rem 0.85rem; text-decoration:none;">🧪 Laboratori interactiu</a>' : '') +
+        '</div>';
+      main.appendChild(bridge);
+    }
+
+    var isActivityOrLab = curPath.indexOf('/activitats/') !== -1 || (curPath.indexOf('/pralabs/') !== -1 && curPath.indexOf('minishell') === -1);
+    if (!isActivityOrLab) return;
+
+    // Helper: Troba si l'exercici té REALMENT una solució associada
+    function findSolutionFor(ex) {
+      // 1. Solució immediatament posterior a l'exercici
+      var el = ex.nextElementSibling;
+      var count = 0;
+      while (el && count < 3) {
+        if (el.tagName === 'DETAILS' || el.classList.contains('udl-solucio') || el.classList.contains('solucio')) {
+          return el;
+        }
+        if (el.classList.contains('udl-exercici') || el.classList.contains('udl-exerciciprog') || el.classList.contains('exercici') || el.classList.contains('udl-repte') || el.classList.contains('repte') || /^H[1-4]$/.test(el.tagName)) {
+          break;
+        }
+        el = el.nextElementSibling;
+        count++;
+      }
+      // 2. Solució niada a l'interior
+      var inner = ex.querySelector('details, .udl-solucio, .solucio');
+      if (inner) return inner;
+      return null;
+    }
+
+    var candidateBlocks = Array.from(main.querySelectorAll('.udl-exercici, .udl-exerciciprog, .exercici, .udl-repte, .repte'));
+    var exBlocks = [];
+    var solMap = new Map();
+
+    candidateBlocks.forEach(function(ex) {
+      var sol = findSolutionFor(ex);
+      // Condició clau: NOMÉS afegim recuadres als exercicis que tenen solució real per comprovar
+      if (sol) {
+        exBlocks.push(ex);
+        solMap.set(ex, sol);
+      }
+    });
+
+    if (exBlocks.length === 0) return;
+
+    var pageKey = 'udl_act_' + (window.location.pathname || 'page').replace(/[^a-zA-Z0-9_-]/g, '_');
+    var isModeActive = store(pageKey + '_active') === '1';
+
+    // Barra didàctica d'estudi actiu superior
+    var bar = document.createElement('div');
+    bar.className = 'udl-activity-study-bar';
+    bar.innerHTML =
+      '<div class="udl-asb-info">' +
+        '<div class="udl-asb-header">' +
+          '<span class="udl-asb-badge">🎯 Pràctica guiada i autoavaluació</span>' +
+          '<span class="udl-asb-pill">' + exBlocks.length + ' exercicis resolts</span>' +
+        '</div>' +
+        '<p class="udl-asb-desc">Activa el mode pràctica per ocultar temporalment les solucions, escriure el teu propi raonament en cada exercici i comprovar després el resultat pas a pas.</p>' +
+      '</div>' +
+      '<div class="udl-asb-actions">' +
+        '<button type="button" class="udl-asb-toggle ' + (isModeActive ? 'active' : '') + '" aria-pressed="' + (isModeActive ? 'true' : 'false') + '">' +
+          '<span class="udl-asb-icon">' + (isModeActive ? '✓' : '💡') + '</span> ' +
+          '<span class="udl-asb-toggle-lbl">' + (isModeActive ? 'Desactiva el mode pràctica' : 'Activa el mode pràctica') + '</span>' +
+        '</button>' +
+        (guiaLink ? '<a href="' + guiaLink + blocHash + '" class="udl-button udl-button-outline" style="font-size:0.82rem; padding:0.42rem 0.85rem; text-decoration:none;">📖 Resum teòric del bloc</a>' : '') +
+      '</div>' +
+      '<div class="udl-asb-progress-wrap" ' + (isModeActive ? '' : 'hidden') + '>' +
+        '<div class="udl-asb-stats">' +
+          '<span class="udl-asb-stat-text">Assolits: <strong class="udl-asb-count">0</strong> / ' + exBlocks.length + ' (<span class="udl-asb-pct">0%</span>)</span>' +
+          '<span class="udl-asb-stat-actions">' +
+            '<button type="button" class="udl-asb-summary-btn" title="Mostra un diagnòstic de quins exercicis estan entesos i quins cal repassar" style="background:transparent; border:none; color:var(--udl-primary); font-weight:600; font-size:0.78rem; cursor:pointer; text-decoration:underline; margin-right:0.6rem;">📋 Resum de resultats</button>' +
+            '<button type="button" class="udl-asb-reset" title="Reinicia el progrés d\'aquesta sessió">Reinicia</button>' +
+          '</span>' +
+        '</div>' +
+        '<div class="udl-asb-bar-track"><div class="udl-asb-bar-fill" style="width: 0%"></div></div>' +
+        '<div class="udl-asb-summary-panel" style="display:none; margin-top:0.85rem; padding:0.85rem 1rem; border-radius:8px; background:var(--udl-surface); border:1px solid var(--udl-border); font-size:0.82rem;"></div>' +
+      '</div>';
+
+    var anchor = main.querySelector('.udl-inline-toc') || main.querySelector('.udl-readtime') || main.querySelector('.quarto-title-block') || main.firstElementChild;
+    if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(bar, anchor.nextSibling);
+    else main.insertBefore(bar, main.firstChild);
+
+    var toggleBtn = bar.querySelector('.udl-asb-toggle');
+    var toggleLbl = bar.querySelector('.udl-asb-toggle-lbl');
+    var toggleIcon = bar.querySelector('.udl-asb-icon');
+    var progWrap = bar.querySelector('.udl-asb-progress-wrap');
+    var countEl = bar.querySelector('.udl-asb-count');
+    var pctEl = bar.querySelector('.udl-asb-pct');
+    var fillEl = bar.querySelector('.udl-asb-bar-fill');
+    var resetBtn = bar.querySelector('.udl-asb-reset');
+
+    var cachedStates = null;
+    function getSavedStates() {
+      if (cachedStates) return cachedStates;
+      try { cachedStates = JSON.parse(store(pageKey + '_states') || '{}'); } catch(e) { cachedStates = {}; }
+      return cachedStates;
+    }
+    function saveStates(states) {
+      cachedStates = states;
+      store(pageKey + '_states', JSON.stringify(states));
+    }
+
+    function updateProgress() {
+      var states = getSavedStates();
+      var doneCount = 0;
+      exBlocks.forEach(function(b, idx) {
+        var st = states[idx];
+        if (st && st.status === 'ok') doneCount++;
+      });
+      var pct = Math.round((doneCount / exBlocks.length) * 100);
+      if (countEl) countEl.textContent = doneCount;
+      if (pctEl) pctEl.textContent = pct + '%';
+      if (fillEl) fillEl.style.width = pct + '%';
+    }
+
+    var initialStates = getSavedStates();
+    exBlocks.forEach(function(ex, idx) {
+      ex.classList.add('udl-ex-interactive-target');
+      ex.setAttribute('data-ex-idx', idx);
+
+      var solDetails = solMap.get(ex);
+      if (solDetails) {
+        solDetails.classList.add('udl-sol-target');
+      }
+
+      var box = document.createElement('div');
+      box.className = 'udl-ex-interactive-box';
+      box.setAttribute('data-for-idx', idx);
+      if (!isModeActive) box.hidden = true;
+
+      var curSt = initialStates[idx] || {};
+      var curNote = curSt.note || '';
+      var curStatus = curSt.status || '';
+
+      if (curStatus === 'ok') ex.classList.add('udl-ex-done-ok');
+      else if (curStatus === 'review') ex.classList.add('udl-ex-done-review');
+
+      box.innerHTML =
+        '<div class="udl-ex-box-head">' +
+          '<span class="udl-ex-box-title">✍️ Espai de resolució i autoaprenentatge</span>' +
+          '<span class="udl-ex-box-status ' + (curStatus === 'ok' ? 'status-ok' : (curStatus === 'review' ? 'status-rev' : '')) + '">' +
+            (curStatus === 'ok' ? '✓ Assolit' : (curStatus === 'review' ? '⏳ Pendent de repàs' : '')) +
+          '</span>' +
+        '</div>' +
+        '<textarea class="udl-ex-textarea" placeholder="Escriu aquí el teu raonament, predicció o arbre de processos abans de comprovar la solució..." aria-label="Anotacions de l\'exercici ' + (idx + 1) + '"></textarea>' +
+        '<div class="udl-ex-footer">' +
+          '<button type="button" class="udl-ex-btn-reveal">👁️ Comprova amb la solució</button>' +
+          '<div class="udl-ex-rating">' +
+            '<span class="udl-ex-rate-lbl">Autoavaluació:</span>' +
+            '<button type="button" class="udl-ex-rate-btn udl-ex-btn-ok ' + (curStatus === 'ok' ? 'selected' : '') + '" title="Ho he sabut raonar o resoldre correctament">✓ Entès</button>' +
+            '<button type="button" class="udl-ex-rate-btn udl-ex-btn-rev ' + (curStatus === 'review' ? 'selected' : '') + '" title="Tinc dubtes o vull tornar-ho a intentar més endavant">⏳ Cal repassar</button>' +
+          '</div>' +
+        '</div>';
+
+      if (solDetails && solDetails.parentNode === ex.parentNode) {
+        ex.parentNode.insertBefore(box, solDetails);
+      } else {
+        ex.insertAdjacentElement('afterend', box);
+      }
+
+      var txt = box.querySelector('.udl-ex-textarea');
+      if (txt && curNote) txt.value = curNote;
+      var revBtn = box.querySelector('.udl-ex-btn-reveal');
+      var btnOk = box.querySelector('.udl-ex-btn-ok');
+      var btnRev = box.querySelector('.udl-ex-btn-rev');
+      var stLbl = box.querySelector('.udl-ex-box-status');
+
+      var saveTimer = null;
+      txt.addEventListener('input', function() {
+        var s = getSavedStates();
+        s[idx] = s[idx] || {};
+        s[idx].note = txt.value;
+        if (saveTimer) clearTimeout(saveTimer);
+        saveTimer = setTimeout(function() { saveStates(s); }, 160);
+      });
+
+      if (revBtn && solDetails) {
+        revBtn.addEventListener('click', function() {
+          var isRev = solDetails.classList.contains('udl-sol-revealed');
+          if (isRev) {
+            solDetails.classList.remove('udl-sol-revealed');
+            if (solDetails.tagName === 'DETAILS') solDetails.open = false;
+            revBtn.textContent = '👁️ Comprova amb la solució';
+            revBtn.classList.remove('active');
+          } else {
+            solDetails.classList.add('udl-sol-revealed');
+            if (solDetails.tagName === 'DETAILS') solDetails.open = true;
+            revBtn.textContent = '🙈 Oculta la solució';
+            revBtn.classList.add('active');
+            solDetails.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+        });
+      }
+
+      function setStatus(status) {
+        var s = getSavedStates();
+        s[idx] = s[idx] || {};
+        if (s[idx].status === status) {
+          delete s[idx].status;
+          ex.classList.remove('udl-ex-done-ok', 'udl-ex-done-review');
+          btnOk.classList.remove('selected');
+          btnRev.classList.remove('selected');
+          stLbl.textContent = '';
+          stLbl.className = 'udl-ex-box-status';
+        } else {
+          s[idx].status = status;
+          ex.classList.toggle('udl-ex-done-ok', status === 'ok');
+          ex.classList.toggle('udl-ex-done-review', status === 'review');
+          btnOk.classList.toggle('selected', status === 'ok');
+          btnRev.classList.toggle('selected', status === 'review');
+          stLbl.textContent = status === 'ok' ? '✓ Assolit' : '⏳ Pendent de repàs';
+          stLbl.className = 'udl-ex-box-status ' + (status === 'ok' ? 'status-ok' : 'status-rev');
+        }
+        saveStates(s);
+        updateProgress();
+      }
+
+      btnOk.addEventListener('click', function() { setStatus('ok'); });
+      btnRev.addEventListener('click', function() { setStatus('review'); });
+    });
+
+    function applyPracticeMode(active) {
+      document.body.classList.toggle('udl-activity-practice', active);
+      toggleBtn.classList.toggle('active', active);
+      toggleBtn.setAttribute('aria-pressed', active ? 'true' : 'false');
+      toggleIcon.textContent = active ? '✓' : '💡';
+      toggleLbl.textContent = active ? 'Desactiva el mode pràctica' : 'Activa el mode pràctica';
+      progWrap.hidden = !active;
+
+      document.querySelectorAll('.udl-ex-interactive-box').forEach(function(bx) {
+        bx.hidden = !active;
+      });
+
+      if (active) {
+        document.querySelectorAll('.udl-sol-target').forEach(function(d) {
+          d.classList.remove('udl-sol-revealed');
+          if (d.tagName === 'DETAILS') d.open = false;
+        });
+        document.querySelectorAll('.udl-ex-btn-reveal').forEach(function(btn) {
+          btn.textContent = '👁️ Comprova amb la solució';
+          btn.classList.remove('active');
+        });
+      } else {
+        document.querySelectorAll('.udl-sol-target').forEach(function(d) {
+          d.classList.remove('udl-sol-revealed');
+        });
+      }
+    }
+
+    applyPracticeMode(isModeActive);
+    updateProgress();
+
+    toggleBtn.addEventListener('click', function() {
+      isModeActive = !isModeActive;
+      store(pageKey + '_active', isModeActive ? '1' : '0');
+      applyPracticeMode(isModeActive);
+      if (isModeActive) {
+        say('Mode pràctica interactiu activat. Les solucions s\'han amagat per practicar.');
+      } else {
+        say('Mode pràctica pausat.');
+      }
+    });
+
+    var sumBtn = bar.querySelector('.udl-asb-summary-btn');
+    var sumPanel = bar.querySelector('.udl-asb-summary-panel');
+
+    function renderActivitySummary() {
+      if (!sumPanel) return;
+      var states = getSavedStates();
+      var okCount = 0, revCount = 0, pendCount = 0;
+      var itemsHtml = exBlocks.map(function(ex, i) {
+        var st = states[i] || {};
+        var status = st.status;
+        var titleEl = ex.querySelector('.udl-component-title') || ex.querySelector('strong, h3, h4');
+        var exName = titleEl ? titleEl.textContent.trim() : ('Exercici ' + (i + 1));
+        var badgeText = 'Pendent de resoldre', badgeStyle = 'background:rgba(100,116,139,0.15); color:var(--udl-text-muted);';
+        if (status === 'ok') {
+          okCount++;
+          badgeText = '✓ Assolit';
+          badgeStyle = 'background:rgba(16,185,129,0.15); color:#059669; font-weight:700;';
+        } else if (status === 'review') {
+          revCount++;
+          badgeText = '⏳ Cal repassar';
+          badgeStyle = 'background:rgba(245,158,11,0.15); color:#d97706; font-weight:700;';
+        } else {
+          pendCount++;
+        }
+
+        return '<div style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem; padding:0.4rem 0; border-bottom:1px solid var(--udl-border);">' +
+          '<span><strong>' + (i + 1) + '.</strong> <a href="#" data-jump-idx="' + i + '" style="color:var(--udl-primary); font-weight:600; text-decoration:none;">' + exName + '</a></span>' +
+          '<span style="font-size:0.72rem; padding:0.12rem 0.5rem; border-radius:999px; ' + badgeStyle + '">' + badgeText + '</span>' +
+        '</div>';
+      }).join('');
+
+      sumPanel.innerHTML = '<div style="font-weight:700; font-size:0.9rem; margin-bottom:0.35rem; color:var(--udl-text);">📊 Resum d\'avaluació d\'aquesta activitat</div>' +
+        '<div style="font-size:0.8rem; color:var(--udl-text-muted); margin-bottom:0.65rem;">' +
+          'Assolits: <strong style="color:var(--udl-success);">' + okCount + '</strong> · Cal repassar: <strong style="color:var(--udl-warning);">' + revCount + '</strong> · Pendents: ' + pendCount +
+        '</div>' +
+        '<div style="max-height:260px; overflow-y:auto; margin-bottom:0.4rem;">' + itemsHtml + '</div>' +
+        '<div style="font-size:0.75rem; color:var(--udl-text-muted);">Clica sobre el títol de qualsevol exercici per desplaçar-t\'hi directament i revisar-ne la solució.</div>';
+
+      sumPanel.querySelectorAll('a[data-jump-idx]').forEach(function(a) {
+        a.addEventListener('click', function(e) {
+          e.preventDefault();
+          var targetIdx = parseInt(a.getAttribute('data-jump-idx'), 10);
+          if (exBlocks[targetIdx]) {
+            exBlocks[targetIdx].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            var targetBox = main.querySelector('.udl-ex-interactive-box[data-for-idx="' + targetIdx + '"]');
+            if (targetBox) {
+              var rev = targetBox.querySelector('.udl-ex-btn-reveal');
+              if (rev) rev.click();
+            }
+          }
+        });
+      });
+      sumPanel.style.display = sumPanel.style.display === 'none' ? 'block' : 'none';
+    }
+
+    if (sumBtn) sumBtn.addEventListener('click', renderActivitySummary);
+
+    if (resetBtn) {
+      resetBtn.addEventListener('click', function() {
+        if (!confirm('Vols reiniciar les teves anotacions i autoavaluacions d\'aquesta activitat?')) return;
+        saveStates({});
+        document.querySelectorAll('.udl-ex-textarea').forEach(function(t) { t.value = ''; });
+        document.querySelectorAll('.udl-ex-interactive-target').forEach(function(e) { e.classList.remove('udl-ex-done-ok', 'udl-ex-done-review'); });
+        document.querySelectorAll('.udl-ex-rate-btn').forEach(function(b) { b.classList.remove('selected'); });
+        document.querySelectorAll('.udl-ex-box-status').forEach(function(s) { s.textContent = ''; s.className = 'udl-ex-box-status'; });
+        updateProgress();
+        if (sumPanel) sumPanel.style.display = 'none';
+        say('Progrés de l\'activitat reiniciat.');
+      });
+    }
+  });
+
+  applyPrefs();
+})();
+</script>

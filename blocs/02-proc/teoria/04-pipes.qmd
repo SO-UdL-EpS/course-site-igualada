@@ -16,19 +16,20 @@ format:
     height: 900
     margin: 0.08
     center: false
+    scrollable: true
     footer: 'Sistemes Operatius (SO) &nbsp; <a href="/index.html" class="home-link" aria-label="Inici"><svg class="home-icon" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 52 C27 43 39 31 60 12 C78 30 93 42 108 51" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M25 48 C25 64 25 76 24 87 C35 84 45 85 53 87 M95 48 C95 64 95 76 97 87 C87 84 77 85 68 87" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M51 87V70 C51 64 55 60 60 60 C65 60 69 64 69 70V87Z" fill="currentColor"/><path d="M82 29V17 C82 14 84 13 87 13H94 C96 13 97 15 96 17 C94 20 93 24 94 32Z" fill="currentColor"/></svg></a>'
 
 ---
 
 ## Implementació de les Pipes 
 
-Les pipes es poden implementar com a buffers circulars basats en memòria assignada pel sistema operatiu. Aquestes pipes es coneixen com a pipes sense nom i són transitòries. Una pipe *sense nom* deixa d'existir quan tots els processos que la tenen assiganda **acaben** o **tanquen** els seus descriptors associats a la pipe.
+Les pipes es poden implementar com a buffers circulars basats en memòria assignada pel sistema operatiu. Aquestes pipes es coneixen com a pipes sense nom i són transitòries. Una pipe *sense nom* deixa d'existir quan tots els processos que la tenen assignada **acaben** o **tanquen** els seus descriptors associats a la pipe.
 
 ::: {style="text-align:center"}
 ![](figures/04/pipe.png){width="30%"}
 :::
 
-Els pipes es creen en el moment que s'obren mitjançant la crida a sistema `pipe()` *(unistd.h)* o amb la sintaxis `|`.
+Les pipes es creen en el moment que s'obren mitjançant la crida a sistema `pipe()` *(unistd.h)* o amb la sintaxi `|`.
 
 ## Creació de Pipes
 
@@ -36,7 +37,7 @@ Els pipes es creen en el moment que s'obren mitjançant la crida a sistema `pipe
 int pipe(int desc[2]);                                                                                                
 RETORNA:  0 on success                                                       
          -1 on error:    errno = EMFILE (no free descriptors)                  
-                                 EMFILE (system file table is full)            
+                                 ENFILE (system file table is full)            
                                  EFAULT (fd array is not valid)                
 ```
 
@@ -70,13 +71,13 @@ void main(){
    pid_t   pidFill;
     /* El primer element de la matriu (fd[0]) està configurat i obert per 
     a la lectura, mentre que el segon element està configurat i obert per 
-    escriure (fd[1]. Totes les dades que viatgen per la pipe es mouen 
+    escriure (fd[1]). Totes les dades que viatgen per la pipe es mouen 
     pel nucli. */
     pipe(fd); pidFill = fork();
      if (pidFill == -1){
         perror("fork"); exit(1);
      } else if (pidFill == 0){
-         /*El procés fill tanca la escriptura per la pipe*/ close(fd[1]);
+         /*El procés fill tanca l'escriptura per la pipe*/ close(fd[1]);
      } else {
          /* El procés pare tanca la lectura per la pipe */ close(fd[0]);
      }
@@ -118,7 +119,7 @@ void main(){
 ## Lectura de les pipes
 
 -   La lectura dels *pipes* es fan mitjançant la crida a sistema: **read()** o la funció **fscanf()**.
--   Si un procés **llegeix** en un *pipe* que tingui el **descriptor tancat**, [**retorna un 0, indicant la condició de final de fitxer**]{.alert}.
+-   Si un procés **llegeix** en un *pipe* que tingui el **descriptor d'escriptura tancat**, [**retorna un 0, indicant la condició de final de fitxer**]{.alert}.
 -   Si un procés **llegeix** d’un **pipe** *buit es bloqueja fins que les dades estiguin disponibles*.
 -   Si un procés intenta **llegir** *més dades que les disponibles* en un pipe, *es llegeixen els disponibles i es retorna el nombre de bytes llegits*.
 
@@ -131,14 +132,14 @@ void main(){
 ``` c
 int main() {
     int fd[2];
+    pipe(fd);
     pid_t p1 = fork();
 
     if (p1 > 0) {
-    {
       close(fd[1]);  
       char buf[100];
-      read(fd[0], buf, sizeof(buf));
-      printf("MSG: %s\n",buf);
+      read(fd[0], &buf, sizeof(buf));
+      printf("MSG: %s\n", buf);
       close(fd[0]);  
     }
 ```
@@ -152,7 +153,7 @@ else if (p1 == 0) {
     close(fd[0]);  
     char msg[5];
     sprintf(msg, "msg1");
-    write(fd[1], msg, strlen(msg));
+    write(fd[1], msg, sizeof(msg));
     close(fd[1]);  
     exit(0);
   }
@@ -175,9 +176,9 @@ int main() {
   close(fd[1]);
   char buf[100];
   while(read(fd[0],&buf,sizeof(buf))){
-    printf("I got a message! 
-      It was %s\n", buf);
-    }
+    printf("I got a message! It was %s\n", 
+        buf);
+  }
   printf("No more messages :(\n");
   close(fd[0]);
 }
@@ -192,10 +193,10 @@ close(fd[0]);
 char msg[5];
 sprintf(msg,"msg1");
 ssize_t nw = write(fd[1], 
-    msg, strlen(msg));
+    msg, sizeof(msg));
 sprintf(msg,"msg2");
 nw = write(fd[1], 
-    msg, strlen(msg));
+    msg, sizeof(msg));
 close(fd[1]); 
 while(1);
 exit(0);
@@ -217,9 +218,9 @@ int main() {
   close(fd[1]);
   char buf[100];
   while(read(fd[0],&buf,sizeof(buf))){
-    printf("I got a message! 
-      It was %s\n", buf);
-    }
+    printf("I got a message! It was %s\n", 
+        buf);
+  }
   printf("No more messages :(\n");
   close(fd[0]);
 }
@@ -234,10 +235,10 @@ close(fd[0]);
 char msg[5];
 sprintf(msg,"msg1");
 ssize_t nw = write(fd[1], 
-    msg, strlen(msg));
+    msg, sizeof(msg));
 sprintf(msg,"msg2");
 nw = write(fd[1], 
-    msg, strlen(msg));
+    msg, sizeof(msg));
 //close(fd[1]);  <-
 while(1);
 exit(0);
@@ -260,7 +261,7 @@ int main() {
   int fd[2]; int r = pipe(fd);
   pid_t p1 = fork();
   if (p1 == 0) { /*Fill*/ }
-    close(fd[1]);  
+    close(fd[0]);
     signal(SIGPIPE, sigpipe_handler);
     write(fd[1], "Hello", 5);
 }
@@ -271,9 +272,7 @@ int main() {
 #### Fill
 
 ``` c
-close(fd[0]);  
-sleep(2);  
-close(fd[1]);  
+close(fd[0]);
 exit(EXIT_SUCCESS);
 ```
 :::
@@ -298,7 +297,7 @@ int dup2(int fdold, int fdnew)
 ```
 
 -   *dup*: utilitza el descriptor de fitxer lliure més petit per duplicar el descriptor de fitxer *fdold*.
--   *dup2*: fa que *fdnew* sigui una còpia de *fdold*, tancant *fdold* si és necessari.
+-   *dup2*: fa que *fdnew* sigui una còpia de *fdold*, tancant *fdnew* abans si estava obert.
 
 ## Exemple a linux: `ls | wc -l` (I)
 
@@ -309,9 +308,9 @@ int dup2(int fdold, int fdnew)
 ## Exemple a linux: `ls | wc -l` (II) 
 
 -   El *procés 1* farà un **recobriment de la comanda ls** i l'**executarà**. Per defecte la comanda *ls* imprimeix per *stdout* el llistat de fitxers i directoris del directori actual.
--   En aquest cas *la pipe (\|)* indica que `ls` no escriurà per **stdout** i ho farà per la **pipe**. D'aquesta manera no veurem el llista de fitxers a la terminal, seran enviats a la *pipe*.
+-   En aquest cas *la pipe (\|)* indica que `ls` no escriurà per **stdout** i ho farà per la **pipe**. D'aquesta manera no veurem la llista de fitxers a la terminal, seran enviats a la *pipe*.
 -   El *procés 2* farà un **recobriment de la comanda wc -l**, aquesta comanda *compta el nombre de línies rebudes per* **stdin**. En aquest cas, com tenim la comanda precedida d'una pipe... El procés *redireccionarà* **stdin** a la **pipe**. Per tant, llegirà el contingut escrit per la comanda `ls`.
--   Per defecte la comanda `wc -l` escriu a **stdout**, com ara no hi ha cap més **pipe**. Aquesta sortida [**no es redirecciona**]{.alert} i per tant únicament veurem el resultat per **stdout**. És a dir, el nombre de fitxers i directoris del directori actual.
+-   Per defecte la comanda `wc -l` escriu a **stdout**; com que ara no hi ha cap més **pipe**, aquesta sortida [**no es redirecciona**]{.alert} i per tant únicament veurem el resultat per **stdout**. És a dir, el nombre de fitxers i directoris del directori actual.
 
 ## Exemple a linux: `ls | wc -l` (III)
 
@@ -344,7 +343,7 @@ waitpid(pid2,0,0);
 #### Fill 1 (`ls`)
 
 ``` c
-if (close(pfd[0]) == -1)                    
+if (close(fd[0]) == -1)                    
     perror("close 1");
 
     /* Duplicate stdout on write end of pipe; 
@@ -389,7 +388,7 @@ if (close(pfd[0]) == -1)
 Com és que el programa no acaba mai?
 :::
 
-El procés pare ha de tancar els descriptors de fitxer que no utilitza. Si no els procés fill lector de la pipe no acaba mai. Ja que no tots els processos han tancat els descriptors de fitxer associats a la **pipe**.
+El procés pare ha de tancar els descriptors de fitxer que no utilitza. Si no, el procés fill lector de la pipe no acaba mai, ja que no tots els processos han tancat els descriptors de fitxer associats a la **pipe**.
 
 ``` c
 // Pare
@@ -401,3 +400,14 @@ if (close(fd[1]) == -1)
 waitpid(pid1,0,0);
 waitpid(pid2,0,0);
 ```
+
+## Resum
+
+::: {.resum title="Punts clau per no quedar-se bloquejat amb una pipe"}
+::: nonincremental
+- **`fd[0]` és sempre lectura** (com `0 = stdin`) i **`fd[1]` és sempre escriptura** (com `1 = stdout`).
+- `pipe(fd)` s'ha de cridar **abans del `fork()`** perquè pare i fills comparteixin el mateix canal del nucli.
+- **L'EOF (`read == 0`) només arriba quan tots els processos han tancat `fd[1]`**: si el pare o el propi lector es deixen `fd[1]` obert, `read()` es queda bloquejat esperant.
+- Quan ja no queda cap lector (`fd[0]` tancat a tot arreu), qualsevol `write()` a `fd[1]` rep el senyal **`SIGPIPE`** (o retorna `-1` amb `errno = EPIPE` si s'ignora el senyal).
+:::
+:::

@@ -223,32 +223,6 @@ while (cmd != NULL) {
 }
 ```
 
-
-
-```{.c}
-char *cmd = strtok(linia, ";");
-
-while (cmd != NULL) {
-    char *args[MAX_ARGS];
-    int nargs = 0;
-
-    char *tok = strtok(cmd, " \t");
-
-    while (tok != NULL && nargs < MAX_ARGS - 1) {
-        args[nargs++] = tok;
-        tok = strtok(NULL, " \t");
-    }
-
-    args[nargs] = NULL;
-
-    if (nargs > 0) {
-        executa(args);
-    }
-
-    cmd = strtok(NULL, ";");
-}
-```
-
 ::: {.exercici}
 **Prediu abans de provar.** Amb la línia `ls -l ; pwd`, quines comandes s'executen?
 :::
@@ -268,7 +242,7 @@ Aquest és el límit de `strtok`: **només pot tenir una cadena en curs de tross
 
 #### Dues fases separades
 
-Solució primer analitzem *tota* la línia en comandes, i només quan hem acabat analitzem cada comanda en paraules.
+Solució: primer analitzem *tota* la línia en comandes, i només quan hem acabat analitzem cada comanda en paraules.
 
 ```{.c}
 #include <stdio.h>
@@ -473,7 +447,7 @@ Afegeix `signal(SIGSTOP, SIG_IGN);` al `main` i compila amb `-Wall -Wextra`.
 Treu la línia de `SIGSTOP`. Ctrl-Z **no** envia `SIGSTOP`: envia **`SIGTSTP`**, que és la versió *educada* i **sí que es pot ignorar**.
 
 ::: {.exercici}
-1. Sense tocar res més, escriu `sleep 30` i prem **Ctrl-Z**. Què passa, i amb quin processos?
+1. Sense tocar res més, escriu `sleep 30` i prem **Ctrl-Z**. Què passa, i amb quins processos?
 2. Ara afegeix `signal(SIGTSTP, SIG_IGN);` **només al `main`** (no toquis `executa`). Torna-ho a provar. Per què el `sleep` tampoc no s'atura?
 3. Si el fill **restaurés** `SIGTSTP` a `SIG_DFL` (com fem amb `SIGINT`), Ctrl-Z aturaria `sleep`. Què faria llavors la shell?
 :::
@@ -538,7 +512,7 @@ static int posa_senyal(int signum, void (*gestor)(int))
 posa_senyal(SIGINT,  SIG_IGN);
 posa_senyal(SIGTSTP, SIG_IGN);
 
-
+/* al fill d'executa, abans de l'execvp */
 posa_senyal(SIGINT, SIG_DFL);
 ```
 

@@ -101,13 +101,13 @@ git clone URL
 Per exemple:
 
 ```bash
-git clone https://github.com/el-teu-usuari/amsa.git
+git clone https://github.com/el-teu-usuari/course-site.git
 ```
 
 A continuació, entra al directori del projecte:
 
 ```bash
-cd amsa
+cd course-site
 ```
 
 A partir d'aquest moment treballaràs sobre una còpia local del repositori.
@@ -283,10 +283,10 @@ Comprova especialment que la direcció sigui correcta.
 
 En aquest cas:
 
-```bash
-Repositori principal
-    ↓
-Branca amb la teva contribució
+```text
+Repositori principal (base)
+    ↑
+Branca amb la teva contribució al teu fork (compare / head)
 ```
 
 GitHub també et mostrarà si els canvis es poden integrar automàticament.
@@ -396,5 +396,17 @@ Abans d'obrir una PR, pregunta't:
 > Si un altre estudiant hagués de fer servir aquest material demà, aquesta modificació realment li seria útil?
 
 Si la resposta és sí, probablement tens una bona contribució.
+
+---
+
+## Comunitat i contribucions incorporades
+
+Aquest repositori es manté viu gràcies a la feina conjunta del professorat i dels estudiants que hi aporten millores obertes curs rere curs:
+
+| Curs | Autoria / Contribució | Aportació principal als materials |
+|---|---|---|
+| Base del projecte | **Jordi Mateo Fornés** (Responsable docent) | Disseny del marc docent `udl-course`, arquitectura del lloc, diapositives de teoria, laboratoris (*Pralabs*) i col·lecció d'activitats. |
+| 2026-27 | **Roger Domingo** (Alumne contribuïdor · GEI Igualada) | Format de lectura contínua d'apunts i índex per a les diapositives, guia d'estudi i resums, laboratori interactiu d'autocomprovació, activitats i simulador del Bloc 3, millores de disseny responsiu i contrast en mode fosc. |
+
 
 

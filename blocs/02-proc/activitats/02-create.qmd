@@ -400,7 +400,7 @@ int main()
 <summary><b>Pots veure el raonament</b></summary>
 
 :::{.solucio}
-El comportament depèn de la **parity del PID del procés inicial**. Com que `pid` es calcula una sola vegada, tots els descendents hereten aquest mateix valor i es comporten d'acord amb ell.
+El comportament depèn de la **paritat del PID del procés inicial**. Com que `pid` es calcula una sola vegada, tots els descendents hereten aquest mateix valor i es comporten d'acord amb ell.
 
 **Cas parell: el pare crea 10 fills.** Es creen **11 processos** (el pare i 10 fills), i s'imprimeixen **10 línies** `Pid Fill: ...`, una per fill, en un ordre no garantit.
 

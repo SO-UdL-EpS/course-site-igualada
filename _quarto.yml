@@ -1,18 +1,30 @@
-project:
+﻿project:
   type: website
   output-dir: docs
+  render:
+    - "**/*.qmd"
+    - "!MANTENIMENT_DOCENT.md"
+
+# Idioma del web: perquÃ¨ lectors de pantalla i sÃ­ntesi de veu usin la fonÃ¨tica catalana
+lang: ca
 
 website:
   title: "Sistemes Operatius"
-  description: "Grau en Enginyeria Informàtica · Campus Igualada"
+  description: "Grau en Enginyeria InformÃ tica Â· Campus Igualada"
   page-navigation: true
+  bread-crumbs: true
+  search:
+    location: navbar
+    type: overlay
   favicon: assets/logo.svg
 
   page-footer:
     left: |
-      Universitat de Lleida · Departament d'Enginyeria Informàtica i Disseny Digital
+      Universitat de Lleida Â· Grau en Enginyeria InformÃ tica (Campus Igualada)
+    center: |
+      DocÃ¨ncia: Jordi Mateo FornÃ©s Â· Millores d'accessibilitat i estudi: Roger Domingo (alumne contribuÃ¯dor)
     right: |
-      Construït amb Quarto
+      Materials de codi obert Â· Quarto
 
 
   navbar:
@@ -21,25 +33,44 @@ website:
     left:
       - text: "Inici"
         href: index.qmd
+      - text: "Continguts"
+        menu:
+          - text: "Bloc 1 Â· Espai d'Usuari i MemÃ²ria"
+            href: blocs/01-espai-usuari/pralabs/01_c_mem.qmd
+          - text: "Bloc 2 Â· Processos, Pipes i Minishell"
+            href: blocs/02-proc/pralabs/01_minishell.qmd
+          - text: "Bloc 3 Â· PlanificaciÃ³ de CPU"
+            href: blocs/03-sched/activitats/01-sched-activitats.qmd
+      - text: "Guia d'estudi i resums"
+        href: course-info/guia-estudi.qmd
+      - text: "Laboratori interactiu"
+        href: course-info/entrenament-interactiu.qmd
+      - text: "Contribueix"
+        href: course-info/contributions/contribute.qmd
       - text: "Guia docent"
         href: https://guiadocent.udl.cat/html/2026-27_105012
     right:
       - icon: github
-        href: https://github.com/SO-UdL-EpS/course-site
+        href: https://github.com/SO-UdL-EpS/course-site-igualada
   sidebar:
     logo: assets/logo.png
-    logo-alt: "AMSA Logo"
+    logo-alt: "Sistemes Operatius UdL Logo"
+    search: true
 
     style: floating
     collapse-level: 3
     contents:
     - href: course-info/presentation-slides.qmd
-      text: "Presentació del curs"
+      text: "PresentaciÃ³ del curs"
+    - href: course-info/guia-estudi.qmd
+      text: "Guia d'estudi i resums"
+    - href: course-info/entrenament-interactiu.qmd
+      text: "Laboratori interactiu"
     - href: course-info/contributions/contribute.qmd
       text: "Contribueix al curs"
     - section: "Blocs"
       contents:
-        - section: "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari"
+        - section: "Bloc 1 Â· Desenvolupament de Programari en Espai d'Usuari"
           contents:
             - section: Teoria
               contents:
@@ -51,7 +82,7 @@ website:
               - href: blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.qmd
               - href: blocs/01-espai-usuari/teoria/07_syscalls_kernel.qmd
             - section: "Pralabs"
-              contents: 
+              contents:
               - href: blocs/01-espai-usuari/pralabs/01_c_mem.qmd
               - href: blocs/01-espai-usuari/pralabs/02_c_mem.qmd
               - href: blocs/01-espai-usuari/pralabs/03_c_heap.qmd
@@ -63,7 +94,7 @@ website:
               - href: blocs/01-espai-usuari/activitats/02_espai_funcions.qmd
               - href: blocs/01-espai-usuari/activitats/03_pokemon.qmd
 
-        - section: "Bloc 2 · Processos"
+        - section: "Bloc 2 Â· Processos"
           contents:
             - section: Teoria
               contents:
@@ -72,41 +103,36 @@ website:
               - href: blocs/02-proc/teoria/03-signals.qmd
               - href: blocs/02-proc/teoria/04-pipes.qmd
               - href: blocs/02-proc/teoria/05-fifos.qmd
-            - section: "Activitats"
-              contents:
-              - href: blocs/02-proc/activitats/02-create.qmd
-              - href: blocs/02-proc/activitats/03-exec.qmd
-              - href: blocs/02-proc/activitats/01-fork-wait.qmd
-              - href: blocs/02-proc/activitats/04-pipes.qmd
-              - href: blocs/02-proc/activitats/05-loteria.qmd
             - section: "Pralabs"
               contents:
               - href: blocs/02-proc/pralabs/01_minishell.qmd
               - href: blocs/02-proc/pralabs/02_minishell.qmd
               - href: blocs/02-proc/pralabs/03_minishell.qmd
-        - section: "Bloc 3 · Planificació"
+            - section: "Activitats"
+              contents:
+              - href: blocs/02-proc/activitats/01-fork-wait.qmd
+              - href: blocs/02-proc/activitats/02-create.qmd
+              - href: blocs/02-proc/activitats/03-exec.qmd
+              - href: blocs/02-proc/activitats/04-pipes.qmd
+              - href: blocs/02-proc/activitats/05-loteria.qmd
+        - section: "Bloc 3 Â· PlanificaciÃ³"
           contents:
             - section: "Teoria"
               contents:
                 - href: blocs/03-sched/teoria/01-sched.qmd
-                - href: blocs/03-sched/teoria/02-sched.qmd
             - section: "Activitats"
               contents:
-                - href: blocs/03-sched/activitats/01-sched.qmd
-                - href: blocs/03-sched/activitats/02-sched.qmd
+                - href: blocs/03-sched/activitats/01-sched-activitats.qmd
 
-        - section: "Bloc 7 · Shell Scripting"
-          contents:
-            - section: Teoria
-              contents:
-                - href: blocs/07-shell/teoria/01-shell.qmd
-                - href: blocs/07-shell/teoria/02-shell.qmd
-            - section: Pralabs
-              contents:
-                - href: blocs/07-shell/pralabs/01-shell.qmd
-    
 
 
 format:
   udl-course-html:
     toc: true
+    include-in-header:
+      - text: |
+          <link rel="preconnect" href="https://fonts.googleapis.com">
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+          <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    include-after-body:
+      - file: _extensions/udl-course/partials/study-tools.html

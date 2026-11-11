@@ -16,6 +16,7 @@ format:
     height: 900
     margin: 0.08
     center: false
+    scrollable: true
     footer: 'Sistemes Operatius (SO) &nbsp; <a href="/index.html" class="home-link" aria-label="Inici"><svg class="home-icon" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 52 C27 43 39 31 60 12 C78 30 93 42 108 51" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M25 48 C25 64 25 76 24 87 C35 84 45 85 53 87 M95 48 C95 64 95 76 97 87 C87 84 77 85 68 87" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M51 87V70 C51 64 55 60 60 60 C65 60 69 64 69 70V87Z" fill="currentColor"/><path d="M82 29V17 C82 14 84 13 87 13H94 C96 13 97 15 96 17 C94 20 93 24 94 32Z" fill="currentColor"/></svg></a>'
     include-in-header:
       - text: |
@@ -103,7 +104,7 @@ El nucli ofereix a cada procés (1) la il·lusió de **tenir la CPU per a ell so
 | | **Canvi de mode** | **Canvi de context** |
 |:---------------|:-----------------------------|:------------------------------|
 | **Què canvia** | El **nivell de privilegi** (usuari ↔ nucli) | **Quina tasca executa** a la CPU |
-| **Qui**        | mateixa tasca | un altra tasca |
+| **Qui**        | mateixa tasca | una altra tasca |
 | **Procés** | El **mateix** procés | Un procés **diferent** |
 | **Causes** | Crida al sistema, excepció, interrupció | Expropiació, bloqueig (E/S), `sched_yield`, `exit` |
 | **Es desa** | El mínim (PC, SP, indicadors...) | El **context complet** + canvi d'espai d'adreces |
@@ -144,7 +145,7 @@ sequenceDiagram
 
 :::{.exemple .fragment title="Com comprovar-ho"}
 
-Linux ho compta per procés a `/proc/PID/status`: `voluntary_ctxt_switches` i `nonvoluntary_ctxt_switches` :
+Linux ho compta per procés a `/proc/PID/status`: `voluntary_ctxt_switches` i `nonvoluntary_ctxt_switches`:
 
 ``` {.bash code-line-numbers="false"}
 grep ctxt /proc/$$/status
@@ -180,7 +181,7 @@ Només el **planificador** decideix quin procés *preparat* passa a *execució*.
 ## Els estats reals de Linux 
 
 :::{.exemple}
-Per veure ,és informació sobre els processos poder fer `man ps` i llegir la secció **PROCESS STATE CODES**. 
+Per veure més informació sobre els processos podeu fer `man ps` i llegir la secció **PROCESS STATE CODES**. 
 :::
 
 | `ps` | Nucli | Què significa |
@@ -195,7 +196,7 @@ Per veure ,és informació sobre els processos poder fer `man ps` i llegir la se
 | **X** | `EXIT_DEAD` | Mort (no es veu mai) |
 
 :::{.exemple}
-Podeu consultar [sched.h](https://elixir.bootlin.com/linux/v7.2.8/source/include/linux/sched.h#L108) es representen els estats de les tasques. **TASK_RUNNING** indica que la tasca és runnable: pot executar-se, tant si està esperant que el planificador li assigni la CPU com si s'està executant en aquell moment. En canvi, **TASK_INTERRUPTIBLE** i **TASK_UNINTERRUPTIBLE** representen diferents formes d'espera (dormit).
+Podeu consultar [sched.h](https://elixir.bootlin.com/linux/v7.2.8/source/include/linux/sched.h#L108), on es representen els estats de les tasques. **TASK_RUNNING** indica que la tasca és runnable: pot executar-se, tant si està esperant que el planificador li assigni la CPU com si s'està executant en aquell moment. En canvi, **TASK_INTERRUPTIBLE** i **TASK_UNINTERRUPTIBLE** representen diferents formes d'espera (dormit).
 :::
 
 ## `R` no vol dir «executant-se» 
@@ -216,7 +217,7 @@ Molts llibres descriuen **9 estats**: *executant en mode usuari*, *executant en 
 
 | Model  | A **Linux** |
 |:----------------------------|:-------------------------------------------|
-| **Swapping** de processos **sencers** (estats intercanviat) | Linux fa **paginació**: intercanvia **pàgines**, no processos |
+| **Swapping** de processos **sencers** (estats intercanviats) | Linux fa **paginació**: intercanvia **pàgines**, no processos |
 | **Nucli no expropiable**: un procés *expropiat* torna sempre a mode usuari | Un procés pot perdre la CPU **mentre executa codi del nucli** (segons `CONFIG_PREEMPT*`) |
 | El **mode** (usuari/nucli) forma part de l'**estat** | El mode és **ortogonal** a l'estat del planificador |
 
@@ -351,7 +352,7 @@ AsciinemaPlayer.create(
 
 ::::: columns
 ::: {.column width="55%"}
-`/proc/<pid>/` és un **pseudo-sistema de fitxers**: el nucli genera el contingut **en llegir-lo**, a partir de la PCB i altres estructures. No és el «taula de processos» real.
+`/proc/<pid>/` és un **pseudo-sistema de fitxers**: el nucli genera el contingut **en llegir-lo**, a partir de la PCB i altres estructures. No és la «taula de processos» real.
 
 | Entrada | Què mostra |
 |:--------------|:----------------------------|

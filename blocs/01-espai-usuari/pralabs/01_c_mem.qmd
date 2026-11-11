@@ -32,7 +32,7 @@ int main() {
         vector_suma[i] = vector1[i] + vector2[i];
     }
 
-    printf("El vector resultant de la suma es:\n");
+    printf("El vector resultant de la suma és:\n");
     printf("(");
     for (int i = 0; i < DIMENSIO; i++) {
         printf("%.2f", vector_suma[i]);
@@ -121,6 +121,8 @@ flowchart LR
     a["&x = 0x7ffee3b8c4a0"] -->|"és l'adreça de"| x
 ```
 :::
+
+</details>
 
 ---
 
@@ -348,7 +350,7 @@ printf("%p\n", (void *)(pv + 2));
 ```
 
 ::: {.exercici}
-Abans d'executar-ho: quan sumes `2` a `pv`, creus que avança 2 bytes o 2 elements de tipus `int`? Compara  els resultats.
+Abans d'executar-ho: quan sumes `2` a `pv`, creus que avança 2 bytes o 2 elements de tipus `int`? Compara els resultats.
 :::
 
 <details>
@@ -406,7 +408,7 @@ a. El programa té diversos errors. Troba'ls sense executar-lo.
 
 </details>
 
-b. Volem modificar la mesura a través del punter `sensor` perquè passi de 10 a 99. Quina instrucció has d'escriure? Explica què passa amb mesures[0] i per què?
+b. Volem modificar la mesura a través del punter `sensor` perquè passi de 10 a 99. Quina instrucció has d'escriure? Explica què passa amb `mesures[0]` i per què?
 
 <details>
 <summary><b>Pots veure el raonament</b></summary>

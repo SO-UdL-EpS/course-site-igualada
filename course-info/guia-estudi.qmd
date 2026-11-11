@@ -1,0 +1,1131 @@
+---
+title: "Guia d'estudi i resums"
+subtitle: "Comprensió d'arrel dels 3 blocs, esquemes de codi, taules de referència i preparació d'exàmens"
+author: "Jordi Mateo Fornés (Docent) · Roger Domingo (Alumne contribuïdor)"
+format:
+  udl-course-html:
+    toc: true
+---
+
+::: {.objectius title="Com estudiar Sistemes Operatius sense perdre's pel camí"}
+Sistemes Operatius és una assignatura exigent perquè obliga a canviar la manera de pensar: ja no n'hi ha prou que un programa en C «compili», sinó que cal entendre **on viu cada byte a la memòria virtual** i **què fa el nucli (*kernel*) de Linux darrere de cada crida**.
+
+Aquesta guia està pensada per acompanyar-te **des de la base fins a l'examen** en aquest ordre:
+
+1. **[El model mental d'arrel](#visio-global)**: Com encaixen els 3 blocs de l'assignatura i els 6 pilars que t'estalviaran memoritzar a cegues.
+2. **[Resum i esquemes del Bloc 1 (Memòria, C i Syscalls)](#bloc-1)**: Segments ELF, punters dobles, compilació, ABI x86-64 i patró de memòria dinàmica.
+3. **[Resum i esquemes del Bloc 2 (Processos, Senyals i Pipes)](#bloc-2)**: Estats de Linux, `fork/exec/waitpid`, `sigaction`, `pipe/dup2` i les 3 plantilles de codi essencials.
+4. **[Resum i esquemes del Bloc 3 (Planificació de CPU)](#bloc-3)**: Fórmules pas a pas, comparativa FCFS / SJF / SRTF / Round Robin i regles de la cua de preparats.
+5. **[Diagnòstic ràpid d'errors al laboratori](#diagnostic)** i **[Plantilla per al full DIN A4 dels exàmens](#full-a4)**.
+6. **[Targetes d'autoavaluació (*Flashcards*) i checklist de progrés](#autocomprovacio)** per comprovar que ho domines.
+:::
+
+---
+
+## 1. Entendre l'assignatura d'arrel: Com connecten els 3 Blocs {#visio-global}
+
+Quan estudies cada tema per separat, és fàcil veure els punters, el `fork()`, les `pipes` i els diagrames de Gantt com mons desconnectats. En realitat, **tot forma part d'un mateix cicle dins del nucli de Linux**.
+
+Imagina què passa des que escrius una comanda com `./filtre < dades.txt | wc -l` fins que s'executa a la CPU:
+
+```{=html}
+<div style="display:grid; gap:0.5rem; margin:1.15rem 0 1.6rem;">
+  <div style="padding:1rem 1.2rem; border-radius:10px; background:var(--udl-surface-sunken); border:1px solid var(--udl-border); border-left:5px solid var(--udl-theory);">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.55rem;">
+      <span style="font-size:0.76rem; font-weight:800; text-transform:uppercase; letter-spacing:0.05em; color:var(--udl-theory);">Fase 1 · Bloc 1 · Espai d'usuari, memòria virtual i syscalls</span>
+      <span class="udl-badge udl-badge-theory">Ring 3 → Ring 0</span>
+    </div>
+    <p style="margin:0 0 0.7rem; font-size:0.87rem; color:var(--udl-text); line-height:1.52;">
+      El compilador genera un executable <strong>ELF</strong> amb segments fixos (<code>.text</code>, <code>.rodata</code>, <code>.data</code>, <code>.bss</code>). En executar-se, té una <strong>Stack</strong> per a les crides a funció i un <strong>Heap</strong> (<code>malloc</code>/<code>free</code>). Com que corre en mode no privilegiat (Ring 3), cada cop que necessita el sistema operatiu ha d'executar la instrucció <code>syscall</code>.
+    </p>
+    <div style="display:flex; flex-wrap:wrap; gap:0.4rem; align-items:center; font-size:0.78rem; font-weight:600;">
+      <span style="padding:0.28rem 0.65rem; border-radius:6px; background:var(--udl-surface); border:1px solid var(--udl-border);">Codi C (<code>.c</code>)</span>
+      <span style="color:var(--udl-text-muted);">→</span>
+      <span style="padding:0.28rem 0.65rem; border-radius:6px; background:var(--udl-surface); border:1px solid var(--udl-border);">Binari ELF</span>
+      <span style="color:var(--udl-text-muted);">→</span>
+      <span style="padding:0.28rem 0.65rem; border-radius:6px; background:var(--udl-surface); border:1px solid var(--udl-border);">Memòria Virtual (Stack / Heap)</span>
+      <span style="color:var(--udl-text-muted);">→</span>
+      <span style="padding:0.28rem 0.65rem; border-radius:6px; background:color-mix(in srgb, var(--udl-theory) 15%, var(--udl-surface)); border:1px solid var(--udl-theory); color:var(--udl-theory);"><code>syscall</code> al Kernel</span>
+    </div>
+  </div>
+
+  <div style="text-align:center; font-size:1.1rem; line-height:1; color:var(--udl-text-muted);" aria-hidden="true">▼</div>
+
+  <div style="padding:1rem 1.2rem; border-radius:10px; background:var(--udl-surface-sunken); border:1px solid var(--udl-border); border-left:5px solid var(--udl-lab);">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.55rem;">
+      <span style="font-size:0.76rem; font-weight:800; text-transform:uppercase; letter-spacing:0.05em; color:var(--udl-lab);">Fase 2 · Bloc 2 · Processos, descriptors de fitxer, pipes i senyals</span>
+      <span class="udl-badge udl-badge-lab">PCB i IPC</span>
+    </div>
+    <p style="margin:0 0 0.7rem; font-size:0.87rem; color:var(--udl-text); line-height:1.52;">
+      El nucli manté un <strong>PCB (<code>struct task_struct</code>)</strong> i una <strong>taula de descriptors</strong> (<code>0</code>=stdin, <code>1</code>=stdout, <code>2</code>=stderr) per a cada procés. La shell crea la canonada amb <code>pipe()</code>, clona el procés amb <code>fork()</code>, redirigeix els descriptors amb <code>dup2()</code>, carrega el nou programa amb <code>execvp()</code> i recull els fills amb <code>waitpid()</code> quan rep <code>SIGCHLD</code>.
+    </p>
+    <div style="display:flex; flex-wrap:wrap; gap:0.4rem; align-items:center; font-size:0.78rem; font-weight:600;">
+      <span style="padding:0.28rem 0.65rem; border-radius:6px; background:var(--udl-surface); border:1px solid var(--udl-border);"><code>pipe(fd)</code></span>
+      <span style="color:var(--udl-text-muted);">→</span>
+      <span style="padding:0.28rem 0.65rem; border-radius:6px; background:var(--udl-surface); border:1px solid var(--udl-border);"><code>fork()</code> (clona PCB + FDs)</span>
+      <span style="color:var(--udl-text-muted);">→</span>
+      <span style="padding:0.28rem 0.65rem; border-radius:6px; background:var(--udl-surface); border:1px solid var(--udl-border);"><code>dup2()</code> + <code>close()</code></span>
+      <span style="color:var(--udl-text-muted);">→</span>
+      <span style="padding:0.28rem 0.65rem; border-radius:6px; background:var(--udl-surface); border:1px solid var(--udl-border);"><code>execvp()</code></span>
+      <span style="color:var(--udl-text-muted);">→</span>
+      <span style="padding:0.28rem 0.65rem; border-radius:6px; background:color-mix(in srgb, var(--udl-lab) 15%, var(--udl-surface)); border:1px solid var(--udl-lab); color:var(--udl-lab);"><code>waitpid()</code> (evita Zombis)</span>
+    </div>
+  </div>
+
+  <div style="text-align:center; font-size:1.1rem; line-height:1; color:var(--udl-text-muted);" aria-hidden="true">▼</div>
+
+  <div style="padding:1rem 1.2rem; border-radius:10px; background:var(--udl-surface-sunken); border:1px solid var(--udl-border); border-left:5px solid var(--udl-assignment);">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.55rem;">
+      <span style="font-size:0.76rem; font-weight:800; text-transform:uppercase; letter-spacing:0.05em; color:var(--udl-assignment);">Fase 3 · Bloc 3 · Planificació de la CPU i canvis de context</span>
+      <span class="udl-badge udl-badge-assignment">Runqueue i Gantt</span>
+    </div>
+    <p style="margin:0 0 0.7rem; font-size:0.87rem; color:var(--udl-text); line-height:1.52;">
+      Mentre <code>wc</code> espera dades de la pipe, el nucli el posa en estat <strong>Bloquejat (<code>S</code> / <code>TASK_INTERRUPTIBLE</code>)</strong> perquè no ocupi CPU. Quan <code>./filtre</code> escriu a la pipe, el nucli desperta <code>wc</code> a <strong>Preparat (<code>R</code> / <code>TASK_RUNNING</code>)</strong> i el planificador (FCFS, SJF, SRTF o Round Robin) decideix quin procés entra a la CPU.
+    </p>
+    <div style="display:flex; flex-wrap:wrap; gap:0.4rem; align-items:center; font-size:0.78rem; font-weight:600;">
+      <span style="padding:0.28rem 0.65rem; border-radius:6px; background:var(--udl-surface); border:1px solid var(--udl-border);">Execució a CPU (<code>R</code>)</span>
+      <span style="color:var(--udl-text-muted);">→</span>
+      <span style="padding:0.28rem 0.65rem; border-radius:6px; background:var(--udl-surface); border:1px solid var(--udl-border);">Espera E/S (<code>S</code> / <code>D</code>)</span>
+      <span style="color:var(--udl-text-muted);">→</span>
+      <span style="padding:0.28rem 0.65rem; border-radius:6px; background:var(--udl-surface); border:1px solid var(--udl-border);">Cua de Preparats (<code>R</code>)</span>
+      <span style="color:var(--udl-text-muted);">→</span>
+      <span style="padding:0.28rem 0.65rem; border-radius:6px; background:color-mix(in srgb, var(--udl-assignment) 15%, var(--udl-surface)); border:1px solid var(--udl-assignment); color:var(--udl-assignment);">Planificador (FCFS / SJF / SRTF / RR)</span>
+    </div>
+  </div>
+</div>
+```
+
+### Explorador interactiu dels 6 pilars fonamentals («Què passa realment per sota?»)
+
+Fes clic sobre cadascun dels **6 conceptes clau** següents per veure l'esquema visual i la comparativa pràctica (❌ error típic vs. ✅ com funciona realment):
+
+```{=html}
+<div class="udl-widget" id="root-pillars" style="margin: 1.25rem 0; border-left: 4px solid var(--udl-primary);">
+  <div style="display:flex; flex-wrap:wrap; gap:0.45rem; margin-bottom:1rem;" id="rp-tabs">
+    <button type="button" data-p="0" class="udl-button" style="font-size:0.78rem; padding:0.38rem 0.75rem;">1. Punters i pas per valor</button>
+    <button type="button" data-p="1" class="udl-button udl-button-outline" style="font-size:0.78rem; padding:0.38rem 0.75rem;">2. Stack vs. Heap vs. .rodata</button>
+    <button type="button" data-p="2" class="udl-button udl-button-outline" style="font-size:0.78rem; padding:0.38rem 0.75rem;">3. Buffer libc vs. Syscall</button>
+    <button type="button" data-p="3" class="udl-button udl-button-outline" style="font-size:0.78rem; padding:0.38rem 0.75rem;">4. Per què separar fork() i exec()?</button>
+    <button type="button" data-p="4" class="udl-button udl-button-outline" style="font-size:0.78rem; padding:0.38rem 0.75rem;">5. Descriptors, pipe() i dup2()</button>
+    <button type="button" data-p="5" class="udl-button udl-button-outline" style="font-size:0.78rem; padding:0.38rem 0.75rem;">6. Bloqueig d'E/S i Planificació</button>
+  </div>
+  <div id="rp-body" style="padding:1rem 1.15rem; border-radius:8px; background:var(--udl-surface-sunken); border:1px solid var(--udl-border); font-size:0.88rem; line-height:1.58;"></div>
+</div>
+
+<script>
+(function() {
+  const pillars = [
+    {
+      title: "Pilar 1 · Per què a C tot es passa per valor (i quan cal un doble punter int **)",
+      idea: "En C, quan crides una funció, la CPU <strong>sempre copia el valor de l'argument</strong> dins del marc de pila de la funció cridada. Si passes un punter <code>int *p</code>, la funció rep una <strong>còpia de l'adreça</strong>: pot modificar el contingut apuntat (<code>*p = 99</code>), però si reassigna el punter (<code>p = malloc(...)</code>) només canvia la seva còpia local!",
+      visual: `
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:0.8rem; margin:0.8rem 0;">
+          <div style="padding:0.8rem; border-radius:8px; background:color-mix(in srgb, #ef4444 8%, var(--udl-surface)); border:1px solid color-mix(in srgb, #ef4444 35%, var(--udl-border));">
+            <div style="font-weight:700; font-size:0.8rem; color:#ef4444; margin-bottom:0.4rem;">❌ Incorrecte: passar <code>int *p</code> per reservar</div>
+            <div style="font-family:monospace; font-size:0.78rem; background:var(--udl-surface); padding:0.55rem; border-radius:6px; border:1px solid var(--udl-border); margin-bottom:0.45rem;">
+              void init_malament(int *p) {<br>
+              &nbsp;&nbsp;p = malloc(sizeof(int));<br>
+              }<br>
+              <span style="color:var(--udl-text-muted);">// A main: int *ptr = NULL;</span><br>
+              <span style="color:var(--udl-text-muted);">// init_malament(ptr); &rarr; ptr segueix sent NULL!</span>
+            </div>
+            <div style="font-size:0.8rem; color:var(--udl-text);">La funció només ha modificat la seva variable local <code>p</code>, i en fer <code>return</code> es perd l'adreça reservada (<em>memory leak</em>).</div>
+          </div>
+          <div style="padding:0.8rem; border-radius:8px; background:color-mix(in srgb, #10b981 8%, var(--udl-surface)); border:1px solid color-mix(in srgb, #10b981 35%, var(--udl-border));">
+            <div style="font-weight:700; font-size:0.8rem; color:#10b981; margin-bottom:0.4rem;">✅ Correcte: passar <code>&amp;ptr</code> a <code>int **pp</code></div>
+            <div style="font-family:monospace; font-size:0.78rem; background:var(--udl-surface); padding:0.55rem; border-radius:6px; border:1px solid var(--udl-border); margin-bottom:0.45rem;">
+              void init_be(int **pp) {<br>
+              &nbsp;&nbsp;*pp = malloc(sizeof(int));<br>
+              }<br>
+              <span style="color:var(--udl-text-muted);">// A main: int *ptr = NULL;</span><br>
+              <span style="color:var(--udl-text-muted);">// init_be(&amp;ptr); &rarr; ptr ja apunta al Heap!</span>
+            </div>
+            <div style="font-size:0.8rem; color:var(--udl-text);">Com que passem l'adreça on viu <code>ptr</code> (<code>&amp;ptr</code>), fer <code>*pp = ...</code> escriu directament dins la caixa <code>ptr</code> de <code>main()</code>.</div>
+          </div>
+        </div>`,
+      rule: "Regla d'or: Si una funció ha de modificar un 'int' de fora, rep 'int *'. Si ha de modificar cap on apunta un punter 'T *' de fora, ha de rebre l'adreça del punter: 'T **'."
+    },
+    {
+      title: "Pilar 2 · Temps de vida i permisos: Stack vs. Heap vs. .rodata",
+      idea: "Cada variable viu en un segment de memòria amb permisos de maquinari (MMU) i durada diferents. Confondre un punter a <code>.rodata</code> amb un array a la <code>Stack</code> o retornar l'adreça d'una variable local són les dues causes principals de <code>SIGSEGV</code>.",
+      visual: `
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(230px, 1fr)); gap:0.65rem; margin:0.8rem 0;">
+          <div style="padding:0.75rem; border-radius:8px; background:var(--udl-surface); border:1px solid var(--udl-border); border-top:3px solid #3b82f6;">
+            <div style="font-weight:700; font-size:0.8rem; color:#3b82f6;">1. Stack (Pila · <code>RW-</code>)</div>
+            <div style="font-family:monospace; font-size:0.78rem; margin:0.35rem 0;">char s[] = "hola";</div>
+            <div style="font-size:0.79rem; color:var(--udl-text);">Copia els 5 bytes a la pila. Es pot modificar (<code>s[0] = 'H'</code>), però <strong>es destrueix automàticament quan la funció fa <code>return</code></strong>.</div>
+          </div>
+          <div style="padding:0.75rem; border-radius:8px; background:var(--udl-surface); border:1px solid var(--udl-border); border-top:3px solid #10b981;">
+            <div style="font-weight:700; font-size:0.8rem; color:#10b981;">2. Heap (Dinàmica · <code>RW-</code>)</div>
+            <div style="font-family:monospace; font-size:0.78rem; margin:0.35rem 0;">char *d = strdup("hola");</div>
+            <div style="font-size:0.79rem; color:var(--udl-text);">Reservat amb <code>malloc</code>/<code>calloc</code>/<code>strdup</code>. Es pot modificar i <strong>sobreviu al <code>return</code></strong> fins que fem <code>free(d)</code>.</div>
+          </div>
+          <div style="padding:0.75rem; border-radius:8px; background:var(--udl-surface); border:1px solid var(--udl-border); border-top:3px solid #ef4444;">
+            <div style="font-weight:700; font-size:0.8rem; color:#ef4444;">3. .rodata (Literals · <code>R--</code>)</div>
+            <div style="font-family:monospace; font-size:0.78rem; margin:0.35rem 0;">char *p = "hola";</div>
+            <div style="font-size:0.79rem; color:var(--udl-text);"><code>p</code> és a la pila però apunta al segment de només lectura. Fer <code>p[0] = 'H'</code> provoca <strong>Segmentation Fault immediat</strong>!</div>
+          </div>
+        </div>`,
+      rule: "Regla d'or: Mai retornis l'adreça d'una variable local (&x) perquè el seu marc de Stack desapareix en retornar. Si una dada creada dins d'una funció ha de continuar viva fora d'ella, reserva-la al Heap."
+    },
+    {
+      title: "Pilar 3 · Espai d'usuari (buffer de stdio) vs. Espai del nucli (write / read)",
+      idea: "Entrar al kernel té un cost. Per això <code>printf()</code> no envia el text a la pantalla immediatament, sinó que el guarda en un <strong>buffer de memòria d'usuari (<code>stdio</code>)</strong> fins que troba un <code>\\n</code>, s'omple el buffer o es crida <code>fflush(stdout)</code> / <code>exit()</code>.",
+      visual: `
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:0.8rem; margin:0.8rem 0;">
+          <div style="padding:0.8rem; border-radius:8px; background:color-mix(in srgb, #ef4444 8%, var(--udl-surface)); border:1px solid color-mix(in srgb, #ef4444 35%, var(--udl-border));">
+            <div style="font-weight:700; font-size:0.8rem; color:#ef4444; margin-bottom:0.4rem;">❌ Què passa si no hi ha <code>\\n</code> abans de <code>fork()</code>?</div>
+            <div style="font-family:monospace; font-size:0.78rem; background:var(--udl-surface); padding:0.55rem; border-radius:6px; border:1px solid var(--udl-border); margin-bottom:0.45rem;">
+              printf("Hola "); <span style="color:#ef4444;">// Queda al buffer d'usuari!</span><br>
+              fork();<br>
+              printf("món\\n");
+            </div>
+            <div style="font-size:0.8rem; color:var(--udl-text);"><strong>Sortida:</strong> <code>Hola món</code> i <code>Hola món</code> (s'imprimeix <strong>dues vegades</strong> <code>Hola</code> perquè <code>fork()</code> clona la memòria d'usuari, inclòs el buffer pendent de buidar!).</div>
+          </div>
+          <div style="padding:0.8rem; border-radius:8px; background:color-mix(in srgb, #10b981 8%, var(--udl-surface)); border:1px solid color-mix(in srgb, #10b981 35%, var(--udl-border));">
+            <div style="font-weight:700; font-size:0.8rem; color:#10b981; margin-bottom:0.4rem;">✅ Com evitar duplicats de buffer</div>
+            <div style="font-family:monospace; font-size:0.78rem; background:var(--udl-surface); padding:0.55rem; border-radius:6px; border:1px solid var(--udl-border); margin-bottom:0.45rem;">
+              write(1, "Hola ", 5); <span style="color:#10b981;">// Syscall directa al kernel</span><br>
+              <span style="color:var(--udl-text-muted);">// O bé: printf("Hola "); fflush(stdout);</span><br>
+              fork();
+            </div>
+            <div style="font-size:0.8rem; color:var(--udl-text);"><code>write()</code> entra directament al kernel sense passar pel buffer d'<code>stdio</code>. I si un <code>exec()</code> falla al fill, usa <code>_exit(127)</code> perquè no buidi buffers heretats.</div>
+          </div>
+        </div>`,
+      rule: "Regla d'or: Abans d'un fork() o d'un exec(), buida sempre stdout amb '\\n' o fflush(stdout), i dins del fill usa _exit() si falla l'exec."
+    },
+    {
+      title: "Pilar 4 · Per què Unix separa fork() i exec() en dues crides?",
+      idea: "Separar la clonació del procés (<code>fork</code>) de la càrrega del nou programa binari (<code>exec</code>) permet que, <strong>entre totes dues crides</strong>, el procés fill modifiqui els seus descriptors de fitxer, senyals o directori de treball sense tocar gens el procés pare.",
+      visual: `
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:0.65rem; margin:0.8rem 0;">
+          <div style="padding:0.75rem; border-radius:8px; background:var(--udl-surface); border:1px solid var(--udl-border);">
+            <div style="font-weight:700; font-size:0.8rem; color:var(--udl-primary);">Pas 1 · <code>fork()</code></div>
+            <div style="font-size:0.79rem; margin-top:0.3rem; color:var(--udl-text);">El kernel crea un procés fill amb nou PID que hereta una còpia de la taula de descriptors oberts del pare.</div>
+          </div>
+          <div style="padding:0.75rem; border-radius:8px; background:color-mix(in srgb, var(--udl-primary) 10%, var(--udl-surface)); border:1px solid var(--udl-primary);">
+            <div style="font-weight:700; font-size:0.8rem; color:var(--udl-primary);">Pas 2 · Finestra al fill (<code>pid == 0</code>)</div>
+            <div style="font-size:0.79rem; margin-top:0.3rem; color:var(--udl-text);">El fill fa <code>dup2(fd, 1)</code> per redirigir la sortida, tanca els descriptors sobrers i restaura senyals (<code>SIG_DFL</code>).</div>
+          </div>
+          <div style="padding:0.75rem; border-radius:8px; background:var(--udl-surface); border:1px solid var(--udl-border);">
+            <div style="font-weight:700; font-size:0.8rem; color:var(--udl-primary);">Pas 3 · <code>execvp()</code></div>
+            <div style="font-size:0.79rem; margin-top:0.3rem; color:var(--udl-text);">Reemplaça la memòria pel nou programa ELF, però <strong>conserva el PID i els descriptors redirigits al Pas 2</strong>!</div>
+          </div>
+        </div>`,
+      rule: "Regla d'or: exec() NO crea un procés nou (el PID és el mateix) ni tanca els descriptors estàndard; per això el nou programa escriu a la pipe o al fitxer sense saber que l'han redirigit."
+    },
+    {
+      title: "Pilar 5 · Taula de descriptors, pipe() i per què es bloqueja read()",
+      idea: "Una pipe al kernel té un comptador de quants descriptors oberts apunten a l'extrem d'escriptura (<code>fd[1]</code>). La crida <code>read(fd[0], ...)</code> <strong>només retorna 0 (EOF) quan aquest comptador arriba exactament a 0</strong>.",
+      visual: `
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:0.8rem; margin:0.8rem 0;">
+          <div style="padding:0.8rem; border-radius:8px; background:color-mix(in srgb, #ef4444 8%, var(--udl-surface)); border:1px solid color-mix(in srgb, #ef4444 35%, var(--udl-border));">
+            <div style="font-weight:700; font-size:0.8rem; color:#ef4444; margin-bottom:0.35rem;">❌ El pare (o el lector) no tanca <code>fd[1]</code></div>
+            <div style="font-size:0.8rem; color:var(--udl-text);">
+              Després de fer <code>fork()</code>, tant el pare com els fills tenen <code>fd[1]</code> obert. Encara que el fill escriptor acabi i tanqui el seu <code>fd[1]</code>, si el pare no ha fet <code>close(fd[1])</code> abans del <code>wait()</code>, el comptador d'escriptors val <code>1</code> i <strong>el lector es queda penjat per sempre</strong> esperant més dades!
+            </div>
+          </div>
+          <div style="padding:0.8rem; border-radius:8px; background:color-mix(in srgb, #10b981 8%, var(--udl-surface)); border:1px solid color-mix(in srgb, #10b981 35%, var(--udl-border));">
+            <div style="font-weight:700; font-size:0.8rem; color:#10b981; margin-bottom:0.35rem;">✅ Tancar tots els extrems no utilitzats</div>
+            <div style="font-size:0.8rem; color:var(--udl-text);">
+              1. El fill escriptor tanca <code>fd[0]</code>, fa <code>dup2(fd[1], 1)</code> i tanca <code>fd[1]</code>.<br>
+              2. El fill lector tanca <code>fd[1]</code>, fa <code>dup2(fd[0], 0)</code> i tanca <code>fd[0]</code>.<br>
+              3. El pare tanca <strong>tots dos</strong> (<code>close(fd[0]); close(fd[1]);</code>) abans de fer <code>waitpid()</code>.
+            </div>
+          </div>
+        </div>`,
+      rule: "Regla d'or: Sempre que un programa amb pipes es quedi penjat sense acabar, busca quin procés (gairebé sempre el pare o el lector) s'ha deixat fd[1] obert."
+    },
+    {
+      title: "Pilar 6 · Bloqueig d'E/S vs. Cua de preparats i Planificació de CPU",
+      idea: "Un procés que fa una operació d'entrada/sortida o espera un esdeveniment passa a estat <strong>Bloquejat (<code>S</code> o <code>D</code>)</strong> i surt de la cua de preparats. Durant aquest interval <strong>no consumeix CPU ni tampoc està esperant CPU</strong>.",
+      visual: `
+        <div style="padding:0.8rem; border-radius:8px; background:var(--udl-surface); border:1px solid var(--udl-border); margin:0.8rem 0;">
+          <div style="font-size:0.8rem; font-weight:700; margin-bottom:0.5rem; color:var(--udl-text);">Línia de vida d'un procés des que arriba (<i>T<sub>a</sub></i>) fins que acaba (<i>T<sub>f</sub></i>):</div>
+          <div style="display:flex; flex-wrap:wrap; gap:0.35rem; align-items:center; font-size:0.78rem; font-weight:600; margin-bottom:0.55rem;">
+            <span style="padding:0.35rem 0.7rem; border-radius:6px; background:rgba(245,158,11,0.18); border:1px solid #f59e0b; color:#d97706;">En cua Ready (<i>T<sub>espera</sub></i>)</span>
+            <span>+</span>
+            <span style="padding:0.35rem 0.7rem; border-radius:6px; background:rgba(16,185,129,0.18); border:1px solid #10b981; color:#059669;">Executant a CPU (<i>T<sub>CPU</sub></i>)</span>
+            <span>+</span>
+            <span style="padding:0.35rem 0.7rem; border-radius:6px; background:rgba(100,116,139,0.18); border:1px solid #64748b; color:var(--udl-text-muted);">Bloquejat fent E/S (<i>T<sub>E/S</sub></i>)</span>
+            <span>=</span>
+            <span style="padding:0.35rem 0.7rem; border-radius:6px; background:color-mix(in srgb, var(--udl-primary) 18%, var(--udl-surface)); border:1px solid var(--udl-primary); color:var(--udl-primary);">Temps de Retorn (<i>T<sub>retorn</sub> = T<sub>f</sub> &minus; T<sub>a</sub></i>)</span>
+          </div>
+          <div style="font-size:0.8rem; color:var(--udl-text);">Per això la fórmula general del Temps d'Espera és sempre <strong><i>T<sub>espera</sub> = T<sub>retorn</sub> &minus; T<sub>CPU</sub> &minus; T<sub>E/S</sub></i></strong>.</div>
+        </div>`,
+      rule: "Regla d'or: Quan dibuixis un diagrama de Gantt amb E/S, mentre un procés està en E/S la CPU queda lliure per executar qualsevol altre procés que estigui a la cua Ready."
+    }
+  ];
+
+  const tabs = document.querySelectorAll('#rp-tabs button[data-p]');
+  const body = document.getElementById('rp-body');
+
+  function showPillar(idx) {
+    const p = pillars[idx];
+    tabs.forEach((b, i) => {
+      b.className = i === idx ? 'udl-button' : 'udl-button udl-button-outline';
+    });
+    body.innerHTML = `
+      <div style="font-weight:700; font-size:0.95rem; color:var(--udl-primary-dark); margin-bottom:0.4rem;">${p.title}</div>
+      <p style="margin:0 0 0.5rem 0; color:var(--udl-text);">${p.idea}</p>
+      ${p.visual}
+      <div style="padding:0.55rem 0.8rem; border-radius:6px; background:color-mix(in srgb, var(--udl-success) 10%, var(--udl-surface)); border-left:3px solid var(--udl-success); font-size:0.83rem; font-weight:600; color:var(--udl-text);">
+        💡 ${p.rule}
+      </div>
+    `;
+  }
+
+  tabs.forEach(b => {
+    b.addEventListener('click', () => showPillar(parseInt(b.getAttribute('data-p'), 10)));
+  });
+  showPillar(0);
+})();
+</script>
+```
+
+---
+
+## 2. Bloc 1 · Espai d'usuari, memòria i crides a sistema {#bloc-1}
+
+::: {.concepte title="Fil conductor i materials del Bloc 1"}
+Al Bloc 1 aprenem com un fitxer `.c` es transforma en un binari **ELF**, com es distribueixen les seves dades en l'**espai d'adreces virtuals** d'un procés, com la CPU executa les crides a funció mitjançant registres i marcs de pila (*Stack frames*), i com passem de l'espai d'usuari al nucli mitjançant l'instrucció `syscall`.
+
+- **Teoria (en vista d'apunts)**: [01 Rols del SO](../blocs/01-espai-usuari/teoria/01_rols_funcions.html?vista=apunts) · [02 Espai de memòria](../blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html?vista=apunts) · [03 CPU, registres i Stack](../blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html?vista=apunts) · [04 Construcció en C i ELF](../blocs/01-espai-usuari/teoria/04_construccio_progama_c.html?vista=apunts) · [05 Variables i estructures](../blocs/01-espai-usuari/teoria/05_variables_estructures.html?vista=apunts) · [06 Syscalls: de C al kernel](../blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html?vista=apunts) · [07 Syscalls: dins del kernel](../blocs/01-espai-usuari/teoria/07_syscalls_kernel.html?vista=apunts)
+- **Pralabs i Activitats**: [Pralab 01 (Adreces)](../blocs/01-espai-usuari/pralabs/01_c_mem.html) · [Pralab 02 (Punters)](../blocs/01-espai-usuari/pralabs/02_c_mem.html) · [Pralab 03 (Heap)](../blocs/01-espai-usuari/pralabs/03_c_heap.html) · [Pralab 04 (`char **` i `int **`)](../blocs/01-espai-usuari/pralabs/04_c_ptrptr.html) · [Activitat Punters](../blocs/01-espai-usuari/activitats/01_c_punters_arrays.html) · [Activitat Pokémon](../blocs/01-espai-usuari/activitats/03_pokemon.html)
+:::
+
+### 2.1 Mapa de memòria d'un procés Linux (64 bits) i exemple visual amb codi C
+
+```{=html}
+<div class="udl-widget" style="margin: 1rem 0 1.25rem 0; border-left: 4px solid var(--udl-primary);">
+  <div style="font-weight:700; font-size:0.92rem; color:var(--udl-primary-dark); margin-bottom:0.65rem;">
+    🔍 Exemple visual: On va a parar cada línia del teu codi C dins de la memòria virtual?
+  </div>
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:1rem; align-items:stretch;">
+    <div style="padding:0.85rem; border-radius:8px; background:var(--udl-surface); border:1px solid var(--udl-border); font-family:monospace; font-size:0.8rem; line-height:1.55;">
+      <div style="font-family:sans-serif; font-weight:700; font-size:0.78rem; color:var(--udl-text-muted); margin-bottom:0.4rem;">📄 FITXER <code>programa.c</code></div>
+      <div><span style="color:#8b5cf6; font-weight:700;">int</span> g_init = 42; <span style="color:var(--udl-text-muted);">// ──► .data (RW-)</span></div>
+      <div><span style="color:#8b5cf6; font-weight:700;">int</span> g_zero;      <span style="color:var(--udl-text-muted);">// ──► .bss  (RW-)</span></div>
+      <div style="margin-top:0.35rem;"><span style="color:#3b82f6; font-weight:700;">int</span> <strong>main</strong>(<span style="color:#3b82f6;">int</span> argc, <span style="color:#3b82f6;">char</span> **argv) { <span style="color:var(--udl-text-muted);">// codi ──► .text (R-X)</span></div>
+      <div style="padding-left:1rem;"><span style="color:#ef4444; font-weight:700;">char</span> *lit = <span style="color:#ef4444;">"UdL"</span>; <span style="color:var(--udl-text-muted);">// "UdL\0" a .rodata (R--), 'lit' a Stack</span></div>
+      <div style="padding-left:1rem;"><span style="color:#f59e0b; font-weight:700;">char</span> buf[] = <span style="color:#f59e0b;">"SO"</span>; <span style="color:var(--udl-text-muted);">// còpia {'S','O','\0'} a Stack (RW-)</span></div>
+      <div style="padding-left:1rem;"><span style="color:#10b981; font-weight:700;">int</span> *v = <strong>malloc</strong>(8); <span style="color:var(--udl-text-muted);">// bloc de 8B al Heap, 'v' a Stack</span></div>
+      <div style="padding-left:1rem;"><strong>free</strong>(v);</div>
+      <div style="padding-left:1rem;"><strong>return</strong> 0;</div>
+      <div>}</div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:0.35rem; font-size:0.79rem;">
+      <div style="padding:0.45rem 0.7rem; border-radius:6px; background:rgba(245,158,11,0.14); border:1px solid #f59e0b; display:flex; justify-content:space-between; align-items:center;">
+        <span><strong>🔼 Adreces altes · Stack (Pila) ↓</strong> <code>RW-</code></span>
+        <span style="font-family:monospace; font-size:0.75rem;">argc, argv, lit, buf[3], v</span>
+      </div>
+      <div style="text-align:center; font-size:0.72rem; color:var(--udl-text-muted); padding:0.1rem 0;">
+        ⬇️ creix avall &nbsp;·&nbsp; <em>Espai lliure virtual (mmap / llibreries .so)</em> &nbsp;·&nbsp; creix amunt ⬆️
+      </div>
+      <div style="padding:0.45rem 0.7rem; border-radius:6px; background:rgba(16,185,129,0.14); border:1px solid #10b981; display:flex; justify-content:space-between; align-items:center;">
+        <span><strong>Heap (Memòria dinàmica) ↑</strong> <code>RW-</code></span>
+        <span style="font-family:monospace; font-size:0.75rem;">*v (8 bytes de malloc)</span>
+      </div>
+      <div style="padding:0.4rem 0.7rem; border-radius:6px; background:rgba(139,92,246,0.12); border:1px solid #8b5cf6; display:flex; justify-content:space-between; align-items:center;">
+        <span><strong>.bss</strong> (globals no inicialitzades) <code>RW-</code></span>
+        <span style="font-family:monospace; font-size:0.75rem;">g_zero (= 0)</span>
+      </div>
+      <div style="padding:0.4rem 0.7rem; border-radius:6px; background:rgba(139,92,246,0.18); border:1px solid #8b5cf6; display:flex; justify-content:space-between; align-items:center;">
+        <span><strong>.data</strong> (globals inicialitzades) <code>RW-</code></span>
+        <span style="font-family:monospace; font-size:0.75rem;">g_init (= 42)</span>
+      </div>
+      <div style="padding:0.4rem 0.7rem; border-radius:6px; background:rgba(239,68,68,0.14); border:1px solid #ef4444; display:flex; justify-content:space-between; align-items:center;">
+        <span><strong>.rodata</strong> (literals només lectura) <code>R--</code></span>
+        <span style="font-family:monospace; font-size:0.75rem;">"UdL\0"</span>
+      </div>
+      <div style="padding:0.4rem 0.7rem; border-radius:6px; background:rgba(59,130,246,0.14); border:1px solid #3b82f6; display:flex; justify-content:space-between; align-items:center;">
+        <span><strong>🔽 Adreces baixes · .text (Codi)</strong> <code>R-X</code></span>
+        <span style="font-family:monospace; font-size:0.75rem;">instruccions de main()</span>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+| Segment (d'adreces baixes a altes) | Què s'hi emmagatzema? | Permisos | Gestió i creixement | Error típic si s'utilitza malament |
+|:---|:---|:---:|:---|:---|
+| **`.text` (Code)** | Instruccions màquina compilades del programa. | `R-X` | Fixa (es carrega de l'ELF). | Intentar escriure en un punter a funció $\implies$ `SIGSEGV`. |
+| **`.rodata`** | Constants i literals de cadena (`char *s = "hola";`). | `R--` | Fixa (només lectura). | Modificar un literal `s[0] = 'H'` $\implies$ `SIGSEGV`! (Usa `char s[] = "hola"` a la Stack si cal modificar-lo). |
+| **`.data`** | Variables globals i `static` **inicialitzades** ($\ne 0$). | `RW-` | Fixa durant tota la vida del procés. | Acoblament excessiu o problemes de reentrància. |
+| **`.bss`** | Variables globals i `static` **no inicialitzades** (o $= 0$). | `RW-` | El kernel les mapeja a zero en carregar. | Assumir que les variables locals (Stack) també s'inicialitzen a `0` com les globals. |
+| **Heap** | Memòria dinàmica (`malloc`, `calloc`, `realloc`, `strdup`). | `RW-` | Manual (`free`). Creix cap a **adreces altes** ($\uparrow$). | **Memory leak** (no fer `free`), **double free**, **use-after-free** o oblidar `+ 1` pel `'\0'`. |
+| **Stack (Pila)** | Variables locals, paràmetres i adreces de retorn de cada crida. | `RW-` | Automàtica (LIFO). Creix cap a **adreces baixes** ($\downarrow$). | Retornar `&local` d'una funció (*dangling pointer*) o recursivitat infinita (*Stack Overflow*). |
+
+### 2.2 Xuleta de punters, arrays i gestió de memòria
+
+| Expressió C | Significat exacte | Per què cal vigilar? |
+|:---|:---|:---|
+| `int x = 10;` | Enter a la pila amb valor `10`. | Si és local i no s'inicialitza, conté **brossa** del marc anterior. |
+| `int *p = &x;` | `p` guarda l'**adreça** on viu `x`. | `sizeof(p)` és sempre **8 bytes** (en 64 bits), independentment del tipus apuntat. |
+| `*p = 20;` | Desreferència: escriu `20` dins la cel·la apuntada per `p` (modifica `x`). | Si `p == NULL` o no s'ha inicialitzat $\implies$ **Segmentation fault (`SIGSEGV`)**. |
+| `int **pp = &p;` | Punter doble: guarda l'adreça d'un punter. | Imprescindible quan una funció vol **modificar cap on apunta un punter de la funció que fa la crida** o per a taules `char **argv`. |
+| `p + i` vs `p[i]` | Aritmètica de punters: avança `i * sizeof(*p)` bytes. | `p[i]` és exactament idèntic a `*(p + i)`. |
+| `malloc(n * sizeof *p)` | Reserva `n` elements al Heap sense inicialitzar. | Patró recomanat: `sizeof *p` s'adapta sol si canvies el tipus de `p`. |
+| `calloc(n, sizeof *p)` | Reserva `n` elements al Heap i els posa tots a `0`. | Evita lectures de memòria no inicialitzada i comprova desbordament en la multiplicació. |
+
+### 2.3 Compilació ELF, Makefiles i Registres de l'ABI x86-64
+
+```{=html}
+<div class="udl-widget" style="margin: 0.85rem 0 1.15rem 0; border-left: 4px solid var(--udl-accent);">
+  <div style="font-weight:700; font-size:0.9rem; color:var(--udl-primary-dark); margin-bottom:0.55rem;">
+    ⚙️ Exemple visual: Què passa quan crides <code>write(1, "Hola\n", 5)</code> en x86-64?
+  </div>
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:0.65rem; font-size:0.8rem;">
+    <div style="padding:0.65rem; border-radius:8px; background:var(--udl-surface); border:1px solid var(--udl-border);">
+      <div style="font-weight:700; color:var(--udl-primary); margin-bottom:0.25rem;">1. Codi C i Wrapper <code>libc</code></div>
+      El programa crida <code>write(1, buf, 5)</code>. El wrapper de <code>libc</code> col·loca els arguments als registres:
+      <div style="font-family:monospace; font-size:0.76rem; margin-top:0.3rem; padding:0.35rem; border-radius:4px; background:var(--udl-bg);">
+        rax = 1 (SYS_write)<br>rdi = 1 (fd stdout)<br>rsi = adreça de "Hola\n"<br>rdx = 5 (bytes)
+      </div>
+    </div>
+    <div style="padding:0.65rem; border-radius:8px; background:var(--udl-surface); border:1px solid var(--udl-border);">
+      <div style="font-weight:700; color:#d97706; margin-bottom:0.25rem;">2. Instrucció <code>syscall</code> (Ring 3 → 0)</div>
+      La CPU desa <code>rip</code> a <code>rcx</code>, canvia a <strong>mode privilegiat (Ring 0)</strong>, canvia a la pila de kernel del procés i salta a l'entrada <code>1</code> de la <code>sys_call_table</code> (<code>ksys_write</code>).
+    </div>
+    <div style="padding:0.65rem; border-radius:8px; background:var(--udl-surface); border:1px solid var(--udl-border);">
+      <div style="font-weight:700; color:#059669; margin-bottom:0.25rem;">3. Validació i Retorn (Ring 0 → 3)</div>
+      El kernel valida el descriptor <code>1</code> i copia les dades amb <code>copy_from_user()</code>. Retorna a <code>rax</code>:
+      <ul style="margin:0.25rem 0 0 1.1rem; padding:0;">
+        <li>Si <code>rax &ge; 0</code>: retorna <code>5</code>.</li>
+        <li>Si <code>rax &in; [-4095, -1]</code>: <code>libc</code> posa <code>errno = -rax</code> i retorna <code>-1</code>.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+```
+
+| Tema | Resum essencial que cal recordar |
+|:---|:---|
+| **Les 4 fases de `gcc`** | 1. **Preprocessador** (`gcc -E prog.c -o prog.i`): expandeix `#include` i `#define`.<br>2. **Compilador** (`gcc -S prog.i -o prog.s`): tradueix C a assemblador.<br>3. **Assemblador** (`gcc -c prog.s -o prog.o`): genera codi màquina reubicable amb símbols pendents (`UND`).<br>4. **Enllaçador / Linker** (`gcc prog.o util.o -o prog`): resol símbols i genera l'executable ELF final. |
+| **Variables de `Makefile`** | **`$@`**: nom de l'objectiu (*target*, a l'esquerra dels `:`).<br>**`$<`**: nom del **primer** prerequisit.<br>**`$^`**: llista de **tots** els prerequisits (per enllaçar tots els `.o`).<br>**`.PHONY: clean all`**: indica que no són noms de fitxers físics. |
+| **Crides a funció (ABI x86-64)** | - **Arguments enters/punters (1r a 6è)**: `rdi`, `rsi`, `rdx`, `rcx`, `r8`, `r9` (a partir del 7è van a la pila).<br>- **Valor de retorn**: `rax`.<br>- **Punter de pila i marc**: `rsp` (*stack pointer*, cim de la pila) i `rbp` (*frame pointer*).<br>- **`call f`**: empila l'adreça de retorn (`rip`) i salta a `f`. **`ret`**: desempila l'adreça i hi torna. |
+| **Instrucció `syscall` (x86-64)** | - **`rax`**: número de la syscall a l'entrada (ex: `0`=`read`, `1`=`write`, `60`=`exit`) i valor de retorn a la sortida.<br>- **Arguments de la syscall**: `rdi`, `rsi`, `rdx`, `r10`, `r8`, `r9`.<br>- Si el kernel retorna un valor entre `-4095` i `-1`, el *wrapper* de `libc` posa `errno = -ret` i retorna `-1` al programa C. |
+
+### 2.4 Patró de codi canònic del Bloc 1: Reserva i alliberament d'un array de punters (`int **` / `char **`)
+
+```{=html}
+<div class="udl-widget" style="margin: 0.85rem 0 1rem 0; border-left: 4px solid #10b981;">
+  <div style="font-weight:700; font-size:0.9rem; color:var(--udl-primary-dark); margin-bottom:0.55rem;">
+    🧩 Esquema visual en memòria d'una matriu dinàmica <code>int **m</code> (2 files &times; 3 columnes)
+  </div>
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:0.75rem; align-items:center; font-size:0.8rem;">
+    <div style="padding:0.65rem; border-radius:8px; background:rgba(245,158,11,0.12); border:1px solid #f59e0b;">
+      <div style="font-weight:700; color:#d97706; margin-bottom:0.25rem;">1. Stack (variable local)</div>
+      <div style="font-family:monospace;">int **m = 0x55a010;</div>
+      <div style="font-size:0.75rem; color:var(--udl-text-muted); margin-top:0.2rem;">Guarda l'adreça de l'array de punters del Heap.</div>
+    </div>
+    <div style="padding:0.65rem; border-radius:8px; background:rgba(59,130,246,0.12); border:1px solid #3b82f6;">
+      <div style="font-weight:700; color:#2563eb; margin-bottom:0.25rem;">2. Heap · Nivell 1 (<code>malloc</code> extern)</div>
+      <div style="font-family:monospace;">m[0] = 0x55a040 ──► Fila 0<br>m[1] = 0x55a080 ──► Fila 1</div>
+      <div style="font-size:0.75rem; color:var(--udl-text-muted); margin-top:0.2rem;">Array de <code>files</code> elements de tipus <code>int *</code> (8B cadascun).</div>
+    </div>
+    <div style="padding:0.65rem; border-radius:8px; background:rgba(16,185,129,0.12); border:1px solid #10b981;">
+      <div style="font-weight:700; color:#059669; margin-bottom:0.25rem;">3. Heap · Nivell 2 (<code>calloc</code> de cada fila)</div>
+      <div style="font-family:monospace;">Fila 0: [ m[0][0] | m[0][1] | m[0][2] ]<br>Fila 1: [ m[1][0] | m[1][1] | m[1][2] ]</div>
+      <div style="font-size:0.75rem; color:var(--udl-text-muted); margin-top:0.2rem;">Per alliberar: <strong>primer</strong> <code>free(m[i])</code> (Nivell 2) i <strong>després</strong> <code>free(m)</code> (Nivell 1)!</div>
+    </div>
+  </div>
+</div>
+```
+
+```c
+// Reserva d'una matriu dinàmica de 'files x cols' al Heap amb comprovació d'errors:
+int **crea_matriu(int files, int cols) {
+    int **m = malloc(files * sizeof(*m)); // 1. Array de punters a fila (int *)
+    if (m == NULL) return NULL;
+
+    for (int i = 0; i < files; i++) {
+        m[i] = calloc(cols, sizeof(*m[i])); // 2. Cada fila d'enters inicialitzada a 0
+        if (m[i] == NULL) {
+            // Si falla una fila, alliberem les files anteriors i l'array principal!
+            for (int k = 0; k < i; k++) free(m[k]);
+            free(m);
+            return NULL;
+        }
+    }
+    return m;
+}
+
+// Alliberament SEMPRE en ordre invers (primer el contingut de cada fila, després l'array):
+void allibera_matriu(int **m, int files) {
+    if (m == NULL) return;
+    for (int i = 0; i < files; i++) {
+        free(m[i]); // 1. Alliberem cada fila
+    }
+    free(m);        // 2. Alliberem l'array de punters
+}
+```
+
+::: {.reflexio title="Per què així i no d'una altra manera? (Preguntes clàssiques del Bloc 1)"}
+- **Per què `malloc(256 MiB)` és instantani i gairebé no fa créixer la RAM física (`RSS`) fins que hi escrivim?**
+  Perquè el kernel aplica **assignació per demanda (*demand paging*)**: `mmap`/`brk` només crea l'entrada a la taula d'àrees de memòria virtual (`VMA`), sense reservar marcs físics de RAM. Només quan el programa escriu a cada pàgina de 4 KiB es produeix un *minor page fault* i el kernel hi assigna una pàgina física real.
+- **Per què existeixen tant `write()` (syscall) com `printf()` / `fwrite()` (libc)?**
+  Perquè cada crida al sistema (`write`) implica un canvi de mode d'usuari a mode kernel (Ring 3 $\to$ Ring 0) que té un cost fix. `stdio` (`printf`, `fwrite`) acumula les dades en un **buffer a l'espai d'usuari** i només fa una crida `write()` al kernel quan el buffer s'omple o troba un `\n`.
+- **Per què el kernel mai llegeix directament `*user_ptr` i usa `copy_from_user()`?**
+  Perquè l'usuari pot passar un punter `NULL`, una adreça no mapejada o una adreça del propi kernel. Si el kernel desreferenciés un punter invàlid directament podria causar un *kernel oops* o una vulnerabilitat de seguretat; `copy_from_user()` valida el rang i captura les faltes de pàgina retornant `-EFAULT`.
+:::
+
+---
+
+## 3. Bloc 2 · Processos, senyals, pipes i redireccions {#bloc-2}
+
+::: {.concepte title="Fil conductor i materials del Bloc 2"}
+Al Bloc 2 passem d'un sol programa a un sistema multiprocés: com el nucli manté el **PCB (`task_struct`)** i els estats de cada tasca, com es creen i transformen processos (`fork`, `waitpid`, `exec`), com es reben notificacions asíncrones (`sigaction`) i com es connecten processos mitjançant la taula de descriptors (`pipe`, `dup2`, `mkfifo`) per construir una *minishell*.
+
+- **Teoria (en vista d'apunts)**: [01 Processos, estats i PCB](../blocs/02-proc/teoria/01-procs.html?vista=apunts) · [02 Creació: `fork`, `wait` i `exec`](../blocs/02-proc/teoria/02-create.html?vista=apunts) · [03 Senyals i `sigaction`](../blocs/02-proc/teoria/03-signals.html?vista=apunts) · [04 Pipes i `dup2`](../blocs/02-proc/teoria/04-pipes.html?vista=apunts) · [05 FIFOs (`mkfifo`)](../blocs/02-proc/teoria/05-fifos.html?vista=apunts)
+- **Pralabs i Activitats**: [Minishell I](../blocs/02-proc/pralabs/01_minishell.html) · [Minishell II](../blocs/02-proc/pralabs/02_minishell.html) · [Minishell III](../blocs/02-proc/pralabs/03_minishell.html) · [Activitat `fork/wait`](../blocs/02-proc/activitats/01-fork-wait.html) · [Activitat Creació](../blocs/02-proc/activitats/02-create.html) · [Activitat `exec`](../blocs/02-proc/activitats/03-exec.html) · [Activitat Pipes](../blocs/02-proc/activitats/04-pipes.html) · [Activitat Loteria](../blocs/02-proc/activitats/05-loteria.html)
+:::
+
+### 3.1 Els estats dels processos a Linux (`ps`) vs. el model de 5 estats
+
+```{=html}
+<div class="udl-widget" style="margin: 0.9rem 0 1.2rem 0; border-left: 4px solid var(--udl-primary);">
+  <div style="font-weight:700; font-size:0.9rem; color:var(--udl-primary-dark); margin-bottom:0.65rem;">
+    🔄 Mapa visual de transicions d'estat d'un procés a Linux
+  </div>
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:0.7rem; font-size:0.8rem;">
+    <div style="padding:0.7rem; border-radius:8px; background:rgba(16,185,129,0.12); border:1px solid #10b981;">
+      <div style="font-weight:700; color:#059669; margin-bottom:0.25rem;">1. Creació i Cua Ready (<code>R</code>)</div>
+      <code>fork()</code> crea el fill i el posa en <strong><code>TASK_RUNNING</code> (Preparat)</strong>. Quan el planificador el tria, passa a <strong><code>TASK_RUNNING</code> (En execució a la CPU)</strong>.
+    </div>
+    <div style="padding:0.7rem; border-radius:8px; background:rgba(245,158,11,0.12); border:1px solid #f59e0b;">
+      <div style="font-weight:700; color:#d97706; margin-bottom:0.25rem;">2. Bloqueig i Pausa (<code>S</code>, <code>D</code>, <code>T</code>)</div>
+      <ul style="margin:0; padding-left:1.1rem;">
+        <li><code>read()</code> / <code>wait()</code> / <code>pause()</code> &rarr; <strong><code>S</code></strong> (despertable per senyal).</li>
+        <li>E/S de disc crítica &rarr; <strong><code>D</code></strong> (ininterrompible).</li>
+        <li><code>SIGSTOP</code> / <code>Ctrl-Z</code> &rarr; <strong><code>T</code></strong> (aturat fins a <code>SIGCONT</code>).</li>
+      </ul>
+    </div>
+    <div style="padding:0.7rem; border-radius:8px; background:rgba(239,68,68,0.12); border:1px solid #ef4444;">
+      <div style="font-weight:700; color:#ef4444; margin-bottom:0.25rem;">3. Finalització i Zombi (<code>Z</code>)</div>
+      Quan el procés fa <code>exit()</code>, allibera memòria però queda en <strong><code>EXIT_ZOMBIE</code> (<code>Z</code>)</strong> conservant el seu PID i codi de retorn fins que el pare executa <strong><code>wait()</code> / <code>waitpid()</code></strong>.
+    </div>
+  </div>
+</div>
+```
+
+| Codi `ps` | Estat al nucli (`task_struct`) | Equivalència al model de 5 estats | Detall fonamental |
+|:---:|:---|:---|:---|
+| **`R`** | `TASK_RUNNING` | **Preparat** *o* **En execució** | A Linux un sol estat cobreix tant estar a la CPU com esperar torn a la *runqueue*. |
+| **`S`** | `TASK_INTERRUPTIBLE` | **Bloquejat** (despertable per senyal) | Dorm esperant un esdeveniment (`read` de pipe/terminal, `wait`, `pause`, `sleep`). Si rep un senyal, es desperta (la crida pot retornar `-1` amb `EINTR`). |
+| **`D`** | `TASK_UNINTERRUPTIBLE` | **Bloquejat** (ininterrompible) | Espera crítica de maquinari/disc. **No atén cap senyal (ni tan sols `SIGKILL`)** fins que acabi l'operació d'E/S. |
+| **`T`** | `__TASK_STOPPED` | Aturat / Suspès | Aturat per `SIGSTOP` o `SIGTSTP` (`Ctrl-Z`). Torna a `R` quan rep `SIGCONT` (`fg` / `bg`). |
+| **`Z`** | `EXIT_ZOMBIE` | **Acabat** (pendent de recollir) | Ja ha alliberat la seva memòria i fitxers, però el nucli conserva el seu `task_struct` fins que el pare faci `wait()`/`waitpid()`. No es pot matar amb `kill -9` perquè ja és mort! |
+
+### 3.2 Quadre resum de crides al sistema de processos i IPC
+
+| Família | Crida i prototipus bàsic | Què fa i què retorna? | Detall crític d'examen |
+|:---|:---|:---|:---|
+| **Creació** | `pid_t fork(void);` | Duplica el procés actual (amb *Copy-on-Write*). Retorna `0` al fill, `>0` (PID del fill) al pare, `-1` si error. | Pare i fill comparteixen l'apuntador de posició (*offset*) dels fitxers oberts, però tenen espais de memòria independents. |
+| **Espera** | `pid_t wait(int *status);`<br>`pid_t waitpid(pid_t pid, int *status, int opts);` | Bloqueja fins que un fill acaba (o canvia d'estat). Retorna el PID recollit o `-1` (`ECHILD` si no queden fills). | **Macros per llegir `status`**:<br>- `WIFEXITED(s)` $\to$ `WEXITSTATUS(s)` (8 bits: `0..255`)<br>- `WIFSIGNALED(s)` $\to$ `WTERMSIG(s)` |
+| **Recobriment** | `int execvp(const char *file, char *const argv[]);`<br>`int execlp(const char *file, const char *arg0, ..., NULL);` | Substitueix la memòria del procés per un nou programa ELF. **Conserva el mateix PID i els descriptors oberts**. | **Només retorna (`-1`) si falla!** Després d'un `exec` al fill, posa sempre `perror(...)` i `_exit(127)`. L'últim element d'`argv` ha de ser `NULL`. |
+| **Sortida** | `void exit(int status);` vs `void _exit(int status);` | Finalitza el procés i passa a `EXIT_ZOMBIE` fins que el pare faci `wait`. | Al fill, si `exec` falla, usa **`_exit()`** i no `exit()` per no buidar per duplicat els buffers `stdio` heretats del pare! |
+| **Senyals** | `int sigaction(int sig, const struct sigaction *act, ...);`<br>`int kill(pid_t pid, int sig);` | Instal·la un gestor / envia un senyal. `kill()` retorna `0` o `-1`. | `SIGKILL` (9) i `SIGSTOP` (19) **no es poden capturar ni ignorar**. `exec()` reseteja els handlers a `SIG_DFL` però **manté `SIG_IGN`**. |
+| **Pipes** | `int pipe(int fd[2]);` | Crea un canal unidireccional al kernel: **`fd[0]` lectura**, **`fd[1]` escriptura**. | **Regla d'or**: Tanca immediatament els extrems que cada procés no utilitzi (sobretot `fd[1]`) perquè el lector pugui rebre l'**EOF (`read == 0`)**! |
+| **Redirecció** | `int dup2(int fdold, int fdnew);` | Fa que `fdnew` apunti al mateix fitxer/pipe que `fdold` (tancant abans `fdnew` si estava obert). | Després de `dup2(fd[1], STDOUT_FILENO);`, **tanca `fd[1]`** (`close(fd[1])`) per no deixar un descriptor duplicat obert! |
+
+### 3.3 Exemple visual i patrons de codi fonamentals del Bloc 2
+
+```{=html}
+<div class="udl-widget" style="margin: 0.9rem 0 1.2rem 0; border-left: 4px solid var(--udl-accent);">
+  <div style="font-weight:700; font-size:0.9rem; color:var(--udl-primary-dark); margin-bottom:0.45rem;">
+    🔌 Exemple visual pas a pas: Què fa realment <code>dup2()</code> a la taula de descriptors en <code>ls | wc -l</code>?
+  </div>
+  <div style="font-size:0.81rem; color:var(--udl-text); margin-bottom:0.75rem; line-height:1.5;">
+    Quan el pare fa <code>pipe(fd)</code>, el kernel crea la pipe i li assigna dos descriptors nous: <strong><code>fd[0] = 3</code> (lectura)</strong> i <strong><code>fd[1] = 4</code> (escriptura)</strong>. En fer els dos <code>fork()</code>, els fills hereten els descriptors <code>0, 1, 2, 3, 4</code>. Mira com cada fill <strong>copia el punter de la pipe cap a <code>1</code> o <code>0</code> amb <code>dup2()</code></strong> abans d'eliminar els descriptors <code>3</code> i <code>4</code> amb <code>close()</code>:
+  </div>
+
+  <!-- Flux horitzontal en 3 columnes: Fill 1 -> Pipe al Kernel -> Fill 2 -->
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:0.65rem; align-items:stretch; font-size:0.79rem; margin-bottom:0.65rem;">
+    <!-- Fill 1 -->
+    <div style="min-width:0; padding:0.75rem; border-radius:8px; background:var(--udl-surface); border:1px solid #3b82f6; border-top:3px solid #3b82f6;">
+      <div style="font-weight:700; color:#3b82f6; margin-bottom:0.35rem;">1️⃣ Fill 1 (escriptor: <code>ls</code>)</div>
+      <div style="font-size:0.75rem; color:var(--udl-text-muted); margin-bottom:0.35rem;">
+        Fa <code>dup2(fd[1], 1)</code> (ara l'<code>1</code> apunta a la pipe!) i tanca <code>3</code> i <code>4</code>:
+      </div>
+      <div style="font-family:monospace; line-height:1.55; background:var(--udl-bg); padding:0.45rem 0.55rem; border-radius:6px;">
+        0 (stdin) &nbsp;&rarr; Terminal<br>
+        <strong style="color:#10b981;">1 (stdout) &rarr; Pipe [Escriptura] ──►</strong><br>
+        2 (stderr) &rarr; Terminal<br>
+        <span style="color:var(--udl-text-muted); text-decoration:line-through;">3 (fd[0]) &nbsp;&rarr; close(fd[0])</span><br>
+        <span style="color:var(--udl-text-muted); text-decoration:line-through;">4 (fd[1]) &nbsp;&rarr; close(fd[1]) (ja copiat a 1)</span>
+      </div>
+    </div>
+
+    <!-- Pipe al Kernel -->
+    <div style="min-width:0; padding:0.75rem; border-radius:8px; background:color-mix(in srgb, #10b981 10%, var(--udl-surface)); border:1px dashed #10b981; display:flex; flex-direction:column; justify-content:center; text-align:center;">
+      <div style="font-weight:700; color:#10b981; font-size:0.84rem; margin-bottom:0.35rem;">⚙️ Buffer de la Pipe al Kernel</div>
+      <div style="font-family:monospace; font-size:0.78rem; padding:0.4rem; border-radius:6px; background:var(--udl-surface); border:1px solid var(--udl-border); margin-bottom:0.4rem;">
+        fd=1 (<code>ls</code>) ──► <strong>[ Buffer FIFO ]</strong> ──► fd=0 (<code>wc</code>)
+      </div>
+      <div style="font-size:0.75rem; color:var(--udl-text); line-height:1.45;">
+        <strong>Comptadors de referència al nucli:</strong><br>
+        • Escriptors oberts: <strong>1</strong> (només el <code>fd=1</code> de <code>ls</code>)<br>
+        • Lectors oberts: <strong>1</strong> (només el <code>fd=0</code> de <code>wc</code>)
+      </div>
+    </div>
+
+    <!-- Fill 2 -->
+    <div style="min-width:0; padding:0.75rem; border-radius:8px; background:var(--udl-surface); border:1px solid #10b981; border-top:3px solid #10b981;">
+      <div style="font-weight:700; color:#10b981; margin-bottom:0.35rem;">2️⃣ Fill 2 (lector: <code>wc -l</code>)</div>
+      <div style="font-size:0.75rem; color:var(--udl-text-muted); margin-bottom:0.35rem;">
+        Fa <code>dup2(fd[0], 0)</code> (ara el <code>0</code> llegeix de la pipe!) i tanca <code>3</code> i <code>4</code>:
+      </div>
+      <div style="font-family:monospace; line-height:1.55; background:var(--udl-bg); padding:0.45rem 0.55rem; border-radius:6px;">
+        <strong style="color:#10b981;">►── 0 (stdin) &nbsp;&rarr; Pipe [Lectura]</strong><br>
+        1 (stdout) &rarr; Terminal<br>
+        2 (stderr) &rarr; Terminal<br>
+        <span style="color:var(--udl-text-muted); text-decoration:line-through;">3 (fd[0]) &nbsp;&rarr; close(fd[0]) (ja copiat a 0)</span><br>
+        <span style="color:var(--udl-text-muted); text-decoration:line-through;">4 (fd[1]) &nbsp;&rarr; close(fd[1])</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Procés Pare ocupant tota l'amplada inferior -->
+  <div style="padding:0.65rem 0.85rem; border-radius:8px; background:var(--udl-surface); border:1px solid var(--udl-border); border-left:3px solid #f59e0b; font-size:0.79rem;">
+    <strong style="color:#d97706;">3️⃣ Procés Pare (Shell):</strong> Com que el pare no escriu ni llegeix de la pipe, ha de fer <code>close(fd[0])</code> (3) i <code>close(fd[1])</code> (4) abans de <code>waitpid()</code>. Així, quan <code>ls</code> acabi i tanqui el seu <code>fd=1</code>, el comptador d'escriptors al nucli baixarà de <code>1</code> a <code>0</code> i <code>wc -l</code> rebrà l'<strong><code>EOF</code> (<code>read == 0</code>)</strong> i podrà acabar!
+  </div>
+</div>
+```
+
+:::: {.columns}
+::: {.column width="50%"}
+#### Patró 1 · Canonada `cmd1 | cmd2` (`pipe` + `dup2`)
+```c
+int fd[2];
+if (pipe(fd) == -1) { perror("pipe"); exit(1); }
+
+pid_t p1 = fork();
+if (p1 == 0) {                // Fill 1 (escriptor: cmd1)
+    close(fd[0]);             // 1. No llegeix de la pipe
+    dup2(fd[1], STDOUT_FILENO); // 2. stdout (1) -> pipe
+    close(fd[1]);             // 3. Tanca fd[1] duplicat
+    execvp(cmd1[0], cmd1);
+    perror("execvp cmd1");
+    _exit(127);
+}
+
+pid_t p2 = fork();
+if (p2 == 0) {                // Fill 2 (lector: cmd2)
+    close(fd[1]);             // 1. No escriu a la pipe!
+    dup2(fd[0], STDIN_FILENO);  // 2. stdin (0) <- pipe
+    close(fd[0]);             // 3. Tanca fd[0] duplicat
+    execvp(cmd2[0], cmd2);
+    perror("execvp cmd2");
+    _exit(127);
+}
+
+// PARE: Imprescindible tancar TOTS DOS extrems abans del wait!
+close(fd[0]);
+close(fd[1]);
+waitpid(p1, NULL, 0);
+waitpid(p2, NULL, 0);
+```
+:::
+
+::: {.column width="50%"}
+#### Patró 2 · Gestor de senyals segur amb `sigaction`
+```c
+#include <signal.h>
+#include <errno.h>
+#include <unistd.h>
+
+// Flag atòmic i sense optimització de registre del compilador
+volatile sig_atomic_t rebut = 0;
+
+void gestor_sigint(int sig) {
+    int saved_errno = errno;  // 1. Preserva errno
+    (void)sig;
+    rebut = 1;                // 2. Només operacions async-signal-safe
+    write(STDOUT_FILENO, "\nSenyal rebut\n", 14);
+    errno = saved_errno;      // 3. Restaura errno
+}
+
+int main(void) {
+    struct sigaction sa = {0};
+    sa.sa_handler = gestor_sigint;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = SA_RESTART; // Reintenta syscalls interrompudes
+    sigaction(SIGINT, &sa, NULL);
+
+    while (!rebut) {
+        pause();              // Dorm en estat S fins rebre senyal
+    }
+    return 0;
+}
+```
+:::
+::::
+
+::: {.reflexio title="Per què així i no d'una altra manera? (Preguntes clàssiques del Bloc 2)"}
+- **Per què en una shell la pròpia shell ignora `SIGINT` (`SIG_IGN`), però el fill ha de restaurar `SIG_DFL` abans de fer `execvp`?**
+  Perquè quan l'usuari prem `Ctrl-C`, el terminal envia `SIGINT` a tot el grup de processos en primer pla. La shell l'ignora per no morir, però com que **`execvp` conserva els senyals ignorats (`SIG_IGN`)**, si el fill no fes `signal(SIGINT, SIG_DFL)` abans de l'`execvp`, els programes executats des de la nostra shell serien immunes al `Ctrl-C`!
+- **Per què `cd` i `exit` han de ser comandes internes (*built-ins*) de la shell i no es poden executar dins d'un fill amb `fork()`?**
+  Perquè el directori de treball actual (`cwd`) és un atribut del PCB de cada procés. Si la shell fes `fork()` i el fill executés `chdir("..")`, només canviaria el directori del fill, que mor immediatament després, deixant la shell pare al mateix directori on era!
+- **Quina diferència hi ha entre una pipe anònima (`pipe`) i una FIFO (`mkfifo`) pel que fa a `open()`?**
+  Una pipe anònima ja neix amb tots dos descriptors oberts (`fd[0]` i `fd[1]`) i només serveix per a processos amb parentiu comú (`fork`). Una FIFO té una entrada al sistema de fitxers per comunicar processos no emparentats, i el seu **`open()` és bloquejant per defecte**: `open(..., O_RDONLY)` es bloqueja fins que algun procés faci `open(..., O_WRONLY)` i viceversa.
+:::
+
+---
+
+## 4. Bloc 3 · Planificació del processador {#bloc-3}
+
+::: {.concepte title="Fil conductor i materials del Bloc 3"}
+Al Bloc 3 estudiem com el planificador a curt termini del nucli reparteix la CPU entre els processos de la cua de preparats (`Ready`), com es calculen les mètriques de rendiment i com afecten l'**apropiació (*preemption*)**, les ràfegues d'**E/S** i el **cost del canvi de context ($\delta$)**.
+
+- **Teoria i Pràctica**: [Teoria 01 · Planificació de processos](../blocs/03-sched/teoria/01-sched.html?vista=apunts) · [Activitats resoltes i Simulador interactiu de diagrames de Gantt](../blocs/03-sched/activitats/01-sched-activitats.html)
+:::
+
+### 4.1 Fórmules i mètriques de planificació pas a pas
+
+Per a cada procés $i$ amb instant d'arribada $T_a$, temps total de CPU $T_{CPU}$, temps total d'entrada/sortida $T_{E/S}$, primer instant d'entrada a la CPU $T_{inici}$ i instant de finalització $T_f$:
+
+| Mètrica | Fórmula exacta | Què mesura i com no equivocar-s'hi |
+|:---|:---:|:---|
+| **Temps de Retorn (*Turnaround*)** | $T_{retorn} = T_f - T_a$ | Temps total des que el procés arriba fins que acaba del tot (inclou CPU + espera + E/S). |
+| **Temps d'Espera (*Waiting*)** | $T_{espera} = T_{retorn} - T_{CPU} - T_{E/S}$ | Temps passat **únicament a la cua de preparats (`Ready`)**. Mai s'hi suma el temps bloquejat en E/S! |
+| **Temps de Resposta (*Response*)** | $T_{resposta} = T_{inici} - T_a$ | Temps des que arriba fins que toca la CPU **per primera vegada** (vital en sistemes interactius). |
+| **Temps de Retorn Normalitzat** | $T_N = \dfrac{T_{retorn}}{T_{CPU}}$ | Penalització relativa (sempre $\ge 1,0$). Un valor molt alt en un procés curt indica efecte comboi o fam. |
+| **Sobrecàrrega per canvi de context** | $\text{Cost CPU} = N_{canvis} \times \delta$ | Durant un canvi de context ($\delta$), la CPU executa codi del kernel i **cap procés d'usuari avança**. |
+
+### 4.2 Comparativa sintètica d'algorismes de planificació
+
+| Algorisme | Apropiatiu? | Criteri de selecció | Avantatge principal | Inconvenient / Regla clau d'examen |
+|:---|:---:|:---|:---|:---|
+| **FCFS** (*First-Come, First-Served*) | No | Ordre d'arribada a `Ready` (cua FIFO). | Molt simple, sense sobrecàrrega ni fam (*starvation*). | **Efecte comboi**: un procés intensiu en CPU bloqueja tots els processos curts que arriben darrere. |
+| **SJF** (*Shortest Job First*) | No | Menor ràfega de CPU ($T_{CPU}$) entre els presents a `Ready`. | Minimitza el temps d'espera mitjà ($\overline{T_{espera}}$) entre els no apropiatius. | Requereix estimar la durada de la propera ràfega i pot causar **fam (*starvation*)** als processos llargs. |
+| **SRTF / STCF** (*Shortest Remaining Time*) | **Sí** | Menor temps de CPU **restant** en cada instant. | **Òptim matemàtic** en temps d'espera i de retorn mitjans. | Si arriba un procés nou amb $T_{CPU} < T_{restant}$ de l'actual, **l'expropia immediatament**. Risc de fam. |
+| **Round Robin (RR)** | **Sí** (per rellotge) | Cua circular FIFO amb quantum de temps fix $q$. | **Temps de resposta ($T_{resposta}$) baix** i repartiment equitatiu sense inanició. | **Regla de la cua FIFO**: si un procés nou arriba al mateix instant $t$ en què un altre esgota el seu quantum, **el nou entra a la cua abans** que el procés expropiat es reencuï. |
+| **Prioritats / Multinivell** | Sí / No | Prioritat estàtica o dinàmica (p. ex. CFS a Linux amb `vruntime` i `nice`). | Permet combinar processos interactius i *batch*. | Sense **envelliment (*aging*)**, les prioritats baixes pateixen fam. |
+
+### 4.3 Exemple visual comparatiu: Els 4 algorismes sobre el mateix joc de processos
+
+```{=html}
+<div class="udl-widget" style="margin: 1rem 0 1.25rem 0; border-left: 4px solid var(--udl-primary);">
+  <div style="font-weight:700; font-size:0.92rem; color:var(--udl-primary-dark); margin-bottom:0.4rem;">
+    📊 Exemple visual resolt (<i>t</i> = 0..8): Com canvia el diagrama de Gantt segons l'algorisme?
+  </div>
+  <div style="font-size:0.81rem; color:var(--udl-text); margin-bottom:0.75rem;">
+    Suposem 3 processos sense E/S:
+    <span style="display:inline-block; padding:0.15rem 0.5rem; border-radius:4px; background:rgba(59,130,246,0.18); border:1px solid #3b82f6; font-weight:600; margin-left:0.25rem;">P1: <i>T<sub>a</sub></i> = 0, <i>T<sub>CPU</sub></i> = 5</span>
+    <span style="display:inline-block; padding:0.15rem 0.5rem; border-radius:4px; background:rgba(16,185,129,0.18); border:1px solid #10b981; font-weight:600; margin-left:0.25rem;">P2: <i>T<sub>a</sub></i> = 1, <i>T<sub>CPU</sub></i> = 2</span>
+    <span style="display:inline-block; padding:0.15rem 0.5rem; border-radius:4px; background:rgba(245,158,11,0.18); border:1px solid #f59e0b; font-weight:600; margin-left:0.25rem;">P3: <i>T<sub>a</sub></i> = 2, <i>T<sub>CPU</sub></i> = 1</span>
+  </div>
+
+  <div style="display:flex; flex-direction:column; gap:0.75rem; font-size:0.8rem;">
+    <!-- FCFS -->
+    <div style="padding:0.65rem 0.8rem; border-radius:8px; background:var(--udl-surface); border:1px solid var(--udl-border);">
+      <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.4rem; margin-bottom:0.35rem;">
+        <strong>1. FCFS (No apropiatiu · Ordre d'arribada)</strong>
+        <span style="color:var(--udl-text-muted); font-size:0.76rem;">Espera mitjana: (0 + 4 + 5) / 3 = <strong>3,00 u.t.</strong> (efecte comboi de P1)</span>
+      </div>
+      <div style="display:grid; grid-template-columns:5fr 2fr 1fr; gap:2px; text-align:center; font-weight:700; font-size:0.76rem;">
+        <div style="padding:0.35rem; border-radius:4px; background:rgba(59,130,246,0.22); border:1px solid #3b82f6;">P1 (0..5)</div>
+        <div style="padding:0.35rem; border-radius:4px; background:rgba(16,185,129,0.22); border:1px solid #10b981;">P2 (5..7)</div>
+        <div style="padding:0.35rem; border-radius:4px; background:rgba(245,158,11,0.22); border:1px solid #f59e0b;">P3 (7..8)</div>
+      </div>
+    </div>
+
+    <!-- SJF -->
+    <div style="padding:0.65rem 0.8rem; border-radius:8px; background:var(--udl-surface); border:1px solid var(--udl-border);">
+      <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.4rem; margin-bottom:0.35rem;">
+        <strong>2. SJF (No apropiatiu · Més curt quan la CPU queda lliure a <i>t</i> = 5)</strong>
+        <span style="color:var(--udl-text-muted); font-size:0.76rem;">Espera mitjana: (0 + 5 + 3) / 3 = <strong>2,67 u.t.</strong> (a <i>t</i>=5 tria P3 abans que P2)</span>
+      </div>
+      <div style="display:grid; grid-template-columns:5fr 1fr 2fr; gap:2px; text-align:center; font-weight:700; font-size:0.76rem;">
+        <div style="padding:0.35rem; border-radius:4px; background:rgba(59,130,246,0.22); border:1px solid #3b82f6;">P1 (0..5)</div>
+        <div style="padding:0.35rem; border-radius:4px; background:rgba(245,158,11,0.22); border:1px solid #f59e0b;">P3 (5..6)</div>
+        <div style="padding:0.35rem; border-radius:4px; background:rgba(16,185,129,0.22); border:1px solid #10b981;">P2 (6..8)</div>
+      </div>
+    </div>
+
+    <!-- SRTF -->
+    <div style="padding:0.65rem 0.8rem; border-radius:8px; background:var(--udl-surface); border:1px solid var(--udl-border);">
+      <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.4rem; margin-bottom:0.35rem;">
+        <strong>3. SRTF (Apropiatiu · Menor temps restant en cada instant)</strong>
+        <span style="color:#059669; font-weight:600; font-size:0.76rem;">Espera mitjana òptima: (3 + 0 + 1) / 3 = <strong>1,33 u.t.</strong> (a <i>t</i>=1 P2 expropia P1 perquè 2 &lt; 4)</span>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 2fr 1fr 4fr; gap:2px; text-align:center; font-weight:700; font-size:0.76rem;">
+        <div style="padding:0.35rem; border-radius:4px; background:rgba(59,130,246,0.22); border:1px solid #3b82f6;">P1 (0..1)</div>
+        <div style="padding:0.35rem; border-radius:4px; background:rgba(16,185,129,0.22); border:1px solid #10b981;">P2 (1..3)</div>
+        <div style="padding:0.35rem; border-radius:4px; background:rgba(245,158,11,0.22); border:1px solid #f59e0b;">P3 (3..4)</div>
+        <div style="padding:0.35rem; border-radius:4px; background:rgba(59,130,246,0.22); border:1px solid #3b82f6;">P1 (4..8)</div>
+      </div>
+    </div>
+
+    <!-- Round Robin q=2 -->
+    <div style="padding:0.65rem 0.8rem; border-radius:8px; background:var(--udl-surface); border:1px solid var(--udl-border);">
+      <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.4rem; margin-bottom:0.35rem;">
+        <strong>4. Round Robin amb quantum <i>q</i> = 2 (Apropiatiu per rellotge)</strong>
+        <span style="color:var(--udl-text-muted); font-size:0.76rem;">A <i>t</i>=2 arriba P3 just quan P1 esgota el quantum: <strong>P3 entra a la cua abans que P1 es reencuï!</strong></span>
+      </div>
+      <div style="display:grid; grid-template-columns:2fr 2fr 1fr 2fr 1fr; gap:2px; text-align:center; font-weight:700; font-size:0.76rem;">
+        <div style="padding:0.35rem; border-radius:4px; background:rgba(59,130,246,0.22); border:1px solid #3b82f6;">P1 (0..2)</div>
+        <div style="padding:0.35rem; border-radius:4px; background:rgba(16,185,129,0.22); border:1px solid #10b981;">P2 (2..4)</div>
+        <div style="padding:0.35rem; border-radius:4px; background:rgba(245,158,11,0.22); border:1px solid #f59e0b;">P3 (4..5)</div>
+        <div style="padding:0.35rem; border-radius:4px; background:rgba(59,130,246,0.22); border:1px solid #3b82f6;">P1 (5..7)</div>
+        <div style="padding:0.35rem; border-radius:4px; background:rgba(59,130,246,0.22); border:1px solid #3b82f6;">P1 (7..8)</div>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+---
+
+## 5. Diagnòstic ràpid d'errors («El meu programa en C no funciona: què miro primer?») {#diagnostic}
+
+```{=html}
+<div class="udl-widget" style="margin: 0.9rem 0 1.2rem 0; border-left: 4px solid #ef4444;">
+  <div style="font-weight:700; font-size:0.9rem; color:var(--udl-primary-dark); margin-bottom:0.55rem;">
+    🩺 Arbre visual de diagnòstic en 10 segons: Quin símptoma tens?
+  </div>
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:0.7rem; font-size:0.8rem;">
+    <div style="padding:0.7rem; border-radius:8px; background:rgba(239,68,68,0.1); border:1px solid #ef4444;">
+      <div style="font-weight:700; color:#ef4444; margin-bottom:0.25rem;">💥 Peta amb <code>SIGSEGV</code></div>
+      1. Punter <code>NULL</code> o sense <code>malloc</code>.<br>
+      2. Escriure en un literal <code>char *s = "..."</code>.<br>
+      3. Falta el <code>NULL</code> final a <code>execvp</code>.<br>
+      👉 <em>Solució</em>: <code>gdb ./prog</code> &rarr; <code>run</code> &rarr; <code>bt</code>.
+    </div>
+    <div style="padding:0.7rem; border-radius:8px; background:rgba(245,158,11,0.12); border:1px solid #f59e0b;">
+      <div style="font-weight:700; color:#d97706; margin-bottom:0.25rem;">⏳ Es queda penjat (no acaba mai)</div>
+      1. <strong>95% dels casos</strong>: el pare o el lector no han tancat <code>fd[1]</code> d'una <code>pipe</code>.<br>
+      2. <code>wait()</code> esperant un fill o <code>open()</code> d'una FIFO sense l'altre extrem obert.
+    </div>
+    <div style="padding:0.7rem; border-radius:8px; background:rgba(59,130,246,0.12); border:1px solid #3b82f6;">
+      <div style="font-weight:700; color:#2563eb; margin-bottom:0.25rem;">👯 Surt text duplicat o brossa</div>
+      1. <strong>Text duplicat</strong>: <code>printf</code> sense <code>\n</code> abans de <code>fork()</code> (posa <code>fflush(stdout)</code>).<br>
+      2. <strong>Brossa al final</strong>: <code>read()</code> no posa <code>'\0'</code> (posa <code>buf[n] = '\0'</code>).
+    </div>
+  </div>
+</div>
+```
+
+Quan estàs programant un laboratori o un examen pràctic i el codi falla o es queda penjat, busca el símptoma exacte en aquesta taula:
+
+| Símptoma que veus a la terminal | Causa més probable (90% dels casos) | Com comprovar-ho i solucionar-ho en 30 segons |
+|:---|:---|:---|
+| **`Segmentation fault (core dumped)`** | 1. Desreferenciar un punter `NULL` o no inicialitzat.<br>2. Modificar un literal de cadena (`char *s = "hola"; s[0] = 'H';`).<br>3. Oblidar el `NULL` al final d'`argv` en `execvp`.<br>4. Passar un `int` sense `&` a `scanf` o `wait(status)` en lloc de `wait(&status)`. | Compila amb `gcc -g -Wall -Wextra` i executa `gdb ./programa`, fes `run` i quan peti escriu `bt` (backtrace): et dirà el **número de línia exacte** on ha fallat. |
+| **El programa amb `pipe()` no acaba mai (es queda penjat esperant)** | Algú (gairebé sempre **el procés pare** o el propi fill lector) s'ha deixat obert l'extrem d'escriptura **`fd[1]`**. Com que encara queda un escriptor obert, `read(fd[0], ...)` mai retorna `0` (EOF). | Revisa que tant el pare com el fill lector facin `close(fd[1]);` **abans** del `waitpid()` i del bucle de lectura. |
+| **Un `printf` s'imprimeix dues vegades després d'un `fork()`** | El `printf` d'abans del `fork()` no tenia `\n` (o la sortida estava redirigida a un fitxer) i el buffer d'`stdio` s'ha duplicat al fill. | Posa `\n` o crida `fflush(stdout);` just abans de fer `fork()`, i fes servir `_exit(127)` (amb guió baix) al fill si `exec` falla. |
+| **Es creen molts més processos dels que volies (mini *fork-bomb*)** | Tens un `fork()` dins d'un bucle `for` i el fill **no fa `exit()`** (ni `exec()`) al final del seu bloc `if (pid == 0)`, de manera que el fill continua donant voltes al bucle i creant nets. | Assegura't que tot bloc `if (pid == 0) { ... }` acabi sempre amb `exit(...)` o `_exit(...)`. |
+| **`execvp` o `execlp` falla amb `No such file or directory`** | 1. Has usat `execv`/`execl` (sense `p`) passant `"ls"` en lloc de `"/bin/ls"`.<br>2. Has deixat espais dins del nom del programa (`"ls -l"` com a primer argument en comptes de separar `"ls"` i `"-l"`). | Si no poses la ruta completa `/bin/...`, usa sempre les variants amb **`p`** (`execvp` o `execlp`) i passa cada argument per separat acabant en `NULL`. |
+| **La cadena impresa mostra brossa o caràcters estranys al final** | `read()` llegeix bytes crus i **no afegeix el `'\0'` final**. Si després fas `printf("%s", buf)`, continua llegint brossa de la pila. | Desa el retorn `ssize_t n = read(fd, buf, sizeof(buf) - 1);` i posa manualment `if (n > 0) buf[n] = '\0';`. |
+
+---
+
+## 6. Com organitzar el teu full DIN A4 per a cada parcial (T1 i T2) {#full-a4}
+
+::: {.bonapractica title="Un full DIN A4 independent (2 cares) per a cada examen parcial"}
+Com que l'avaluació teòrica es divideix en **dos exàmens parcials independents (`T1` i `T2`)** i a cadascun es permet portar **un full DIN A4 manuscrit per les dues cares**, **no cal comprimir tota l'assignatura en un sol full**. Prepara un full específic i ben espaiat per als blocs que entrin a cada prova:
+
+```{=html}
+<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:1rem; margin-top:0.85rem;">
+  <!-- Full per al Parcial T1 -->
+  <div style="min-width:0; padding:0.95rem; border-radius:8px; background:var(--udl-bg); border:1px solid var(--udl-border); border-top:3px solid #3b82f6;">
+    <div style="font-weight:700; font-size:0.88rem; color:var(--udl-primary-dark); border-bottom:1px solid var(--udl-border); padding-bottom:0.45rem; margin-bottom:0.65rem;">
+      📝 Full DIN A4 per al Parcial 1 (T1 · Blocs 1 i 2)
+    </div>
+    <div style="display:flex; flex-direction:column; gap:0.55rem; font-size:0.8rem; line-height:1.5;">
+      <div style="padding:0.55rem 0.7rem; border-radius:6px; background:var(--udl-surface); border-left:3px solid #3b82f6;">
+        <strong>Cara A (sencera) · Bloc 1: Memòria, C, ELF i Syscalls</strong><br>
+        • <em>Caixa 1</em>: Mapa de memòria (<code>.text</code>, <code>.rodata</code>, <code>.data</code>, <code>.bss</code>, <code>Heap</code> &uarr;, <code>Stack</code> &darr;) i mides en 64 bits (<code>void* = 8B</code>, <code>int = 4B</code>).<br>
+        • <em>Caixa 2</em>: Plantilla sencera de reserva i alliberament invers de matrius dinàmiques (<code>int **</code> / <code>char **</code>) i pas per referència.<br>
+        • <em>Caixa 3</em>: Fases de <code>gcc</code> (<code>-E</code>, <code>-S</code>, <code>-c</code>), variables de Make (<code>$@</code>, <code>$&lt;</code>, <code>$^</code>) i registres x86-64 (<code>rax</code>, <code>rdi</code>, <code>rsi</code>, <code>rdx</code>, <code>r10</code>, <code>r8</code>, <code>r9</code>).
+      </div>
+      <div style="padding:0.55rem 0.7rem; border-radius:6px; background:var(--udl-surface); border-left:3px solid #10b981;">
+        <strong>Cara B (sencera) · Bloc 2: Processos, Senyals, Pipes i FIFOs</strong><br>
+        • <em>Caixa 4</em>: Estats a Linux (<code>R</code>, <code>S</code>, <code>D</code>, <code>T</code>, <code>Z</code>), plantilla de <code>fork()</code> + <code>waitpid()</code> + macros (<code>WIFEXITED</code>, <code>WEXITSTATUS</code>, <code>WIFSIGNALED</code>) i variants d'<code>exec*</code>.<br>
+        • <em>Caixa 5</em>: Plantilla de gestor segur amb <code>sigaction</code> (<code>SA_RESTART</code>, <code>volatile sig_atomic_t</code>, preservar <code>errno</code> i usar <code>write</code>).<br>
+        • <em>Caixa 6</em>: Codi pas a pas de <code>cmd1 | cmd2</code> amb <code>pipe()</code> + <code>dup2()</code> + <code>close()</code> i condicions de bloqueig d'<code>open()</code> en FIFOs, <code>EOF</code> i <code>SIGPIPE</code>.
+      </div>
+    </div>
+  </div>
+
+  <!-- Full per al Parcial T2 -->
+  <div style="min-width:0; padding:0.95rem; border-radius:8px; background:var(--udl-bg); border:1px solid var(--udl-border); border-top:3px solid #059669;">
+    <div style="font-weight:700; font-size:0.88rem; color:var(--udl-primary-dark); border-bottom:1px solid var(--udl-border); padding-bottom:0.45rem; margin-bottom:0.65rem;">
+      📝 Full DIN A4 per al Parcial 2 (T2 · Bloc 3 i blocs finals)
+    </div>
+    <div style="display:flex; flex-direction:column; gap:0.55rem; font-size:0.8rem; line-height:1.5;">
+      <div style="padding:0.55rem 0.7rem; border-radius:6px; background:var(--udl-surface); border-left:3px solid #059669;">
+        <strong>Cara A · Bloc 3: Planificació de CPU, E/S i Canvis de context</strong><br>
+        • <em>Caixa 1 (Fórmules)</em>: <i>T<sub>retorn</sub></i> = <i>T<sub>f</sub></i> &minus; <i>T<sub>a</sub></i>, <i>T<sub>espera</sub></i> = <i>T<sub>retorn</sub></i> &minus; <i>T<sub>CPU</sub></i> &minus; <i>T<sub>E/S</sub></i>, <i>T<sub>resposta</sub></i> = <i>T<sub>inici</sub></i> &minus; <i>T<sub>a</sub></i>, <i>T<sub>N</sub></i> = <i>T<sub>retorn</sub></i> / <i>T<sub>CPU</sub></i> i sobrecàrrega (&delta;).<br>
+        • <em>Caixa 2 (Algorismes i regles)</em>: Comparativa FCFS, SJF, SRTF, Round Robin (regla d'ordre a la cua FIFO quan coincideixen arribada i fi de quantum) i Prioritats / CFS (<code>vruntime</code> i <code>nice</code>).<br>
+        • <em>Caixa 3 (Exemple resolt guia)</em>: Un mini-exemple numèric amb E/S i taula de verificació (suma de CPU + IDLE = <i>T<sub>final</sub></i>).
+      </div>
+      <div style="padding:0.55rem 0.7rem; border-radius:6px; background:var(--udl-surface); border-left:3px solid #8b5cf6;">
+        <strong>Cara B · Resta de temes que entrin al Parcial T2</strong><br>
+        • Reserva aquesta segona cara per als continguts de la segona meitat del curs que el professor indiqui a la convocatòria de T2 (coordinació/interbloqueig, gestió avançada de memòria i paginació o mòduls del nucli).
+      </div>
+    </div>
+  </div>
+</div>
+```
+:::
+
+---
+
+## 7. Autoavaluació activa: Targetes de repàs i seguiment {#autocomprovacio}
+
+Un cop hagis llegit els resums d'arrel, posa't a prova amb aquestes **18 targetes d'autocomprovació** (pots filtrar per bloc o cercar qualsevol concepte) i marca el teu progrés a la llista de control final:
+
+```{=html}
+<div class="udl-widget" id="study-flashcards" style="margin: 1.5rem 0; border-left: 4px solid var(--udl-outcome);">
+  <div style="display:flex; flex-wrap:wrap; gap:0.75rem; align-items:center; justify-content:space-between; margin-bottom:1rem;">
+    <input type="search" id="fc-search" placeholder="Cerca un concepte, syscall o dubte (ex: fork, pipe, stack, zombie, waitpid, makefile, quantum...)" style="flex:1; min-width:240px; padding:0.5rem 0.8rem; border-radius:8px; border:1px solid var(--udl-border); background:var(--udl-surface); color:var(--udl-text); font-size:0.88rem;">
+    <div style="display:flex; gap:0.4rem; flex-wrap:wrap;" id="fc-filters">
+      <button type="button" data-bloc="all" class="udl-button" style="padding:0.35rem 0.75rem; font-size:0.78rem;">Totes (18)</button>
+      <button type="button" data-bloc="due" class="udl-button udl-button-outline" style="padding:0.35rem 0.75rem; font-size:0.78rem;">Repàs d'avui</button>
+      <button type="button" data-bloc="b1" class="udl-button udl-button-outline" style="padding:0.35rem 0.75rem; font-size:0.78rem;">Bloc 1 · Memòria i C</button>
+      <button type="button" data-bloc="b2" class="udl-button udl-button-outline" style="padding:0.35rem 0.75rem; font-size:0.78rem;">Bloc 2 · Processos i IPC</button>
+      <button type="button" data-bloc="b3" class="udl-button udl-button-outline" style="padding:0.35rem 0.75rem; font-size:0.78rem;">Bloc 3 · Planificació</button>
+    </div>
+  </div>
+
+  <div style="margin-bottom:0.9rem;">
+    <div id="fc-stats" style="font-size:0.8rem; color:var(--udl-text-muted); margin-bottom:0.3rem;" aria-live="polite"></div>
+    <div style="height:6px; border-radius:999px; background:var(--udl-border); overflow:hidden;"><div id="fc-bar" style="height:100%; width:0%; background:var(--udl-primary); transition:width 200ms ease;"></div></div>
+  </div>
+
+  <div id="fc-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap:0.85rem;"></div>
+</div>
+
+<script>
+(function() {
+  const cards = [
+    { bloc: 'b1', tag: 'Bloc 1 · Memòria', q: 'On viuen les variables locals i què passa quan la funció retorna?', a: 'Viuen a la <strong>Stack (pila)</strong> dins del marc d\'activació (stack frame) de la funció. Quan la funció fa <code>return</code>, el marc es destrueix i retornar un punter a una variable local provoca un <em>dangling pointer</em> (comportament indefinit).' },
+    { bloc: 'b1', tag: 'Bloc 1 · Memòria', q: 'Per què char *s = "hola"; s[0] = \'H\'; provoca Segmentation Fault, però char s[] = "hola"; s[0] = \'H\'; funciona?', a: 'Perquè amb <code>char *s = "hola"</code> el punter apunta directament al literal dins de <strong><code>.rodata</code> (només lectura, <code>R--</code>)</strong>. En canvi, <code>char s[] = "hola"</code> copia els 5 bytes (inclòs <code>\'\\0\'</code>) dins d\'un array local a la <strong>Stack (<code>RW-</code>)</strong>.' },
+    { bloc: 'b1', tag: 'Bloc 1 · Memòria', q: 'Per què cal fer servir el Heap (malloc/calloc) si la Stack és molt més ràpida?', a: 'Perquè la Stack té mida limitada i temps de vida lligat a la funció. El <strong>Heap</strong> permet reservar memòria la mida de la qual només es coneix en temps d\'execució i que ha de sobreviure després que la funció creadora retorni.' },
+    { bloc: 'b1', tag: 'Bloc 1 · Punters', q: 'Quina diferència hi ha entre sizeof(arr) quan arr és char arr[10] vs char *arr?', a: '<code>char arr[10]</code> és un array i <code>sizeof(arr)</code> val <strong>10 bytes</strong>. En canvi, <code>char *arr</code> (o un array passat com a paràmetre d\'una funció, que decau a punter) té <code>sizeof(arr) == 8 bytes</code> (en arquitectures de 64 bits).' },
+    { bloc: 'b1', tag: 'Bloc 1 · Compilació', q: 'Què fan les variables automàtiques $@, $< i $^ en una regla de Makefile?', a: '<strong><code>$@</code></strong> és el nom del fitxer objectiu (target); <strong><code>$&lt;</code></strong> és el primer prerequisit (ideal per a <code>gcc -c $&lt; -o $@</code>); i <strong><code>$^</code></strong> són tots els prerequisits (ideal per enllaçar tots els <code>.o</code>).' },
+    { bloc: 'b1', tag: 'Bloc 1 · Syscalls', q: 'Per què un programa d\'usuari no pot accedir directament al maquinari ni a la memòria del kernel?', a: 'Perquè la CPU executa els processos d\'usuari en <strong>mode no privilegiat (Ring 3)</strong>. Per demanar un servei protegit cal executar la instrucció <code>syscall</code> (trap), que valida arguments i salta de forma controlada a Ring 0.' },
+    { bloc: 'b1', tag: 'Bloc 1 · E/S', q: 'Per què printf("Hola") sense \\n pot no mostrar res abans d\'un fork() o _exit()?', a: 'Perquè <code>stdout</code> pertany a <code>stdio</code> (espai d\'usuari) i fa <em>buffering</em> per línia quan apunta a un terminal (o per bloc si apunta a fitxer/pipe). Si no hi ha <code>\\n</code> ni <code>fflush(stdout)</code>, les dades queden al buffer de <code>libc</code> i <code>fork()</code> el duplica.' },
+    { bloc: 'b2', tag: 'Bloc 2 · Estats', q: 'Quina diferència hi ha entre els estats S (TASK_INTERRUPTIBLE) i D (TASK_UNINTERRUPTIBLE) a Linux?', a: 'Tots dos són estats de bloqueig (espera), però un procés en <strong><code>S</code></strong> es desperta si rep un senyal, mentre que un procés en <strong><code>D</code></strong> (típicament esperant maquinari/disc) <strong>no respon a cap senyal, ni tan sols a <code>SIGKILL</code></strong>, fins que acaba l\'operació.' },
+    { bloc: 'b2', tag: 'Bloc 2 · Processos', q: 'Què retorna fork() al pare i què retorna al fill?', a: 'Al <strong>pare</strong> li retorna el <strong>PID del fill (> 0)</strong>; al <strong>fill</strong> li retorna <strong>0</strong>; i si falla, retorna <strong>-1</strong> al pare (sense crear cap fill) i assigna <code>errno</code>.' },
+    { bloc: 'b2', tag: 'Bloc 2 · Processos', q: 'Per què l\'esquema de creació en Unix separa fork() i exec() en dues crides diferents?', a: 'Perquè entre el <code>fork()</code> i l\'<code>exec()</code> el procés fill pot reconfigurar el seu entorn (redirigir <code>stdin</code>/<code>stdout</code> amb <code>dup2</code>, tancar descriptors de pipes, restaurar senyals o canviar directori) sense alterar el procés pare!' },
+    { bloc: 'b2', tag: 'Bloc 2 · Processos', q: 'Quina diferència hi ha entre un procés Zombi (Z) i un procés Orfe?', a: 'Un <strong>Zombi</strong> ja ha acabat (ha fet <code>exit</code>), però el seu pare encara no ha fet <code>wait()</code> per llegir-ne l\'estat, de manera que el seu <code>task_struct</code> segueix ocupant una entrada a la taula de processos. Un <strong>Orfe</strong> segueix viu però el seu pare ha mort; <code>init/systemd</code> (PID 1) l\'adopta i en farà el <code>wait()</code> quan acabi.' },
+    { bloc: 'b2', tag: 'Bloc 2 · Senyals', q: 'Què passa amb els senyals capturats (handler) i amb els senyals ignorats (SIG_IGN) quan un procés fa exec()?', a: 'Els gestors personalitzats (handlers) es restableixen a <strong><code>SIG_DFL</code></strong> (perquè el codi de la funció handler desapareix en canviar la memòria ELF), però els senyals configurats com a <strong><code>SIG_IGN</code> es mantenen ignorats</strong>!' },
+    { bloc: 'b2', tag: 'Bloc 2 · Senyals', q: 'Per què dins d\'un handler de senyal s\'ha d\'usar write() i guardar errno en lloc d\'usar printf()?', a: 'Perquè el senyal arriba de forma asíncrona i pot interrompre un <code>printf()</code> o <code>malloc()</code> a mig camí. <code>printf</code> no és <em>async-signal-safe</em>; <code>write</code> sí que ho és, però pot modificar <code>errno</code> i per això cal desar-lo i restaurar-lo.' },
+    { bloc: 'b2', tag: 'Bloc 2 · Pipes', q: 'Per què un lector de pipe es queda bloquejat per sempre si el pare o el propi lector no tanquen fd[1]?', a: 'Perquè <code>read()</code> d\'una pipe només retorna <code>0</code> (EOF) quan <strong>el comptador de referències de l\'extrem d\'escriptura (fd[1]) arriba a 0 a tot el sistema</strong>. Si algun procés es deixa <code>fd[1]</code> obert, el kernel assumeix que encara poden arribar dades.' },
+    { bloc: 'b2', tag: 'Bloc 2 · Pipes', q: 'Què passa quan un procés fa write() en una pipe on ja no queda cap lector (tots els fd[0] estan tancats)?', a: 'El nucli envia immediatament el senyal <strong><code>SIGPIPE</code></strong> al procés escriptor (l\'acció per defecte és terminar el procés). Si el procés ignora o captura <code>SIGPIPE</code>, <code>write()</code> retorna <code>-1</code> amb <code>errno = EPIPE</code>.' },
+    { bloc: 'b3', tag: 'Bloc 3 · Planificació', q: 'Quina diferència hi ha entre Temps de Retorn, Temps d\'Espera i Temps de Resposta?', a: '<strong>Retorn (<i>T</i><sub>retorn</sub> = <i>T</i><sub>f</sub> &minus; <i>T</i><sub>a</sub>)</strong>: temps total al sistema.<br><strong>Espera (<i>T</i><sub>espera</sub> = <i>T</i><sub>retorn</sub> &minus; <i>T</i><sub>cpu</sub> &minus; <i>T</i><sub>E/S</sub>)</strong>: temps acumulat a la cua de preparats.<br><strong>Resposta (<i>T</i><sub>resposta</sub> = <i>T</i><sub>inici</sub> &minus; <i>T</i><sub>a</sub>)</strong>: temps fins a la primera execució a la CPU.' },
+    { bloc: 'b3', tag: 'Bloc 3 · Planificació', q: 'Com afecta la mida del quantum (q) a l\'algorisme Round Robin?', a: 'Si <i>q</i> és <strong>massa gran</strong> (<i>q</i> &rarr; &infin;), Round Robin es comporta com <strong>FCFS</strong> i empitjora el temps de resposta. Si <i>q</i> és <strong>massa petit</strong>, el temps perdut en canvis de context (&delta;) dispara la sobrecàrrega del nucli i redueix la productivitat.' },
+    { bloc: 'b3', tag: 'Bloc 3 · Planificació', q: 'Quin algorisme minimitza matemàticament el temps d\'espera mitjà i quin risc té?', a: '<strong>SRTF (Shortest Remaining Time First)</strong> (o SJF entre els no apropiatius). El seu risc principal és la <strong>fam (starvation)</strong> dels processos llargs si continuen arribant processos curts; es corregeix amb envelliment (<em>aging</em>).' }
+  ];
+
+  let activeBloc = 'all';
+  const grid = document.getElementById('fc-grid');
+  const searchInput = document.getElementById('fc-search');
+  const filterBtns = document.querySelectorAll('#fc-filters button');
+  const statsEl = document.getElementById('fc-stats');
+
+  // Repàs espaiat senzill (caixes de Leitner): cada targeta té una caixa de l'1 al 3.
+  const DAY = 24 * 60 * 60 * 1000;
+  const WAIT = { 1: 0, 2: 1 * DAY, 3: 4 * DAY };
+  const STORE = 'udl_fc_progress_v1';
+  let progress = {};
+  try { progress = JSON.parse(localStorage.getItem(STORE) || '{}') || {}; } catch (e) { progress = {}; }
+
+  function saveProgress() {
+    try { localStorage.setItem(STORE, JSON.stringify(progress)); } catch (e) {}
+  }
+  function isDue(c) {
+    const p = progress[c.q];
+    return !p || Date.now() >= p.next;
+  }
+  function boxOf(c) {
+    return progress[c.q] ? progress[c.q].box : 0;
+  }
+  function grade(c, knew) {
+    const prev = boxOf(c) || 1;
+    const box = knew ? Math.min(3, prev + 1) : 1;
+    progress[c.q] = { box: box, next: Date.now() + WAIT[box] };
+    saveProgress();
+  }
+  function updateStats() {
+    const mastered = cards.filter(c => boxOf(c) === 3 && !isDue(c)).length;
+    const due = cards.filter(isDue).length;
+    statsEl.textContent = mastered + ' de ' + cards.length + ' targetes ben apreses · ' + due + ' per repassar avui';
+    const bar = document.getElementById('fc-bar');
+    if (bar) bar.style.width = Math.round(100 * mastered / cards.length) + '%';
+    const dueBtn = document.querySelector('#fc-filters button[data-bloc="due"]');
+    if (dueBtn) dueBtn.textContent = 'Repàs d\'avui (' + due + ')';
+  }
+
+  function norm(s) {
+    return (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  }
+
+  function render() {
+    const qText = norm(searchInput.value).trim();
+    const terms = qText ? qText.split(/\s+/) : [];
+    grid.innerHTML = '';
+    const filtered = cards.filter(c => {
+      const matchBloc = activeBloc === 'all' || (activeBloc === 'due' ? isDue(c) : c.bloc === activeBloc);
+      const hay = norm(c.q + ' ' + c.a + ' ' + c.tag);
+      const matchText = terms.length === 0 || terms.every(t => hay.includes(t));
+      return matchBloc && matchText;
+    });
+    updateStats();
+
+    if (filtered.length === 0) {
+      grid.innerHTML = activeBloc === 'due'
+        ? '<p style="color:var(--udl-text-muted); font-size:0.88rem;">No tens res per repassar ara mateix. Torna demà o consulta totes les targetes.</p>'
+        : '<p style="color:var(--udl-text-muted); font-size:0.88rem;">Cap targeta coincideix amb la cerca.</p>';
+      return;
+    }
+
+    filtered.forEach(c => {
+      const card = document.createElement('div');
+      card.style.cssText = 'border:1px solid var(--udl-border); border-radius:10px; padding:0.9rem; background:var(--udl-surface-sunken); cursor:pointer; transition:transform 120ms ease, box-shadow 120ms ease;';
+      card.tabIndex = 0;
+      card.setAttribute('role', 'button');
+      card.innerHTML = `
+        <div style="font-size:0.7rem; font-weight:700; text-transform:uppercase; color:var(--udl-primary); margin-bottom:0.35rem;">${c.tag} · <span style="font-weight:400; color:var(--udl-text-muted);">Pensa la resposta i clica per comprovar-la</span></div>
+        <div class="fc-q" style="font-weight:600; font-size:0.88rem; color:var(--udl-text);">${c.q}</div>
+        <div class="fc-a" style="display:none; margin-top:0.6rem; padding-top:0.6rem; border-top:1px dashed var(--udl-border); font-size:0.84rem; color:var(--udl-text);">
+          ${c.a}
+          <div style="display:flex; gap:0.4rem; flex-wrap:wrap; margin-top:0.75rem;">
+            <button type="button" class="udl-button fc-know" style="padding:0.3rem 0.7rem; font-size:0.76rem;">Ho sabia</button>
+            <button type="button" class="udl-button udl-button-outline fc-redo" style="padding:0.3rem 0.7rem; font-size:0.76rem;">Ho he de repassar</button>
+          </div>
+        </div>
+      `;
+      const toggle = () => {
+        const ans = card.querySelector('.fc-a');
+        const isOpen = ans.style.display === 'block';
+        ans.style.display = isOpen ? 'none' : 'block';
+        card.style.borderColor = isOpen ? 'var(--udl-border)' : 'var(--udl-primary)';
+      };
+      card.addEventListener('click', toggle);
+      card.addEventListener('keydown', (e) => {
+        if ((e.key === 'Enter' || e.key === ' ') && e.target === card) { e.preventDefault(); toggle(); }
+      });
+      const done = (knew) => (e) => {
+        e.stopPropagation();
+        grade(c, knew);
+        if (activeBloc === 'due') { render(); } else { updateStats(); toggle(); card.style.opacity = knew ? '0.6' : '1'; }
+      };
+      card.querySelector('.fc-know').addEventListener('click', done(true));
+      card.querySelector('.fc-redo').addEventListener('click', done(false));
+      grid.appendChild(card);
+    });
+  }
+
+  searchInput.addEventListener('input', render);
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeBloc = btn.dataset.bloc;
+      filterBtns.forEach(b => {
+        if (b === btn) {
+          b.classList.remove('udl-button-outline');
+        } else {
+          b.classList.add('udl-button-outline');
+        }
+      });
+      render();
+    });
+  });
+
+  render();
+})();
+</script>
+```
+
+### Seguiment de repàs per blocs
+
+Marca cada casella a mesura que consolidis cada part del temari (el teu progrés es desa automàticament al teu navegador):
+
+```{=html}
+<div class="udl-widget" id="study-tracker" style="margin: 1.5rem 0; border-left: 4px solid var(--udl-success);">
+  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.6rem;">
+    <strong style="font-size:0.95rem; color:var(--udl-primary-dark);">El meu progrés de domini del curs</strong>
+    <div>
+      <span id="st-pct" style="font-weight:700; font-size:0.88rem; color:var(--udl-primary); margin-right:0.6rem;">0% completat</span>
+      <button type="button" id="st-reset" class="udl-button udl-button-outline" style="padding:0.2rem 0.6rem; font-size:0.74rem;">Reinicia</button>
+    </div>
+  </div>
+  <div class="udl-progress" style="margin-bottom:1rem;">
+    <div id="st-bar" class="udl-progress-bar" style="width:0%; transition:width 200ms ease;"></div>
+  </div>
+
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:1rem; font-size:0.85rem;">
+    <div>
+      <div style="font-weight:700; color:var(--udl-theory); margin-bottom:0.4rem;">Bloc 1 · Memòria, C i Syscalls</div>
+      <label style="display:block; margin-bottom:0.3rem; cursor:pointer;"><input type="checkbox" class="st-chk" data-id="b1_1"> Rols del SO i espai d'usuari vs. kernel</label>
+      <label style="display:block; margin-bottom:0.3rem; cursor:pointer;"><input type="checkbox" class="st-chk" data-id="b1_2"> Mapa de memòria (Text, Data, BSS, Heap, Stack)</label>
+      <label style="display:block; margin-bottom:0.3rem; cursor:pointer;"><input type="checkbox" class="st-chk" data-id="b1_3"> Crides a funció, registres ABI i Stack Frame</label>
+      <label style="display:block; margin-bottom:0.3rem; cursor:pointer;"><input type="checkbox" class="st-chk" data-id="b1_4"> Compilació, enllaçat ELF i Makefiles</label>
+      <label style="display:block; margin-bottom:0.3rem; cursor:pointer;"><input type="checkbox" class="st-chk" data-id="b1_5"> Pralabs 1–4 (Punters, Arrays, Heap i <code>char **</code>)</label>
+      <label style="display:block; margin-bottom:0.3rem; cursor:pointer;"><input type="checkbox" class="st-chk" data-id="b1_6"> Activitats de Punters, Stack amb GDB i Pokémon</label>
+    </div>
+
+    <div>
+      <div style="font-weight:700; color:var(--udl-lab); margin-bottom:0.4rem;">Bloc 2 · Processos, Senyals i Pipes</div>
+      <label style="display:block; margin-bottom:0.3rem; cursor:pointer;"><input type="checkbox" class="st-chk" data-id="b2_1"> Concepte de procés, PCB (<code>task_struct</code>) i 5 estats</label>
+      <label style="display:block; margin-bottom:0.3rem; cursor:pointer;"><input type="checkbox" class="st-chk" data-id="b2_2"> <code>fork()</code>, <code>waitpid()</code>, Zombis, Orfes i família <code>exec</code></label>
+      <label style="display:block; margin-bottom:0.3rem; cursor:pointer;"><input type="checkbox" class="st-chk" data-id="b2_3"> Senyals, <code>sigaction</code>, <code>kill</code>, <code>alarm</code> i handlers segurs</label>
+      <label style="display:block; margin-bottom:0.3rem; cursor:pointer;"><input type="checkbox" class="st-chk" data-id="b2_4"> Pipes anònimes, <code>dup2()</code>, redireccions i FIFOs</label>
+      <label style="display:block; margin-bottom:0.3rem; cursor:pointer;"><input type="checkbox" class="st-chk" data-id="b2_5"> Pralabs Minishell (Parts 1, 2 i 3)</label>
+      <label style="display:block; margin-bottom:0.3rem; cursor:pointer;"><input type="checkbox" class="st-chk" data-id="b2_6"> Activitats <code>fork/wait</code>, <code>exec</code>, <code>pipes</code> i <code>loteria</code></label>
+    </div>
+
+    <div>
+      <div style="font-weight:700; color:var(--udl-assignment); margin-bottom:0.4rem;">Bloc 3 i Preparació d'Exàmens</div>
+      <label style="display:block; margin-bottom:0.3rem; cursor:pointer;"><input type="checkbox" class="st-chk" data-id="b3_1"> Mètriques (<i>T</i><sub>retorn</sub>, <i>T</i><sub>espera</sub>, <i>T</i><sub>resposta</sub>, <i>T</i><sub>N</sub>) i estats d'E/S</label>
+      <label style="display:block; margin-bottom:0.3rem; cursor:pointer;"><input type="checkbox" class="st-chk" data-id="b3_2"> Algorismes FCFS, SJF, SRTF i efecte comboi</label>
+      <label style="display:block; margin-bottom:0.3rem; cursor:pointer;"><input type="checkbox" class="st-chk" data-id="b3_3"> Round Robin, elecció del quantum <i>q</i> i cost del canvi de context</label>
+      <label style="display:block; margin-bottom:0.3rem; cursor:pointer;"><input type="checkbox" class="st-chk" data-id="b3_4"> Resolts els 4 exercicis i simulador del Bloc 3</label>
+      <label style="display:block; margin-bottom:0.3rem; cursor:pointer;"><input type="checkbox" class="st-chk" data-id="b3_5"> Preparat el meu full DIN A4 manuscrit (Cara A i B)</label>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const chks = document.querySelectorAll('#study-tracker .st-chk');
+  const bar = document.getElementById('st-bar');
+  const pctEl = document.getElementById('st-pct');
+  const resetBtn = document.getElementById('st-reset');
+
+  function updateTracker() {
+    let done = 0;
+    chks.forEach(c => {
+      if (c.checked) done++;
+    });
+    const pct = Math.round((done / chks.length) * 100);
+    bar.style.width = pct + '%';
+    pctEl.textContent = `${pct}% completat (${done}/${chks.length})`;
+  }
+
+  chks.forEach(c => {
+    const id = 'udl_st_' + c.dataset.id;
+    c.checked = localStorage.getItem(id) === '1';
+    c.addEventListener('change', () => {
+      localStorage.setItem(id, c.checked ? '1' : '0');
+      updateTracker();
+    });
+  });
+
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      chks.forEach(c => {
+        c.checked = false;
+        localStorage.removeItem('udl_st_' + c.dataset.id);
+      });
+      updateTracker();
+    });
+  }
+
+  updateTracker();
+})();
+</script>
+```

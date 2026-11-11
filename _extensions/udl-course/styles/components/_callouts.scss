@@ -69,6 +69,7 @@ $groups: (
   laboratori:    var(--udl-lab),
   repte:         var(--udl-assignment),
   reflexio:      var(--udl-outcome),
+  pista:         var(--udl-exam),
 
   examtip:       var(--udl-exam),
   errorcomu:     var(--udl-warning),
@@ -88,5 +89,29 @@ $groups: (
   }
   .udl-#{$name} .udl-component-title {
     color: #{$color};
+  }
+}
+
+// Raw HTML <details> blocks used in labs and activities (e.g. solutions & hints)
+main.content details:not(.udl-component) {
+  border: 1px solid var(--udl-border);
+  border-left: 4px solid var(--udl-secondary);
+  border-radius: var(--udl-radius-sm);
+  background: var(--udl-surface);
+  margin: var(--udl-space-md) 0;
+  padding: 0.55rem 1rem;
+
+  > summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--udl-primary-dark);
+    padding: 0.2rem 0;
+    user-select: none;
+  }
+
+  &[open] > summary {
+    margin-bottom: 0.65rem;
+    padding-bottom: 0.45rem;
+    border-bottom: 1px solid var(--udl-border);
   }
 }

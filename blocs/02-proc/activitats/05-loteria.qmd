@@ -153,9 +153,8 @@ En aquesta versió, el pare passa al programa `generador` el número del descrip
 #include <time.h>
 #include <unistd.h>
 
-int main()
+int main(void)
 {
-
     srand((unsigned int) time(NULL) ^ (unsigned int) getpid());
     int numero = 1 + rand() % 49;
     int fd = 4;
@@ -664,7 +663,7 @@ gcc -Wall -Wextra -o loteria loteria.c
 </details>
 
 
-## Alternativa per la escriptura i lectura de missatges
+## Alternativa per a l'escriptura i lectura de missatges
 
 
 :::::{.panel-tabset}

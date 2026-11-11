@@ -1,11 +1,22 @@
-# Course Materials
+# Sistemes Operatius (SO) — Materials del curs
 
-This repository contains all the course materials, including lecture slides, lab exercises, and notes. This is an open-source project, and we encourage everyone to use and adapt these materials for similar courses or personal study.
+Aquest repositori conté els materials docents de l'assignatura **Sistemes Operatius** del Grau en Enginyeria Informàtica (Campus Igualada · Universitat de Lleida), incloent-hi les diapositives de teoria, els laboratoris guiats (*pralabs*), les activitats pràctiques i les guies d'estudi. És un projecte de codi obert i animem a tothom a utilitzar i adaptar aquests materials.
 
-## Contributing
+## Estructura del repositori
 
-We welcome contributions to improve the course! If you find an error or have an idea for a new section, please submit a pull request. Your contributions will help make these materials better for the entire community.
+- `blocs/01-espai-usuari/`: Bloc 1 · Desenvolupament de Programari en Espai d'Usuari (Teoria, Pralabs i Activitats).
+- `blocs/02-proc/`: Bloc 2 · Execució i Comunicació de Processos (Teoria, Pralabs i Activitats).
+- `blocs/03-sched/`: Bloc 3 · Planificació i Coordinació de Recursos (Teoria i Activitats).
+- `course-info/`: Presentació del curs, guia de contribució i recursos d'estudi i consulta ràpida.
 
-## License
+## Com contribuir
 
-This work is licensed under a [Creative Commons Attribution 4.0 International License](http://creativecommons.org/licenses/by/4.0/). See also [LICENSE](LICENSE.txt) for more information.
+Agraïm les contribucions per millorar els materials de l'assignatura! Si detectes una errata, un error tècnic o tens una proposta de nou exercici o millora pedagògica, consulta la [guia de contribució](course-info/contributions/contribute.qmd) i obre un *Pull Request*.
+
+## Administració i gestió docent
+
+Per afegir nous temes, modificar l'estructura o la paleta de colors, i protegir la branca principal a GitHub perquè ningú pugui fer modificacions sense aprovació prèvia, consulta la [Guia de Manteniment Docent](MANTENIMENT_DOCENT.md).
+
+## Llicència
+
+Aquest treball està subjecte a una llicència [Creative Commons Attribution 4.0 International License](http://creativecommons.org/licenses/by/4.0/). Consulta el fitxer [LICENSE](LICENSE) per a més informació.

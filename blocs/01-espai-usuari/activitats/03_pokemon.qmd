@@ -149,7 +149,7 @@ int main() {
 pikachu.name = malloc( (strlen("Pikachu")+1) * sizeof(char) );
 ```
 
-Ara anem analitzar els següents supòsits:
+Ara analitzarem els següents supòsits:
 
 ```c
 char name[] = "Pikachu";
@@ -190,7 +190,7 @@ Aquí hi ha una trampa clàssica de C: si ho compileu, `gcc` **no** ho rebutja �
 **malloc** i **calloc** ens permeten reservar memòria dinàmicament. La diferència és que `malloc` no inicialitza la memòria reservada (conté brossa), mentre que `calloc` la inicialitza tota a 0.
 :::
 
-Tota l'estructura de dades **pikachu** es troba a la **heap**: tant l'*id*, *height*, *weight* com el punter *name*. En canvi, si en algun moment fem servir un punter `Pokemon *pikachu` (com veurem més endavant amb `create_pokemon`), el propi punter `pikachu` viurà a la **stack**, apuntant a l'estructura sencera, que llavors sí que viurà tota ella a la **heap**.
+En aquest primer exemple (`struct pokemon pikachu;` declarat com a variable local a `main`), l'estructura **pikachu** es troba a la **stack** (tant el *pokemon_id*, *height*, *weight* com el propi punter *name*), i només la cadena reservada amb `strdup` o `malloc` viu a la **heap**. En canvi, quan fem servir un punter `Pokemon *pikachu` reservat dinàmicament (com veurem més endavant amb `create_pokemon`), el punter `pikachu` viurà a la **stack**, mentre que l'estructura sencera (`pokemon_id`, `height`, `weight` i `name`) i la cadena a la qual apunta `name` viuran totes dues a la **heap**.
 
 ## Ús de typedef
 
@@ -202,7 +202,7 @@ Ara podem utilitzar **typedef** per definir un nou tipus de dades que ens permet
 */
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h> //strdup(),
+#include <string.h> //strdup()
 
 typedef struct pokemon {
     int          pokemon_id;
@@ -413,7 +413,7 @@ void set_weight(Pokemon *pokemon, double weight);
 #endif // _POKEMON_H_
 ```
 
-Observeu que els **setter** reben un punter a la nostra estructura de dades **Pokemon**. Això és perquè volem modificar l'estructura de dades original i no una còpia de l'estructura de dades. En el cas dels **getter** no necessitem modificar l'estructura de dades original, per tant, no necessitem passar un punter però per evitar còpies innecessàries de l'estructura de dades, passem un punter.
+Observeu que els **setters** reben un punter a la nostra estructura de dades **Pokemon**. Això és perquè volem modificar l'estructura de dades original i no una còpia de l'estructura de dades. En el cas dels **getters** no necessitem modificar l'estructura de dades original, per tant, no necessitem passar un punter però per evitar còpies innecessàries de l'estructura de dades, passem un punter.
 
 ```c
 /*
@@ -468,7 +468,7 @@ void set_weight(Pokemon *pokemon, double weight) {
 La funció **strcpy** utilitzada en el **setter** de **name** no és segura. Pot causar *buffer overflow* si la nova cadena és més gran que la memòria actual. Una manera de solucionar aquest problema seria utilitzar `strncpy` en lloc de `strcpy`, però `strncpy` no afegeix el caràcter de finalització de cadena **'\0'** si la nova cadena és més gran que la mida especificada. Per tant, és important assegurar-se que la cadena de destí té prou espai per emmagatzemar la nova cadena i el caràcter de finalització.
 :::
 
-Ara podem utilitzar els **getter** i **setter** de la següent manera:
+Ara podem utilitzar els **getters** i **setters** de la següent manera:
 
 ```c
 /*
@@ -610,17 +610,17 @@ int main() {
     set_name(p, "Pikachu");
 
     printf("Pokemon: %s\n", get_name(p));
-    printf("Pokemon name size: %ld\n", strlen(get_name(p)));
+    printf("Pokemon name size: %zu\n", strlen(get_name(p)));
 
     set_name(p, "Raichu");
 
     printf("Pokemon: %s\n", get_name(p));
-    printf("Pokemon name size: %ld\n", strlen(get_name(p)));
+    printf("Pokemon name size: %zu\n", strlen(get_name(p)));
 
     set_name(p, "Charizard");
 
     printf("Pokemon: %s\n", get_name(p));
-    printf("Pokemon name size: %ld\n", strlen(get_name(p)));
+    printf("Pokemon name size: %zu\n", strlen(get_name(p)));
 
     destroy_pokemon(p);
 

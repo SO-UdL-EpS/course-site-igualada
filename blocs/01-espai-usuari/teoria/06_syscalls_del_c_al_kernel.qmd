@@ -16,6 +16,7 @@ format:
     height: 900
     margin: 0.08
     center: false
+    scrollable: true
     footer: 'Sistemes Operatius (SO) &nbsp; <a href="/index.html" class="home-link" aria-label="Inici"><svg class="home-icon" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 52 C27 43 39 31 60 12 C78 30 93 42 108 51" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M25 48 C25 64 25 76 24 87 C35 84 45 85 53 87 M95 48 C95 64 95 76 97 87 C87 84 77 85 68 87" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M51 87V70 C51 64 55 60 60 60 C65 60 69 64 69 70V87Z" fill="currentColor"/><path d="M82 29V17 C82 14 84 13 87 13H94 C96 13 97 15 96 17 C94 20 93 24 94 32Z" fill="currentColor"/></svg></a>'
     include-in-header:
       - text: |
@@ -180,7 +181,7 @@ Contracte **a nivell de codi font**: noms, tipus, semàntica. `ssize_t write(int
 
 :::{.exercici}
 Quantes syscalls creus que farà el programa `hello`?
-::::
+:::
 
 <div id="strace-demo"></div>
 
@@ -331,7 +332,7 @@ AsciinemaPlayer.create(
 </script>
 
 :::{.exemple title="Exemple de syscall sense libc" .fragment}
-Aquest exemple és identic a `write(1, "Hello\n", 6)`, però sense passar per la **libc**. Posa a mà el número de syscall (1) i els arguments als registres RAX, RDI, RSI i RDX, i executa directament la instrucció syscall. Amb strace es veu exactament el mateix write(1, "Hello\n", 6) = 6, i això demostra que el kernel no distingeix qui ha preparat els registres, i que l'ABI és un contracte de registres, no de C. La variant `syscall(SYS_write, …)` fa el mateix amb la funció portable de la libc, sense assemblador.
+Aquest exemple és idèntic a `write(1, "Hello\n", 6)`, però sense passar per la **libc**. Posa a mà el número de syscall (1) i els arguments als registres RAX, RDI, RSI i RDX, i executa directament la instrucció syscall. Amb strace es veu exactament el mateix write(1, "Hello\n", 6) = 6, i això demostra que el kernel no distingeix qui ha preparat els registres, i que l'ABI és un contracte de registres, no de C. La variant `syscall(SYS_write, …)` fa el mateix amb la funció portable de la libc, sense assemblador.
 :::
 
 
@@ -353,7 +354,7 @@ No hi ha cap instrucció *passa a mode kernel i salta on vulguis*. Llavors, com 
 
 - La instrucció `syscall` / `svc` **canvia el privilegi i salta a una adreça que el programa NO tria**.
 - Aquesta adreça la fixa el **kernel en arrencar**.
-- El programa només pot demanar entra al kernel i **el kernel decideix què s'executa**.
+- El programa només pot demanar entrar al kernel i **el kernel decideix què s'executa**.
 
 ::: {.concepte title="Idea de seguretat" .fragment}
 Un únic punt d'entrada, controlat pel kernel: així no es pot saltar al mig de codi privilegiat.
@@ -407,7 +408,7 @@ AsciinemaPlayer.create(
 </script>
 
 :::{.exemple}
-La instrucció `dissassemble` permet localitzar `syscall` i `break` ens permet posar un punt d'aturada just abans. Observeu com s'atura just a la instrucció **syscall** dins de `write()`, i abans d'executar-la es veu que `rax = 1` (el número de write) i que rdi, rsi i rdx porten els arguments. Amb un `stepi` s'executa aquesta única instrucció: surt Hello per pantalla, rax passa a valer 6 (els bytes escrits) i rcx i r11 han canviat, perquè syscall els trepitja.
+La instrucció `disassemble` permet localitzar `syscall` i `break` ens permet posar un punt d'aturada just abans. Observeu com s'atura just a la instrucció **syscall** dins de `write()`, i abans d'executar-la es veu que `rax = 1` (el número de write) i que rdi, rsi i rdx porten els arguments. Amb un `stepi` s'executa aquesta única instrucció: surt Hello per pantalla, rax passa a valer 6 (els bytes escrits) i rcx i r11 han canviat, perquè syscall els trepitja.
 :::
 
 

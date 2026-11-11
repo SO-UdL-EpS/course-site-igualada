@@ -10,7 +10,7 @@ format:
 L'activitat és **no avaluable**. No cal lliurar-la ni preparar una resposta formal. L'objectiu és consolidar, a través d'una font primària, dues idees que hem vist avui a classe:
 
 - **el sistema operatiu es construeix sobre un nombre reduït de primitives** que ho sostenen tot, des del shell fins als dispositius.
-- **la simplicitat de disseny no és una limitació, és una decisió**,
+- **la simplicitat de disseny no és una limitació, és una decisió**.
 
 
 ::: {.exercici title="Lectura: The UNIX Time-Sharing System"}
