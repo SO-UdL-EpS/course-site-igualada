@@ -5,12 +5,12 @@
     - "**/*.qmd"
     - "!MANTENIMENT_DOCENT.md"
 
-# Idioma del web: perquÃ¨ lectors de pantalla i sÃ­ntesi de veu usin la fonÃ¨tica catalana
+# Idioma del web: perquè lectors de pantalla i síntesi de veu usin la fonètica catalana
 lang: ca
 
 website:
   title: "Sistemes Operatius"
-  description: "Grau en Enginyeria InformÃ tica Â· Campus Igualada"
+  description: "Grau en Enginyeria Informàtica · Campus Igualada"
   page-navigation: true
   bread-crumbs: true
   search:
@@ -20,11 +20,11 @@ website:
 
   page-footer:
     left: |
-      Universitat de Lleida Â· Grau en Enginyeria InformÃ tica (Campus Igualada)
+      Universitat de Lleida · Grau en Enginyeria Informàtica (Campus Igualada)
     center: |
-      DocÃ¨ncia: Jordi Mateo FornÃ©s Â· Millores d'accessibilitat i estudi: Roger Domingo (alumne contribuÃ¯dor)
+      Docència: Jordi Mateo Fornés · Millores d'accessibilitat i estudi: Roger Domingo (alumne contribuïdor)
     right: |
-      Materials de codi obert Â· Quarto
+      Materials de codi obert · Quarto
 
 
   navbar:
@@ -35,11 +35,11 @@ website:
         href: index.qmd
       - text: "Continguts"
         menu:
-          - text: "Bloc 1 Â· Espai d'Usuari i MemÃ²ria"
+          - text: "Bloc 1 · Espai d'Usuari i Memòria"
             href: blocs/01-espai-usuari/pralabs/01_c_mem.qmd
-          - text: "Bloc 2 Â· Processos, Pipes i Minishell"
+          - text: "Bloc 2 · Processos, Pipes i Minishell"
             href: blocs/02-proc/pralabs/01_minishell.qmd
-          - text: "Bloc 3 Â· PlanificaciÃ³ de CPU"
+          - text: "Bloc 3 · Planificació de CPU"
             href: blocs/03-sched/activitats/01-sched-activitats.qmd
       - text: "Guia d'estudi i resums"
         href: course-info/guia-estudi.qmd
@@ -61,7 +61,7 @@ website:
     collapse-level: 3
     contents:
     - href: course-info/presentation-slides.qmd
-      text: "PresentaciÃ³ del curs"
+      text: "Presentació del curs"
     - href: course-info/guia-estudi.qmd
       text: "Guia d'estudi i resums"
     - href: course-info/entrenament-interactiu.qmd
@@ -70,7 +70,7 @@ website:
       text: "Contribueix al curs"
     - section: "Blocs"
       contents:
-        - section: "Bloc 1 Â· Desenvolupament de Programari en Espai d'Usuari"
+        - section: "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari"
           contents:
             - section: Teoria
               contents:
@@ -94,7 +94,7 @@ website:
               - href: blocs/01-espai-usuari/activitats/02_espai_funcions.qmd
               - href: blocs/01-espai-usuari/activitats/03_pokemon.qmd
 
-        - section: "Bloc 2 Â· Processos"
+        - section: "Bloc 2 · Processos"
           contents:
             - section: Teoria
               contents:
@@ -115,7 +115,7 @@ website:
               - href: blocs/02-proc/activitats/03-exec.qmd
               - href: blocs/02-proc/activitats/04-pipes.qmd
               - href: blocs/02-proc/activitats/05-loteria.qmd
-        - section: "Bloc 3 Â· PlanificaciÃ³"
+        - section: "Bloc 3 · Planificació"
           contents:
             - section: "Teoria"
               contents:
