@@ -2,13 +2,35 @@
 // _tables.scss — GitHub-style tables, not Bootstrap defaults
 // ============================================================
 
+.udl-table-scroll {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: var(--udl-space-lg) 0;
+  border-radius: var(--udl-radius-sm);
+
+  > .table,
+  > table {
+    margin: 0;
+  }
+}
+
 .table, table:not(.reveal table) {
+  display: table;
   width: 100%;
   border-collapse: collapse;
   font-size: var(--udl-text-sm);
   margin: var(--udl-space-lg) 0;
-  display: block;
-  overflow-x: auto; // responsive: scroll the table, not the page
+  color: var(--udl-text);
+
+  --bs-table-color: var(--udl-text);
+  --bs-table-bg: transparent;
+  --bs-table-border-color: var(--udl-border);
+  --bs-table-striped-color: var(--udl-text);
+  --bs-table-striped-bg: color-mix(in srgb, var(--udl-surface-sunken) 60%, transparent);
+  --bs-table-hover-color: var(--udl-text);
+  --bs-table-hover-bg: color-mix(in srgb, var(--udl-primary) 5%, transparent);
 
   th {
     background: var(--udl-surface-sunken);
@@ -22,8 +44,15 @@
     padding: 0.55em 0.9em;
     border-bottom: 1px solid var(--udl-border);
     border-right: none;
+    color: var(--udl-text);
+    vertical-align: top;
+  }
+
+  thead th {
+    color: var(--udl-primary-dark);
+    border-bottom: 2px solid var(--udl-border);
   }
 
   tr:last-child td { border-bottom: none; }
-  tr:hover td { background: color-mix(in srgb, var(--udl-primary) 3%, transparent); }
+  tr:hover td { background: color-mix(in srgb, var(--udl-primary) 4%, transparent); }
 }

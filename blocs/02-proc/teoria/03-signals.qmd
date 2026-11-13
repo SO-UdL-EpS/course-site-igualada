@@ -16,6 +16,7 @@ format:
     height: 900
     margin: 0.08
     center: false
+    scrollable: true
     footer: 'Sistemes Operatius (SO) &nbsp; <a href="/index.html" class="home-link" aria-label="Inici"><svg class="home-icon" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 52 C27 43 39 31 60 12 C78 30 93 42 108 51" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M25 48 C25 64 25 76 24 87 C35 84 45 85 53 87 M95 48 C95 64 95 76 97 87 C87 84 77 85 68 87" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M51 87V70 C51 64 55 60 60 60 C65 60 69 64 69 70V87Z" fill="currentColor"/><path d="M82 29V17 C82 14 84 13 87 13H94 C96 13 97 15 96 17 C94 20 93 24 94 32Z" fill="currentColor"/></svg></a>'
 
 ---
@@ -66,7 +67,7 @@ Els esdeveniments que generen senyals poden provenir de maquinari o programari.
 
 ## Exemple pràctic 
 
-Quants senyals estem enviant? Quines? Quina acció fa el procés quan rep els senyals?
+Quants senyals estem enviant? Quins? Quina acció fa el procés quan rep els senyals?
 
 ::: columns
 ::: {.column width="20%"}
@@ -90,15 +91,15 @@ ctrl+c
 :::
 
 * *Quants senyals estem enviant?* 3
-* *Quines?* SIGTSTP, SIGINT, SIGCONT
-* *Quina acció fa el procés quan rep les senyals?* Aturar l'execució en primer pla i portar el procés a segon pla. Arrancar l'execució en segon pla. Acabar el procés.
+* *Quins?* SIGTSTP, SIGCONT, SIGINT
+* *Quina acció fa el procés quan rep els senyals?* Aturar l'execució en primer pla i portar el procés a segon pla. Arrancar l'execució en segon pla. Acabar el procés.
 
 
 ## Exemple pràctic: Pas a Pas 
 
-- La comanda *yes>/dev/null* crearà un **procés A** i s'executa al *primer pla*, quan un usuari pitjà el **ctrl-z**, el kernel automàticament envia un senyal *SIGSTOP* al **procés A,** que modifica el seu estat d'execució a parat i també marxa del primer pla al segon pla. 
+- La comanda *yes>/dev/null* crearà un **procés A** i s'executa al *primer pla*, quan un usuari pitja el **ctrl-z**, el kernel automàticament envia un senyal *SIGTSTP* al **procés A**, que modifica el seu estat d'execució a parat i també marxa del primer pla al segon pla. 
 
-- Després amb la comanda **bg**, el kernel tramet al procés el senyal *SIGCONT* i continua la seva execució en segon pla quan la rep. Una altra manera equivalent per realitzar aquest procés és **yes>/dev/null &** on *&* ens envia l'ordre directament en execució al background.
+- Després amb la comanda **bg**, el kernel tramet al procés el senyal *SIGCONT* i continua la seva execució en segon pla quan el rep. Una altra manera equivalent per realitzar aquest procés és **yes>/dev/null &** on *&* ens envia l'ordre directament en execució al background.
 
 - Observeu també com de  forma similar la comanda **fg**; en aquest cas el kernel tramet *SIGCONT* i el procés quan rep *SIGCONT*; torna a executar-se al primer pla.  Noteu que amb ctrl-c tenim un comportament similar; i el procés en primer pla és acabat en rebre el senyal *SIGINT* (**ctrl+c**).
 
@@ -140,7 +141,7 @@ sighandler_t signal(int signum, sighandler_t gestor);
 ```
 
 #### Valors de retorn
-* En cas d'èxit retorna un **punter a la anterior funció gestora del senyal**.
+* En cas d'èxit retorna un **punter a l'anterior funció gestora del senyal**.
 * En cas d'error, retorna **SIG_ERR**.
 
 ## `pause()`
@@ -152,7 +153,7 @@ La crida a sistema `pause()` s'utilitza per posar en espera un procés fins que 
 int pause(void);
 ```
 
-* Sempré **retorna -1**.
+* Sempre **retorna -1**.
 * Es **bloqueja** fins que el procés rep un senyal (qualsevol).
 
 ## Gestió interna de senyals (Kernel) 
@@ -205,7 +206,7 @@ int main() {
 ```
 
 :::{.center-container}
-Aquesta és la sintaxis tradicional per incloure la gestió de senyals en C.
+Aquesta és la sintaxi tradicional per incloure la gestió de senyals en C.
 :::
 
 ## `sigaction`
@@ -272,7 +273,7 @@ Envia el senyal *sig* al/s procés/ssos segons pid:
 #### Valors de retorn
 
 * En cas d'èxit, s'ha enviat com a mínim un senyal, es retorna **zero**.
-* En cas d'error, retorna **SIG_ERR**
+* En cas d'error, retorna **-1** (i s'assigna `errno`; no s'ha de confondre amb `SIG_ERR`, que és el valor de retorn de `signal()`)
 :::
 
 
@@ -327,7 +328,7 @@ void handler(int sig) {
 }
 ```
 
-Una funció és **async-signal-safe** si no provoca comportament indefinit o corrupció de memòria.Només es poden cridar funcions que no depenguin de recursos globals compartits que puguin estar en un estat inconsistent. En aquest cas, `malloc()` i `free()` no són segures perquè poden modificar l'estat intern del gestor de memòria, acabant en corrupció de memòria **heap**.
+Una funció és **async-signal-safe** si no provoca comportament indefinit o corrupció de memòria. Només es poden cridar funcions que no depenguin de recursos globals compartits que puguin estar en un estat inconsistent. En aquest cas, `malloc()` i `free()` no són segures perquè poden modificar l'estat intern del gestor de memòria, acabant en corrupció de memòria **heap**.
 
 
 
@@ -337,15 +338,15 @@ Una funció és **async-signal-safe** si no provoca comportament indefinit o cor
 | ------- | -- | --------------------------- | ----------------- |
 | SIGABRT | 6  | Abort                       | Terminació        |
 | SIGALRM | 14 | Temporitzador               | Terminació        |
-| SIGCONT | 25 | Reprendre                   | Continuar         |
+| SIGCONT | 18 | Reprendre (x86/ARM)         | Continuar         |
 | SIGFPE  | 8  | Error aritmètic             | Terminació        |
 | SIGKILL | 9  | Finalització forçada        | No capturable     |
 | SIGINT  | 2  | Interrupció usuari (Ctrl+C) | Terminació        |
-| SIGUSR1 | 16 | Senyal definit per l’usuari | Terminació        |
+| SIGUSR1 | 10 | Senyal definit per l’usuari | Terminació        |
 
 ## Timers al nucli 
 
-El nucli manté un repositor de timers (estructures internes, sovint per PCB o grup de processos) que compta el temps restant per a cada procés o alarm.
+El nucli manté un repositori de timers (estructures internes, sovint per PCB o grup de processos) que compta el temps restant per a cada procés o alarm.
 
 ::: center-container
 ```{mermaid}
@@ -377,7 +378,7 @@ Quan un procés crida `alarm(sec)`, el kernel:
 El procés s'envia a si mateix després de *sec* segons un senyal **SIGALRM**. Retorna el nombre de segons pendents si hi havia una crida a *alarm* anterior, o zero en altre cas.
 
 ```c
-#include <unistd.h> C
+#include <unistd.h>
 unsigned int alarm(unsigned int sec);
 ```
 
@@ -390,6 +391,15 @@ Per desactivar una alarma pendent, es pot cridar a `alarm(0)`, aquesta comanda c
 :::{style="text-align:center"}
 ![](https://wizardzines.com/images/uploads/signals.png){width=60%}
 :::
+
+::: {.examtip title="3 regles d'or de senyals per als exàmens"}
+::: nonincremental
+1. **`SIGKILL` (9) i `SIGSTOP` (19)** no es poden capturar, bloquejar ni ignorar mai; en canvi, `SIGINT` (Ctrl+C) i `SIGTSTP` (Ctrl+Z) sí.
+2. **Dins d'un handler**: fes servir només funcions *async-signal-safe* (`write`, mai `printf` ni `malloc`), declara les banderes globals com a `volatile sig_atomic_t` i **desa i restaura `errno`**.
+3. **Herència en `fork()` i `exec()`**: `fork()` ho hereta tot; `exec()` manté els senyals ignorats (`SIG_IGN`) però **reinicia a `SIG_DFL` tots els handlers personalitzats** (perquè el codi de la funció handler desapareix en substituir la memòria!).
+:::
+:::
+
 
 
 

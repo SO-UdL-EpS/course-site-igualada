@@ -68,6 +68,8 @@ sequenceDiagram
     P->>P: printf B
     F->>F: printf B
 ```
+
+3. **Repte (`./programa > out.txt`):** quan la sortida està redirigida a un fitxer, `stdout` passa de ser *line-buffered* a *fully-buffered*. Per tant, `"A\n"` queda pendent al buffer de `stdio` abans del `fork()`, es duplica al fill i al final s'imprimeixen **dues `A`** i **dues `B`**.
 :::
 
 </details>

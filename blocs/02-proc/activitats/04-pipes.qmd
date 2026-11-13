@@ -22,7 +22,7 @@ Els **blocs 1 i 2** es resolen amb **paper i llapis**: per a cada exercici **dib
 :::
 
 :::{.bonapractica}
-**Convencions dels enunciats.** Els fragments són trossos de `main` sense `#include`; suposen que al començament només estan oberts els descriptors `0`, `1` i `2`, i que `pipe(p)` crea `p[0] = 3` i `p[1] = 4` si no hi ha cap altre fitxer obert. En els fragments **s'ometen les comprovacions d'error** per simpliciat; en les solucions completes sí que hi són. Quan un `exec` falla, el fill acaba amb `_exit(127)`.
+**Convencions dels enunciats.** Els fragments són trossos de `main` sense `#include`; suposen que al començament només estan oberts els descriptors `0`, `1` i `2`, i que `pipe(p)` crea `p[0] = 3` i `p[1] = 4` si no hi ha cap altre fitxer obert. En els fragments **s'ometen les comprovacions d'error** per simplicitat; en les solucions completes sí que hi són. Quan un `exec` falla, el fill acaba amb `_exit(127)`.
 :::
 
 ---
@@ -654,7 +654,7 @@ int main(void) {
 1. `pin = {3, 4}` i `pout = {5, 6}`: justament **els números que el fill necessita com a `3` i `4`**, i això fa que sigui delicat.
 2. Amb `pin[0] == 3`, `dup2(pin[0], 3)` **no fa res** i el `close(pin[0])` següent **tanca el descriptor 3**, el mateix que s'acabava de preparar. `filtre` fa `read(3, ...)`, rep `EBADF` i acaba, i el pare mor amb `SIGPIPE` en escriure a una pipe sense lector. Per això només es fa `dup2` + `close` quan el número és diferent. A més, el `dup2(pout[1], 4)` **tanca el 4**, que era `pin[1]`: per això el fill tanca primer `pin[1]` i `pout[0]`.
 3. `filtre` acaba quan `read(3)` retorna `0`, és a dir quan **tots** els extrems d'escriptura de `pin` estan tancats: el del pare (`close(pin[1])`) i el que heretava el fill (que tanca abans de l'`exec`). El pare, al seu torn, deixa de llegir quan `filtre` acaba i tanca el `4`; per això el pare també ha de tancar el seu `pout[1]`.
-4. **Interbloqueig.** El pare escriu a `pin` i `filtre` converteix i escriu a `pout`; com que el pare no llegeix, `pout` s'omple (64 KiB) i `filtre` es bloqueja al `write(4)`; ja no llegeix de `pin`, que també s'omple, i el pare es bloqueja al `write`. Cap dels dos no pot avançar. Es resol llegint i escrivint **alhora**, per exemple amb `poll`/`select`, o amb un segon procés (o fil) que s'encarregui d'una de les dues direccions. És el mateix problema de l'exercici 8, ara amb dues pipes.
+4. **Interbloqueig.** El pare escriu a `pin` i `filtre` converteix i escriu a `pout`; com que el pare no llegeix, `pout` s'omple (64 KiB) i `filtre` es bloqueja al `write(4)`; ja no llegeix de `pin`, que també s'omple, i el pare es bloqueja al `write`. Cap dels dos no pot avançar. És el mateix problema de l'exercici 8, ara amb dues pipes. Es resol llegint i escrivint **alhora**, per exemple amb `poll`/`select`, o amb un segon procés (o fil) que s'encarregui d'una de les dues direccions.
 :::
 
 </details>
@@ -836,9 +836,139 @@ int main(void) {
 ```
 
 3. **Una pipe compartida:** només 2 descriptors, sense límit pràctic de fills, i el pare fa un únic bucle de `read`; cal l'índex de fila. **Una pipe per fill:** el pare sap qui li envia cada fila (no cal índex), però necessita `2N` descriptors, i el límit típic és `ulimit -n = 1024`, així que fallaria cap a `N ≈ 500`; a més, cal llegir-les en algun ordre i un fill lent pot fer esperar els altres.
-4. **Interbloqueig** quan el total de dades, `N × (4 + 4N)` bytes aproximadament, supera la capacitat de la pipe (64 KiB): a partir de `N = 128`, algun fill es bloqueja al `write` i el pare és al `wait` (vegeu l'exercici 8). Per això el programa llegeix **fins a l'EOF** i fa `wait` **després**.
+4. **Interbloqueig** quan el total de dades, `N × (4 + 4N)` bytes aproximadament, supera la capacitat de la pipe (64 KiB, vegeu l'exercici 8): a partir de `N = 128`, algun fill es bloqueja al `write` i el pare és al `wait`. Per això el programa llegeix **fins a l'EOF** i fa `wait` **després**.
 5. Amb un FIFO, cada fill hauria de fer `open(ruta, O_WRONLY)` pel seu compte, i el pare `open(ruta, O_RDONLY)`, que es bloqueja fins que arriba el primer escriptor. El problema nou: **el pare veu l'EOF quan l'últim escriptor tanca**, i si el primer fill acaba abans que el segon hagi obert el FIFO, el pare veu un **EOF prematur** i perd files. La solució és **comptar els missatges** (`N` files) en lloc de dependre de l'EOF. En definitiva, un FIFO no aporta res aquí, perquè els processos ja estan emparentats.
 :::
 
 </details>
+
+---
+
+## Visualitzador pas a pas · Taula de descriptors en una pipe (`ls | wc -l`)
+
+Un dels punts on és més fàcil equivocar-se amb les canonades és recordar **qui té obert cada extrem de la pipe** després de `pipe(fd)`, dels `fork()` i dels `dup2()`. En aquest esquema interactiu pots avançar pels 5 passos i veure com queden les taules de descriptors del **Pare**, del **Fill 1 (`ls`)** i del **Fill 2 (`wc -l`)**, i per què cal tancar `fd[1]` també al pare:
+
+```{=html}
+<div class="udl-widget" id="fd-sim" style="margin: 1.5rem 0; border-left: 4px solid var(--udl-theory);">
+  <h4 style="margin-top:0; font-size:1rem; color:var(--udl-primary-dark); text-transform:none; letter-spacing:normal;">
+    Evolució dels descriptors de fitxer en <code>ls | wc -l</code>
+  </h4>
+
+  <div style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:1rem;" id="fd-step-btns"></div>
+
+  <div id="fd-code-box" style="padding:0.75rem 1rem; border-radius:8px; background:var(--udl-surface-sunken); border:1px solid var(--udl-border); font-family:var(--udl-font-mono); font-size:0.83rem; margin-bottom:1rem;"></div>
+
+  <div id="fd-tables" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:0.85rem; margin-bottom:1rem;"></div>
+
+  <div id="fd-pipe-status" style="padding:0.75rem 1rem; border-radius:8px; font-size:0.85rem;"></div>
+</div>
+
+<script>
+(function() {
+  const steps = [
+    {
+      label: "1. Estat inicial",
+      code: "int fd[2]; // Abans de cridar pipe(fd)",
+      desc: "Només existeix el procés Pare (la shell) amb els 3 descriptors estàndard connectats al terminal (`pts/0`).",
+      procs: [
+        { name: "Pare (shell)", fds: { 0: "Terminal (lectura)", 1: "Terminal (escriptura)", 2: "Terminal (errors)", 3: "—", 4: "—" } }
+      ],
+      readers: 0, writers: 0,
+      note: "Encara no s'ha creat el buffer de la pipe al nucli."
+    },
+    {
+      label: "2. pipe(fd)",
+      code: "pipe(fd); // fd[0] = 3 (lectura), fd[1] = 4 (escriptura)",
+      desc: "El nucli crea la pipe en memòria i assigna els dos primers descriptors lliures del pare: `3` per llegir i `4` per escriure.",
+      procs: [
+        { name: "Pare (shell)", fds: { 0: "Terminal", 1: "Terminal", 2: "Terminal", 3: "Pipe [Lectura]", 4: "Pipe [Escriptura]" } }
+      ],
+      readers: 1, writers: 1,
+      note: "Ara mateix hi ha 1 lector (fd 3 del pare) i 1 escriptor (fd 4 del pare)."
+    },
+    {
+      label: "3. Dos fork()",
+      code: "pid1 = fork(); /* Fill 1 */ ... pid2 = fork(); /* Fill 2 */",
+      desc: "Cada `fork()` clona la taula de descriptors del pare! Ara **tots tres processos** tenen oberts `fd[0]=3` i `fd[1]=4`.",
+      procs: [
+        { name: "Pare (shell)", fds: { 0: "Terminal", 1: "Terminal", 2: "Terminal", 3: "Pipe [Lectura]", 4: "Pipe [Escriptura]" } },
+        { name: "Fill 1 (ls)", fds: { 0: "Terminal", 1: "Terminal", 2: "Terminal", 3: "Pipe [Lectura]", 4: "Pipe [Escriptura]" } },
+        { name: "Fill 2 (wc -l)", fds: { 0: "Terminal", 1: "Terminal", 2: "Terminal", 3: "Pipe [Lectura]", 4: "Pipe [Escriptura]" } }
+      ],
+      readers: 3, writers: 3,
+      note: "Atenció: el comptador d'escriptors oberts a la pipe és 3. Fins que tots 3 no es tanquin, `read()` mai retornarà 0 (EOF)."
+    },
+    {
+      label: "4. dup2 i close als fills",
+      code: "// Fill 1: close(3); dup2(4, 1); close(4);\n// Fill 2: close(4); dup2(3, 0); close(3);",
+      desc: "El Fill 1 redirigeix `stdout (1)` cap a la pipe i tanca 3 i 4. El Fill 2 redirigeix `stdin (0)` des de la pipe i tanca 3 i 4.",
+      procs: [
+        { name: "Pare (shell)", fds: { 0: "Terminal", 1: "Terminal", 2: "Terminal", 3: "Pipe [Lectura]", 4: "Pipe [Escriptura]" } },
+        { name: "Fill 1 (ls)", fds: { 0: "Terminal", 1: "→ Pipe [Escriptura]", 2: "Terminal", 3: "Tancat", 4: "Tancat" } },
+        { name: "Fill 2 (wc -l)", fds: { 0: "← Pipe [Lectura]", 1: "Terminal", 2: "Terminal", 3: "Tancat", 4: "Tancat" } }
+      ],
+      readers: 2, writers: 2,
+      note: "Compte: si el Pare fa `wait()` ara sense tancar els seus descriptors 3 i 4, quan `ls` acabi encara quedarà 1 escriptor obert (el fd 4 del Pare) i `wc -l` es quedarà bloquejat esperant."
+    },
+    {
+      label: "5. Pare tanca fd[0] i fd[1]",
+      code: "// Al Pare: close(fd[0]); close(fd[1]); waitpid(pid1...); waitpid(pid2...);",
+      desc: "El Pare tanca els descriptors 3 i 4 que no necessita. Ara l'únic escriptor és `stdout` de `ls` i l'únic lector és `stdin` de `wc -l`.",
+      procs: [
+        { name: "Pare (shell)", fds: { 0: "Terminal", 1: "Terminal", 2: "Terminal", 3: "Tancat", 4: "Tancat" } },
+        { name: "Fill 1 (ls)", fds: { 0: "Terminal", 1: "→ Pipe [Escriptura]", 2: "Terminal", 3: "Tancat", 4: "Tancat" } },
+        { name: "Fill 2 (wc -l)", fds: { 0: "← Pipe [Lectura]", 1: "Terminal", 2: "Terminal", 3: "Tancat", 4: "Tancat" } }
+      ],
+      readers: 1, writers: 1,
+      note: "Correcte: quan `ls` faci `exit()`, el comptador d'escriptors passarà de 1 a 0, `wc -l` rebrà `EOF (0)` al seu `read()`, mostrarà el recompte i acabarà."
+    }
+  ];
+
+  let cur = 0;
+  const btnsEl = document.getElementById('fd-step-btns');
+  const codeEl = document.getElementById('fd-code-box');
+  const tablesEl = document.getElementById('fd-tables');
+  const statusEl = document.getElementById('fd-pipe-status');
+
+  function render() {
+    const s = steps[cur];
+    btnsEl.innerHTML = '';
+    steps.forEach((st, idx) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = idx === cur ? 'udl-button' : 'udl-button udl-button-outline';
+      b.style.cssText = 'padding:0.35rem 0.7rem; font-size:0.78rem;';
+      b.textContent = st.label;
+      b.addEventListener('click', () => { cur = idx; render(); });
+      btnsEl.appendChild(b);
+    });
+
+    codeEl.innerHTML = `<div style="color:var(--udl-primary); font-weight:700; margin-bottom:0.25rem;">${s.code.replace(/\n/g, '<br>')}</div><div style="font-family:var(--udl-font-body); font-size:0.84rem; color:var(--udl-text);">${s.desc.replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')}</div>`;
+
+    tablesEl.innerHTML = '';
+    s.procs.forEach(p => {
+      const box = document.createElement('div');
+      box.style.cssText = 'border:1px solid var(--udl-border); border-radius:8px; padding:0.7rem; background:var(--udl-surface);';
+      let rows = '';
+      for (const [fd, target] of Object.entries(p.fds)) {
+        const isPipe = target.includes('Pipe');
+        const isClosed = target === 'Tancat';
+        const style = isPipe ? 'font-weight:700; color:var(--udl-primary);' : (isClosed ? 'color:var(--udl-text-muted); text-decoration:line-through;' : '');
+        rows += `<tr><td style="padding:0.25rem 0.5rem;"><code>fd[${fd}]</code></td><td style="padding:0.25rem 0.5rem; ${style}">${target}</td></tr>`;
+      }
+      box.innerHTML = `<div style="font-weight:700; font-size:0.84rem; margin-bottom:0.4rem; color:var(--udl-primary-dark);">${p.name}</div><` + `table style="width:100%; font-size:0.78rem; margin:0;"><thead><tr><th>FD</th><th>Apunta a</th></tr></thead><tbody>${rows}</tbody></` + `table>`;
+      tablesEl.appendChild(box);
+    });
+
+    const isGood = cur === 4;
+    statusEl.style.background = isGood ? 'color-mix(in srgb, var(--udl-success) 14%, transparent)' : 'color-mix(in srgb, var(--udl-exam) 16%, transparent)';
+    statusEl.style.borderLeft = `3px solid ${isGood ? 'var(--udl-success)' : 'var(--udl-exam)'}`;
+    statusEl.innerHTML = `<strong>Estat del buffer de la Pipe al Kernel:</strong> Lectors oberts = <code>${s.readers}</code> · Escriptors oberts = <code>${s.writers}</code><br>${s.note.replace(/`([^`]+)`/g, '<code>$1</code>')}`;
+  }
+
+  render();
+})();
+</script>
+```
+
 

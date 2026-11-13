@@ -19,23 +19,34 @@
 .udl-button {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.4em;
-  padding: 0.55em 1.2em;
+  padding: 0.52em 1.15em;
   border-radius: var(--udl-radius);
   background: var(--udl-primary);
   color: #ffffff !important;
   font-weight: 600;
   text-decoration: none !important;
-  transition: background var(--udl-transition-fast);
-  border: none;
+  transition: background var(--udl-transition-fast), border-color var(--udl-transition-fast), color var(--udl-transition-fast);
+  border: 1.5px solid var(--udl-primary);
   cursor: pointer;
 }
-.udl-button:hover, .udl-button:focus-visible { background: var(--udl-primary-dark); }
+.udl-button:not(.udl-button-outline):hover,
+.udl-button:not(.udl-button-outline):focus-visible {
+  background: #5c1b36;
+  border-color: #5c1b36;
+  color: #ffffff !important;
+}
 .udl-button:focus-visible { outline: 2px solid var(--udl-secondary); outline-offset: 2px; }
 
-.udl-button-outline {
+.udl-button.udl-button-outline {
   background: transparent;
   color: var(--udl-primary) !important;
   border: 1.5px solid var(--udl-primary);
 }
-.udl-button-outline:hover { background: color-mix(in srgb, var(--udl-primary) 8%, transparent); }
+.udl-button.udl-button-outline:hover,
+.udl-button.udl-button-outline:focus-visible {
+  background: color-mix(in srgb, var(--udl-primary) 11%, transparent);
+  color: var(--udl-primary) !important;
+  border-color: var(--udl-primary);
+}

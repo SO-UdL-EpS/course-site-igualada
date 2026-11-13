@@ -1,0 +1,753 @@
+---
+title: "Exercicis de planificació de processos"
+subtitle: "Bloc 3 · Sistemes Operatius (SO)"
+author: "Jordi Mateo Fornés (Docent) · Roger Domingo (Alumne contribuïdor)"
+format:
+  udl-course-html:
+    toc: true
+---
+
+::: {.objectius title="Objectius d'aprenentatge"}
+En acabar aquest conjunt d'activitats seràs capaç de:
+
+- Calcular les mètriques fonamentals de planificació (**temps de retorn** $T_{retorn}$, **temps d'espera** $T_{espera}$, **temps de resposta** $T_{resposta}$ i **retorn normalitzat** $T_N$) a partir de l'instant d'arribada ($T_a$) i del temps de CPU ($T_{cpu}$).
+- Construir i interpretar diagrames de Gantt pas a pas per a polítiques **no apropiatives** (**FCFS**, **SJF**) i **apropiatives** (**Round Robin**, **SRTF/STCF**).
+- Identificar i quantificar l'**efecte comboi** (*convoy effect*), la **inanició** (*starvation*) i l'impacte de la **sobrecàrrega de canvi de context** segons l'elecció del quantum $q$.
+- Raonar **per què cada política pren les decisions que pren** i en quin tipus de sistema (interactiu, per lots o temps real) convé aplicar-la.
+:::
+
+## Guia ràpida de fórmules i criteris (per al teu full d'examen)
+
+::: {.resum title="Fórmules clau de planificació"}
+Per a cada procés amb instant d'arribada $T_a$, temps total de CPU $T_{cpu}$, instant de primera execució $T_{inici}$ i instant de finalització $T_f$ *(als llibres també hi veuràs la notació curta $T_r$, $T_w$, $T_{resp}$)*:
+
+| Mètrica | Símbol | Fórmula | Què mesura i com interpretar-la? |
+|:---|:---:|:---|:---|
+| **Temps de retorn** (*Turnaround*) | $T_{retorn}$ ($T_r$) | $T_{retorn} = T_f - T_a$ | Temps total que el procés passa al sistema des que arriba fins que acaba. Sempre es compleix $T_{retorn} \ge T_{cpu}$. |
+| **Temps d'espera** (*Waiting*) | $T_{espera}$ ($T_w$) | $T_{espera} = T_{retorn} - T_{cpu}$ *(sense E/S)* | Temps acumulat a la cua de **preparats** esperant CPU. Si hi ha E/S: $T_{espera} = T_{retorn} - T_{cpu} - T_{E/S}$. |
+| **Temps de resposta** (*Response*) | $T_{resposta}$ | $T_{resposta} = T_{inici} - T_a$ | Temps des que el procés arriba fins que s'executa **per primera vegada**. Crític en sistemes interactius. |
+| **Retorn normalitzat** | $T_N$ | $T_N = \dfrac{T_{retorn}}{T_{cpu}}$ | Quantes vegades més ha trigat respecte a tenir la CPU per a ell sol ($T_N \ge 1$). Penalitza molt els processos curts maltractats. |
+| **Fracció útil amb canvi de context** ($\delta$) | $U_{útil}$ | $U_{útil} = \dfrac{q}{q + \delta}$ | Fracció del temps en què la CPU fa feina útil en cada torn de quantum $q$ quan cada canvi de context costa $\delta$. |
+:::
+
+::: {.reflexio title="Per què així i no d'una altra manera? — Comparativa de polítiques"}
+Quan estudiem planificació, l'error més habitual és memoritzar com es dibuixa el diagrama de Gantt sense entendre **per què existeixen tantes polítiques diferents**. La raó és que **cap política pot optimitzar totes les mètriques alhora**:
+
+- **Per què FCFS (*First-Come, First-Served*) no és suficient si és el més simple en ordre d'arribada?**
+  Perquè és **no apropiatiu** i no mira la durada dels processos. Si arriba un procés molt llarg (*CPU-bound*) abans que diversos processos curts (*I/O-bound* o interactius), els curts queden atrapats al darrere. Això és l'**efecte comboi** (*convoy effect*) i dispara tant $\bar{T}_{espera}$ com el retorn normalitzat ($T_N$) dels processos curts.
+- **Per què SJF (*Shortest Job First*) i SRTF minimitzen el temps d'espera mitjà?**
+  Executar primer la ràfega més curta redueix l'espera de totes les que venen darrere. Però té dos problemes a la pràctica: **(1)** el nucli no coneix el futur (ha d'estimar la propera ràfega a partir de l'historial), i **(2)** si no paren d'arribar processos curts, un procés llarg pot patir **inanició (*starvation*)**.
+- **Per què Round Robin (RR) és la base dels sistemes de temps compartit tot i tenir sovint un $\bar{T}_{retorn}$ pitjor?**
+  Perquè en un sistema interactiu l'objectiu principal és garantir un **temps de resposta ($T_{resposta}$) baix i acotat** sense dependre de l'ordre d'arribada. Amb $n$ processos i quantum $q$, cap procés espera més de $(n-1)\,q$ entre dos torns consecutius.
+:::
+
+::: {.examtip title="Conveni de desempat en Round Robin"}
+Als exercicis de **Round Robin**, fixa't sempre en l'ordre exacte en què els processos entren a la cua FIFO de preparats:
+
+1. Si en un mateix instant $t$ **arriba un procés nou** i un altre **és expulsat per fi de quantum**, seguim el conveni vist a teoria: **el procés nou entra primer a la cua** i just darrere s'encua el procés que acaba de deixar la CPU.
+2. Quan facis un Round Robin a mà a l'examen, **escriu l'estat de la cua sota cada instant $t$** (igual que a les transparències). Fer el Gantt de memòria sense apuntar la cua és la font número u d'errors.
+:::
+
+---
+
+## Simulador interactiu de planificació
+
+Abans de resoldre els exercicis a mà, pots fer servir aquest simulador per provar les polítiques (**FCFS**, **Round Robin**, **SJF** i **SRTF**), variar el **quantum $q$**, carregar els enunciats d'aquesta pàgina i comprovar el diagrama de Gantt i les mètriques.
+
+```{=html}
+<div class="udl-widget" id="sched-sim" style="margin: 1.5rem 0; border-left: 4px solid var(--udl-theory);">
+  <h4 style="margin-top:0; font-size:1rem; color:var(--udl-primary-dark); text-transform:none; letter-spacing:normal;">
+    Simulador de planificació i diagrama de Gantt
+  </h4>
+  <p style="font-size:0.9rem; color:var(--udl-text-muted); margin-bottom:1rem;">
+    Selecciona un escenari o modifica els processos, tria la política i observa com es construeix el diagrama de Gantt i com varien els temps d'espera, retorn i resposta.
+  </p>
+
+  <div style="display:flex; flex-wrap:wrap; gap:0.75rem; align-items:flex-end; margin-bottom:1rem; padding:0.85rem; background:var(--udl-surface-sunken); border-radius:var(--udl-radius);">
+    <div>
+      <label for="sim-preset" style="display:block; font-size:0.78rem; font-weight:600; margin-bottom:0.25rem;">Escenari d'exemple:</label>
+      <select id="sim-preset" style="padding:0.4rem 0.6rem; border-radius:6px; border:1px solid var(--udl-border); background:var(--udl-surface); color:var(--udl-text); font-size:0.85rem;">
+        <option value="ex1">Exercici 1 (5 processos: A..E)</option>
+        <option value="convoy">Exercici 2 (Efecte comboi: P1 llarg vs curts)</option>
+        <option value="simulacre">Exercici 4 (Problema complet: P1..P4)</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="sim-algo" style="display:block; font-size:0.78rem; font-weight:600; margin-bottom:0.25rem;">Política:</label>
+      <select id="sim-algo" style="padding:0.4rem 0.6rem; border-radius:6px; border:1px solid var(--udl-border); background:var(--udl-surface); color:var(--udl-text); font-size:0.85rem;">
+        <option value="FCFS">FCFS (First-Come, First-Served)</option>
+        <option value="RR" selected>Round Robin (RR amb quantum q)</option>
+        <option value="SJF">SJF (Shortest Job First · No apropiatiu)</option>
+        <option value="SRTF">SRTF / STCF (Shortest Remaining Time · Apropiatiu)</option>
+      </select>
+    </div>
+
+    <div id="sim-q-wrap">
+      <label for="sim-q" style="display:block; font-size:0.78rem; font-weight:600; margin-bottom:0.25rem;">Quantum (<i>q</i>): <span id="sim-q-val" style="color:var(--udl-primary); font-weight:700;">4</span></label>
+      <input type="range" id="sim-q" min="1" max="10" value="4" style="width:120px; accent-color:var(--udl-primary);">
+    </div>
+  </div>
+
+  <div style="overflow-x:auto; margin-bottom:1rem;">
+    <table style="width:100%; font-size:0.82rem; margin:0;" id="sim-input-table">
+      <thead>
+        <tr>
+          <th>Procés</th>
+          <th>Arribada (<i>T</i><sub>a</sub>)</th>
+          <th>Ràfega CPU (<i>T</i><sub>cpu</sub>)</th>
+          <th>Acció</th>
+        </tr>
+      </thead>
+      <tbody id="sim-proc-tbody"></tbody>
+    </table>
+    <button type="button" id="sim-add-btn" class="udl-button udl-button-outline" style="margin-top:0.5rem; padding:0.3rem 0.75rem; font-size:0.78rem;">+ Afegeix procés</button>
+  </div>
+
+  <div style="margin-top:1.25rem;">
+    <div style="font-size:0.82rem; font-weight:700; margin-bottom:0.4rem; color:var(--udl-primary-dark);">Diagrama de Gantt resultant:</div>
+    <div style="overflow-x:auto; padding-bottom:0.25rem;">
+      <div id="sim-gantt" style="display:flex; width:100%; min-height:54px; border-radius:8px; overflow:hidden; border:1px solid var(--udl-border); background:var(--udl-surface-sunken);"></div>
+      <div id="sim-timeline" style="display:none;"></div>
+    </div>
+  </div>
+
+  <div style="margin-top:1.25rem; overflow-x:auto;">
+    <div style="font-size:0.82rem; font-weight:700; margin-bottom:0.4rem; color:var(--udl-primary-dark);">Taula de mètriques calculades:</div>
+    <table style="width:100%; font-size:0.82rem; margin:0;">
+      <thead>
+        <tr>
+          <th>Procés</th>
+          <th><i>T</i><sub>a</sub></th>
+          <th><i>T</i><sub>cpu</sub></th>
+          <th><i>T</i><sub>inici</sub></th>
+          <th><i>T</i><sub>f</sub></th>
+          <th>Retorn (<i>T</i><sub>retorn</sub>)</th>
+          <th>Espera (<i>T</i><sub>espera</sub>)</th>
+          <th>Resposta (<i>T</i><sub>resposta</sub>)</th>
+          <th>Normalitzat (<i>T</i><sub>N</sub>)</th>
+        </tr>
+      </thead>
+      <tbody id="sim-metrics-tbody"></tbody>
+      <tfoot id="sim-metrics-tfoot" style="font-weight:700; background:var(--udl-surface-sunken);"></tfoot>
+    </table>
+  </div>
+
+  <div id="sim-insight" style="margin-top:1rem; padding:0.75rem 1rem; border-radius:8px; background:color-mix(in srgb, var(--udl-outcome) 10%, transparent); border-left:3px solid var(--udl-outcome); font-size:0.84rem;"></div>
+</div>
+
+<script>
+(function() {
+  const colors = ['#9c2d5b', '#2563eb', '#0d9488', '#7c3aed', '#b45309', '#dc2626', '#15803d'];
+  const presets = {
+    ex1: [
+      { id: 'A', arr: 0, cpu: 3 },
+      { id: 'B', arr: 2, cpu: 6 },
+      { id: 'C', arr: 4, cpu: 4 },
+      { id: 'D', arr: 6, cpu: 5 },
+      { id: 'E', arr: 8, cpu: 2 }
+    ],
+    convoy: [
+      { id: 'P1', arr: 0, cpu: 24 },
+      { id: 'P2', arr: 1, cpu: 3 },
+      { id: 'P3', arr: 2, cpu: 3 }
+    ],
+    simulacre: [
+      { id: 'P1', arr: 0, cpu: 8 },
+      { id: 'P2', arr: 1, cpu: 4 },
+      { id: 'P3', arr: 2, cpu: 9 },
+      { id: 'P4', arr: 3, cpu: 5 }
+    ]
+  };
+
+  let procs = JSON.parse(JSON.stringify(presets.ex1));
+
+  const presetEl = document.getElementById('sim-preset');
+  const algoEl = document.getElementById('sim-algo');
+  const qEl = document.getElementById('sim-q');
+  const qValEl = document.getElementById('sim-q-val');
+  const qWrapEl = document.getElementById('sim-q-wrap');
+  const procTbody = document.getElementById('sim-proc-tbody');
+  const addBtn = document.getElementById('sim-add-btn');
+  const ganttEl = document.getElementById('sim-gantt');
+  const timelineEl = document.getElementById('sim-timeline');
+  const metricsTbody = document.getElementById('sim-metrics-tbody');
+  const metricsTfoot = document.getElementById('sim-metrics-tfoot');
+  const insightEl = document.getElementById('sim-insight');
+
+  function renderInputs() {
+    procTbody.innerHTML = '';
+    procs.forEach((p, idx) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><span style="display:inline-block; padding:0.12rem 0.5rem; border-radius:4px; background:${colors[idx % colors.length]}; color:#ffffff; font-weight:700; font-size:0.78rem;">${p.id}</span></td>
+        <td><input type="number" min="0" max="100" value="${p.arr}" data-idx="${idx}" data-field="arr" style="width:70px; padding:0.2rem 0.4rem; border:1px solid var(--udl-border); border-radius:4px; background:var(--udl-surface); color:var(--udl-text);"></td>
+        <td><input type="number" min="1" max="100" value="${p.cpu}" data-idx="${idx}" data-field="cpu" style="width:70px; padding:0.2rem 0.4rem; border:1px solid var(--udl-border); border-radius:4px; background:var(--udl-surface); color:var(--udl-text);"></td>
+        <td>${procs.length > 1 ? `<button type="button" data-del="${idx}" style="border:none; background:transparent; color:var(--udl-warning); cursor:pointer; font-weight:700;">✕</button>` : ''}</td>
+      `;
+      procTbody.appendChild(tr);
+    });
+
+    procTbody.querySelectorAll('input').forEach(inp => {
+      inp.addEventListener('input', (e) => {
+        const i = parseInt(e.target.dataset.idx, 10);
+        const f = e.target.dataset.field;
+        let v = parseInt(e.target.value, 10);
+        if (isNaN(v)) v = f === 'cpu' ? 1 : 0;
+        if (f === 'cpu' && v < 1) v = 1;
+        if (f === 'arr' && v < 0) v = 0;
+        procs[i][f] = v;
+        simulate();
+      });
+    });
+
+    procTbody.querySelectorAll('button[data-del]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const i = parseInt(e.target.dataset.del, 10);
+        procs.splice(i, 1);
+        renderInputs();
+        simulate();
+      });
+    });
+  }
+
+  function simulate() {
+    const algo = algoEl.value;
+    const q = parseInt(qEl.value, 10) || 1;
+    qValEl.textContent = q;
+    qWrapEl.style.display = (algo === 'RR') ? 'block' : 'none';
+
+    const n = procs.length;
+    const items = procs.map((p, i) => ({
+      id: p.id,
+      idx: i,
+      arr: p.arr,
+      cpu: p.cpu,
+      rem: p.cpu,
+      start: -1,
+      fin: 0
+    }));
+
+    let t = 0;
+    let done = 0;
+    let segments = [];
+    let contextSwitches = 0;
+
+    function pushSeg(id, idx, t0, t1) {
+      if (t1 <= t0) return;
+      if (segments.length > 0 && segments[segments.length - 1].id === id) {
+        segments[segments.length - 1].end = t1;
+      } else {
+        if (segments.some(s => s.id !== 'IDLE') && id !== 'IDLE') contextSwitches++;
+        segments.push({ id, idx, start: t0, end: t1 });
+      }
+    }
+
+    if (algo === 'FCFS') {
+      const sorted = [...items].sort((a, b) => a.arr - b.arr || a.idx - b.idx);
+      for (const p of sorted) {
+        if (t < p.arr) {
+          pushSeg('IDLE', -1, t, p.arr);
+          t = p.arr;
+        }
+        p.start = t;
+        pushSeg(p.id, p.idx, t, t + p.cpu);
+        t += p.cpu;
+        p.fin = t;
+        p.rem = 0;
+      }
+    } else if (algo === 'SJF') {
+      while (done < n) {
+        const avail = items.filter(p => p.rem > 0 && p.arr <= t);
+        if (avail.length === 0) {
+          const nextArr = Math.min(...items.filter(p => p.rem > 0).map(p => p.arr));
+          pushSeg('IDLE', -1, t, nextArr);
+          t = nextArr;
+          continue;
+        }
+        avail.sort((a, b) => a.cpu - b.cpu || a.arr - b.arr || a.idx - b.idx);
+        const p = avail[0];
+        p.start = t;
+        pushSeg(p.id, p.idx, t, t + p.cpu);
+        t += p.cpu;
+        p.fin = t;
+        p.rem = 0;
+        done++;
+      }
+    } else if (algo === 'SRTF') {
+      while (done < n) {
+        const avail = items.filter(p => p.rem > 0 && p.arr <= t);
+        if (avail.length === 0) {
+          const nextArr = Math.min(...items.filter(p => p.rem > 0).map(p => p.arr));
+          pushSeg('IDLE', -1, t, nextArr);
+          t = nextArr;
+          continue;
+        }
+        avail.sort((a, b) => a.rem - b.rem || a.arr - b.arr || a.idx - b.idx);
+        const p = avail[0];
+        if (p.start === -1) p.start = t;
+        pushSeg(p.id, p.idx, t, t + 1);
+        p.rem -= 1;
+        t += 1;
+        if (p.rem === 0) {
+          p.fin = t;
+          done++;
+        }
+      }
+    } else if (algo === 'RR') {
+      const queue = [];
+      const inQ = new Array(n).fill(false);
+      const sortedByArr = [...items].sort((a, b) => a.arr - b.arr || a.idx - b.idx);
+
+      function enqueueArrivals(upToT) {
+        for (const p of sortedByArr) {
+          if (p.rem > 0 && !inQ[p.idx] && p.arr <= upToT) {
+            queue.push(p);
+            inQ[p.idx] = true;
+          }
+        }
+      }
+
+      enqueueArrivals(0);
+      while (done < n) {
+        if (queue.length === 0) {
+          const nextArr = Math.min(...items.filter(p => p.rem > 0).map(p => p.arr));
+          pushSeg('IDLE', -1, t, nextArr);
+          t = nextArr;
+          enqueueArrivals(t);
+          continue;
+        }
+        const p = queue.shift();
+        if (p.start === -1) p.start = t;
+        const slice = Math.min(q, p.rem);
+        pushSeg(p.id, p.idx, t, t + slice);
+        t += slice;
+        p.rem -= slice;
+        enqueueArrivals(t);
+        if (p.rem > 0) {
+          queue.push(p);
+        } else {
+          p.fin = t;
+          done++;
+        }
+      }
+    }
+
+    const totalTime = t || 1;
+    ganttEl.innerHTML = '';
+    ganttEl.style.minWidth = Math.max(280, segments.length * 36) + 'px';
+    timelineEl.innerHTML = '';
+
+    segments.forEach((seg, sIdx) => {
+      const dur = seg.end - seg.start;
+      const pct = (dur / totalTime) * 100;
+      const div = document.createElement('div');
+      const bg = seg.id === 'IDLE' ? '#64748b' : colors[seg.idx % colors.length];
+      div.style.cssText = `flex:${dur} 0 34px; min-width:34px; background:${bg}; color:#ffffff; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:0.78rem; font-weight:700; border-right:1px solid rgba(255,255,255,0.35); overflow:hidden; padding:3px 2px;`;
+      div.title = `${seg.id}: [${seg.start} → ${seg.end}] (durada ${dur})`;
+      div.innerHTML = `<span>${seg.id}</span><span style="font-size:0.65rem; opacity:0.92; font-weight:400;">${seg.start}-${seg.end}</span>`;
+      ganttEl.appendChild(div);
+    });
+
+    let sumTr = 0, sumTw = 0, sumTresp = 0, sumTn = 0;
+    metricsTbody.innerHTML = '';
+    items.forEach(p => {
+      const tr = p.fin - p.arr;
+      const tw = tr - p.cpu;
+      const tresp = p.start - p.arr;
+      const tn = tr / p.cpu;
+      sumTr += tr; sumTw += tw; sumTresp += tresp; sumTn += tn;
+
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td><span style="display:inline-block; padding:0.12rem 0.5rem; border-radius:4px; background:${colors[p.idx % colors.length]}; color:#ffffff; font-weight:700; font-size:0.78rem;">${p.id}</span></td>
+        <td>${p.arr}</td>
+        <td>${p.cpu}</td>
+        <td>${p.start}</td>
+        <td>${p.fin}</td>
+        <td><strong>${tr}</strong></td>
+        <td>${tw}</td>
+        <td>${tresp}</td>
+        <td>${tn.toFixed(2)}</td>
+      `;
+      metricsTbody.appendChild(row);
+    });
+
+    const avgTr = (sumTr / n).toFixed(2);
+    const avgTw = (sumTw / n).toFixed(2);
+    const avgTresp = (sumTresp / n).toFixed(2);
+    const avgTn = (sumTn / n).toFixed(2);
+
+    metricsTfoot.innerHTML = `
+      <tr>
+        <td colspan="5">Mitjana (${n} processos)</td>
+        <td><span style="text-decoration:overline"><i>T</i></span><sub>retorn</sub> = ${avgTr}</td>
+        <td><span style="text-decoration:overline"><i>T</i></span><sub>espera</sub> = ${avgTw}</td>
+        <td><span style="text-decoration:overline"><i>T</i></span><sub>resposta</sub> = ${avgTresp}</td>
+        <td><span style="text-decoration:overline"><i>T</i></span><sub>N</sub> = ${avgTn}</td>
+      </tr>
+    `;
+
+    let msg = `<strong>Resum (${algo}${algo === 'RR' ? ', q = ' + q : ''}):</strong> S'han produït <strong>${contextSwitches} canvis de procés</strong> en un temps total de ${totalTime} u. `;
+    if (algo === 'FCFS') {
+      msg += `Com que FCFS és no apropiatiu, el temps de resposta coincideix sempre amb el temps d'espera (mitjana ${avgTw}). Si un procés llarg arriba primer, penalitza el <i>T</i><sub>N</sub> dels processos curts.`;
+    } else if (algo === 'RR') {
+      msg += `Amb <i>q</i> = ${q}, el temps de resposta mitjà és de <strong>${avgTresp} u.</strong>, millorant l'atenció inicial a canvi de ${contextSwitches} canvis de context.`;
+    } else if (algo === 'SJF') {
+      msg += `SJF selecciona la ràfega més curta disponible a la cua, reduint l'espera mitjana (${avgTw}) sense interrompre el procés en execució.`;
+    } else if (algo === 'SRTF') {
+      msg += `SRTF desallotja la CPU quan arriba un procés amb menys temps restant, obtenint el mínim temps d'espera (${avgTw}) i de retorn (${avgTr}) mitjans.`;
+    }
+    insightEl.innerHTML = msg;
+  }
+
+  presetEl.addEventListener('change', () => {
+    procs = JSON.parse(JSON.stringify(presets[presetEl.value]));
+    renderInputs();
+    simulate();
+  });
+  algoEl.addEventListener('change', simulate);
+  qEl.addEventListener('input', simulate);
+  addBtn.addEventListener('click', () => {
+    const nextIdx = procs.length + 1;
+    const lastArr = procs.length > 0 ? procs[procs.length - 1].arr + 1 : 0;
+    procs.push({ id: 'P' + nextIdx, arr: lastArr, cpu: 4 });
+    renderInputs();
+    simulate();
+  });
+
+  renderInputs();
+  simulate();
+})();
+</script>
+```
+
+---
+
+## Exercici 1 · Comparativa pas a pas: FCFS vs. Round Robin ($q=4$ i $q=1$)
+
+::: {.exercici title="Enunciat de l'Exercici 1"}
+Considerem el següent conjunt de 5 processos sense operacions d'E/S:
+
+| Procés | Temps d'arribada ($T_a$) | Temps de CPU ($T_{cpu}$) |
+|:---:|:---:|:---:|
+| **A** | 0 | 3 |
+| **B** | 2 | 6 |
+| **C** | 4 | 4 |
+| **D** | 6 | 5 |
+| **E** | 8 | 2 |
+
+1. Construeix la taula completa ($T_f$, $T_{retorn}$, $T_{espera}$, $T_{resposta}$, $T_N$) per a **FCFS**, **Round Robin ($q=4$)** i **Round Robin ($q=1$)** aplicant el conveni de teoria (les noves arribades s'encuen abans que el procés expulsat en el mateix instant).
+2. Compara el retorn normalitzat ($T_N$) i el temps de resposta del procés **E** (el més curt, amb $T_{cpu}=2$) en tots tres casos. Quina política el tracta millor i per què?
+3. Per què a **Round Robin** el procés **B** acaba a $t=17$ ($q=4$) o $t=18$ ($q=1$), mentre que amb **FCFS** acabava a $t=9$?
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+::: {.solucio}
+### 1. Resolució dels tres escenaris
+
+:::: {.panel-tabset}
+
+#### a) FCFS (No apropiatiu)
+
+Ordre d'execució estricte per arribada: `A [0..3] → B [3..9] → C [9..13] → D [13..18] → E [18..20]`.
+
+| Procés | $T_a$ | $T_{cpu}$ | $T_{inici}$ | $T_f$ | $T_{retorn} = T_f-T_a$ | $T_{espera} = T_{retorn}-T_{cpu}$ | $T_{resposta}$ | $T_N = T_{retorn}/T_{cpu}$ |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **A** | 0 | 3 | 0 | 3 | 3 | 0 | 0 | 1,00 |
+| **B** | 2 | 6 | 3 | 9 | 7 | 1 | 1 | 1,17 |
+| **C** | 4 | 4 | 9 | 13 | 9 | 5 | 5 | 2,25 |
+| **D** | 6 | 5 | 13 | 18 | 12 | 7 | 7 | 2,40 |
+| **E** | 8 | 2 | 18 | 20 | 12 | 10 | 10 | **6,00** |
+| **Mitjana** | — | **4,0** | — | — | **8,60** | **4,60** | **4,60** | **2,56** |
+
+#### b) Round Robin ($q = 4$)
+
+Seguim l'evolució de la cua de preparats a cada tall:
+
+- **$t=0..3$**: S'executa **A** (necessita 3 < $q=4$, acaba a $t=3$). Mentrestant, a $t=2$ ha arribat **B**. Cua a $t=3$: `[B]`.
+- **$t=3..7$**: S'executa **B** durant 4 unitats (li'n queden $6-4=2$). Mentrestant, arriben **C** ($t=4$) i **D** ($t=6$). Cua a $t=7$: `[C, D, B]`.
+- **$t=7..11$**: S'executa **C** durant 4 unitats (acaba a $t=11$). Mentrestant, a $t=8$ ha arribat **E**. Cua a $t=11$: `[D, B, E]`.
+- **$t=11..15$**: S'executa **D** durant 4 unitats (li'n queda $5-4=1$). Cua a $t=15$: `[B, E, D]`.
+- **$t=15..17$**: S'executa **B** durant les 2 unitats restants (acaba a $t=17$). Cua a $t=17$: `[E, D]`.
+- **$t=17..19$**: S'executa **E** durant 2 unitats (acaba a $t=19$). Cua a $t=19$: `[D]`.
+- **$t=19..20$**: S'executa **D** durant l'última unitat (acaba a $t=20$).
+
+| Procés | $T_a$ | $T_{cpu}$ | $T_{inici}$ | $T_f$ | $T_{retorn}$ | $T_{espera}$ | $T_{resposta}$ | $T_N$ |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **A** | 0 | 3 | 0 | 3 | 3 | 0 | 0 | 1,00 |
+| **B** | 2 | 6 | 3 | 17 | 15 | 9 | 1 | 2,50 |
+| **C** | 4 | 4 | 7 | 11 | 7 | 3 | 3 | 1,75 |
+| **D** | 6 | 5 | 11 | 20 | 14 | 9 | 5 | 2,80 |
+| **E** | 8 | 2 | 17 | 19 | 11 | 9 | 9 | **5,50** |
+| **Mitjana** | — | **4,0** | — | — | **10,00** | **6,00** | **3,60** | **2,71** |
+
+#### c) Round Robin ($q = 1$)
+
+Amb $q=1$ (i encuant les arribades noves abans del procés expulsat a $t=2, 6, 8$), la seqüència a la CPU és `A, A, B, A, B, C, B, D, C, B, E, D, C, B, E, D, C, B, D, D`:
+
+| Procés | $T_a$ | $T_{cpu}$ | $T_{inici}$ | $T_f$ | $T_{retorn}$ | $T_{espera}$ | $T_{resposta}$ | $T_N$ |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **A** | 0 | 3 | 0 | 4 | 4 | 1 | 0 | 1,33 |
+| **B** | 2 | 6 | 2 | 18 | 16 | 10 | 0 | 2,67 |
+| **C** | 4 | 4 | 5 | 17 | 13 | 9 | 1 | 3,25 |
+| **D** | 6 | 5 | 7 | 20 | 14 | 9 | 1 | 2,80 |
+| **E** | 8 | 2 | 10 | 15 | 7 | 5 | 2 | **3,50** |
+| **Mitjana** | — | **4,0** | — | — | **10,80** | **6,80** | **0,80** | **2,71** |
+
+::::
+
+### 2. Anàlisi del procés curt E i del procés llarg B
+
+- **Comportament del procés E ($T_{cpu}=2$)**: Amb FCFS, **E** arriba a $t=8$ i ha d'esperar que acabin B, C i D sencers: triga 10 unitats a ser atès per primer cop ($T_{resposta}=10$) i assoleix un $T_N = 6,00$ (6 vegades el temps que necessitava). Amb RR ($q=1$), **E** entra a la CPU a $t=10$ ($T_{resposta}=2$), redueix el seu $T_N$ fins a $3,50$, i el temps de resposta mitjà del sistema baixa de **4,60** a només **0,80**.
+- **Per què B triga més amb RR?**: Perquè **B** és el procés més llarg ($T_{cpu}=6$). En FCFS monopolitza la CPU de $t=3$ a $t=9$ sense deixar entrar C, D ni E. En Round Robin, B ha d'anar cedint torns a C, D i E, de manera que la seva espera puja d'1 a 9–10 unitats, però a canvi **evitem bloquejar els processos interactius que arriben després**.
+:::
+</details>
+
+---
+
+## Exercici 2 · Efecte comboi i cost del canvi de context
+
+::: {.exercici title="Enunciat de l'Exercici 2"}
+En un sistema monoprocessador arriben 3 processos gairebé simultàniament:
+
+- **P1** (procés intensiu en CPU, p. ex. compilació): arriba a $t=0$, necessita $T_{CPU} = 24\text{ ms}$.
+- **P2** (procés interactiu, p. ex. escriptura al terminal): arriba a $t=1\text{ ms}$, necessita $T_{CPU} = 3\text{ ms}$.
+- **P3** (procés interactiu): arriba a $t=2\text{ ms}$, necessita $T_{CPU} = 3\text{ ms}$.
+
+Respon:
+
+1. Calcula el temps d'espera mitjà ($\overline{T_w}$) i el temps de resposta mitjà ($\overline{T_{resp}}$) sota **FCFS**, **SJF (no apropiatiu)** i **SRTF (apropiatiu)**. Quantifiquen aquests números l'**efecte comboi**?
+2. Ara aplica **Round Robin amb $q = 4\text{ ms}$**. Quin és el nou **temps de resposta** ($T_{resp}$) de **P2** i **P3**? L'usuari notarà que el terminal respon ràpid?
+3. Suposa ara que dos processos llargs s'alternen contínuament per Round Robin i que cada **canvi de context** té un cost de sobrecàrrega del nucli de $\delta = 1\text{ ms}$ (temps durant el qual el despatxador desa/restaura registres i es refreda la memòria cau). Quin **percentatge del temps de CPU fa feina útil** en aquests dos casos?
+   - Amb un quantum raonable: $q = 12\text{ ms}$.
+   - Amb un quantum massa petit: $q = 1\text{ ms}$.
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+::: {.solucio}
+1. **Quantificació de l'efecte comboi (FCFS i SJF vs. SRTF)**:
+   - **Amb FCFS (i també amb SJF no apropiatiu, ja que a $t=0$ només hi ha P1 i no es pot interrompre a $t=1$)**: `P1 [0..24] → P2 [24..27] → P3 [27..30]`.
+     - Temps d'espera (que aquí coincideix amb $T_{resposta}$): $T_{espera}(P1) = 0\text{ ms}$, $T_{espera}(P2) = 24 - 1 = 23\text{ ms}$, $T_{espera}(P3) = 27 - 2 = 25\text{ ms}$.
+     - **Mitjana FCFS / SJF**: $\bar{T}_{espera} = \bar{T}_{resposta} = \frac{0 + 23 + 25}{3} = \mathbf{16,0\text{ ms}}$. Els processos curts P2 i P3 tenen un retorn normalitzat $T_N$ de $26/3 = 8,67$ i $28/3 = 9,33$.
+   - **Amb SRTF (apropiatiu)**: A $t=1$ arriba P2 ($T_{cpu}=3 < 23$ restants de P1) i desallotja P1: `P1 [0..1] → P2 [1..4] → P3 [4..7] → P1 [7..30]`.
+     - Temps d'espera: $T_{espera}(P1) = 30 - 24 = 6\text{ ms}$, $T_{espera}(P2) = 0\text{ ms}$, $T_{espera}(P3) = 4 - 2 = 2\text{ ms}$.
+     - Temps de resposta: $T_{resposta}(P1) = 0\text{ ms}$, $T_{resposta}(P2) = 1 - 1 = 0\text{ ms}$, $T_{resposta}(P3) = 4 - 2 = 2\text{ ms}$.
+     - **Mitjana SRTF**: $\bar{T}_{espera} = \frac{6 + 0 + 2}{3} = \mathbf{2,67\text{ ms}}$ (6 vegades menys espera mitjana que FCFS) i $\bar{T}_{resposta} = \frac{0 + 0 + 2}{3} = \mathbf{0,67\text{ ms}}$.
+
+2. **Round Robin amb $q = 4\text{ ms}$ (sense conèixer la durada dels processos)**:
+   - `P1 [0..4] → P2 [4..7] → P3 [7..10] → P1 [10..30]`.
+   - **Temps de resposta ($T_{resposta}$)**:
+     - $T_{resposta}(P1) = 0 - 0 = 0\text{ ms}$.
+     - $T_{resposta}(P2) = 4 - 1 = \mathbf{3\text{ ms}}$ (amb FCFS era $23\text{ ms}$).
+     - $T_{resposta}(P3) = 7 - 2 = \mathbf{5\text{ ms}}$ (amb FCFS era $25\text{ ms}$).
+   - **Conclusió**: Sense haver d'endevinar quant durarà cada procés (com exigiria SJF), Round Robin elimina el bloqueig percebut per l'usuari limitant l'espera inicial a un sol quantum de P1.
+
+3. **Impacte del cost del canvi de context ($\delta = 1\text{ ms}$)**:
+   Per cada torn de treball útil $q$, el nucli inverteix $\delta$ en canviar al procés següent:
+   - **Cas A ($q = 12\text{ ms}$)**:
+     $$U_{útil} = \frac{q}{q + \delta} = \frac{12}{12 + 1} = \frac{12}{13} \approx \mathbf{92,3\%\text{ de feina útil}}$$
+   - **Cas B ($q = 1\text{ ms}$)**:
+     $$U_{útil} = \frac{q}{q + \delta} = \frac{1}{1 + 1} = \frac{1}{2} = \mathbf{50\%\text{ de feina útil}}$$
+   - **Regla de disseny**: El quantum $q$ ha de ser **molt més gran que el cost del canvi de context $\delta$** (als sistemes actuals $q \approx 10\text{–}100\text{ ms}$ davant d'un $\delta$ d'entre $0,1$ i $1\text{ ms}$, mantenint la sobrecàrrega al voltant de l'1%).
+:::
+</details>
+
+---
+
+## Exercici 3 · Processos amb ràfegues de CPU i bloquejos d'E/S
+
+::: {.exercici title="Enunciat de l'Exercici 3"}
+Fins ara hem suposat processos purament de CPU, però en un sistema real els processos alternen ràfegues de CPU amb operacions d'**Entrada/Sortida (E/S)** durant les quals passen a l'estat **Bloquejat (*Waiting/Sleep*)** i alliberen la CPU.
+
+Suposem dos processos que arriben a $t=0$ sota un planificador **FCFS sobre la cua de Preparats**:
+
+- **Procés P1 (interactiu / I/O-bound)**: fa una ràfega de CPU de $2\text{ u.}$, es bloqueja per E/S de disc durant $4\text{ u.}$, i quan acaba l'E/S fa una última ràfega de CPU de $2\text{ u.}$ ($T_{CPU\_total} = 4$, $T_{E/S} = 4$).
+- **Procés P2 (càlcul / CPU-bound)**: arriba a $t=0$ (just darrere de P1) i necessita una única ràfega contínua de CPU de $5\text{ u.}$ ($T_{CPU\_total} = 5$, $T_{E/S} = 0$).
+
+1. Dibuixa la línia temporal (CPU i E/S) des de $t=0$ fins que tots dos processos acaben. En algun moment la CPU queda ociosa (*Idle*)?
+2. Calcula per a P1 i P2 el **temps de retorn ($T_r$)** i el **temps d'espera a la cua de Preparats ($T_w$)** tenint en compte que **el temps que un procés està bloquejat fent E/S NO és temps d'espera a la cua de Ready** ($T_w = T_r - T_{CPU} - T_{E/S}$).
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+::: {.solucio}
+### 1. Traça temporal d'estats (`Running`, `Ready`, `Blocked`)
+
+- **$t=0..2$**: **P1** s'executa a la CPU (`Running`), mentre **P2** espera a `Ready`.
+- **$t=2$**: **P1** inicia la seva operació d'E/S i passa a l'estat **Bloquejat (`Blocked`)** durant 4 unitats (des de $t=2$ fins a $t=6$). Com que P1 ha deixat lliure la CPU voluntàriament, el planificador selecciona **P2**.
+- **$t=2..6$**: **P2** s'executa a la CPU mentre **P1** fa E/S en paral·lel al controlador de disc.
+- **$t=6$**: L'operació d'E/S de **P1** finalitza (interrupció de maquinari). **P1** passa de `Blocked` a `Ready`. Com que l'algorisme és FCFS (no apropiatiu) i a **P2** encara li queda 1 unitat de CPU ($5 - 4 = 1$), **P2** continua fins a acabar.
+- **$t=6..7$**: **P2** completa la seva última unitat de CPU i **finalitza a $t=7$**. **P1** espera a `Ready` durant aquesta 1 unitat.
+- **$t=7..9$**: **P1** entra a la CPU per fer la seva segona ràfega de 2 unitats i **finalitza a $t=9$**.
+
+```
+Temps:     0    1    2    3    4    5    6    7    8    9
+CPU:      [   P1   ][          P2          ][   P1   ]
+E/S P1:              (···· Bloquejat E/S ····)
+Estat P1:  Run  Run  Blk  Blk  Blk  Blk  Rdy  Run  Run
+Estat P2:  Rdy  Rdy  Run  Run  Run  Run  Run  Fi
+```
+
+La CPU **no queda ociosa en cap instant** ($100\%$ d'aprofitament entre $t=0$ i $t=9$) gràcies a la multiprogramació: mentre P1 espera el disc, P2 aprofita el processador!
+
+### 2. Càlcul de mètriques
+
+| Procés | $T_{arr}$ | $T_{CPU}$ | $T_{E/S}$ | $T_{fi}$ | Retorn ($T_r = T_{fi}-T_{arr}$) | Espera a Ready ($T_w = T_r - T_{CPU} - T_{E/S}$) |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **P1** | 0 | $2+2 = 4$ | 4 | 9 | $9 - 0 = \mathbf{9}$ | $9 - 4 - 4 = \mathbf{1}$ *(només espera de $t=6$ a $t=7$)* |
+| **P2** | 0 | 5 | 0 | 7 | $7 - 0 = \mathbf{7}$ | $7 - 5 - 0 = \mathbf{2}$ *(espera de $t=0$ a $t=2$)* |
+
+::: {.errorcomu title="Compte amb restar només el temps de CPU quan hi ha E/S!"}
+Si apliquessis cegament $T_w = T_r - T_{CPU}$ a **P1**, obtindries $9 - 4 = 5$, cosa que és **incorrecta** perquè 4 d'aquestes unitats P1 estava bloquejat esperant el disc (no estava a la cua de `Ready` esperant el planificador). Sempre recorda:
+$$T_r = T_{CPU} + T_{E/S} + T_w \implies T_w = T_r - T_{CPU} - T_{E/S}$$
+:::
+:::
+</details>
+
+---
+
+## Exercici 4 · Problema complet d'examen (FCFS, SJF, SRTF i RR)
+
+::: {.exercici title="Enunciat de l'Exercici 4"}
+Es tenen els 4 processos següents (sense E/S):
+
+| Procés | Temps d'arribada ($T_{arr}$) | Temps de CPU ($T_{CPU}$) |
+|:---:|:---:|:---:|
+| **P1** | 0 | 8 |
+| **P2** | 1 | 4 |
+| **P3** | 2 | 9 |
+| **P4** | 3 | 5 |
+
+*(Pots carregar l'escenari **"Exercici 4"** al simulador de dalt per comprovar els teus diagrames de Gantt un cop els hagis fet en paper).*
+
+1. Dibuixa el diagrama de Gantt i calcula el **temps d'espera mitjà ($\overline{T_w}$)** i el **temps de retorn mitjà ($\overline{T_r}$)** per a:
+   - **FCFS**
+   - **SJF (no apropiatiu)**
+   - **SRTF (apropiatiu)**
+   - **Round Robin amb $q = 4$**
+2. Ordena els 4 algorismes de menor a major **temps d'espera mitjà ($\overline{T_w}$)**.
+:::
+
+<details>
+<summary><b>Pots veure el raonament</b></summary>
+
+::: {.solucio}
+### 1. Diagrames de Gantt i taules per algorisme
+
+- **FCFS**: `P1 [0..8] → P2 [8..12] → P3 [12..21] → P4 [21..26]`
+  - $T_r$: $P1=8,\ P2=11,\ P3=19,\ P4=23 \implies \overline{T_r} = \mathbf{15,25}$
+  - $T_w$: $P1=0,\ P2=7,\ P3=10,\ P4=18 \implies \overline{T_w} = \mathbf{8,75}$
+
+- **SJF (No apropiatiu)**: A $t=0$ només hi ha P1, de manera que P1 s'executa sencer fins a $t=8$. A $t=8$ ja han arribat P2 ($4$), P3 ($9$) i P4 ($5$), i s'executen per ordre de ràfega més curta: `P1 [0..8] → P2 [8..12] → P4 [12..17] → P3 [17..26]`
+  - $T_r$: $P1=8,\ P2=11,\ P3=24,\ P4=14 \implies \overline{T_r} = \mathbf{14,25}$
+  - $T_w$: $P1=0,\ P2=7,\ P3=15,\ P4=9 \implies \overline{T_w} = \mathbf{7,75}$
+
+- **SRTF (Apropiatiu)**:
+  - A $t=0$ comença P1 (resten 8).
+  - A $t=1$ arriba P2 ($T_{CPU}=4 < 7$ restants de P1) $\implies$ **P2 desallotja P1**.
+  - A $t=2$ arriba P3 ($9 > 3$ de P2) i a $t=3$ arriba P4 ($5 > 2$ de P2); P2 continua fins a acabar a $t=5$.
+  - A $t=5$, restants: $P1=7,\ P3=9,\ P4=5 \implies$ entra **P4** fins a $t=10$.
+  - A $t=10$, restants: $P1=7,\ P3=9 \implies$ entra **P1** fins a $t=17$, i finalment **P3** de $t=17$ a $t=26$.
+  - Gantt: `P1 [0..1] → P2 [1..5] → P4 [5..10] → P1 [10..17] → P3 [17..26]`
+  - $T_r$: $P1=17,\ P2=4,\ P3=24,\ P4=7 \implies \overline{T_r} = \mathbf{13,00}$
+  - $T_w$: $P1=9,\ P2=0,\ P3=15,\ P4=2 \implies \overline{T_w} = \mathbf{6,50}$
+
+- **Round Robin ($q = 4$)**:
+  - Gantt: `P1 [0..4] → P2 [4..8] → P3 [8..12] → P4 [12..16] → P1 [16..20] → P3 [20..24] → P4 [24..25] → P3 [25..26]`
+  - $T_{fi}$: $P1=20,\ P2=8,\ P3=26,\ P4=25$
+  - $T_r$: $P1=20,\ P2=7,\ P3=24,\ P4=22 \implies \overline{T_r} = \mathbf{18,25}$
+  - $T_w$: $P1=12,\ P2=3,\ P3=15,\ P4=17 \implies \overline{T_w} = \mathbf{11,75}$
+  - $T_{resp}$: $P1=0,\ P2=3,\ P3=6,\ P4=9 \implies \overline{T_{resp}} = \mathbf{4,50}$ (el millor repartiment inicial tot i tenir un $\overline{T_w}$ més alt).
+
+### 2. Classificació per temps d'espera mitjà ($\overline{T_w}$)
+
+$$\text{SRTF } (6,50) < \text{SJF } (7,75) < \text{FCFS } (8,75) < \text{Round Robin } (11,75)$$
+:::
+</details>
+
+---
+
+## Autocomprovació ràpida (Test interactiu)
+
+Posa a prova si tens clars els conceptes clau abans de passar al següent bloc:
+
+```{=html}
+<div class="udl-widget" id="sched-quiz" style="margin: 1.5rem 0; border-left: 4px solid var(--udl-exam);">
+  <h4 style="margin-top:0; font-size:1rem; color:var(--udl-primary-dark); text-transform:none; letter-spacing:normal;">
+    Test ràpid d'autocomprovació · Planificació (4 preguntes)
+  </h4>
+
+  <div class="quiz-q" data-ans="1" style="margin-bottom:1rem; padding-bottom:0.8rem; border-bottom:1px solid var(--udl-border);">
+    <p style="font-weight:600; margin-bottom:0.4rem;">1. Què passa amb l'algorisme Round Robin si escollim un quantum <i>q</i> infinitament gran (<i>q</i> &rarr; &infin;)?</p>
+    <label style="display:block; font-size:0.88rem; cursor:pointer;"><input type="radio" name="sq1" value="0"> Es comporta exactament com SJF.</label>
+    <label style="display:block; font-size:0.88rem; cursor:pointer;"><input type="radio" name="sq1" value="1"> Es comporta com FCFS (cap procés arriba a ser expulsat per fi de quantum).</label>
+    <label style="display:block; font-size:0.88rem; cursor:pointer;"><input type="radio" name="sq1" value="2"> El cost dels canvis de context tendeix al 100%.</label>
+    <div class="quiz-fb" style="display:none; margin-top:0.4rem; font-size:0.84rem; padding:0.4rem 0.6rem; border-radius:6px;"></div>
+  </div>
+
+  <div class="quiz-q" data-ans="2" style="margin-bottom:1rem; padding-bottom:0.8rem; border-bottom:1px solid var(--udl-border);">
+    <p style="font-weight:600; margin-bottom:0.4rem;">2. Quin valor pot prendre com a mínim el temps de retorn normalitzat (<i>T</i><sub>N</sub> = <i>T</i><sub>retorn</sub> / <i>T</i><sub>cpu</sub>) d'un procés?</p>
+    <label style="display:block; font-size:0.88rem; cursor:pointer;"><input type="radio" name="sq2" value="0"> 0,0 (quan el procés no espera gens).</label>
+    <label style="display:block; font-size:0.88rem; cursor:pointer;"><input type="radio" name="sq2" value="1"> Pot ser menor que 1,0 si el quantum és molt petit.</label>
+    <label style="display:block; font-size:0.88rem; cursor:pointer;"><input type="radio" name="sq2" value="2"> 1,0 (perquè sempre es compleix <i>T</i><sub>retorn</sub> = <i>T</i><sub>cpu</sub> + <i>T</i><sub>espera</sub> &ge; <i>T</i><sub>cpu</sub>).</label>
+    <div class="quiz-fb" style="display:none; margin-top:0.4rem; font-size:0.84rem; padding:0.4rem 0.6rem; border-radius:6px;"></div>
+  </div>
+
+  <div class="quiz-q" data-ans="0" style="margin-bottom:1rem; padding-bottom:0.8rem; border-bottom:1px solid var(--udl-border);">
+    <p style="font-weight:600; margin-bottom:0.4rem;">3. Quin és el principal risc de l'algorisme SRTF (o SJF) en un sistema on no paren d'arribar processos curts?</p>
+    <label style="display:block; font-size:0.88rem; cursor:pointer;"><input type="radio" name="sq3" value="0"> Inanició (<i>starvation</i>) dels processos amb ràfegues de CPU llargues.</label>
+    <label style="display:block; font-size:0.88rem; cursor:pointer;"><input type="radio" name="sq3" value="1"> Efecte comboi dels processos curts darrere dels llargs.</label>
+    <label style="display:block; font-size:0.88rem; cursor:pointer;"><input type="radio" name="sq3" value="2"> Que el temps de retorn normalitzat sigui inferior a 1.</label>
+    <div class="quiz-fb" style="display:none; margin-top:0.4rem; font-size:0.84rem; padding:0.4rem 0.6rem; border-radius:6px;"></div>
+  </div>
+
+  <div class="quiz-q" data-ans="1" style="margin-bottom:1rem;">
+    <p style="font-weight:600; margin-bottom:0.4rem;">4. Quan un procés en execució sol·licita llegir d'una pipe buida o d'un fitxer en disc, a quin estat passa?</p>
+    <label style="display:block; font-size:0.88rem; cursor:pointer;"><input type="radio" name="sq4" value="0"> Directament a la cua de preparats (<i>Ready</i>) per esperar el següent quantum.</label>
+    <label style="display:block; font-size:0.88rem; cursor:pointer;"><input type="radio" name="sq4" value="1"> A l'estat d'espera o bloquejat (<i>Waiting/Sleep</i>) fins que l'operació d'E/S finalitzi, cedint la CPU a un altre procés.</label>
+    <label style="display:block; font-size:0.88rem; cursor:pointer;"><input type="radio" name="sq4" value="2"> A l'estat zombi fins que el nucli resolgui la lectura.</label>
+    <div class="quiz-fb" style="display:none; margin-top:0.4rem; font-size:0.84rem; padding:0.4rem 0.6rem; border-radius:6px;"></div>
+  </div>
+
+  <button type="button" id="sched-quiz-btn" class="udl-button" style="font-size:0.85rem; padding:0.45rem 1rem;">Comprova les respostes</button>
+  <span id="sched-quiz-score" style="margin-left:0.75rem; font-weight:700; font-size:0.9rem;"></span>
+</div>
+
+<script>
+(function() {
+  const explanations = [
+    "Si el quantum és major que la ràfega de qualsevol procés, cap procés exhaureix el seu torn i tots acaben en l'ordre FIFO d'arribada (FCFS).",
+    "Com que el temps de retorn inclou el temps de CPU més el temps d'espera (<i>T</i><sub>retorn</sub> = <i>T</i><sub>cpu</sub> + <i>T</i><sub>espera</sub>), el cas òptim és <i>T</i><sub>espera</sub> = 0, on <i>T</i><sub>N</sub> = 1,0.",
+    "Com que SRTF prioritza sempre qui té menys temps restant, un procés llarg pot quedar posposat indefinidament (inanició). S'evita amb tècniques d'envelliment (<i>aging</i>).",
+    "Un procés bloquejat per E/S no pot avançar encara que li donéssim la CPU; passa a bloquejat i només torna a preparats quan arriba la interrupció o les dades."
+  ];
+  document.getElementById('sched-quiz-btn').addEventListener('click', function() {
+    const qs = document.querySelectorAll('#sched-quiz .quiz-q');
+    let ok = 0;
+    qs.forEach((q, i) => {
+      const ans = q.dataset.ans;
+      const sel = q.querySelector('input[type="radio"]:checked');
+      const fb = q.querySelector('.quiz-fb');
+      fb.style.display = 'block';
+      if (sel && sel.value === ans) {
+        ok++;
+        fb.style.background = 'color-mix(in srgb, var(--udl-success) 15%, transparent)';
+        fb.style.color = 'var(--udl-text)';
+        fb.innerHTML = '<strong>Correcte.</strong> ' + explanations[i];
+      } else {
+        fb.style.background = 'color-mix(in srgb, var(--udl-warning) 15%, transparent)';
+        fb.style.color = 'var(--udl-text)';
+        fb.innerHTML = '<strong>Revisa-ho:</strong> ' + explanations[i];
+      }
+    });
+    document.getElementById('sched-quiz-score').textContent = `Puntuació: ${ok} / ${qs.length}`;
+  });
+})();
+</script>
+```

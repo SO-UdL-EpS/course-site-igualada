@@ -330,7 +330,7 @@ Per convenció, les macros s'escriuen en **MAJÚSCULES** (`ACABAR`). Així es di
 :::
 
 :::{.reflexio}
-Aquesta solució encara no és perfecta: si l'usuari escriu `q` amb espais, tabuladors,... al davant o al darrere (`"  q"`, `"q  "`, `"  q  "`), el shell **no surt**. Mes endavant veurem com **tokenitzar** la línia i detectar millor les built-in.
+Aquesta solució encara no és perfecta: si l'usuari escriu `q` amb espais, tabuladors,... al davant o al darrere (`"  q"`, `"q  "`, `"  q  "`), el shell **no surt**. Més endavant veurem com **tokenitzar** la línia i detectar millor les built-in.
 :::
 
 ---

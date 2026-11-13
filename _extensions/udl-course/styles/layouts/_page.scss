@@ -2,16 +2,105 @@
 // _layout.scss — page structure, content width, override Bootstrap defaults
 // ============================================================
 
-body { background: var(--udl-background); }
+html, body {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+body {
+  background: var(--udl-background);
+  padding-bottom: 3.75rem;
+}
 
 .quarto-title-block { margin-bottom: var(--udl-space-xl); }
+
+// Prevent CSS Grid children from bursting horizontally beyond viewport width
+#quarto-content > *,
+main.content,
+.udl-dashboard > *,
+.udl-card-grid > *,
+.udl-component,
+.udl-widget {
+  min-width: 0;
+  max-width: 100%;
+}
 
 // Bootstrap ships wide, boxy containers by default — override for an
 // editorial reading measure instead of a "web-app" full-bleed feel.
 main.content {
-  max-width: 860px;
+  max-width: 880px;
   margin: 0 auto;
-  padding: 0 var(--udl-space-lg);
+  padding: 0 clamp(0.95rem, 2.8vw, 1.75rem);
+
+  p, li, td, .udl-card {
+    overflow-wrap: break-word;
+  }
+}
+
+// Inline quick section jumper (especially useful on split-screen laptops,
+// tablets and phones when Quarto hides the right-hand #quarto-margin-sidebar)
+.udl-inline-toc {
+  margin: -0.75rem 0 1.65rem;
+  padding: 0.65rem 0.9rem;
+  border-radius: var(--udl-radius);
+  border: 1px solid var(--udl-border);
+  background: var(--udl-surface);
+  font-size: 0.8rem;
+
+  .udl-itoc-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--udl-text-muted);
+    font-weight: 600;
+    margin-bottom: 0.45rem;
+  }
+
+  .udl-itoc-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  a {
+    display: inline-block;
+    padding: 0.2rem 0.58rem;
+    border-radius: 999px;
+    background: var(--udl-surface-sunken);
+    border: 1px solid var(--udl-border);
+    color: var(--udl-text);
+    text-decoration: none;
+    font-size: 0.76rem;
+    font-weight: 500;
+    transition: all var(--udl-transition-fast);
+
+    &:hover {
+      border-color: var(--udl-primary);
+      color: var(--udl-primary);
+    }
+  }
+}
+
+@media (min-width: 1200px) {
+  // On wide desktop screens where right TOC is already visible, keep inline TOC compact
+  .udl-inline-toc {
+    padding: 0.5rem 0.8rem;
+  }
+}
+
+// Off-screen measurement helper so Mermaid diagrams inside closed <details>
+// or inactive tabs calculate exact bounding boxes instead of clipping text.
+details.udl-mermaid-measuring,
+.tab-pane.udl-mermaid-measuring {
+  display: block !important;
+  position: absolute !important;
+  left: -9999px !important;
+  top: 0 !important;
+  width: 780px !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
 
 // Remove Bootstrap's heavy card/border defaults where they leak into
@@ -32,3 +121,653 @@ hr {
 
 // Generous white space between sections instead of Bootstrap's tight defaults
 .level2, .level3 { margin-top: var(--udl-space-xl); }
+
+// Barra de progrés i modes de lectura fàcil / focus
+#udl-reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--udl-primary), var(--udl-outcome));
+  z-index: 2500;
+  transition: width 80ms linear;
+}
+
+#udl-reading-ruler {
+  display: none;
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: -200px;
+  height: 38px;
+  pointer-events: none;
+  z-index: 2400;
+  background: color-mix(in srgb, var(--udl-exam) 16%, transparent);
+  border-top: 1.5px solid color-mix(in srgb, var(--udl-primary) 45%, transparent);
+  border-bottom: 1.5px solid color-mix(in srgb, var(--udl-primary) 45%, transparent);
+}
+
+body.udl-ruler-active #udl-reading-ruler {
+  display: block;
+}
+
+// Màscara de lectura: enfosqueix tot excepte la franja que s'està llegint
+body.udl-ruler-mask #udl-reading-ruler {
+  height: 64px;
+  background: transparent;
+  border-top: 2px solid color-mix(in srgb, var(--udl-primary) 60%, transparent);
+  border-bottom: 2px solid color-mix(in srgb, var(--udl-primary) 60%, transparent);
+  box-shadow: 0 0 0 100vmax rgba(10, 16, 28, 0.55);
+}
+
+// Barra de preferències: un sol botó discret que obre un panell agrupat
+.udl-a11y-bar {
+  position: fixed;
+  bottom: 0.85rem;
+  right: 0.9rem;
+  z-index: 1900;
+  max-width: calc(100vw - 1.8rem);
+
+  #udl-btn-prefs {
+    border: 1px solid var(--udl-border);
+    background: var(--udl-surface);
+    color: var(--udl-text);
+    padding: 0.42rem 0.9rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: var(--udl-shadow-hover);
+    transition: border-color var(--udl-transition-fast), color var(--udl-transition-fast);
+
+    &::after { content: " \25BE"; }
+    &[aria-expanded="true"]::after { content: " \25B4"; }
+    &:hover { border-color: var(--udl-primary); color: var(--udl-primary); }
+    &.active { border-color: var(--udl-primary); }
+  }
+}
+
+#udl-prefs-panel {
+  position: fixed;
+  bottom: 4rem;
+  right: 0.9rem;
+  width: min(330px, calc(100vw - 1.8rem));
+  max-height: calc(100vh - 6rem);
+  overflow-y: auto;
+  z-index: 1950;
+  padding: 0.35rem 0.85rem 0.85rem;
+  background: var(--udl-surface);
+  color: var(--udl-text);
+  border: 1px solid var(--udl-border);
+  border-radius: 12px;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.22);
+  font-size: 0.84rem;
+
+  &[hidden] { display: none !important; }
+
+  .udl-pp-group + .udl-pp-group {
+    border-top: 1px solid var(--udl-border);
+    margin-top: 0.6rem;
+    padding-top: 0.2rem;
+  }
+  .udl-pp-title {
+    margin: 0.6rem 0 0.4rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--udl-text-muted);
+  }
+  .udl-pp-hint {
+    margin: 0.3rem 0 0;
+    font-size: 0.74rem;
+    color: var(--udl-text-muted);
+    line-height: 1.4;
+  }
+  .udl-pp-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 0.35rem 0;
+
+    select {
+      max-width: 60%;
+      padding: 0.25rem 0.4rem;
+      border-radius: 6px;
+      border: 1px solid var(--udl-border);
+      background: var(--udl-surface);
+      color: var(--udl-text);
+      font-size: 0.8rem;
+    }
+  }
+  .udl-pp-toggle {
+    display: block;
+    width: 100%;
+    margin: 0.3rem 0;
+    padding: 0.4rem 0.7rem;
+    text-align: left;
+    border: 1px solid var(--udl-border);
+    background: var(--udl-surface-sunken);
+    color: var(--udl-text);
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:hover { border-color: var(--udl-primary); }
+    &[aria-pressed="true"],
+    &.active {
+      background: var(--udl-primary);
+      border-color: var(--udl-primary);
+      color: #ffffff;
+    }
+  }
+}
+
+body.quarto-dark #udl-prefs-panel .udl-pp-toggle[aria-pressed="true"],
+body.quarto-dark #udl-prefs-panel .udl-pp-toggle.active {
+  color: #10182a;
+}
+
+@media (hover: none) {
+  #udl-pp-guide { display: none; }
+}
+
+// Indicador de sortida del mode concentració (sempre visible quan està actiu)
+#udl-focus-exit {
+  position: fixed;
+  top: 0.6rem;
+  right: 0.9rem;
+  z-index: 2600;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  max-width: calc(100vw - 1.8rem);
+  padding: 0.3rem 0.4rem 0.3rem 0.8rem;
+  background: var(--udl-surface);
+  color: var(--udl-text);
+  border: 1px solid var(--udl-primary);
+  border-radius: 999px;
+  box-shadow: var(--udl-shadow-hover);
+  font-size: 0.78rem;
+
+  &[hidden] { display: none !important; }
+
+  #udl-focus-where {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--udl-text-muted);
+  }
+  button {
+    flex-shrink: 0;
+    border: none;
+    background: var(--udl-primary);
+    color: #ffffff;
+    padding: 0.3rem 0.8rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.78rem;
+    cursor: pointer;
+  }
+}
+body.quarto-dark #udl-focus-exit button { color: #10182a; }
+
+.udl-readtime {
+  margin: -0.5rem 0 1.1rem;
+  font-size: 0.82rem;
+  color: var(--udl-text-muted);
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// Selecció de tipografia (Preferències de lectura)
+body.udl-font-atkinson { --udl-font-body: "Atkinson Hyperlegible", "Inter", Verdana, sans-serif; --udl-font-heading: "Atkinson Hyperlegible", "Inter", Verdana, sans-serif; }
+body.udl-font-lexend { --udl-font-body: "Lexend", "Inter", Verdana, sans-serif; --udl-font-heading: "Lexend", "Inter", Verdana, sans-serif; }
+body.udl-font-opendyslexic { --udl-font-body: "OpenDyslexic", "Comic Sans MS", Verdana, sans-serif; --udl-font-heading: "OpenDyslexic", "Comic Sans MS", Verdana, sans-serif; }
+
+// Lectura fàcil: sans-serif també als títols (la serif d'alt contrast cansa i confon lletres)
+body.udl-easy-read {
+  --udl-font-body: "Atkinson Hyperlegible", "Inter", Verdana, sans-serif;
+  --udl-font-heading: "Atkinson Hyperlegible", "Inter", Verdana, sans-serif;
+  --udl-line-height: 1.88;
+  --udl-measure: 38em;
+  letter-spacing: 0.028em;
+  word-spacing: 0.09em;
+
+  h1, h2, h3, h4, h5, .udl-hero h2, .udl-component-title {
+    font-family: var(--udl-font-heading) !important;
+    letter-spacing: 0.01em;
+  }
+
+  main.content p, main.content li {
+    font-size: 1.05rem;
+    line-height: 1.88;
+    text-align: left;
+  }
+
+  main.content p + p {
+    margin-top: 1.2em;
+  }
+
+  // Sense canvis de fons en passar el ratolí: redueix el soroll visual
+
+  pre.sourceCode, code {
+    letter-spacing: 0.02em;
+    line-height: 1.7;
+    font-variant-ligatures: none;
+    font-family: var(--udl-font-mono);
+  }
+}
+
+// Tipus de lletra triat també als títols i components
+body.udl-font-atkinson, body.udl-font-lexend, body.udl-font-opendyslexic {
+  h1, h2, h3, h4, h5, .udl-component-title { font-family: var(--udl-font-heading) !important; }
+}
+
+body.udl-focus-mode {
+  #quarto-sidebar,
+  #quarto-margin-sidebar,
+  .quarto-secondary-nav,
+  .udl-inline-toc,
+  footer.footer {
+    display: none !important;
+  }
+
+  #quarto-content {
+    display: block !important;
+    max-width: 960px !important;
+    margin: 0 auto !important;
+    padding-top: 1.25rem !important;
+  }
+
+  main.content {
+    max-width: 900px !important;
+    margin: 0 auto !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto !important; }
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+// Focus de teclat ben visible a tot el web
+a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
+  outline: 3px solid #f2c14e;
+  outline-offset: 2px;
+}
+
+// ------------------------------------------------------------
+// Estudi didàctic i interactiu per a activitats ("si es vol" - opcional)
+// ------------------------------------------------------------
+.udl-activity-study-bar {
+  margin: 1.25rem 0 1.75rem;
+  padding: 1rem 1.25rem;
+  border-radius: var(--udl-radius, 8px);
+  background: var(--udl-surface, #ffffff);
+  border: 1px solid var(--udl-border, #e2e8f0);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+
+  .udl-asb-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.45rem;
+  }
+
+  .udl-asb-badge {
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    background: rgba(15, 118, 110, 0.1);
+    color: #0f766e;
+    border: 1px solid rgba(15, 118, 110, 0.25);
+  }
+
+  .udl-asb-pill {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    background: var(--udl-surface-sunken, #f1f5f9);
+    color: var(--udl-text-muted, #64748b);
+  }
+
+  .udl-asb-desc {
+    font-size: 0.88rem;
+    line-height: 1.52;
+    color: var(--udl-text, #334155);
+    margin: 0.25rem 0 0.85rem;
+  }
+
+  .udl-asb-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    align-items: center;
+  }
+
+  .udl-asb-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.45rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 6px;
+    background: #0f766e;
+    color: #ffffff;
+    border: 1px solid #0f766e;
+    cursor: pointer;
+    transition: all 0.15s ease;
+
+    &:hover {
+      background: #0d645e;
+      box-shadow: 0 2px 8px rgba(15, 118, 110, 0.25);
+    }
+
+    &.active, &[aria-pressed="true"] {
+      background: var(--udl-surface-sunken, #f1f5f9);
+      color: var(--udl-text, #1e293b);
+      border-color: var(--udl-border, #cbd5e1);
+
+      &:hover {
+        background: #e2e8f0;
+      }
+    }
+  }
+
+  .udl-asb-progress-wrap {
+    margin-top: 0.95rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--udl-border, #e2e8f0);
+  }
+
+  .udl-asb-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.82rem;
+    color: var(--udl-text-muted, #64748b);
+    margin-bottom: 0.45rem;
+  }
+
+  .udl-asb-count {
+    color: #0f766e;
+    font-weight: 700;
+  }
+
+  .udl-asb-reset {
+    background: transparent;
+    border: none;
+    font-size: 0.78rem;
+    color: var(--udl-text-muted, #64748b);
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 0;
+
+    &:hover {
+      color: #b91c1c;
+    }
+  }
+
+  .udl-asb-bar-track {
+    height: 7px;
+    border-radius: 999px;
+    background: var(--udl-surface-sunken, #f1f5f9);
+    overflow: hidden;
+  }
+
+  .udl-asb-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #0f766e, #10b981);
+    border-radius: 999px;
+    transition: width 0.3s ease;
+  }
+}
+
+.udl-ex-interactive-box {
+  &[hidden] {
+    display: none !important;
+  }
+  margin: 1rem 0 1.25rem;
+  padding: 0.9rem 1.1rem;
+  border-radius: 8px;
+  background: var(--udl-surface-sunken, #f8fafc);
+  border: 1px solid var(--udl-border, #e2e8f0);
+  border-left: 4px solid #0f766e;
+
+  .udl-ex-box-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .udl-ex-box-title {
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: var(--udl-text, #1e293b);
+  }
+
+  .udl-ex-box-status {
+    font-size: 0.75rem;
+    font-weight: 600;
+
+    &.status-ok {
+      color: #059669;
+    }
+    &.status-rev {
+      color: #d97706;
+    }
+  }
+
+  .udl-ex-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    font-family: inherit;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    padding: 0.65rem 0.8rem;
+    border-radius: 6px;
+    border: 1px solid var(--udl-border, #cbd5e1);
+    background: var(--udl-surface, #ffffff);
+    color: var(--udl-text, #1e293b);
+    resize: vertical;
+    min-height: 75px;
+    outline: none;
+
+    &:focus {
+      border-color: #0f766e;
+      box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.15);
+    }
+  }
+
+  .udl-ex-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+  }
+
+  .udl-ex-btn-reveal {
+    padding: 0.38rem 0.8rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    border-radius: 6px;
+    background: var(--udl-surface, #ffffff);
+    color: #0f766e;
+    border: 1px solid #0f766e;
+    cursor: pointer;
+    transition: all 0.15s ease;
+
+    &:hover {
+      background: #0f766e;
+      color: #ffffff;
+    }
+  }
+
+  .udl-ex-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+  }
+
+  .udl-ex-rate-lbl {
+    font-size: 0.78rem;
+    color: var(--udl-text-muted, #64748b);
+  }
+
+  .udl-ex-rate-btn {
+    padding: 0.32rem 0.7rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    border-radius: 5px;
+    cursor: pointer;
+    background: var(--udl-surface, #ffffff);
+    transition: all 0.15s ease;
+  }
+
+  .udl-ex-btn-ok {
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+
+    &:hover, &.selected {
+      background: #10b981;
+      color: #ffffff;
+      border-color: #10b981;
+    }
+  }
+
+  .udl-ex-btn-rev {
+    color: #92400e;
+    border: 1px solid #fde68a;
+
+    &:hover, &.selected {
+      background: #f59e0b;
+      color: #ffffff;
+      border-color: #f59e0b;
+    }
+  }
+}
+
+.udl-exercici.udl-ex-done-ok,
+.udl-repte.udl-ex-done-ok,
+.exercici.udl-ex-done-ok {
+  border-left-color: #10b981 !important;
+}
+
+.udl-exercici.udl-ex-done-review,
+.udl-repte.udl-ex-done-review,
+.exercici.udl-ex-done-review {
+  border-left-color: #f59e0b !important;
+}
+
+// En mode pràctica, la solució s'amaga completament fins que l'estudiant prem "Comprova amb la solució"
+body.udl-activity-practice {
+  .udl-ex-interactive-target ~ details:not(.udl-sol-revealed),
+  .udl-ex-interactive-target details:not(.udl-sol-revealed),
+  .udl-ex-interactive-target ~ .udl-solucio:not(.udl-sol-revealed),
+  .udl-ex-interactive-target ~ .solucio:not(.udl-sol-revealed),
+  .udl-sol-target:not(.udl-sol-revealed),
+  details.udl-sol-target:not(.udl-sol-revealed) {
+    display: none !important;
+  }
+
+  .udl-sol-target.udl-sol-revealed,
+  details.udl-sol-target.udl-sol-revealed,
+  .udl-solucio.udl-sol-revealed {
+    display: block !important;
+    animation: udl-fade-in 0.2s ease;
+  }
+}
+
+@keyframes udl-fade-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+body.quarto-dark {
+  .udl-activity-study-bar {
+    background: #141d2e;
+    border-color: #2c3a52;
+    .udl-asb-badge { background: rgba(95, 196, 184, 0.15); color: #5fc4b8; border-color: rgba(95, 196, 184, 0.3); }
+    .udl-asb-pill { background: #1c273a; color: #94a3b8; }
+    .udl-asb-desc { color: #cbd5e1; }
+    .udl-asb-toggle { background: #0f766e; border-color: #0f766e; }
+    .udl-asb-toggle.active, .udl-asb-toggle[aria-pressed="true"] { background: #1e293b; color: #cbd5e1; border-color: #2c3a52; }
+    .udl-asb-bar-track { background: #1e293b; }
+    .udl-asb-progress-wrap { border-color: #2c3a52; }
+    .udl-asb-count { color: #5fc4b8; }
+  }
+  .udl-ex-interactive-box {
+    background: #101726;
+    border-color: #2c3a52;
+    border-left-color: #5fc4b8;
+    .udl-ex-box-title { color: #e2e8f0; }
+    .udl-ex-textarea {
+      background: #182338;
+      border-color: #2c3a52;
+      color: #f1f5f9;
+      &:focus { border-color: #5fc4b8; }
+    }
+    .udl-ex-btn-reveal {
+      background: #182338;
+      border-color: #5fc4b8;
+      color: #5fc4b8;
+      &:hover { background: #5fc4b8; color: #0b1320; }
+    }
+    .udl-ex-btn-ok {
+      background: #182338;
+      color: #6ee7b7;
+      border-color: #065f46;
+      &:hover, &.selected { background: #10b981; color: #ffffff; }
+    }
+    .udl-ex-btn-rev {
+      background: #182338;
+      color: #fcd34d;
+      border-color: #78350f;
+      &:hover, &.selected { background: #f59e0b; color: #ffffff; }
+    }
+  }
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 0 1.25cm;
+  }
+  body {
+    padding: 1.25cm 0 !important;
+    -webkit-box-decoration-break: clone !important;
+    box-decoration-break: clone !important;
+  }
+  .udl-a11y-bar, #udl-prefs-panel, #udl-focus-exit, #udl-reading-progress, #udl-reading-ruler,
+  .udl-activity-study-bar, .udl-ex-interactive-box, .code-copy-button { display: none !important; }
+  details { display: block !important; }
+}

@@ -107,5 +107,10 @@
   <path d="M4 9.5h16M9.5 9.5V19.5" stroke="currentColor" stroke-width="1.8"/>
 </symbol>
 
+<symbol id="icon-pista" viewBox="0 0 24 24">
+  <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/>
+  <polygon points="16.2 7.8 14.1 14.1 7.8 16.2 9.9 9.9 16.2 7.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+</symbol>
+
 </defs>
 </svg>

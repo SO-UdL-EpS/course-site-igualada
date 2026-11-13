@@ -16,6 +16,7 @@ format:
     height: 900
     margin: 0.08
     center: false
+    scrollable: true
     footer: 'Sistemes Operatius (SO) &nbsp; <a href="/index.html" class="home-link" aria-label="Inici"><svg class="home-icon" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 52 C27 43 39 31 60 12 C78 30 93 42 108 51" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M25 48 C25 64 25 76 24 87 C35 84 45 85 53 87 M95 48 C95 64 95 76 97 87 C87 84 77 85 68 87" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M51 87V70 C51 64 55 60 60 60 C65 60 69 64 69 70V87Z" fill="currentColor"/><path d="M82 29V17 C82 14 84 13 87 13H94 C96 13 97 15 96 17 C94 20 93 24 94 32Z" fill="currentColor"/></svg></a>'
 ---
 
@@ -38,7 +39,7 @@ Tot arreu es parla de **IoT, BigData, Cloud, AI, Blockchain**...
 :::
 
 ::: {.fragment .concepte}
-El món esta interconnectat per xarxes i informació que es genera i es processa constantment.
+El món està interconnectat per xarxes i informació que es genera i es processa constantment.
 :::
 
 :::
@@ -159,7 +160,7 @@ Dos processos que executen el **mateix programa** són, tot i així, dos process
 
 ## Separació de responsabilitats
 
-El sistema operatiu utilitza dos nivells de privilegi del processador, mode kernel i mode usuari, per protegir l'estat crític del sistema  i per evitar que un procés alteri el funcionament d'altres processos o del propi sistema operatiu.
+El sistema operatiu utilitza dos nivells de privilegi del processador, mode kernel i mode usuari, per protegir l'estat crític del sistema i per evitar que un procés alteri el funcionament d'altres processos o del propi sistema operatiu.
 
 :::{.fragment .definicio title="Mode kernel"}
 - El kernel s'executa amb privilegis que li permeten gestionar recursos protegits i configurar els mecanismes de protecció del hardware.
@@ -622,7 +623,7 @@ Un SO és **Il·lusionista + Àrbitre + Pega**:
 
 # Auditoria d'un sistema operatiu
 
-## Anàlisis de situacions
+## Anàlisi de situacions
 Per a cadascuna determina: (a) quin dels tres papers ha fallat (Il·lusionista / Àrbitre / Pega), (b) una frase justificant per quin mecanisme dels vistos avui.
 
 :::{.exercici  .fragment title="Situació A"}
@@ -651,7 +652,7 @@ D → cap paper falla; és el sistema funcionant correctament.
 ## Crea una situació
 
 :::{.repte}
-Creeu una situació on un sistema operatiu no compleixi el paper d'Ilusionista. Explica quin mecanisme ha fallat i per què.
+Creeu una situació on un sistema operatiu no compleixi el paper d'Il·lusionista. Explica quin mecanisme ha fallat i per què.
 :::
 
 ## Sistema operatiu sense separació de privilegis

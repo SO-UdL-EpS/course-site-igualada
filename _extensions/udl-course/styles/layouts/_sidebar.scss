@@ -6,8 +6,25 @@
   font-family: var(--udl-font-body);
   font-size: var(--udl-text-sm);
 
+  .sidebar-item-container {
+    border-radius: 6px;
+    padding: 0.15rem 0.35rem;
+    transition: background var(--udl-transition-fast);
+
+    &:hover {
+      background: var(--udl-surface-sunken);
+    }
+  }
+
   .sidebar-item-text { color: var(--udl-text); }
 
+  .sidebar-item .active,
+  .sidebar-item.active > .sidebar-item-container {
+    background: color-mix(in srgb, var(--udl-primary) 11%, transparent);
+    border-radius: 6px;
+  }
+
+  .sidebar-item .active .sidebar-item-text,
   .sidebar-item.active > .sidebar-item-container .sidebar-item-text {
     color: var(--udl-primary);
     font-weight: 600;

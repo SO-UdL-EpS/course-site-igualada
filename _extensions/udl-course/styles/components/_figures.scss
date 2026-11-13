@@ -11,6 +11,18 @@ figure img, figure svg {
   height: auto;
   border-radius: var(--udl-radius-sm);
 }
+
+main.content img,
+main.content svg.mermaid-js,
+.cell-output-display svg {
+  max-width: 100% !important;
+  height: auto !important;
+}
+
+.cell-output-display {
+  max-width: 100%;
+  overflow-x: auto;
+}
 figure figcaption {
   font-size: var(--udl-text-sm);
   color: var(--udl-text-muted);

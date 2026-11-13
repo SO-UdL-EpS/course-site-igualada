@@ -15,6 +15,7 @@ format:
     height: 900
     margin: 0.08
     center: false
+    scrollable: true
     footer: 'Sistemes Operatius (SO) &nbsp; <a href="/index.html" class="home-link" aria-label="Inici"><svg class="home-icon" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 52 C27 43 39 31 60 12 C78 30 93 42 108 51" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M25 48 C25 64 25 76 24 87 C35 84 45 85 53 87 M95 48 C95 64 95 76 97 87 C87 84 77 85 68 87" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M51 87V70 C51 64 55 60 60 60 C65 60 69 64 69 70V87Z" fill="currentColor"/><path d="M82 29V17 C82 14 84 13 87 13H94 C96 13 97 15 96 17 C94 20 93 24 94 32Z" fill="currentColor"/></svg></a>'
     include-in-header:
       - text: |
@@ -168,7 +169,7 @@ Si el procés fa E/S, el temps d'espera és el temps acumulat a la cua de prepar
 -   **Productivitat** (*throughput*): $\dfrac{\text{processos completats}}{\text{temps total}}$ (en processos per unitat de temps).
 -   Per comparar polítiques usem **mitjanes**: $\bar{T}_{retorn}$, $\bar{T}_{espera}$, $\bar{T}_{resposta}$.
 
-::: {.errorcomu title="Temps de resposta» no és «temps de retorn" .fragment}
+::: {.errorcomu title="«Temps de resposta» no és «temps de retorn»" .fragment}
 En aquest curs, $T_{resposta}$ és el temps fins a la **primera** execució. Molts textos anomenen *response time* al temps de **compleció** d'una operació.
 :::
 
@@ -435,7 +436,7 @@ Si en un mateix instant arriba un procés nou i un altre és expulsat per fi de 
 :::
 
 -   Respecte a FCFS: $\bar{T}_{resposta}$ passa de 4.33 a 0.33 i $\bar{T}_N$ de 2.75 a 2.20, però $\bar{T}_{espera}$ empitjora (4.33 → 4.67).
--   A $t=3$: arriba C i B és expulsat alhora; per conveni C entra abans que B.
+-   A $t=2$ (arriba B i A és expulsat) i a $t=3$ (arriba C i B és expulsat): per conveni el procés nou entra a la cua abans que l'expulsat.
 :::
 
 ::: notes

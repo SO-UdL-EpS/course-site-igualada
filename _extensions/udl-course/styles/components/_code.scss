@@ -10,12 +10,58 @@
 //   ```
 // ============================================================
 
+// Inline code (`identifier`, `fork()`, etc.) — higher specificity than Quarto's
+// `p code:not(.sourceCode), li code:not(.sourceCode), td code:not(.sourceCode)`
+// so tables, lists and paragraphs never inherit light #e9ecef boxes in dark mode.
+:not(pre) > code,
+p code:not(.sourceCode),
+li code:not(.sourceCode),
+td code:not(.sourceCode),
+th code:not(.sourceCode),
+dd code:not(.sourceCode),
+dt code:not(.sourceCode),
+summary code:not(.sourceCode),
+h1 code, h2 code, h3 code, h4 code,
+.callout code:not(.sourceCode),
+.udl-component code:not(.sourceCode) {
+  background-color: var(--udl-surface-sunken) !important;
+  color: var(--udl-primary-dark) !important;
+  border: 1px solid var(--udl-border);
+  border-radius: 4px;
+  padding: 0.1em 0.36em !important;
+  font-size: 0.86em;
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+:root body:not(.quarto-dark) {
+  :not(pre) > code,
+  p code:not(.sourceCode),
+  li code:not(.sourceCode),
+  td code:not(.sourceCode),
+  th code:not(.sourceCode),
+  .callout code:not(.sourceCode),
+  .udl-component code:not(.sourceCode) {
+    color: var(--udl-primary) !important;
+  }
+}
+
+body .udl-hero :not(pre) > code,
+body .udl-hero p code:not(.sourceCode),
+body .udl-hero li code:not(.sourceCode) {
+  background-color: rgba(255, 255, 255, 0.16) !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
 pre.sourceCode {
   border-radius: var(--udl-radius);
   border: 1px solid var(--udl-border);
   background: var(--udl-surface-sunken);
   font-size: 0.85em;
   overflow-x: auto; // scroll the code, not the page
+  max-width: 100%;
 }
 
 .udl-code-block {
@@ -39,14 +85,47 @@ pre.sourceCode {
   color: var(--udl-text-muted);
 }
 
-// Terminal-style block for shell sessions: ```{.bash .terminal}
-.sourceCode.terminal {
-  background: #1a1a1a;
-  color: #e8e8e8;
+// Terminal-style block for shell sessions: ```{.bash .terminal} or ::: {.terminal}
+// Always uses a dark surface (#1a1a1a), so override Quarto's light-mode syntax tokens
+// to prevent dark/black tokens (#111) from becoming unreadable on #1a1a1a.
+.sourceCode.terminal,
+div.terminal div.sourceCode,
+div.terminal pre.sourceCode {
+  background: #1a1a1a !important;
+  color: #f1f5f9 !important;
+  border-radius: var(--udl-radius);
+  border: 1px solid #334155;
 
-  pre, code { color: inherit; background: transparent; }
+  --quarto-hl-ot-color: #f1f5f9;
+  --quarto-hl-va-color: #f8fafc;
+  --quarto-hl-cf-color: #93c5fd;
+  --quarto-hl-kw-color: #93c5fd;
+  --quarto-hl-fu-color: #7dd3fc;
+  --quarto-hl-bu-color: #7dd3fc;
+  --quarto-hl-ex-color: #7dd3fc;
+  --quarto-hl-op-color: #e2e8f0;
+  --quarto-hl-st-color: #86efac;
+  --quarto-hl-co-color: #94a3b8;
+  --quarto-hl-dv-color: #fcd34d;
+  --quarto-hl-fl-color: #fcd34d;
+  --quarto-hl-at-color: #fbcfe8;
+
+  pre, code {
+    color: #f1f5f9 !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0;
+  }
+
+  code span { color: #f1f5f9 !important; }
+  code span.co, code span.do, code span.an, code span.cv { color: #94a3b8 !important; }
+  code span.st, code span.ch, code span.vs, code span.sc { color: #86efac !important; }
+  code span.kw, code span.cf, code span.fu, code span.bu, code span.ex, code span.im { color: #93c5fd !important; }
+  code span.dv, code span.bn, code span.fl, code span.cn, code span.at { color: #fcd34d !important; }
+  code span.al, code span.er { color: #fca5a5 !important; }
 }
-.sourceCode.terminal::before {
+.sourceCode.terminal::before,
+div.terminal div.sourceCode::before {
   content: "●  ●  ●";
   display: block;
   letter-spacing: 0.3em;

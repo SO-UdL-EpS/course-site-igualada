@@ -22,6 +22,10 @@ $font-mono:    "JetBrains Mono", Menlo, Consolas, monospace;
   --udl-line-height: 1.65;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: var(--udl-font-body);
   color: var(--udl-text);
@@ -35,16 +39,17 @@ h1, h2, h3, h4, h5 {
   line-height: 1.25;
   color: var(--udl-primary-dark);
   letter-spacing: -0.01em;
+  scroll-margin-top: 5rem;
 }
 
-h1 { font-size: var(--udl-text-3xl); }
+h1 { font-size: clamp(1.65rem, 2.4vw + 0.95rem, var(--udl-text-3xl)); }
 h2 {
-  font-size: var(--udl-text-2xl);
+  font-size: clamp(1.32rem, 1.7vw + 0.85rem, var(--udl-text-2xl));
   border-bottom: 1px solid var(--udl-border);
   padding-bottom: 0.3em;
   margin-top: 2em;
 }
-h3 { font-size: var(--udl-text-xl); }
+h3 { font-size: clamp(1.12rem, 1.1vw + 0.82rem, var(--udl-text-xl)); }
 
 p, li { max-width: var(--udl-measure); }
 

@@ -7,7 +7,7 @@ lang: ca
 
 Conjunt d'exercicis per consolidar i ampliar els conceptes treballats als [Pralab 01](../pralabs/01_c_mem.qmd) i [Pralab 02](../pralabs/02_c_mem.qmd). Pots utilitzar el fòrum del campus virtual per compartir, debatre i resoldre els exercicis amb els teus companys. Explica el teu raonament, planteja els dubtes que et sorgeixin i comenta les propostes dels altres.
 
-# Consolida - Exercics bàsics
+# Consolida - Exercicis bàsics
 
 ## 1. Un punter sempre apunta a la variable
 
@@ -367,7 +367,7 @@ s
 ### Preguntes
 
 1. Què ha de retornar la funció si no troba el caràcter?
-2. Per què retornem un punter (`char *`) i no simplement el caràcter (`char`)?
+2. Per què retornem un punter (`const char *`) i no simplement el caràcter (`char`)?
 3. Per què aquest punter és `const char *` i no `char *`?
 4. Què representa `p` quan la funció acaba?
 
@@ -420,3 +420,157 @@ valor de l'element i
 ::: {.concepte}
 La indexació d'un array no és una operació màgica independent dels punters. En C, la notació d'indexació està estretament relacionada amb l'aritmètica de punters i la desreferenciació.
 :::
+
+---
+
+# Autocomprovació · Memòria, punters i `sizeof`
+
+Per acabar d'assentar la relació entre adreces, punters i regions de memòria (en arquitectura de 64 bits, on `sizeof(int) = 4`, `sizeof(char) = 1`, `sizeof(void *) = 8`), prova de respondre aquestes preguntes sobre el codi següent:
+
+```{=html}
+<div class="udl-widget" id="mem-trainer" style="margin: 1.5rem 0; border-left: 4px solid var(--udl-lab);">
+  <h4 style="margin-top:0; font-size:1rem; color:var(--udl-primary-dark); text-transform:none; letter-spacing:normal;">
+    Qüestionari interactiu · On viu cada dada i quin valor té l'expressió?
+  </h4>
+
+  <div style="background:var(--udl-surface-sunken); padding:0.9rem; border-radius:8px; font-family:var(--udl-font-mono); font-size:0.82rem; margin-bottom:1rem; border:1px solid var(--udl-border);">
+    <div style="color:var(--udl-text-muted); margin-bottom:0.3rem;">// Suposa arquitectura Linux x86-64 (int = 4 B, punter = 8 B)</div>
+    <div>int g_init = 7;                  <span style="color:var(--udl-text-muted);">// Adreça: 0x404010</span></div>
+    <div>int main(void) {</div>
+    <div>&nbsp;&nbsp;int v[4] = {10, 20, 30, 40};  <span style="color:var(--udl-text-muted);">// Base v a Stack: 0x7fff0100</span></div>
+    <div>&nbsp;&nbsp;int *p = &amp;v[1];               <span style="color:var(--udl-text-muted);">// p apunta a v[1] (0x7fff0104)</span></div>
+    <div>&nbsp;&nbsp;char *s = malloc(16);          <span style="color:var(--udl-text-muted);">// Bloc al Heap: 0x55a02000</span></div>
+    <div>}</div>
+  </div>
+
+  <div id="mt-question-box" style="padding:0.9rem; border:1px solid var(--udl-border); border-radius:8px; background:var(--udl-surface);">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+      <span id="mt-step" style="font-size:0.76rem; font-weight:700; text-transform:uppercase; color:var(--udl-primary);">Pregunta 1 de 6</span>
+      <span id="mt-score" style="font-size:0.8rem; font-weight:600; color:var(--udl-text-muted);">Encerts: 0</span>
+    </div>
+    <p id="mt-prompt" style="font-weight:600; font-size:0.95rem; margin-bottom:0.75rem;"></p>
+    <div id="mt-options" style="display:grid; gap:0.45rem; margin-bottom:0.75rem;"></div>
+    <div id="mt-feedback" style="display:none; padding:0.65rem 0.85rem; border-radius:6px; font-size:0.85rem; margin-bottom:0.75rem;"></div>
+    <div style="display:flex; gap:0.5rem;">
+      <button type="button" id="mt-prev" class="udl-button udl-button-outline" style="padding:0.35rem 0.8rem; font-size:0.8rem;">← Anterior</button>
+      <button type="button" id="mt-next" class="udl-button" style="padding:0.35rem 0.8rem; font-size:0.8rem;">Següent →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const qs = [
+    {
+      q: "1. Si la base de l'array `v` és `0x7fff0100` i `p = &v[1]`, quina adreça conté `p + 2` i quin valor val `*(p + 2)`?",
+      opts: [
+        "Adreça `0x7fff0106` i valor `30` (suma 2 bytes)",
+        "Adreça `0x7fff010c` (`0x7fff0104 + 2*4`) i valor `40` (`v[3]`)",
+        "Adreça `0x7fff0108` i valor `30` (`v[2]`)"
+      ],
+      ans: 1,
+      exp: "Com que `p` és de tipus `int *` (4 bytes per element) i apunta a `v[1]` (`0x7fff0104`), sumar-li 2 avança `2 * sizeof(int) = 8` bytes fins a `0x7fff010c`, que és `v[3] = 40`."
+    },
+    {
+      q: "2. Quin resultat donen `sizeof(v)` i `sizeof(p)` dins de `main()` en un sistema de 64 bits?",
+      opts: [
+        "`sizeof(v) = 16` i `sizeof(p) = 8`",
+        "`sizeof(v) = 4` i `sizeof(p) = 4`",
+        "`sizeof(v) = 8` i `sizeof(p) = 8`"
+      ],
+      ans: 0,
+      exp: "`v` és un array de 4 enters declarat en aquest mateix àmbit (`4 * 4 = 16` bytes), mentre que `p` és una variable punter (`int *`), que en una arquitectura de 64 bits ocupa sempre `8` bytes."
+    },
+    {
+      q: "3. On viu la variable punter `s` i on viu el bloc de 16 bytes retornat per `malloc(16)`?",
+      opts: [
+        "Tant `s` com els 16 bytes viuen al Heap.",
+        "La variable `s` (8 bytes) viu a la Stack i conté l'adreça `0x55a02000` del bloc de 16 bytes que viu al Heap.",
+        "`s` viu al segment `.data` i el bloc viu a la Stack."
+      ],
+      ans: 1,
+      exp: "`char *s` és una variable local de `main`, així que els 8 bytes que guarden l'adreça viuen a la **Stack**. El bloc de 16 bytes reservat amb `malloc` és el que viu al **Heap**."
+    },
+    {
+      q: "4. Quina diferència hi ha entre declarar `char *msg = \"UdL\";` i `char msg[] = \"UdL\";` dins de `main()`?",
+      opts: [
+        "Són exactament iguals; en tots dos casos podem fer `msg[0] = 'u';`.",
+        "Amb `char *msg`, la cadena literal viu a `.rodata` (només lectura) i modificar `msg[0]` provoca `SIGSEGV`. Amb `char msg[]`, es copia a la Stack i sí que és modificable.",
+        "Amb `char msg[]` es reserva automàticament amb `malloc` al Heap."
+      ],
+      ans: 1,
+      exp: "Els literals de cadena s'emmagatzemen en memòria de només lectura (`.rodata`). `char msg[]` crea un array local a la **Stack** i hi copia els caràcters (inclòs el `'\\0'`), per la qual cosa és segur modificar-lo."
+    },
+    {
+      q: "5. En quin segment de memòria s'ubica la variable global inicialitzada `int g_init = 7;`?",
+      opts: [
+        "Al segment `.data` (dades globals inicialitzades amb valor diferent de zero).",
+        "Al segment `.bss`.",
+        "A la base del Heap."
+      ],
+      ans: 0,
+      exp: "Les variables globals o `static` amb valor inicial explícit van al segment `.data` dins del propi fitxer ELF. Si no estigués inicialitzada (`int g_uninit;`), aniria a `.bss`."
+    },
+    {
+      q: "6. Si passem l'array `v` a una funció `void f(int a[])`, quant val `sizeof(a)` dins de `f`?",
+      opts: [
+        "`16` bytes, perquè continua sent l'array `v`.",
+        "`8` bytes, perquè als paràmetres d'una funció `int a[]` decau sempre a un punter `int *a`.",
+        "`4` bytes, perquè només passa el primer enter."
+      ],
+      ans: 1,
+      exp: "Per això a C sempre hem de passar la longitud `(int a[], int n)` com a segon paràmetre: dins de la funció, `a` és només un punter (`int *`) de 8 bytes i no conserva la mida total de l'array original."
+    }
+  ];
+
+  let cur = 0;
+  let answered = new Array(qs.length).fill(null);
+
+  const stepEl = document.getElementById('mt-step');
+  const scoreEl = document.getElementById('mt-score');
+  const promptEl = document.getElementById('mt-prompt');
+  const optsEl = document.getElementById('mt-options');
+  const fbEl = document.getElementById('mt-feedback');
+  const prevBtn = document.getElementById('mt-prev');
+  const nextBtn = document.getElementById('mt-next');
+
+  function renderQ() {
+    const item = qs[cur];
+    stepEl.textContent = `Pregunta ${cur + 1} de ${qs.length}`;
+    const totalOk = answered.filter((v, i) => v === qs[i].ans).length;
+    scoreEl.textContent = `Encerts: ${totalOk} / ${qs.length}`;
+    promptEl.innerHTML = item.q.replace(/`([^`]+)`/g, '<code>$1</code>');
+    optsEl.innerHTML = '';
+    fbEl.style.display = 'none';
+
+    item.opts.forEach((opt, idx) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      const isSelected = answered[cur] === idx;
+      btn.style.cssText = `text-align:left; padding:0.55rem 0.8rem; border-radius:6px; border:1px solid ${isSelected ? 'var(--udl-primary)' : 'var(--udl-border)'}; background:${isSelected ? 'color-mix(in srgb, var(--udl-primary) 10%, transparent)' : 'var(--udl-surface-sunken)'}; color:var(--udl-text); cursor:pointer; font-size:0.86rem;`;
+      btn.innerHTML = opt.replace(/`([^`]+)`/g, '<code>$1</code>');
+      btn.addEventListener('click', () => {
+        answered[cur] = idx;
+        renderQ();
+      });
+      optsEl.appendChild(btn);
+    });
+
+    if (answered[cur] !== null) {
+      const ok = answered[cur] === item.ans;
+      fbEl.style.display = 'block';
+      fbEl.style.background = ok ? 'color-mix(in srgb, var(--udl-success) 15%, transparent)' : 'color-mix(in srgb, var(--udl-warning) 15%, transparent)';
+      fbEl.innerHTML = (ok ? '<strong>Correcte.</strong> ' : '<strong>Incorrecte.</strong> ') + item.exp.replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    }
+
+    prevBtn.disabled = cur === 0;
+    nextBtn.disabled = cur === qs.length - 1;
+  }
+
+  prevBtn.addEventListener('click', () => { if (cur > 0) { cur--; renderQ(); } });
+  nextBtn.addEventListener('click', () => { if (cur < qs.length - 1) { cur++; renderQ(); } });
+  renderQ();
+})();
+</script>
+```
+

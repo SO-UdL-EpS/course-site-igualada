@@ -16,6 +16,7 @@ format:
     height: 900
     margin: 0.08
     center: false
+    scrollable: true
     footer: 'Sistemes Operatius (SO) &nbsp; <a href="/index.html" class="home-link" aria-label="Inici"><svg class="home-icon" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 52 C27 43 39 31 60 12 C78 30 93 42 108 51" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M25 48 C25 64 25 76 24 87 C35 84 45 85 53 87 M95 48 C95 64 95 76 97 87 C87 84 77 85 68 87" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M51 87V70 C51 64 55 60 60 60 C65 60 69 64 69 70V87Z" fill="currentColor"/><path d="M82 29V17 C82 14 84 13 87 13H94 C96 13 97 15 96 17 C94 20 93 24 94 32Z" fill="currentColor"/></svg></a>'
     include-in-header:
       - text: |
@@ -124,7 +125,7 @@ Perquè el kernel deixa `-ENOSYS` (38) per defecte a `ax` i **conserva el númer
 :::
 :::
 :::{.exemple .fragment}
-Aquesta dema s'atura just a l'entrada de la **syscall**, i el `pt_regs` que veu el kernel es veu des de fora: `orig_rax = 1` és el número que va posar el programa, i `rax = -38 (-ENOSYS)` és el valor per defecte que el kernel deixa a `ax` fins que la syscall hi escrigui el resultat. Un *continue* més enllà, ja surt **Hello** i `rax = 6`, els bytes escrits.
+Aquesta demo s'atura just a l'entrada de la **syscall**, i el `pt_regs` que veu el kernel es veu des de fora: `orig_rax = 1` és el número que va posar el programa, i `rax = -38 (-ENOSYS)` és el valor per defecte que el kernel deixa a `ax` fins que la syscall hi escrigui el resultat. Un *continue* més enllà, ja surt **Hello** i `rax = 6`, els bytes escrits.
 :::
 
 # Part 2 · Espai d'adreces i excepcions {.center}
@@ -165,7 +166,7 @@ Es llancen dues còpies d'un programa que desa el seu PID a una variable global.
 :::
 
 ::: {.notes}
-- `-no-pie` fa que `&x` sigui idèntic en les dues execucions (en provar-ho: `&x=0x404020` a totes dues). Amb PIE + ASLR variaria.
+- `-no-pie` fa que `&x` sigui idèntic en les dues execucions (en provar-ho: `&x=0x40402c` a totes dues). Amb PIE + ASLR variaria.
 - Amb `setarch $(uname -m) -R cat /proc/self/maps` (ASLR desactivat) es veuen `[heap]`, `[vdso]`, `[stack]` a adreces estables.
 - Pregunta: *per què no surt cap adreça del kernel al `maps`?* → perquè `maps` mostra les adreces que el procés **pot** usar; el kernel hi és present a l'espai d'adreces però és inaccessible.
 :::

@@ -154,7 +154,7 @@ Prediu el que imprimirà cada línia. Recorda el Pralab 02: què eren `&v` i `&v
 Comptar els elements amb `sizeof(v) / sizeof(v[0])` funciona amb un array local i **falla en silenci** amb un punter: el resultat és `sizeof(int *) / sizeof(int)` (`2` als nostres sistemes), no `5`. Amb memòria dinàmica has de guardar sempre la mida tu mateix.
 :::
 
-Observa que `&v` té tipus `int **`. **No cal que encara sàpigues utilitzar un `int **`**:
+Observa que `&v` té tipus `int **`. **No cal que encara sàpigues utilitzar un `int **`**: ho treballarem al proper pralab.
 
 #### A.3 — Dues adreces diferents
 
@@ -263,7 +263,7 @@ gcc -Wall -Wextra -g -O0 -o 02_free 02_free.c
 <summary><b>Pots veure el raonament</b></summary>
 
 :::{.solucio}
-- En versions recents de `GCC` és possible que aparegui un avís sobre l'ús de `p` després de `free`. Tal com `pointer 'p' used after 'free' [-Wuse-after-free]`. Vol dir que el programa fa servir `p` després d'haver alliberat el bloc
+- En versions recents de `GCC` és possible que aparegui un avís sobre l'ús de `p` després de `free`. Tal com `pointer 'p' used after 'free' [-Wuse-after-free]`. Vol dir que el programa fa servir `p` després d'haver alliberat el bloc.
 - Independentment de si el compilador ho detecta, el programa és incorrecte.
 - **No.** `free` allibera el bloc; **no canvia la variable `p`** que conté el punter (C passa els arguments per valor: `free` rep una còpia).
 - Després de `free`, **no has d'utilitzar `p` per accedir al bloc alliberat**. Si el punter continuarà existint, és habitual assignar-li `NULL` per deixar explícit que ja no apunta a una reserva vàlida.

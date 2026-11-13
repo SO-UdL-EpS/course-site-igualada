@@ -4,24 +4,27 @@
 
 .udl-card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
   gap: var(--udl-space-lg);
   margin: var(--udl-space-xl) 0;
 }
 
 .udl-card {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   border: 1px solid var(--udl-border);
   border-radius: var(--udl-radius-lg);
-  padding: var(--udl-space-lg);
+  padding: clamp(1.1rem, 2.2vw, 1.5rem);
   background: var(--udl-surface);
   box-shadow: var(--udl-shadow-card);
-  transition: box-shadow var(--udl-transition), transform var(--udl-transition);
+  transition: box-shadow var(--udl-transition), transform var(--udl-transition), border-color var(--udl-transition);
   color: var(--udl-text);
   position: relative;
 
   &:hover, &:focus-within {
     box-shadow: var(--udl-shadow-hover);
+    border-color: color-mix(in srgb, var(--udl-primary) 38%, var(--udl-border));
     transform: translateY(-2px);
   }
 
