@@ -1,3 +1,12 @@
+---
+title: "Bash scripting (I)"
+author: "Jordi Mateo Fornés"
+format:
+  udl-course-html:
+    toc: false
+    number-sections: false
+---
+
 ## Introducció
 
 Fins ara has escrit ordres una a una a la terminal. Però tot el que fas a mà es pot **guardar en un fitxer** i executar quan vulguis: això és un *script*. I darrere de cada script hi ha el mateix mecanisme que fa servir la teva shell: llançar **processos**, esperar que acabin i **mirar com han acabat**.
