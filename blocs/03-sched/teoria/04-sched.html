@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<link href="../../../assets/logo.svg" rel="icon" type="image/svg+xml">
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-html/tabby.min.js"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.11.9">
+
+  <meta name="author" content="Jordi Mateo Fornés">
+  <title>Sistemes Operatius – Planificació de processos (IV)</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../../../site_libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="../../../site_libs/revealjs/dist/reveal.css">
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="../../../site_libs/revealjs/dist/theme/quarto-441239ed6778beee6228094c2d237fb1.css">
+  <link href="../../../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="../../../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="../../../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="../../../site_libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/asciinema-player@3.9.0/dist/bundle/asciinema-player.css">
+  <script src="https://cdn.jsdelivr.net/npm/asciinema-player@3.9.0/dist/bundle/asciinema-player.min.js"></script>
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="quarto-title-block center">
+  <h1 class="title">Planificació de processos (IV)</h1>
+  <p class="subtitle">CFS i EEVDF</p>
+
+<div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+Jordi Mateo Fornés
+</div>
+</div>
+</div>
+
+</section>
+<section id="objectius-de-la-sessió" class="slide level2">
+<h2>Objectius de la sessió</h2>
+<div class="objectius udl-component udl-objectius" title="En acabar la sessió, has de ser capaç de">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-objectius"></use></svg><span>Objectius d'Aprenentatge — En acabar la sessió, has de ser capaç de</span></div>
+<ul>
+<li class="fragment">Situar els planificadors de Linux en el temps i explicar per què es van substituir.</li>
+<li class="fragment">Explicar l’<strong>O(1)</strong> com una MLFQ amb heurístiques i identificar-ne els problemes.</li>
+<li class="fragment">Calcular el <code>vruntime</code> i el <em>slice</em> de <strong>CFS</strong> amb els pesos reals del kernel.</li>
+<li class="fragment">Explicar la limitació de fons de CFS: <strong>pes i latència van lligats</strong>.</li>
+<li class="fragment">Resoldre a mà una planificació <strong>EEVDF</strong> (temps virtual, elegibilitat i deadline virtual).</li>
+<li class="fragment">Relacionar-ho amb el que hi ha a Debian bookworm (CFS) i trixie (EEVDF).</li>
+</ul>
+</div>
+<div class="prerequisits udl-component udl-prerequisits" title="Necessites recordar">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-prerequisits"></use></svg><span>Prerequisits — Necessites recordar</span></div>
+<ul>
+<li class="fragment">MLFQ.</li>
+<li class="fragment">Stride, temps virtual, WFQ i WF²Q, lag.</li>
+</ul>
+</div>
+</section>
+<section>
+<section id="història" class="title-slide slide level1 center">
+<h1>Història</h1>
+
+</section>
+<section id="trenta-anys-de-planificadors" class="slide level2">
+<h2>Trenta anys de planificadors</h2>
+<table class="caption-top">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 58%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Versió</th>
+<th>Any</th>
+<th>Planificador</th>
+<th>Idea clau</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>2.4</td>
+<td>2001</td>
+<td>O(n)</td>
+<td>Èpoques; a cada decisió es recorren <strong>tots</strong> els preparats</td>
+</tr>
+<tr class="even">
+<td>2.6.0</td>
+<td>2003</td>
+<td>O(1)</td>
+<td>140 cues de prioritat i heurístiques d’interactivitat</td>
+</tr>
+<tr class="odd">
+<td>2.6.23</td>
+<td>2007</td>
+<td><strong>CFS</strong></td>
+<td>Repartiment proporcional amb <code>vruntime</code>; apareixen les <strong>classes</strong> de planificació</td>
+</tr>
+<tr class="even">
+<td>3.14</td>
+<td>2014</td>
+<td><code>SCHED_DEADLINE</code></td>
+<td>Temps real per terminis</td>
+</tr>
+<tr class="odd">
+<td>6.6</td>
+<td>2023</td>
+<td><strong>EEVDF</strong></td>
+<td>Substitueix la selecció de CFS; es completa a la 6.12</td>
+</tr>
+<tr class="even">
+<td>6.12</td>
+<td>2024</td>
+<td><code>sched_ext</code></td>
+<td>Planificadors escrits en BPF</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li class="fragment">Les polítiques POSIX <code>SCHED_FIFO</code> i <code>SCHED_RR</code> existeixen des de molt abans i conviuen amb tots aquests planificadors.</li>
+</ul>
+</section>
+<section id="temps-real-sched_fifo-i-sched_rr" class="slide level2">
+<h2>Temps real: <code>SCHED_FIFO</code> i <code>SCHED_RR</code></h2>
+<ul>
+<li class="fragment">Prioritat estàtica de <strong>1 a 99</strong>; sempre per davant dels processos normals.</li>
+<li class="fragment"><code>SCHED_FIFO</code>: s’executa fins que es bloqueja, acaba o <strong>arriba un procés de prioritat més alta</strong>. No té quantum.</li>
+<li class="fragment"><code>SCHED_RR</code>: igual, però amb <strong>quantum</strong> entre processos de la <strong>mateixa</strong> prioritat (per defecte 100 ms).</li>
+</ul>
+<div class="errorcomu fragment udl-component udl-errorcomu" title="SCHED_FIFO no és «no apropiatiu»">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-errorcomu"></use></svg><span>Error Comú — SCHED_FIFO no és «no apropiatiu»</span></div>
+<p>Un procés <code>SCHED_FIFO</code> <strong>sí</strong> que pot ser expulsat, per un procés de temps real més prioritari. El que no té és quantum: entre processos de la mateixa prioritat, no cedeix la CPU per temps.</p>
+</div>
+</section></section>
+<section>
+<section id="el-planificador-o1" class="title-slide slide level1 center">
+<h1>El planificador O(1)</h1>
+
+</section>
+<section id="o1-estructura" class="slide level2">
+<h2>O(1): estructura</h2>
+<ul>
+<li class="fragment"><strong>140 nivells de prioritat</strong>: 0–99 temps real, 100–139 normals. <strong>Número més baix = més prioritat.</strong></li>
+<li class="fragment">Prioritat estàtica d’un procés normal: <span class="math inline">\(120 + \text{nice}\)</span> (<code>nice</code> −20 → 100, <code>nice</code> 19 → 139).</li>
+<li class="fragment">Per a cada CPU, <strong>dues matrius</strong> de 140 cues: <strong>actius</strong> i <strong>expirats</strong>, cadascuna amb un mapa de bits.</li>
+<li class="fragment">Triar = buscar el primer bit a 1 del mapa (cost constant) i agafar el primer de la cua.</li>
+<li class="fragment">Quan un procés esgota el quantum, passa als <strong>expirats</strong>. Quan els actius queden buits, s’intercanvien les dues matrius.</li>
+</ul>
+</section>
+<section id="o1-quantum-i-prioritat-dinàmica" class="slide level2">
+<h2>O(1): quantum i prioritat dinàmica</h2>
+<p><strong>Quantum</strong> segons la prioritat <strong>estàtica</strong>: <code>nice</code> −20 → 800 ms · <code>nice</code> 0 → 100 ms · <code>nice</code> 19 → 5 ms.</p>
+<p><strong>Prioritat dinàmica</strong> segons el temps que el procés passa dormint (<code>sleep_avg</code>):</p>
+<p><span class="math display">\[\text{prioritat} = \text{estàtica} - (\text{bonus} - 5), \qquad \text{bonus} \in [0, 10]\]</span></p>
+<ul>
+<li class="fragment">Un procés que dorm molt (interactiu) rep bonus 10 → <strong>puja 5</strong> nivells.</li>
+<li class="fragment">Un procés que no dorm mai (càlcul) rep bonus 0 → <strong>baixa 5</strong> nivells.</li>
+<li class="fragment">Els processos considerats <strong>interactius</strong> tornen als <strong>actius</strong> en esgotar el quantum, no als expirats.</li>
+</ul>
+<div class="reflexio fragment udl-component udl-reflexio" title="Us sona?">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-reflexio"></use></svg><span>Reflexió — Us sona?</span></div>
+<p>És una <strong>MLFQ</strong>: prioritat que puja o baixa segons el comportament. I té els mateixos problemes: les heurístiques es poden enganyar (com l’Othello) i és difícil ajustar-les.</p>
+</div>
+</section></section>
+<section>
+<section id="cfs-completely-fair-scheduler" class="title-slide slide level1 center">
+<h1>CFS: Completely Fair Scheduler</h1>
+
+</section>
+<section id="la-idea-una-cpu-ideal" class="slide level2">
+<h2>La idea: una CPU ideal</h2>
+<ul>
+<li class="fragment">Model ideal: una CPU que executa <strong>tots</strong> els processos preparats <strong>alhora</strong>, cadascun a la fracció <span class="math inline">\(w_i / \sum w_j\)</span>. És el <strong>GPS</strong>.</li>
+<li class="fragment">La CPU real no pot: CFS porta el compte de quant ha rebut cada procés i executa sempre el que <strong>va més endarrerit</strong>.</li>
+<li class="fragment">El compte és el <strong><code>vruntime</code></strong>: el temps de CPU rebut, ponderat pel pes.</li>
+</ul>
+<div class="concepte fragment udl-component udl-concepte" title="CFS és stride">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-concepte"></use></svg><span>Concepte — CFS és stride</span></div>
+<p><code>vruntime</code> = <em>pass</em> de l’stride. Triar el <code>vruntime</code> mínim = triar el <em>pass</em> mínim. La diferència: CFS mesura temps real executat (en nanosegons), no quanta.</p>
+</div>
+</section>
+<section id="vruntime-i-pesos" class="slide level2">
+<h2><code>vruntime</code> i pesos</h2>
+<p>Cada vegada que un procés s’executa durant <span class="math inline">\(\Delta t\)</span>:</p>
+<p><span class="math display">\[v_i \mathrel{+}= \Delta t \cdot \frac{1024}{w_i}\]</span></p>
+<ul>
+<li class="fragment">El <code>vruntime</code> <strong>només avança mentre el procés s’executa</strong>: dormint o esperant no canvia.</li>
+<li class="fragment">1024 és el pes de <code>nice</code> 0: per a un procés de <code>nice</code> 0, el <code>vruntime</code> avança com el temps real.</li>
+</ul>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: center;"><code>nice</code></th>
+<th style="text-align: center;">−10</th>
+<th style="text-align: center;">−5</th>
+<th style="text-align: center;">0</th>
+<th style="text-align: center;">1</th>
+<th style="text-align: center;">5</th>
+<th style="text-align: center;">10</th>
+<th style="text-align: center;">19</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">Pes <span class="math inline">\(w\)</span></td>
+<td style="text-align: center;">9548</td>
+<td style="text-align: center;">3121</td>
+<td style="text-align: center;"><strong>1024</strong></td>
+<td style="text-align: center;">820</td>
+<td style="text-align: center;">335</td>
+<td style="text-align: center;">110</td>
+<td style="text-align: center;">15</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><span class="math inline">\(1024/w\)</span></td>
+<td style="text-align: center;">0.11</td>
+<td style="text-align: center;">0.33</td>
+<td style="text-align: center;"><strong>1</strong></td>
+<td style="text-align: center;">1.25</td>
+<td style="text-align: center;">3.06</td>
+<td style="text-align: center;">9.31</td>
+<td style="text-align: center;">68.3</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li class="fragment">Cada nivell de <code>nice</code> multiplica el pes per ≈ 1.25: <strong>≈ 10 % de CPU</strong> respecte d’un veí.</li>
+</ul>
+<div class="errorcomu udl-component udl-errorcomu" title="Els factors no són lineals">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-errorcomu"></use></svg><span>Error Comú — Els factors no són lineals</span></div>
+<p><code>nice</code> 5 <strong>no</strong> fa avançar el <code>vruntime</code> el doble de ràpid: el fa avançar <strong>3.06</strong> vegades més ràpid. Feu servir sempre la taula de pesos.</p>
+</div>
+</section>
+<section id="cfs-exemple" class="slide level2">
+<h2>CFS: exemple</h2>
+<ul>
+<li class="fragment">A (<code>nice</code> 0, <span class="math inline">\(w = 1024\)</span>)</li>
+<li class="fragment">B (<code>nice</code> 5, <span class="math inline">\(w = 335\)</span>).</li>
+<li class="fragment">Model simplificat: es decideix a cada tick d’1 ms; empats, A.</li>
+</ul>
+<div class="fragment">
+<table class="caption-top" style="width:100%;">
+<colgroup>
+<col style="width: 13%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 9%">
+<col style="width: 9%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Tick</th>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+<th>10</th>
+<th>11</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(v_A\)</span></td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>4</td>
+<td>4</td>
+<td>5</td>
+<td>6</td>
+<td>7</td>
+<td>7</td>
+<td>8</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(v_B\)</span></td>
+<td>0</td>
+<td>0</td>
+<td>3.06</td>
+<td>3.06</td>
+<td>3.06</td>
+<td>3.06</td>
+<td>6.11</td>
+<td>6.11</td>
+<td>6.11</td>
+<td>6.11</td>
+<td>9.17</td>
+<td>9.17</td>
+</tr>
+<tr class="odd">
+<td>Executa</td>
+<td>A</td>
+<td>B</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>B</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td>B</td>
+<td>A</td>
+<td>A</td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li class="fragment">En 12 ticks: A en rep 9 (75 %) i B 3 (25 %).</li>
+<li class="fragment">Ideal: <span class="math inline">\(\frac{1024}{1024+335} = 75.4\,\%\)</span> i <span class="math inline">\(\frac{335}{1024+335} = 24.6\,\%\)</span>.</li>
+</ul>
+<div class="concepte fragment udl-component udl-concepte">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-concepte"></use></svg><span>Concepte</span></div>
+<p>CFS no assigna prioritats dinàmiques com O(1), sinó que utilitza un comptador que permet comparar el servei rebut per cada procés.</p>
+</div>
+</section>
+<section id="cfs-quant-temps-sexecuta-cada-procés" class="slide level2">
+<h2>CFS: quant temps s’executa cada procés?</h2>
+<p>CFS no té un quantum fix. Fixa un <strong>període</strong> (latència objectiu) i el reparteix proporcionalment:</p>
+<p><span class="math display">\[\text{slice}_i = \text{període} \cdot \frac{w_i}{\sum_j w_j}, \qquad \text{període} = \max\!\left(\text{sched_latency},\ n \cdot \text{min_granularity}\right)\]</span></p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<ul>
+<li class="fragment"><p><strong>sched_latency</strong>: latència objectiu per donar oportunitat d’execució als processos.</p></li>
+<li class="fragment"><p><strong>min_granularity</strong>: temps mínim d’execució.</p></li>
+<li class="fragment"><p><strong>n</strong>: nombre de processos preparats.</p></li>
+<li class="fragment"><p>Valors base: <code>sched_latency</code> = 6 ms i <code>min_granularity</code> = 0.75 ms (el kernel els escala segons el nombre de CPU).</p></li>
+</ul>
+<div class="idea fragment">
+<p>Amb molts processos, el període creix: cap <em>slice</em> baixa de <code>min_granularity</code>, per limitar els canvis de context.</p>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="exemple fragment udl-component udl-exemple">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exemple"></use></svg><span>Exemple</span></div>
+<ul>
+<li class="fragment">Assumeix 1 CPU, amb tres processos (A,B,C) amb <code>nice</code> 0, 0 i 5</li>
+<li class="fragment"><strong>A</strong>: <span class="math inline">\(\frac{1024}{1024+1024+335} \dot 6ms\)</span> = <strong>2.58</strong></li>
+<li class="fragment"><strong>B</strong>: <span class="math inline">\(\frac{1024}{1024+1024+335} \dot 6ms\)</span> = <strong>2.58</strong></li>
+<li class="fragment"><strong>C</strong>: <span class="math inline">\(\frac{335}{1024+1024+335} \dot 6ms\)</span> = <strong>0.84</strong></li>
+</ul>
+</div>
+</div></div>
+</section>
+<section id="processos-nous-i-processos-que-es-desperten" class="slide level2">
+<h2>Processos nous i processos que es desperten</h2>
+<div class="reflexio udl-component udl-reflexio" title="El problema del pass 0 de l'stride">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-reflexio"></use></svg><span>Reflexió — El problema del pass 0 de l'stride</span></div>
+<p>Si un procés nou comencés amb <code>vruntime</code> = 0, executaria fins a atrapar tots els altres.</p>
+</div>
+<ul>
+<li class="fragment">CFS manté <code>min_vruntime</code>: el mínim de la cua, que <strong>mai no decreix</strong>.</li>
+<li class="fragment"><strong>Procés nou</strong>: comença a <code>min_vruntime</code> i, a més, se li suma un <em>slice</em> (<code>START_DEBIT</code>): s’incorpora al final de la ronda.</li>
+<li class="fragment"><strong>Procés que es desperta</strong>: <span class="math inline">\(v_i = \max\left(v_i,\ \text{min_vruntime} - \tfrac{\text{sched_latency}}{2}\right)\)</span>. Rep un <strong>crèdit acotat</strong> per haver dormit, no tot el temps que ha dormit.</li>
+</ul>
+<div class="definicio fragment udl-component udl-definicio" title="min_vruntime">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-definicio"></use></svg><span>Definició — min_vruntime</span></div>
+<p>És una referència global del progrés dels processos de la cua de planificació. Representa el valor mínim de vruntime i serveix per evitar que els processos nous o que es desperten comencin en una posició excessivament avantatjosa.</p>
+</div>
+<div class="errorcomu fragment udl-component udl-errorcomu" title="Un procés nou no té vruntime = 0">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-errorcomu"></use></svg><span>Error Comú — Un procés nou no té vruntime = 0</span></div>
+<p>Si fos així, n’hi hauria prou amb fer <code>fork()</code> repetidament per monopolitzar la CPU.</p>
+</div>
+</section>
+<section id="la-limitació-de-fons-de-cfs" class="slide level2">
+<h2>La limitació de fons de CFS</h2>
+<ul>
+<li class="fragment">A CFS, el <strong>pes</strong> decideix dues coses alhora:
+<ul>
+<li class="fragment"><strong>quanta</strong> CPU rep un procés (la seva fracció);</li>
+<li class="fragment"><strong>amb quina freqüència</strong> la rep (el seu <em>slice</em> i la seva posició a l’arbre).</li>
+</ul></li>
+<li class="fragment">Un procés interactiu que necessita <strong>poca CPU però molt sovint</strong> (àudio, interfície) no ho pot demanar.</li>
+<li class="fragment">Les úniques sortides són <strong>pujar-li el pes</strong> (rep més CPU de la que necessita) o confiar en <strong>heurístiques</strong> de despertar (crèdit per dormir, preempció en despertar-se).</li>
+</ul>
+<div class="concepte fragment udl-component udl-concepte" title="El que voldríem">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-concepte"></use></svg><span>Concepte — El que voldríem</span></div>
+<p>Dos paràmetres independents: el <strong>pes</strong> (quanta CPU) i la <strong>mida de la petició</strong> (cada quant temps). És exactament el que separa WF²Q: el pes del flux i la mida dels paquets.</p>
+</div>
+</section></section>
+<section>
+<section id="eevdf" class="title-slide slide level1 center">
+<h1>EEVDF</h1>
+
+</section>
+<section id="eevdf-earliest-eligible-virtual-deadline-first" class="slide level2">
+<h2>EEVDF: Earliest Eligible Virtual Deadline First</h2>
+<p>Stoica i Abdel-Wahab (1995). Linux el fa servir des de la 6.6 (completat a la 6.12).</p>
+<ul>
+<li class="fragment">Cada procés té un <strong>pes</strong> <span class="math inline">\(w_i\)</span> i fa <strong>peticions</strong> de CPU de mida <span class="math inline">\(r_i\)</span> (el <em>slice</em>).</li>
+<li class="fragment">Temps virtual del sistema: <span class="math inline">\(\dfrac{dV}{dt} = \dfrac{1}{\sum_{j \in A(t)} w_j}\)</span>.</li>
+<li class="fragment">Per a cada petició: <strong>temps virtual elegible</strong> <span class="math inline">\(ve_i\)</span> i <strong>deadline virtual</strong> <span class="math inline">\(vd_i\)</span>.</li>
+</ul>
+<div class="fragment">
+<p><span class="math display">\[vd_i = ve_i + \frac{r_i}{w_i}\]</span></p>
+</div>
+<div class="definicio fragment udl-component udl-definicio" title="Regla d'EEVDF">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-definicio"></use></svg><span>Definició — Regla d'EEVDF</span></div>
+<p>Un procés és <strong>elegible</strong> si <span class="math inline">\(ve_i \le V(t)\)</span>. D’entre els elegibles, s’executa el de <strong><span class="math inline">\(vd\)</span> mínim</strong>.</p>
+</div>
+<ul>
+<li class="fragment">És <strong>WF²Q</strong> amb peticions de CPU en lloc de paquets: <span class="math inline">\(ve\)</span> ↔︎ <span class="math inline">\(S\)</span>, <span class="math inline">\(vd\)</span> ↔︎ <span class="math inline">\(F\)</span>.</li>
+</ul>
+<aside class="notes">
+<p><strong>Temps: 2’.</strong> Feu la correspondència amb 04c en veu alta: <span class="math inline">\(S_i^k = \max(F_i^{k-1}, V(a))\)</span> és el <span class="math inline">\(ve\)</span>; <span class="math inline">\(F = S + L/w\)</span> és el <span class="math inline">\(vd = ve + r/w\)</span>. La regla d’elegibilitat és la de WF²Q.</p>
+<p>Ara els dos paràmetres que buscàvem són independents: <span class="math inline">\(w\)</span> decideix la fracció (com de ràpid avança <span class="math inline">\(ve\)</span> al llarg del temps) i <span class="math inline">\(r\)</span> decideix com de lluny queda el deadline (com aviat serà triat).</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="lag-i-elegibilitat" class="slide level2">
+<h2>Lag i elegibilitat</h2>
+<p><span class="math display">\[
+\operatorname{lag}_i(t)
+=
+\underbrace{S_i^{\mathrm{ideal}}(t)}_{\text{servei a la CPU ideal}}
+-
+\underbrace{s_i(t)}_{\text{servei rebut}}
+\]</span></p>
+<ul>
+<li class="fragment"><strong>Elegible</strong> (<span class="math inline">\(ve_i \le V\)</span>) ⟺ <span class="math inline">\(\text{lag}_i \ge 0\)</span>: el procés ha rebut <strong>com a molt</strong> el que li toca.</li>
+<li class="fragment">Un procés que ha rebut <strong>més</strong> del que li toca (<span class="math inline">\(\text{lag} &lt; 0\)</span>) ha d’esperar, encara que tingui el deadline més proper.</li>
+<li class="fragment">El lag de cada procés queda <strong>acotat</strong> per la mida de la petició més gran (i del quantum). <strong>Justícia amb garantia</strong>, sense heurístiques.</li>
+</ul>
+</section>
+<section id="convenis-per-als-exercicis" class="slide level2">
+<h2>Convenis per als exercicis</h2>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Situació</th>
+<th>Regla</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Ritme del temps virtual</td>
+<td><span class="math inline">\(dV/dt = 1/\sum w_{\text{actius}}\)</span></td>
+</tr>
+<tr class="even">
+<td>Arribada d’un procés a l’instant <span class="math inline">\(t\)</span></td>
+<td><span class="math inline">\(ve = V(t)\)</span></td>
+</tr>
+<tr class="odd">
+<td>Nova petició en acabar-ne una</td>
+<td><span class="math inline">\(ve_{nou} = vd_{anterior}\)</span></td>
+</tr>
+<tr class="even">
+<td>Deadline</td>
+<td><span class="math inline">\(vd = ve + r/w\)</span></td>
+</tr>
+<tr class="odd">
+<td>Elecció</td>
+<td><span class="math inline">\(vd\)</span> mínim entre els que tenen <span class="math inline">\(ve \le V(t)\)</span></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li class="fragment">La CPU s’assigna en quanta d’1 tick: a cada tick es torna a decidir.</li>
+<li class="fragment">Cada procés consumeix exactament el temps que demana.</li>
+</ul>
+<div class="examtip fragment udl-component udl-examtip" title="Abans de triar, comprova l'elegibilitat">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-examtip"></use></svg><span>Pista d'Examen — Abans de triar, comprova l'elegibilitat</span></div>
+<p>L’error més freqüent és triar directament el <span class="math inline">\(vd\)</span> mínim. Primer descarta els processos amb <span class="math inline">\(ve &gt; V(t)\)</span>.</p>
+</div>
+</section>
+<section id="eevdf-exercici-i" class="slide level2">
+<h2>EEVDF: Exercici I</h2>
+<p>Suposa:</p>
+<ul>
+<li class="fragment"><strong>A</strong> (<span class="math inline">\(w = 1\)</span>, <span class="math inline">\(r = 1\)</span>)</li>
+<li class="fragment"><strong>B</strong> (<span class="math inline">\(w = 3\)</span>, <span class="math inline">\(r = 1\)</span>)</li>
+<li class="fragment"><strong>A</strong> i <strong>B</strong> arriben a <span class="math inline">\(t = 0\)</span></li>
+<li class="fragment">Fan peticions contínuament.</li>
+<li class="fragment">Empats: B.</li>
+</ul>
+<p>Fes la planificació de <span class="math inline">\(t=0\)</span> fins a <span class="math inline">\(t=5\)</span>.</p>
+</section>
+<section id="eevdf-exemple-tipus-examen" class="slide level2">
+<h2>EEVDF: exemple tipus examen</h2>
+<p>A (<span class="math inline">\(w = 1\)</span>, <span class="math inline">\(r = 1\)</span>) i B (<span class="math inline">\(w = 3\)</span>, <span class="math inline">\(r = 1\)</span>) arriben a <span class="math inline">\(t = 0\)</span> i fan peticions contínuament. Empats: B.</p>
+<table class="caption-top" style="width:100%;">
+<colgroup>
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 13%">
+<col style="width: 13%">
+<col style="width: 13%">
+<col style="width: 13%">
+<col style="width: 16%">
+<col style="width: 13%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;"><span class="math inline">\(t\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(V\)</span></th>
+<th style="text-align: center;">A: <span class="math inline">\(ve\)</span></th>
+<th style="text-align: center;">A: <span class="math inline">\(vd\)</span></th>
+<th style="text-align: center;">B: <span class="math inline">\(ve\)</span></th>
+<th style="text-align: center;">B: <span class="math inline">\(vd\)</span></th>
+<th style="text-align: center;">Elegibles</th>
+<th style="text-align: center;">Executa</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1/3</td>
+<td style="text-align: center;">A, B</td>
+<td style="text-align: center;">B</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1/4</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1/3</td>
+<td style="text-align: center;">2/3</td>
+<td style="text-align: center;"><strong>A</strong></td>
+<td style="text-align: center;"><strong>A</strong></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">1/2</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">1/3</td>
+<td style="text-align: center;">2/3</td>
+<td style="text-align: center;">B</td>
+<td style="text-align: center;">B</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3/4</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2/3</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">B</td>
+<td style="text-align: center;">B</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">4/3</td>
+<td style="text-align: center;">A, B</td>
+<td style="text-align: center;">B</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">5/4</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4/3</td>
+<td style="text-align: center;">5/3</td>
+<td style="text-align: center;"><strong>A</strong></td>
+<td style="text-align: center;"><strong>A</strong></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li class="fragment">A <span class="math inline">\(t = 1\)</span>, B té el deadline més proper (2/3 &lt; 1), però <strong>no és elegible</strong> (<span class="math inline">\(1/3 &gt; 1/4\)</span>): s’executa A.</li>
+<li class="fragment">En 4 ticks, B en rep 3 i A 1: exactament <span class="math inline">\(3 : 1\)</span>.</li>
+</ul>
+</section>
+<section id="la-mida-de-la-petició-decideix-la-latència" class="slide level2">
+<h2>La mida de la petició decideix la latència</h2>
+<p>Mateix pes, peticions diferents. B (càlcul, <span class="math inline">\(r = 4\)</span> ms) s’està executant: <span class="math inline">\(ve_B = 8\)</span>, <span class="math inline">\(vd_B = 12\)</span>. A <span class="math inline">\(V = 10\)</span> es desperta A, amb lag 0: <span class="math inline">\(ve_A = V = 10\)</span>.</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 18%">
+<col style="width: 26%">
+<col style="width: 39%">
+<col style="width: 15%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Petició d’A</th>
+<th style="text-align: center;"><span class="math inline">\(vd_A = 10 + r_A\)</span></th>
+<th style="text-align: center;">Comparació amb <span class="math inline">\(vd_B = 12\)</span></th>
+<th>Què passa</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">\(r_A = 1\)</span> ms</td>
+<td style="text-align: center;">11</td>
+<td style="text-align: center;">11 &lt; 12</td>
+<td><strong>A va primer</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><span class="math inline">\(r_A = 4\)</span> ms</td>
+<td style="text-align: center;">14</td>
+<td style="text-align: center;">14 &gt; 12</td>
+<td>A espera que B acabi la petició</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li class="fragment">Tots dos reben la <strong>mateixa fracció</strong> de CPU (mateix pes): la mida de la petició només canvia <strong>quan</strong> la reben.</li>
+<li class="fragment">Un procés que demana peticions curtes obté <strong>poca latència sense rebre més CPU</strong>: el que CFS no podia oferir.</li>
+</ul>
+</section>
+<section id="del-paper-al-kernel" class="slide level2">
+<h2>Del paper al kernel</h2>
+<table class="caption-top">
+<colgroup>
+<col style="width: 22%">
+<col style="width: 77%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Paper</th>
+<th>Kernel de Linux (6.6+)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(V(t)\)</span> integrat</td>
+<td>Mitjana dels <code>vruntime</code> ponderada pels pesos (<code>avg_vruntime</code>)</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(ve_i\)</span></td>
+<td><code>vruntime</code> del procés; elegible si <code>vruntime</code> <span class="math inline">\(\le V\)</span></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(vd_i = ve_i + r_i/w_i\)</span></td>
+<td><code>deadline</code> = <code>vruntime</code> + <em>slice</em> <span class="math inline">\(\cdot 1024/w_i\)</span></td>
+</tr>
+<tr class="even">
+<td>Mida de la petició <span class="math inline">\(r_i\)</span></td>
+<td><em>Slice</em>: per defecte ≈ 0.75 ms (escalat segons el nombre de CPU)</td>
+</tr>
+<tr class="odd">
+<td>Arribada amb <span class="math inline">\(ve = V\)</span></td>
+<td>Un procés nou comença a <code>avg_vruntime</code> (lag 0)</td>
+</tr>
+<tr class="even">
+<td>Lag conservat en dormir</td>
+<td>El lag es guarda en dormir i es restaura en despertar (acotat)</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li class="fragment">Des de la 6.12, un procés pot demanar la seva pròpia mida de petició amb <code>sched_setattr()</code> (camp <code>sched_runtime</code>, entre 0.1 i 100 ms).</li>
+</ul>
+</section>
+<section id="cfs-i-eevdf-cara-a-cara" class="slide level2">
+<h2>CFS i EEVDF, cara a cara</h2>
+<table class="caption-top">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 33%">
+<col style="width: 46%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>CFS</th>
+<th>EEVDF</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Model</td>
+<td>Repartiment proporcional (stride)</td>
+<td>Repartiment proporcional + deadlines (WF²Q)</td>
+</tr>
+<tr class="even">
+<td>Tria</td>
+<td><code>vruntime</code> mínim</td>
+<td>Deadline virtual mínim entre els <strong>elegibles</strong></td>
+</tr>
+<tr class="odd">
+<td>Quanta CPU</td>
+<td>Pes</td>
+<td>Pes</td>
+</tr>
+<tr class="even">
+<td>Cada quant</td>
+<td>Pes (i heurístiques de despertar)</td>
+<td><strong>Mida de la petició</strong></td>
+</tr>
+<tr class="odd">
+<td>Justícia</td>
+<td>Sense cota formal</td>
+<td><strong>Lag acotat</strong></td>
+</tr>
+<tr class="even">
+<td>Processos que dormen</td>
+<td>Crèdit de mitja latència</td>
+<td>Es conserva el <strong>lag</strong></td>
+</tr>
+</tbody>
+</table>
+<div class="errorcomu fragment udl-component udl-errorcomu" title="EEVDF no és temps real">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-errorcomu"></use></svg><span>Error Comú — EEVDF no és temps real</span></div>
+<p>EEVDF continua sent un planificador de repartiment proporcional per a processos normals. Les garanties de temps real a Linux són <code>SCHED_FIFO</code>, <code>SCHED_RR</code> i <code>SCHED_DEADLINE</code>.</p>
+</div>
+</section></section>
+<section>
+<section id="linux-avui" class="title-slide slide level1 center">
+<h1>Linux avui</h1>
+
+</section>
+<section id="classes-de-planificació" class="slide level2">
+<h2>Classes de planificació</h2>
+<p>Quan el kernel ha de triar, pregunta a les classes per ordre. La primera que té un procés preparat, guanya.</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 26%">
+<col style="width: 30%">
+<col style="width: 42%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Ordre</th>
+<th>Classe</th>
+<th>Polítiques</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td>stop</td>
+<td>Fils interns del kernel (migració entre CPU)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td>deadline</td>
+<td><code>SCHED_DEADLINE</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td>rt</td>
+<td><code>SCHED_FIFO</code>, <code>SCHED_RR</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td>fair</td>
+<td><code>SCHED_OTHER</code> (= <code>SCHED_NORMAL</code>), <code>SCHED_BATCH</code>, <code>SCHED_IDLE</code> → <strong>CFS / EEVDF</strong></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td>ext</td>
+<td><code>SCHED_EXT</code> (6.12+, planificadors en BPF)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">6</td>
+<td>idle</td>
+<td>Fil ociós de la CPU</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li class="fragment"><strong>Debian bookworm</strong> (kernel 6.1): la classe <em>fair</em> és <strong>CFS</strong>.</li>
+<li class="fragment"><strong>Debian trixie</strong> (kernel 6.12): la classe <em>fair</em> és <strong>EEVDF</strong>, i hi ha <code>sched_ext</code>.</li>
+</ul>
+</section>
+<section id="resum" class="slide level2">
+<h2>Resum</h2>
+<div class="resum udl-component udl-resum">
+<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-resum"></use></svg><span>Resum</span></div>
+<ul>
+<li class="fragment"><strong>O(1)</strong>: 140 cues, quantum segons <code>nice</code> i prioritat dinàmica per heurística. És una MLFQ i en té els problemes.</li>
+<li class="fragment"><strong>CFS</strong>: repartiment proporcional. <span class="math inline">\(v_i \mathrel{+}= \Delta t \cdot 1024/w_i\)</span> només mentre s’executa; tria el <code>vruntime</code> mínim; els nous comencen a <code>min_vruntime</code>.</li>
+<li class="fragment">La limitació de CFS: el <strong>pes</strong> decideix alhora quanta CPU i cada quant.</li>
+<li class="fragment"><strong>EEVDF</strong>: WF²Q per a la CPU. Elegible si <span class="math inline">\(ve \le V\)</span>; tria el <span class="math inline">\(vd = ve + r/w\)</span> mínim. El pes decideix la fracció; la <strong>mida de la petició</strong>, la latència. Lag acotat.</li>
+<li class="fragment">Debian bookworm té CFS; trixie, EEVDF i <code>sched_ext</code>.</li>
+</ul>
+</div>
+
+
+</section></section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+<p>Sistemes Operatius (SO) &nbsp; <a href="../../../index.html" class="home-link" aria-label="Inici"><svg class="home-icon" viewbox="0 0 120 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 52 C27 43 39 31 60 12 C78 30 93 42 108 51" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"></path><path d="M25 48 C25 64 25 76 24 87 C35 84 45 85 53 87 M95 48 C95 64 95 76 97 87 C87 84 77 85 68 87" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M51 87V70 C51 64 55 60 60 60 C65 60 69 64 69 70V87Z" fill="currentColor"></path><path d="M82 29V17 C82 14 84 13 87 13H94 C96 13 97 15 96 17 C94 20 93 24 94 32Z" fill="currentColor"></path></svg></a></p>
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="../../../site_libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="../../../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="../../../site_libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="../../../site_libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="../../../site_libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="../../../site_libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="../../../site_libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="../../../site_libs/revealjs/plugin/search/search.js"></script>
+  <script src="../../../site_libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="../../../site_libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"\u003ci class=\"fas fa-gear\">\u003c/i>","content":"\u003cul class=\"slide-menu-items\">\n\u003cli class=\"slide-tool-item active\" data-item=\"0\">\u003ca href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\">\u003ckbd>f\u003c/kbd> Fullscreen\u003c/a>\u003c/li>\n\u003cli class=\"slide-tool-item\" data-item=\"1\">\u003ca href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\">\u003ckbd>s\u003c/kbd> Speaker View\u003c/a>\u003c/li>\n\u003cli class=\"slide-tool-item\" data-item=\"2\">\u003ca href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\">\u003ckbd>o\u003c/kbd> Slide Overview\u003c/a>\u003c/li>\n\u003cli class=\"slide-tool-item\" data-item=\"3\">\u003ca href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\">\u003ckbd>e\u003c/kbd> PDF Export Mode\u003c/a>\u003c/li>\n\u003cli class=\"slide-tool-item\" data-item=\"4\">\u003ca href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\">\u003ckbd>r\u003c/kbd> Scroll View Mode\u003c/a>\u003c/li>\n\u003cli class=\"slide-tool-item\" data-item=\"5\">\u003ca href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\">\u003ckbd>?\u003c/kbd> Keyboard Help\u003c/a>\u003c/li>\n\u003c/ul>"}],"openButton":true,"openButtonLabel":"Slide menu"},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'fade',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1600,
+
+        height: 900,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 8.0e-2,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+          const outerScaffold = trigger.parentElement.cloneNode(true);
+          const codeEl = outerScaffold.querySelector('code');
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp("https:\/\/igualada\.os\.udl\.cat");
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+          window.quartoDecorateExternalLinks = function (root) {
+         var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+              if (!link.classList.contains('no-external-icon')) {
+              }
+            }
+          }
+          };
+          window.quartoDecorateExternalLinks(window.document);
+        // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+        // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+        const hideOnEscAndFocusOut = {
+          name: 'hideOnEscAndFocusOut',
+          defaultValue: true,
+          fn(instance) {
+            const dismiss = () => {
+              // A show scheduled by the trigger delay would otherwise reopen it
+              instance.clearDelayTimeouts();
+              instance.hide();
+            };
+            const onKeyDown = (event) => {
+              if (event.key !== 'Escape') {
+                return;
+              }
+              // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+              // except an open reveal.js slide menu, which Esc should close too.
+              // The menu handles keys only when its keyboard option is on.
+              const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+                window.Reveal.getConfig().menu?.keyboard !== false;
+              if (!menuHandlesEsc) {
+                event.stopPropagation();
+              }
+              if (instance.popper.contains(window.document.activeElement)) {
+                // Disabled while refocusing so the focus trigger does not reopen it
+                instance.disable();
+                instance.reference.focus();
+                instance.enable();
+              }
+              dismiss();
+            };
+            const onFocusOut = (event) => {
+              const target = event.relatedTarget;
+              if (target && !instance.reference.contains(target) &&
+                  !instance.popper.contains(target)) {
+                dismiss();
+              }
+            };
+            // On the trigger too: a click trigger (code-annotations: select) has no
+            // blur handling. Attached for the instance's lifetime so leaving the
+            // trigger also cancels a show still pending on the trigger delay.
+            instance.reference.addEventListener('focusout', onFocusOut);
+            return {
+              onShow() {
+                window.document.addEventListener('keydown', onKeyDown, true);
+                instance.popper.addEventListener('focusout', onFocusOut);
+              },
+              onHide() {
+                window.document.removeEventListener('keydown', onKeyDown, true);
+                instance.popper.removeEventListener('focusout', onFocusOut);
+              },
+              onDestroy() {
+                instance.reference.removeEventListener('focusout', onFocusOut);
+              },
+            };
+          },
+        };
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+            plugins: [hideOnEscAndFocusOut],
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>
