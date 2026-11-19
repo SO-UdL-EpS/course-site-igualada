@@ -1,0 +1,720 @@
+---
+title: "Bash scripting (II)"
+author: "Jordi Mateo Fornés"
+format:
+  udl-course-html:
+    toc: false
+    number-sections: false
+---
+
+## Introducció
+
+A la sessió anterior has après a executar scripts, a llegir codis de retorn i a prendre decisions encadenant `[ ]`, `&&` i `||`. També has vist que aquesta manera d'escriure costa de llegir quan hi ha més de dues opcions. En aquesta sessió afegim les peces que falten: **variables i entorn**, **aritmètica**, **`if` i `case`**, **bucles** i **estructures de dades** (arrays i diccionaris).
+
+> **Si a bash tot és text, com sumem números, com guardem una llista o com relacionem una clau amb un valor?**
+
+```{.text}
+variables → entorn → aritmètica → if → case → bucles → arrays → diccionaris → joc → repte
+```
+
+:::{.programari}
+- `bash` (**sistema de referència: Debian bookworm, amb bash 5.2**) i un editor de text.
+- Totes les eines que farem servir (`expr`, `printf`, `shuf`...) ja hi són instal·lades per defecte.
+:::
+
+:::{.bonapractica}
+Si no acabes a classe, D.4 (el joc) i el **repte final** es poden fer a casa. Les seccions anteriors els preparen tots dos.
+:::
+
+---
+
+### Part A · Variables i entorn
+
+#### A.1 — Variables (R1)
+
+::: {.exercici}
+Crea `variables.sh`. Declara-hi dues variables, `NOM` amb el teu nom i `EDAT` amb la teva edat, i fes que l'script imprimeixi:
+
+```{.text}
+Hola, el meu nom és [NOM] i tinc [EDAT] anys.
+```
+:::
+
+<details>
+<summary><b>Veure el raonament</b></summary>
+
+:::{.solucio}
+```{.bash}
+#!/bin/bash
+NOM="Anna"
+EDAT=20
+echo "Hola, el meu nom és $NOM i tinc $EDAT anys."
+```
+
+Recorda: `nom=valor` **sense espais**, cometes dobles perquè s'expandeixin les variables, i `chmod +x` abans de fer `./variables.sh`.
+:::
+
+</details>
+
+#### A.2 — Variables d'entorn (R1, segona part)
+
+Ara volem que `NOM` i `EDAT` **no** estiguin definides dins de l'script: les ha de rebre de fora.
+
+::: {.exercici}
+Esborra les dues assignacions de `variables.sh` (deixa només l'`echo`). **Prediu** què imprimirà cadascun d'aquests tres blocs i comprova-ho:
+
+```{.bash}
+NOM=Anna EDAT=20 ./variables.sh
+```
+
+```{.bash}
+NOM=Anna
+EDAT=20
+./variables.sh
+```
+
+```{.bash}
+export NOM EDAT
+./variables.sh
+env | grep -E '^(NOM|EDAT)='
+```
+
+1. Per què el segon bloc imprimeix el missatge **buit**, si les variables estan definides a la terminal?
+2. Quina diferència hi ha entre el primer bloc i el tercer?
+3. Si l'script fes `NOM="Pere"`, canviaria el valor de `NOM` a la teva terminal? Comprova-ho.
+:::
+
+<details>
+<summary><b>Veure el raonament</b></summary>
+
+:::{.solucio}
+1. Una variable creada amb `NOM=Anna` és una **variable de shell**: existeix només dins del procés de la shell. `./variables.sh` s'executa en un **procés fill** (`fork` + `exec`), i el fill només hereta les **variables d'entorn**. Sortida: `Hola, el meu nom és  i tinc  anys.`
+2. `NOM=Anna EDAT=20 ./variables.sh` posa les variables a l'entorn **només d'aquella execució**. Amb `export` la variable passa a formar part de l'entorn de la shell, i **tots** els fills que llancis a partir d'ara la rebran. És el mateix mecanisme que fa que l'script vegi `USER` o `SHELL`.
+3. **No.** L'herència va en un sol sentit, de pare a fill. El fill rep una **còpia** de l'entorn: el que hi canviï desapareix quan acaba. 
+:::
+
+</details>
+
+::: {.exercici}
+**Ampliació.** Fes que l'script no imprimeixi forats buits si falta alguna variable. Prova `${NOM:-desconegut}` i descobreix què fa.
+:::
+
+<details>
+<summary><b>Veure el raonament</b></summary>
+
+:::{.solucio}
+`${VAR:-valor}` s'expandeix a `valor` si `VAR` no existeix o és buida; si no, al contingut de `VAR`. **No** modifica la variable.
+
+```{.bash}
+#!/bin/bash
+echo "Hola, el meu nom és ${NOM:-desconegut} i tinc ${EDAT:-?} anys."
+```
+:::
+
+</details>
+
+---
+
+### Part B · Aritmètica
+
+#### B.1 — Les variables sempre són cadenes (R2)
+
+::: {.exercici}
+Crea `suma.sh` amb dues variables `NUM1=5` i `NUM2=10`. **Prediu** què imprimeix cadascuna d'aquestes línies abans d'executar-les:
+
+```{.bash}
+echo "La suma és: $NUM1 + $NUM2"
+RESULTAT=$NUM1+$NUM2
+echo "La suma és: $RESULTAT"
+```
+
+Per què no surt `15`?
+:::
+
+<details>
+<summary><b>Veure el raonament</b></summary>
+
+:::{.solucio}
+Les dues línies imprimeixen `5 + 10` i `5+10`. Per a bash, **una variable és una cadena de text**: `$NUM1+$NUM2` és només una concatenació dels textos `5`, `+` i `10`. La shell no fa cap operació si no li demanes explícitament.
+:::
+
+</details>
+
+#### B.2 — Tres maneres de fer aritmètica (R3)
+
+```{.bash}
+let RESULTAT=NUM1+NUM2          # builtin de bash
+RESULTAT=$((NUM1 + NUM2))       # expansió aritmètica (POSIX)
+RESULTAT=$(expr $NUM1 + $NUM2)  # programa extern
+```
+
+::: {.exercici}
+Modifica `suma.sh` perquè calculi la suma correctament de les tres maneres. Després **prediu** i comprova:
+
+```{.bash}
+expr $NUM1+$NUM2
+expr $NUM1 * $NUM2
+expr $NUM1 \* $NUM2
+echo $((7 / 2))
+type let expr
+```
+
+1. Per què `expr` és tan estricte amb els espais i amb `*`?
+2. Per què dins de `$(( ))` podem escriure `NUM1` sense `$`?
+3. Què passa amb els decimals?
+4. Quina de les tres formes faràs servir per defecte? Per què?
+:::
+
+<details>
+<summary><b>Veure el raonament</b></summary>
+
+:::{.solucio}
+```{.bash}
+#!/bin/bash
+NUM1=5
+NUM2=10
+
+let RESULTAT=NUM1+NUM2
+echo "let:   $RESULTAT"
+
+RESULTAT=$((NUM1 + NUM2))
+echo "\$(()): $RESULTAT"
+
+RESULTAT=$(expr $NUM1 + $NUM2)
+echo "expr:  $RESULTAT"
+```
+
+1. `expr` és un **programa extern** (`type expr` → `/usr/bin/expr`): rep cada operand i cada operador com un **argument separat**. `5+10` és un sol argument, i `expr` el retorna tal qual. `*`, sense escapar, la shell l'expandeix com a **comodí** amb els noms dels fitxers del directori abans que `expr` el vegi; per això cal `\*`.
+2. Dins de `$(( ))` la shell interpreta qualsevol nom com una variable. També accepta espais lliurement.
+3. L'aritmètica de bash és **entera**: `7 / 2` dona `3`. Per a decimals cal una eina externa, com ara `awk "BEGIN {print 7/2}"` o `bc`.
+4. `$(( ))`: és POSIX (funciona també a `sh`/`dash`), no crea cap procés nou (a diferència d'`expr`) i és la més llegible. `let` només existeix a bash.
+:::
+
+</details>
+
+---
+
+### Part C · Decisions: `if` i `case`
+
+#### C.1 — `if` avalua codis de retorn
+
+```{.bash}
+if ORDRE; then
+    ...         # ORDRE ha retornat 0
+elif ALTRA_ORDRE; then
+    ...
+else
+    ...
+fi
+```
+
+`[ ]` és només l'ordre que fem servir més sovint, però en pot anar qualsevol altra.
+
+::: {.exercici}
+**Prediu** quines lletres s'imprimeixen:
+
+```{.bash}
+if ls /etc > /dev/null; then echo "A"; fi
+if grep -q root /etc/passwd; then echo "B"; fi
+if [ 0 ]; then echo "C"; fi
+if [ "" ]; then echo "D"; fi
+if false; then echo "E"; else echo "F"; fi
+if [ 10 -lt 9 ]; then echo "G"; fi
+if [[ 10 < 9 ]]; then echo "H"; fi
+```
+
+Per què surt `C`? Per què surt `H`, si 10 no és més petit que 9?
+:::
+
+<details>
+<summary><b>Veure el raonament</b></summary>
+
+:::{.solucio}
+Surten `A`, `B`, `C`, `F` i `H`.
+
+- `A` i `B`: `ls` i `grep -q` retornen `0`. `grep -q` no imprimeix res; només retorna si ha trobat el text.
+- `C`: amb un sol argument, `[ ]` comprova si és una **cadena no buida**. `"0"` és un text no buit, per tant és cert. A la shell, `0` és èxit perquè és un **codi de retorn**, no un booleà.
+- `D`: cadena buida, fals.
+- `G` no surt: `-lt` compara **números**.
+- `H` surt: dins de `[[ ]]`, `<` compara **cadenes** per ordre alfabètic, i `"10"` va abans que `"9"` (el caràcter `1` va abans del `9`).
+
+Regla: per a números, `-eq -ne -lt -le -gt -ge`; per a text, `=`, `!=`, `<` i `>`. (A `[ ]`, el `<` s'hauria d'escapar, `\<`, o la shell el prendria per una redirecció.)
+:::
+
+</details>
+
+::: {.concepte title="`[ ]` o `[[ ]]`?"}
+`[[ ]]` és una extensió de bash (no és POSIX) amb avantatges: no divideix les variables en paraules (si oblides les cometes no es trenca), accepta `&&` i `||` a dins i té `=~` per a expressions regulars:
+
+```{.bash}
+[[ $1 =~ ^[0-9]+$ ]] && echo "És un enter positiu"
+```
+
+En aquesta assignatura pots fer servir qualsevol de les dues. Si l'script ha de funcionar amb `sh`, fes servir `[ ]`.
+:::
+
+::: {.exercici}
+Reescriu amb `if` el control d'arguments de `arguments.sh`: si no hi ha arguments, missatge a stderr i `exit 1`.
+:::
+
+<details>
+<summary><b>Veure el raonament</b></summary>
+
+:::{.solucio}
+```{.bash}
+#!/bin/bash
+if [ $# -eq 0 ]; then
+    echo "Error: no s'han passat arguments." >&2
+    exit 1
+fi
+echo "Primer argument: $1, Total arguments: $#"
+```
+
+Fa exactament el mateix que `[ $# -eq 0 ] && { ...; exit 1; }`, però es llegeix d'un cop d'ull, i no té la trampa del `A && B || C`.
+:::
+
+</details>
+
+#### C.2 — Calculadora amb `case` (R4)
+
+Quan hem de comparar **una mateixa variable** amb moltes opcions, `case` és més net que una cadena d'`elif`:
+
+```{.bash}
+case "$VARIABLE" in
+    opcio1)        ordres ;;
+    opcio2|opcio3) ordres ;;     # | = qualsevol de les dues
+    *)             ordres ;;     # cas per defecte
+esac
+```
+
+Els patrons són els mateixos **comodins** que la shell fa servir per als noms de fitxer (`*`, `?`, `[abc]`).
+
+::: {.exercici}
+Crea `calculadora.sh`, que rep **dos números i una operació** (`suma`, `resta`, `multiplicacio`, `divisio`) com a arguments, fa l'operació i mostra el resultat:
+
+```{.text}
+./calculadora.sh 5 3 suma
+El resultat de la suma entre 5 i 3 és: 8
+```
+
+Aplica-hi el que vas aprendre a la sessió 1 sobre errors:
+
+1. Exactament 3 arguments; si no, ús a stderr i codi `1`.
+2. Operació desconeguda: error i codi `2`.
+3. Divisió per zero: error i codi `3`.
+
+Comprova-ho i **prediu** abans el resultat de les dues últimes línies:
+
+```{.bash}
+./calculadora.sh 5 3 suma ; echo $?
+./calculadora.sh 7 2 divisio ; echo $?
+./calculadora.sh 5 0 divisio ; echo $?
+./calculadora.sh 5 3 potencia ; echo $?
+./calculadora.sh 5 3 ; echo $?
+./calculadora.sh 5 hola suma ; echo $?
+```
+:::
+
+<details>
+<summary><b>Veure el raonament</b></summary>
+
+:::{.solucio}
+```{.bash}
+#!/bin/bash
+if [ $# -ne 3 ]; then
+    echo "Ús: $0 num1 num2 operacio" >&2
+    exit 1
+fi
+
+NUM1=$1
+NUM2=$2
+OPERACIO=$3
+
+case "$OPERACIO" in
+    suma)          RESULTAT=$((NUM1 + NUM2)) ;;
+    resta)         RESULTAT=$((NUM1 - NUM2)) ;;
+    multiplicacio) RESULTAT=$((NUM1 * NUM2)) ;;
+    divisio)
+        if [ "$NUM2" -eq 0 ]; then
+            echo "Error: divisió per zero." >&2
+            exit 3
+        fi
+        RESULTAT=$((NUM1 / NUM2))
+        ;;
+    *)
+        echo "Error: operació no vàlida: $OPERACIO" >&2
+        exit 2
+        ;;
+esac
+
+echo "El resultat de la $OPERACIO entre $NUM1 i $NUM2 és: $RESULTAT"
+```
+
+Resultats: `8` (codi 0), `3` (0, divisió entera), error (3), error (2), ús (1).
+
+L'última és la sorpresa: `./calculadora.sh 5 hola suma` imprimeix **`5`** amb codi `0`. Dins de `$(( ))`, `hola` s'interpreta com el **nom d'una variable**; com que no existeix, val `0`. L'script dona un resultat incorrecte sense queixar-se. Per evitar-ho cal validar els números abans d'operar:
+
+```{.bash}
+if ! [[ $NUM1 =~ ^-?[0-9]+$ && $NUM2 =~ ^-?[0-9]+$ ]]; then
+    echo "Error: els operands han de ser enters." >&2
+    exit 1
+fi
+```
+
+(`!` inverteix el codi de retorn de l'ordre que el segueix.)
+:::
+
+</details>
+
+::: {.exercici}
+**Ampliació.** Fes que la calculadora accepti també els símbols `+`, `-`, `x` i `/`. Després prova:
+
+```{.bash}
+./calculadora.sh 6 3 *
+```
+
+Què passa? Per què? Com ho ha d'escriure l'usuari?
+:::
+
+<details>
+<summary><b>Veure el raonament</b></summary>
+
+:::{.solucio}
+```{.bash}
+case "$OPERACIO" in
+    suma|+)          RESULTAT=$((NUM1 + NUM2)) ;;
+    resta|-)         RESULTAT=$((NUM1 - NUM2)) ;;
+    multiplicacio|x) RESULTAT=$((NUM1 * NUM2)) ;;
+    divisio|/)       ... ;;
+```
+
+Amb `*` sense cometes, la shell l'**expandeix** amb els noms de tots els fitxers del directori **abans** de llançar l'script. L'script rep molts més de 3 arguments i surt amb l'error d'ús. L'usuari hauria d'escriure `'*'` o `\*` (el mateix problema que amb `expr`). Per això fem servir `x`.
+
+Si vols acceptar `*` dins del `case`, també l'has d'escapar: `\*)`. Sense escapar, seria el cas per defecte i ho capturaria tot.
+:::
+
+</details>
+
+---
+
+### Part D · Bucles i estructures de dades
+
+#### D.1 — `for` i `while`
+
+```{.bash}
+for VAR in llista de paraules; do
+    ordres
+done
+
+while ORDRE; do      # repeteix mentre ORDRE retorni 0
+    ordres
+done
+```
+
+::: {.exercici}
+**Prediu** què imprimeix cada bucle i comprova-ho:
+
+```{.bash}
+for x in a b c; do echo "[$x]"; done
+for x in "a b c"; do echo "[$x]"; done
+for f in *.sh; do echo "Script: $f"; done
+for f in *.noexisteix; do echo "Script: $f"; done
+for ((i = 1; i <= 3; i++)); do echo "$i"; done
+i=3; while [ $i -gt 0 ]; do echo "$i"; i=$((i - 1)); done
+```
+
+Fixa't en el quart bucle: què imprimeix si no hi ha cap fitxer que coincideixi?
+:::
+
+<details>
+<summary><b>Veure el raonament</b></summary>
+
+:::{.solucio}
+- `for x in a b c` fa tres voltes; `for x in "a b c"` en fa **una**: les cometes agrupen, com a la sessió 1 amb els arguments.
+- `*.sh` s'expandeix amb els scripts del directori: és la manera habitual de recórrer fitxers.
+- `*.noexisteix`: si el patró no coincideix amb res, bash **deixa el text literal** i el bucle fa una volta amb `f='*.noexisteix'`. En un script real, comprova-ho amb `[ -e "$f" ] || continue`.
+- `for ((...))` és la forma de bash a l'estil de C. `while` amb un comptador fa el mateix amb `[ ]`.
+:::
+
+</details>
+
+#### D.2 — Arrays (R5)
+
+```{.bash}
+A=("u" "dos" "tres")   # declarar
+echo "${A[0]}"         # un element (els índexs comencen a 0)
+echo "${A[@]}"         # tots els elements
+echo "${!A[@]}"        # tots els índexs
+echo "${#A[@]}"        # nombre d'elements
+A+=("quatre")          # afegir al final
+```
+
+::: {.exercici}
+Crea `arrays.sh` amb dos arrays: un amb 4 fruites del diable i un altre amb els seus usuaris, en el mateix ordre. L'script ha de llistar quin personatge té quina fruita.
+
+| Fruita del diable | Usuari                 |
+|-------------------|------------------------|
+| Hito-Hito no Mi   | Luffy                  |
+| Mera-Mera no Mi   | Ace/Sabo               |
+| Gura-Gura no Mi   | Barbablanca/Barbanegra |
+| Magu-Magu no Mi   | Akainu                 |
+
+Després **prediu** i comprova:
+
+```{.bash}
+echo $FRUITES
+for f in ${FRUITES[@]}; do echo "[$f]"; done
+for f in "${FRUITES[@]}"; do echo "[$f]"; done
+```
+
+Finalment, afegeix una cinquena parella amb `+=` (per exemple, `Ope-Ope no Mi` i `Law`) i comprova que el bucle principal la mostra **sense tocar-lo**.
+:::
+
+<details>
+<summary><b>Veure el raonament</b></summary>
+
+:::{.solucio}
+```{.bash}
+#!/bin/bash
+FRUITES=("Hito-Hito no Mi" "Mera-Mera no Mi" "Gura-Gura no Mi" "Magu-Magu no Mi")
+USUARIS=("Luffy" "Ace/Sabo" "Barbablanca/Barbanegra" "Akainu")
+
+FRUITES+=("Ope-Ope no Mi")
+USUARIS+=("Law")
+
+for i in "${!FRUITES[@]}"; do
+    echo "${USUARIS[$i]} té la ${FRUITES[$i]}"
+done
+echo "Total: ${#FRUITES[@]} fruites"
+```
+
+- `echo $FRUITES` mostra només el **primer** element: sense índex, `$A` equival a `${A[0]}`.
+- `${FRUITES[@]}` **sense cometes** divideix per espais: surten 12 elements (`[Hito-Hito]`, `[no]`, `[Mi]`...).
+- `"${FRUITES[@]}"` **amb cometes** conserva cada element sencer. És el mateix que `"$@"` amb els arguments, i la mateixa regla: **cita sempre**.
+- Recórrer els **índexs** (`"${!FRUITES[@]}"`) permet accedir a dos arrays alhora. Si oblides afegir l'usuari d'una fruita nova, els arrays queden desaparellats i no te n'adones: és el problema que resol el diccionari.
+:::
+
+</details>
+
+#### D.3 — Diccionaris (R6)
+
+Un **diccionari** (*array associatiu*) indexa per **text** en lloc de per número. S'ha de declarar explícitament amb `declare -A`.
+
+| Clau (Regne) | Valor (Rei/Reina) |
+|--------------|-------------------|
+| Dressrosa    | Doflamingo        |
+| WholeCake    | Big Mom           |
+| Wano         | Kaido             |
+| Alabasta     | Cobra             |
+
+::: {.exercici}
+Crea `diccionaris.sh`: inicialitza un diccionari amb el contingut de la taula i fes un bucle que imprimeixi cada regne amb el seu rei o reina:
+
+```{.text}
+A Wano governa Kaido
+```
+
+Després:
+
+1. Afegeix `Skypiea`, `Water7`, `Marineford` i `Elbaf` (amb qualsevol valor). En quin ordre surten ara?
+2. **Prediu** què passa si esborres la línia `declare -A` i tornes a executar l'script (amb la taula original). Comprova-ho amb `declare -p REGNES`.
+:::
+
+<details>
+<summary><b>Veure el raonament</b></summary>
+
+:::{.solucio}
+```{.bash}
+#!/bin/bash
+declare -A REGNES=(
+    ["Dressrosa"]="Doflamingo"
+    ["WholeCake"]="Big Mom"
+    ["Wano"]="Kaido"
+    ["Alabasta"]="Cobra"
+)
+
+for REGNE in "${!REGNES[@]}"; do
+    echo "A $REGNE governa ${REGNES[$REGNE]}"
+done
+```
+
+1. Amb pocs elements poden sortir en l'ordre d'inserció per casualitat, però en afegir-ne més l'ordre canvia. Un diccionari és una **taula hash**: l'ordre **no està garantit**. Si el necessites, ordena les claus: `printf '%s\n' "${!REGNES[@]}" | sort`.
+2. Sense `declare -A`, bash crea un array **indexat** normal. Avalua cada clau com a **expressió aritmètica**: `Dressrosa` es pren per una variable inexistent, que val `0`. Les quatre assignacions van a l'índex `0` i cadascuna sobreescriu l'anterior. Resultat: `A 0 governa Cobra`, i `declare -p` mostra `declare -a REGNES=([0]="Cobra")`. Cap missatge d'error.
+:::
+
+</details>
+
+#### D.4 — Joc de les relacions (R7)
+
+::: {.exercici}
+Crea `joc.sh`, amb un diccionari personatge → fruita (la taula de D.2), que:
+
+1. Mostri els personatges disponibles.
+2. Demani a l'usuari que n'esculli un. Si no és vàlid, error a stderr i codi `1`.
+3. Mostri les fruites possibles i demani quina té aquest personatge.
+4. Digui si ha encertat. Si falla, codi `1`.
+
+*Pistes:* `read -r -p` i `printf '  - %s\n' "${!FRUITES[@]}"` imprimeix un element per línia. Pensa què passa si l'usuari prem Enter sense escriure res.
+:::
+
+<details>
+<summary><b>Veure el raonament</b></summary>
+
+:::{.solucio}
+```{.bash}
+#!/bin/bash
+declare -A FRUITES=(
+    ["Luffy"]="Hito-Hito no Mi"
+    ["Ace/Sabo"]="Mera-Mera no Mi"
+    ["Barbablanca/Barbanegra"]="Gura-Gura no Mi"
+    ["Akainu"]="Magu-Magu no Mi"
+)
+
+echo "Personatges disponibles:"
+printf '  - %s\n' "${!FRUITES[@]}"
+read -r -p "Escull un personatge: " P
+
+if [ -z "$P" ] || [ -z "${FRUITES[$P]}" ]; then
+    echo "Personatge no vàlid!" >&2
+    exit 1
+fi
+
+echo "Fruites possibles:"
+printf '  - %s\n' "${FRUITES[@]}"
+read -r -p "Quina és la fruita de $P? " R
+
+if [ "$R" = "${FRUITES[$P]}" ]; then
+    echo "Correcte! $P té la ${FRUITES[$P]}."
+else
+    echo "Incorrecte! La fruita de $P és la ${FRUITES[$P]}."
+    exit 1
+fi
+```
+
+- **Per què `printf` i no `echo "${FRUITES[@]}"`?** `echo` ho posa tot en una línia separat per espais. Com que les fruites ja contenen espais, no es veu on acaba una i on comença l'altra.
+- **Per què primer `[ -z "$P" ]`?** Amb `P` buit, `${FRUITES[$P]}` dona l'error `bad array subscript`. El `||` del primer `[ ]` ja és cert i el segon no s'arriba a avaluar.
+- `[ -z "${FRUITES[$P]}" ]` comprova si la clau existeix: una clau inexistent s'expandeix a buit.
+:::
+
+</details>
+
+:::{.reflexio}
+Executa el joc unes quantes vegades i fixa't en l'**ordre** de les dues llistes. Els personatges i les fruites surten en el mateix ordre (el de la taula hash), així que la posició et regala la resposta! Com ho arreglaries? (Pista: `man shuf`.)
+:::
+
+<details>
+<summary><b>Veure el raonament</b></summary>
+
+:::{.solucio}
+Barreja les fruites abans de mostrar-les:
+
+```{.bash}
+printf '  - %s\n' "${FRUITES[@]}" | shuf
+```
+
+`shuf` reordena les línies que rep a l'atzar. Un altre exemple de per què `printf` amb un element per línia és útil: el podem connectar amb qualsevol eina que treballi per línies.
+:::
+
+</details>
+
+::: {.exercici}
+**Ampliació.** Escriure `Barbablanca/Barbanegra` a mà és pesat. Llegeix `help select` i fes una versió en què l'usuari triï personatge i fruita **per número**.
+:::
+
+<details>
+<summary><b>Veure el raonament</b></summary>
+
+:::{.solucio}
+```{.bash}
+#!/bin/bash
+declare -A FRUITES=(
+    ["Luffy"]="Hito-Hito no Mi"
+    ["Ace/Sabo"]="Mera-Mera no Mi"
+    ["Barbablanca/Barbanegra"]="Gura-Gura no Mi"
+    ["Akainu"]="Magu-Magu no Mi"
+)
+
+PS3="Tria un número: "
+
+echo "Escull un personatge:"
+select P in "${!FRUITES[@]}"; do
+    [ -n "$P" ] && break
+    echo "Opció no vàlida." >&2
+done
+
+echo "Quina és la fruita de $P?"
+select R in "${FRUITES[@]}"; do
+    [ -n "$R" ] && break
+    echo "Opció no vàlida." >&2
+done
+
+if [ "$R" = "${FRUITES[$P]}" ]; then
+    echo "Correcte! $P té la ${FRUITES[$P]}."
+else
+    echo "Incorrecte! La fruita de $P és la ${FRUITES[$P]}."
+    exit 1
+fi
+```
+
+`select` és un bucle: numera les opcions, mostra el missatge de `PS3` i torna a preguntar fins que fem `break`. Si el número no és vàlid, la variable queda buida.
+:::
+
+</details>
+
+---
+
+### Repte final · La suma que no suma (CH01)
+
+::: {.exercici}
+Analitza aquest script **sense executar-lo**. Quin resultat esperes? Després executa'l i explica per què el resultat és diferent.
+
+```{.bash}
+#!/bin/bash
+cat > ch01.data << 'EOT'
+102
+071
+210
+153
+EOT
+
+cat ch01.data
+declare -i SUM=0
+
+while read X; do
+    SUM+=$X
+done < ch01.data
+
+echo "Suma: $SUM (esperat: 536)"
+rm -f ch01.data
+```
+
+1. Per què el resultat no és 536? Quin número és el culpable?
+2. Què passaria si esborressis `declare -i`?
+3. Corregeix l'script perquè doni 536.
+4. Executa `./calculadora.sh 08 1 suma`. Què passa? Té relació amb aquest repte?
+
+*Adaptat del llibre* Bash It Out *de Sylvain Leroux.*
+:::
+
+<details>
+<summary><b>Veure el raonament</b></summary>
+
+:::{.solucio}
+1. El resultat és **522**. En aritmètica, bash interpreta els números que comencen per `0` com a **octals** (com C). `071` en octal és 7·8 + 1 = **57**, i no 71: 102 + 57 + 210 + 153 = 522.
+2. `declare -i` marca `SUM` com a **enter**: el `+=` passa a ser una suma aritmètica. Sense això, `+=` sobre una cadena **concatena**, i el resultat seria `0102071210153`. Tornem a B.1: per defecte, tot és text.
+3. Cal forçar la **base 10** amb el prefix `10#`:
+
+```{.bash}
+while read -r X; do
+    SUM+=$((10#$X))
+done < ch01.data
+```
+
+Una alternativa és passar cada número per `bc`, que no fa servir la convenció octal (`echo 071 | bc` dona `71`), però això llança un procés per línia i `bc` no sempre és instal·lat.
+
+4. Dona l'error `value too great for base (error token is "08")`. És el mateix fenomen: `08` comença per `0`, per tant és octal, i el `8` no existeix en base 8. Les dades amb zeros a l'esquerra (dates, hores, codis, mesos com `08` o `09`) són una font clàssica d'errors en scripts reals.
+
+El `while read ... done < fitxer` d'aquest repte és el patró estàndard per **processar un fitxer línia a línia**. El tornaràs a fer servir molt.
+:::
+
+</details>
