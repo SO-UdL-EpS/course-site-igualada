@@ -33,6 +33,8 @@ Tots es poden resoldre amb **paper i llapis**. Per a cadascun, **dibuixa l'arbre
 
 ---
 
+## Exercici 1
+
 ::: {.exercici}
 ```{.c}
 int main(void) {
@@ -62,6 +64,8 @@ int main(void) {
 </details>
 
 ---
+
+## Exercici 2
 
 ::: {.exercici}
 ```{.c}
@@ -106,6 +110,8 @@ sequenceDiagram
 
 ---
 
+## Exercici 3
+
 ::: {.exercici}
 ```{.c}
 int main(void) {
@@ -131,6 +137,8 @@ Executa `ls -l` i no torna. Amb `execv` (sense `p`) caldria donar la ruta comple
 </details>
 
 ---
+
+## Exercici 4
 
 ::: {.exercici}
 ```{.c}
@@ -158,6 +166,8 @@ Fixa't que el `fflush(stdout)` és necessari només perquè, amb la sortida redi
 
 ---
 
+
+## Exercici 5
 
 ::: {.exercici}
 ```{.c}
@@ -208,6 +218,8 @@ Moraleja: cal distingir «l'exec ha fallat» de «el programa llançat ha fallat
 
 ---
 
+## Exercici 6
+
 ::: {.exercici}
 ```{.c}
 int main(void) {
@@ -233,6 +245,8 @@ Per això, quan es vol passar `hola` com a argument cal repetir el nom: `execl("
 </details>
 
 ---
+
+## Exercici 7
 
 ::: {.exercici}
 ```{.c}
@@ -279,6 +293,8 @@ sequenceDiagram
 </details>
 
 ---
+
+## Exercici 8
 
 ::: {.exercici}
 ```{.c}
@@ -327,6 +343,8 @@ sequenceDiagram
 
 ---
 
+## Exercici 9
+
 ::: {.exercici}
 `./run ls -l /tmp` ha d'executar `ls -l /tmp` i mostrar com ha acabat.
 
@@ -370,6 +388,8 @@ Nota: el `127` és la convenció dels shells per a «ordre no trobada».
 </details>
 
 ---
+
+## Exercici 10
 
 ::: {.exercici}
 El pare crea 3 fills (el fill `i` dorm `i` segons) i, mentrestant, «treballa», recollint cada fill tan bon punt acaba, **sense quedar-se bloquejat**.

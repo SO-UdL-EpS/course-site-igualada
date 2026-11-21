@@ -8,15 +8,16 @@ format:
     theme: [simple, ../../../_extensions/udl-course/styles/revealjs.scss, ../../../styles/slides.scss]
     filters: [../../../_extensions/udl-course/components.lua]
     transition: fade
-    slide-number: true
+    slide-number: false
     incremental: true
     chalkboard: false
+    menu: false
+    controls: false
     slide-level: 2
     width: 1600
     height: 900
     margin: 0.08
     center: false
-    footer: 'Sistemes Operatius (SO) &nbsp; <a href="/index.html" class="home-link" aria-label="Inici"><svg class="home-icon" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 52 C27 43 39 31 60 12 C78 30 93 42 108 51" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M25 48 C25 64 25 76 24 87 C35 84 45 85 53 87 M95 48 C95 64 95 76 97 87 C87 84 77 85 68 87" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M51 87V70 C51 64 55 60 60 60 C65 60 69 64 69 70V87Z" fill="currentColor"/><path d="M82 29V17 C82 14 84 13 87 13H94 C96 13 97 15 96 17 C94 20 93 24 94 32Z" fill="currentColor"/></svg></a>'
 ---
 
 
@@ -133,7 +134,7 @@ El camp `age` de la variable `s`. L'operador és `.`
 ## Una struct ocupa memòria
 
 :::{style="text-align:center;"}
-![](./figures/05_variables_estructures/struct_memory.png){ width=70%}
+![](./figures/05_variables_estructures/struct_memory.png){width=70% fig-alt="Esquema sobre struct memory (05_variables_estructures)"}
 :::
 
 
@@ -271,7 +272,7 @@ L'adreça de `s`
 :::
 :::: {.column width="75%" .fragment}
 
-![](./figures/05_variables_estructures/pointer_to_struct.png)
+![](./figures/05_variables_estructures/pointer_to_struct.png){fig-alt="Esquema sobre pointer to struct (05_variables_estructures)"}
 
 :::
 :::
@@ -425,13 +426,13 @@ Perquè dins del propi cos (`struct Node *next;`) encara **no existeix** cap `ty
 :::
 
 :::{.fragment}
-![](./figures/05_variables_estructures/linked_list_node.png)
+![](./figures/05_variables_estructures/linked_list_node.png){fig-alt="Esquema sobre linked list node (05_variables_estructures)"}
 :::
 
 
 ## La llista
 
-![](./figures/05_variables_estructures/linked_list_node.png)
+![](./figures/05_variables_estructures/linked_list_node.png){fig-alt="Esquema sobre linked list node (05_variables_estructures)"}
 
 
 ::: {.reflexio}
@@ -445,12 +446,12 @@ La variable `head` és a la **stack**. Els nodes són al **heap**.
 
 ## Crear el primer node
 
-![](./figures/05_variables_estructures/linked_list_first_node.png)
+![](./figures/05_variables_estructures/linked_list_first_node.png){fig-alt="Esquema sobre linked list first node (05_variables_estructures)"}
 
 
 ## Afegir un segon node
 
-![](./figures/05_variables_estructures/linked_list_second_node.png)
+![](./figures/05_variables_estructures/linked_list_second_node.png){fig-alt="Esquema sobre linked list second node (05_variables_estructures)"}
 
 
 # Recórrer i alliberar
@@ -458,7 +459,7 @@ La variable `head` és a la **stack**. Els nodes són al **heap**.
 ## Traversal
 
 
-![](./figures/05_variables_estructures/current_pointer_traversal.gif)
+![](./figures/05_variables_estructures/current_pointer_traversal.gif){fig-alt="Esquema sobre current pointer traversal (05_variables_estructures)"}
 
 ::: {.concepte}
 `current = current->next` no mou el node. Mou el **punter**.

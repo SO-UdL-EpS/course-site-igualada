@@ -1,17 +1,43 @@
 ---
 title: "Sistemes Operatius"
-subtitle: "Grau en Enginyeria Informàtica · 2n curs · 1r semestre"
-
+subtitle: "Grau en Enginyeria Informàtica · Campus Igualada · Universitat de Lleida"
 format:
   udl-course-html:
     toc: false
 ---
 
-Aquesta assignatura proporciona els coneixements necessaris per comprendre el funcionament intern dels sistemes operatius, amb Linux com a plataforma de referència. 
+```{=html}
+<div class="udl-page-shell udl-home-minimal" id="udl-home-root">
+  <!-- Single Minimalist Hero Section -->
+  <section class="udl-hero" aria-labelledby="udl-hero-title">
+    <div class="udl-hero-eyebrow">
+      <span class="udl-hero-mark" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2.5" width="12" height="11" rx="2"/><path d="M5 6.5l2 1.75L5 10M8.5 10H11"/></svg>
+      </span>
+      <span>Universitat de Lleida · Campus Igualada</span>
+    </div>
+    <h1 id="udl-hero-title" class="udl-hero-title">Sistemes Operatius</h1>
+    <p class="udl-hero-subtitle">Grau en Enginyeria Informàtica · Universitat de Lleida</p>
+    <p class="udl-hero-lead">
+      Arquitectura, abstraccions i mecanismes interns dels sistemes operatius basats en Unix/Linux i programació de sistemes en C: espai de memòria, crides al sistema, gestió de processos, planificació de CPU i automatització amb el shell.
+    </p>
+    <div class="udl-hero-cta">
+      <a class="udl-btn udl-btn-primary udl-btn-lg" href="materials.html">Explora els materials</a>
+    </div>
+  </section>
 
-![Generat amb ChatGPT d’OpenAI (2026) a partir de la indicació: Crear una il·lustració educativa per a l’assignatura Sistemes Operatius, amb una estètica universitària, professional i propera, utilitzant una paleta cromàtica inspirada en la identitat visual de la Universitat de Lleida (UDL) i representant visualment els principals àmbits del temari.](assets/images/os.png)
-
-## Professorat
-
-- Jordi Mateo <mailto:jordi.mateo@udl.cat>
-
+  <!-- Recently Visited Materials -->
+  <section id="udl-home-recent" class="udl-recent-section" aria-labelledby="udl-recent-heading">
+    <div class="udl-recent-header">
+      <h2 id="udl-recent-heading" class="udl-recent-title">Consultats recentment</h2>
+      <button type="button" class="udl-link-btn" id="udl-home-clear-recent" hidden>Neteja l'historial</button>
+    </div>
+    <div id="udl-home-recent-list" class="udl-clean-list">
+      <div class="udl-recent-empty">
+        <span>Encara no has obert cap document en aquesta sessió.</span>
+        <a href="materials.html?bloc=01">Comença pel Bloc 1 →</a>
+      </div>
+    </div>
+  </section>
+</div>
+```

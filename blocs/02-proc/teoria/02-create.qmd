@@ -8,15 +8,16 @@ format:
     theme: [simple, ../../../_extensions/udl-course/styles/revealjs.scss, ../../../styles/slides.scss]
     filters: [../../../_extensions/udl-course/components.lua]
     transition: fade
-    slide-number: true
+    slide-number: false
     incremental: true
     chalkboard: false
+    menu: false
+    controls: false
     slide-level: 2
     width: 1600
     height: 900
     margin: 0.08
     center: false
-    footer: 'Sistemes Operatius (SO) &nbsp; <a href="/index.html" class="home-link" aria-label="Inici"><svg class="home-icon" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 52 C27 43 39 31 60 12 C78 30 93 42 108 51" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M25 48 C25 64 25 76 24 87 C35 84 45 85 53 87 M95 48 C95 64 95 76 97 87 C87 84 77 85 68 87" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M51 87V70 C51 64 55 60 60 60 C65 60 69 64 69 70V87Z" fill="currentColor"/><path d="M82 29V17 C82 14 84 13 87 13H94 C96 13 97 15 96 17 C94 20 93 24 94 32Z" fill="currentColor"/></svg></a>'
 
 ---
 
@@ -42,7 +43,7 @@ Els processos **pare (A)** i **fill (B)** *no comparteixen espai de memòria*. C
 ::::
 
 ::: {.column width="55%"}
-![](figures/02/fork_1.png)
+![](figures/02/fork_1.png){fig-alt="Esquema sobre fork 1 (02-create)"}
 :::
 ::::::
 
@@ -266,7 +267,7 @@ sequenceDiagram
 
 :::::::: columns
 ::: {.column width="50%"}
-![](figures/02/copia-exacta.png){.smaller}
+![](figures/02/copia-exacta.png){.smaller fig-alt="Esquema sobre copia exacta (02-create)"}
 :::
 
 :::::: {.column width="50%"}
@@ -414,7 +415,7 @@ int main() {
 :::
 
 ::: {.column width="50%"}
-![](figures/02/no-determinisme.png){width="80%"}
+![](figures/02/no-determinisme.png){width="80%" fig-alt="Esquema sobre no determinisme (02-create)"}
 :::
 :::::
 
@@ -721,7 +722,7 @@ if (pid == 0) {
 :::
 
 :::: {.column width="50%"}
-![](figures/02/waitpid-signals.png)
+![](figures/02/waitpid-signals.png){fig-alt="Esquema sobre waitpid signals (02-create)"}
 
 ::: {.callout-warning .fragment title="Pregunta?"}
 Quin serà el resultat després d'executar `./ex8 42`?
@@ -908,7 +909,7 @@ sequenceDiagram
 
 ::::::::: columns
 ::::: {.column width="40%"}
-![](figures/02/env.png)
+![](figures/02/env.png){fig-alt="Esquema sobre env (02-create)"}
 
 :::: {.callout-note title="Valors de retorn"}
 ::: nonincremental

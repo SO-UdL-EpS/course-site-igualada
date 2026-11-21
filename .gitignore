@@ -2,3 +2,8 @@
 docs
 .DS_Store
 **/*.quarto_ipynb
+node_modules/
+*.rar
+.tmp_*.typ
+__pycache__/
+*.pyc

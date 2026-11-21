@@ -39,20 +39,33 @@ pre.sourceCode {
   color: var(--udl-text-muted);
 }
 
-// Terminal-style block for shell sessions: ```{.bash .terminal}
-.sourceCode.terminal {
-  background: #1a1a1a;
-  color: #e8e8e8;
+// Terminal-style block for shell sessions: supports BOTH ```{.bash .terminal}
+// and wrapper ::: {.terminal} around a fenced code block.
+.sourceCode.terminal,
+div.terminal > div.sourceCode,
+div.terminal > pre.sourceCode {
+  background: #161b22;
+  color: #e6edf3;
+  border-radius: var(--udl-radius);
+  border: 1px solid #30363d;
 
-  pre, code { color: inherit; background: transparent; }
+  pre, code, pre.sourceCode {
+    color: #e6edf3 !important;
+    background: transparent !important;
+    border: none;
+    margin: 0;
+  }
 }
-.sourceCode.terminal::before {
+
+.sourceCode.terminal::before,
+div.terminal > div.sourceCode::before {
   content: "●  ●  ●";
   display: block;
   letter-spacing: 0.3em;
-  color: #666;
+  color: #6e7681;
   font-size: 0.7rem;
-  padding: 0.4em 0.8em 0;
+  padding: 0.45em 0.9em 0.15em;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
 }
 
 // Language badge, top-right of a code block

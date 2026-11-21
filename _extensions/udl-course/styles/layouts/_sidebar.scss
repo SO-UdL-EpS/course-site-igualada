@@ -1,33 +1,45 @@
 // ============================================================
-// _sidebar.scss
+// _sidebar.scss — Legacy Quarto Left Sidebar Removed
+// Only the right-hand "En aquesta pàgina" Table of Contents (#quarto-margin-sidebar)
+// is styled here for clean, readable document navigation.
 // ============================================================
 
-.sidebar-navigation {
-  font-family: var(--udl-font-body);
-  font-size: var(--udl-text-sm);
+#quarto-sidebar,
+.quarto-secondary-nav {
+  display: none !important;
+}
 
-  .sidebar-item-text { color: var(--udl-text); }
+#quarto-margin-sidebar {
+  padding-top: 1rem;
 
-  .sidebar-item.active > .sidebar-item-container .sidebar-item-text {
-    color: var(--udl-primary);
-    font-weight: 600;
+  .toc-actions,
+  #TOC {
+    font-family: var(--udl-font-body);
+    font-size: 0.82rem;
   }
 
-  .sidebar-section .sidebar-item-text {
-    font-weight: 600;
-    color: var(--udl-primary-dark);
+  #toc-title {
+    font-size: 0.73rem;
+    font-weight: 700;
     text-transform: uppercase;
-    font-size: 0.72rem;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
+    color: var(--udl-text-muted);
+    margin-bottom: 0.5rem;
   }
-}
 
-#quarto-sidebar {
-  background: var(--udl-surface);
-  border-right: 1px solid var(--udl-border);
-}
+  .nav-link {
+    color: var(--udl-text-muted);
+    padding: 0.22rem 0 0.22rem 0.65rem;
+    border-left: 1.5px solid var(--udl-border);
+    line-height: 1.35;
 
-// Collapses correctly on small screens instead of overlapping content
-@media (max-width: 991.98px) {
-  #quarto-sidebar { border-right: none; }
+    &:hover {
+      color: var(--udl-text);
+    }
+    &.active {
+      color: var(--udl-primary) !important;
+      border-left-color: var(--udl-primary);
+      font-weight: 600;
+    }
+  }
 }

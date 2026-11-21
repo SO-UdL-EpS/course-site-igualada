@@ -43,7 +43,7 @@ Tots els problemes d'aquest full fan servir **els mateixos convenis**. Si en feu
 
 **Llegenda dels diagrames**: **E** execució · **W** E/S · **P** preparat · **F** finalitzat (instant de finalització) · casella buida: el procés encara no ha arribat o ja ha acabat. Les files *CPU* indiquen quin procés ocupa cada CPU (– si està ociosa).
 
-Podeu utiltizar [plantilla](./src/template.xlsx)
+Podeu utilitzar la [plantilla de càlcul (.xlsx)](./src/template.xlsx){download="SO-Bloc3-Plantilla-Planificacio.xlsx"} per resoldre els diagrames de Gantt i comprovar les mètriques.
 
 ## Problema 1 · FCFS amb 1 i 2 CPU
 

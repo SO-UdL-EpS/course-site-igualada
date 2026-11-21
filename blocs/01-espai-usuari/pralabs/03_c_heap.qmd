@@ -3,7 +3,7 @@ title: "Pralab 03: Memòria dinàmica (I): `malloc`, `free` i `lifetime`"
 author: "Jordi Mateo Fornés"
 format:
   udl-course-html:
-    toc: false
+    toc: true
     number-sections: false
 ---
 
@@ -43,7 +43,7 @@ Les mides i les adreces que veuràs (`sizeof(int)` és 4 i un punter ocupa 8) s�
 
 ---
 
-### Part A — De l'array local a l'array dinàmic
+## Part A — De l'array local a l'array dinàmic
 
 Crea `01_local_vs_heap.c`. Conté els dos arrays: el local que ja coneixes i el dinàmic.
 
@@ -81,7 +81,7 @@ int main(void)
 
 De moment escriu `free(v)` i no li donis més importància: a la Part B veurem què fa exactament.
 
-#### A.1 — Què continua sent igual
+### A.1 — Què continua sent igual
 
 Substitueix el comentari per aquestes línies:
 
@@ -115,7 +115,7 @@ gcc -Wall -Wextra -g -O0 -o 01_local_vs_heap 01_local_vs_heap.c
 
 Tot el que vas veure sobre arrays i aritmètica de punters funciona igual amb un bloc dinàmic.
 
-#### A.2 — Què ha canviat: la mida
+### A.2 — Què ha canviat: la mida
 
 Afegeix:
 
@@ -156,7 +156,7 @@ Comptar els elements amb `sizeof(v) / sizeof(v[0])` funciona amb un array local 
 
 Observa que `&v` té tipus `int **`. **No cal que encara sàpigues utilitzar un `int **`**:
 
-#### A.3 — Dues adreces diferents
+### A.3 — Dues adreces diferents
 
 Afegeix:
 
@@ -218,9 +218,9 @@ L'última fila de la taula és la que fa que tot el que segueix sigui important.
 
 ---
 
-### Part B — Lifetime: fins quan viu una dada
+## Part B — Lifetime: fins quan viu una dada
 
-#### B.1 — Què fa `free`
+### B.1 — Què fa `free`
 
 Crea `02_free.c`:
 
@@ -298,7 +298,7 @@ flowchart TD
 "Després de `free(p)`, `p` continua apuntant al bloc, així que puc seguir usant-lo." **No.** El bloc ja no és teu. Encara que el programa "sembli funcionar", estàs accedint a memòria que ja no et pertany.
 :::
 
-#### B.2 — Local o heap: qui decideix quan mor?
+### B.2 — Local o heap: qui decideix quan mor?
 
 Crea `03_vector.c`:
 
@@ -375,7 +375,7 @@ Qui decideix quan acaba la vida d'una dada?
 
 ---
 
-### Part C — Ownership: qui allibera?
+## Part C — Ownership: qui allibera?
 
 Mira de nou `03_vector.c` (sense `crea_local`). `crea_vector` fa el `malloc` i `main` fa el `free`.
 
@@ -432,7 +432,7 @@ Fixa't que `free(p)` no ha pogut modificar `p` per nosaltres: només rep una cò
 
 Aquests experiments **no formen part del nucli**. Són opcionals: per revisar a casa si no dona temps a classe.
 
-#### E.1 — La pila és limitada
+### E.1 — La pila és limitada
 
 Podries pensar: **si la mida només la sé en executar, per què no faig servir sempre un array local?**. A C existeixen els **VLA** (*variable length arrays*, C99): `int v[n];` amb `n` decidit en execució. Funcionen, però viuen a la pila. Crea `04_pila_heap.c`:
 
@@ -496,7 +496,7 @@ Un VLA té a més les limitacions de la pila: si no hi cap, **no obtens un `NULL
 
 </details>
 
-#### E.2 — Observem un punter penjat (comportament indefinit)
+### E.2 — Observem un punter penjat (comportament indefinit)
 
 Al B.1 has vist que fer servir un punter després d'un `free` és incorrecte i que el compilador ho avisa. Ara **l'executem només per observar**: el que veurem és què fa **la teva implementació**, no una garantia del llenguatge.
 
@@ -559,7 +559,7 @@ En `05_reuse`, en un sistema típic (`glibc`), `p` i `q` acaben tenint **la mate
 
 </details>
 
-#### E.3 — `NULL` després de `free`
+### E.3 — `NULL` després de `free`
 
 Crea `06_null.c`:
 

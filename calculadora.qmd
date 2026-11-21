@@ -1,0 +1,86 @@
+---
+title: "Calculadora de qualificacions"
+subtitle: "Calcula la nota final i què necessites per aprovar"
+format:
+  udl-course-html:
+    toc: false
+---
+
+```{=html}
+<script src="assets/js/grade-engine.js" defer></script>
+
+<div class="udl-page-shell udl-calc-minimal-shell" id="udl-calculator-page">
+  <!-- Area A: Compact Header + Discreet Academic Year Selector -->
+  <header class="udl-calc-header">
+    <div class="udl-calc-header-titles">
+      <h1 class="udl-calc-page-title">Calculadora de qualificacions</h1>
+      <span id="calc-year-summary-pill" class="udl-calc-subtitle-meta">Teoria 50% · Pràctica 50%</span>
+    </div>
+    <div class="udl-calc-header-controls">
+      <label for="calc-year-select" class="visually-hidden">Curs acadèmic</label>
+      <select id="calc-year-select" class="udl-calc-year-select" aria-label="Selecciona el curs acadèmic"></select>
+      <button type="button" class="udl-btn udl-btn-ghost udl-btn-sm" id="calc-reset-btn" title="Esborra totes les notes introduïdes">Neteja</button>
+    </div>
+  </header>
+
+  <!-- Contextual Validation Alert (Only visible when invalid input is entered) -->
+  <div id="calc-input-alert" class="udl-calc-alert" role="status" aria-live="polite" hidden></div>
+
+  <!-- Area B: Compact Grade Inputs (Empty = Pending, never silently treated as 0) -->
+  <div class="udl-calc-groups" id="calc-categories-container" aria-label="Qualificacions de les avaluacions"></div>
+
+  <!-- Area C: Result & Required Grades to Pass (Immediately after grade inputs) -->
+  <section id="calc-result-panel" class="udl-calc-result-panel" aria-live="polite" aria-label="Resultat i notes necessàries per aprovar">
+    <div class="udl-calc-result-top">
+      <div class="udl-calc-result-meta">
+        <span class="udl-calc-result-goal" id="calc-goal-label">Objectiu: Aprovar (5,00)</span>
+        <span class="udl-calc-result-count" id="calc-entered-count">Notes introduïdes: 0 de 6</span>
+      </div>
+      <span class="udl-calc-status-badge" id="calc-final-status">Pendent</span>
+    </div>
+
+    <div class="udl-calc-req-main">
+      <p class="udl-calc-req-headline" id="calc-req-headline">Introdueix les notes que ja coneixes per calcular què necessites per aprovar.</p>
+      <p class="udl-calc-req-detail" id="calc-req-detail">Les caselles buides es tracten com a avaluacions pendents, no com a un 0.</p>
+    </div>
+
+    <!-- Concrete Passing Example (Visible when 2+ pending assessments or mandatory minimum) -->
+    <div id="calc-example-box" class="udl-calc-example-box" hidden>
+      <div class="udl-calc-example-title" id="calc-example-title">Exemple de combinació per aprovar</div>
+      <ul id="calc-example-list" class="udl-calc-example-list"></ul>
+    </div>
+
+    <!-- Compact Metrics Strip -->
+    <dl class="udl-calc-metrics">
+      <div class="udl-calc-metric">
+        <dt>Aportació confirmada</dt>
+        <dd id="calc-metric-known">0,00 p</dd>
+      </div>
+      <div class="udl-calc-metric">
+        <dt>Pes pendent</dt>
+        <dd id="calc-metric-pending">100%</dd>
+      </div>
+      <div class="udl-calc-metric">
+        <dt id="calc-metric-third-label">Màxim possible</dt>
+        <dd id="calc-metric-third-val">10,00 / 10</dd>
+      </div>
+    </dl>
+  </section>
+
+  <!-- Optional Progressive Disclosure: Formula, Breakdown & Course Policy -->
+  <details class="udl-calc-details">
+    <summary class="udl-calc-details-summary">
+      <span>Desglossament ponderat, fórmula i normativa</span>
+      <span class="udl-calc-details-chevron" aria-hidden="true">▾</span>
+    </summary>
+    <div class="udl-calc-details-body">
+      <dl class="udl-calc-breakdown" id="calc-breakdown-list"></dl>
+      <div class="udl-calc-formula-box">
+        <div class="udl-calc-formula-label">Fórmula oficial</div>
+        <code id="calc-formula-code"></code>
+      </div>
+      <p class="udl-calc-policy-note" id="calc-policy-note"></p>
+    </div>
+  </details>
+</div>
+```

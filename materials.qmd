@@ -1,0 +1,44 @@
+---
+title: "Materials"
+subtitle: "Blocs temàtics, subseccions i recursos docents"
+format:
+  udl-course-html:
+    toc: false
+---
+
+```{=html}
+<div class="udl-page-shell udl-materials-page" id="udl-materials-explorer">
+  <div class="udl-explorer-topbar">
+    <nav id="udl-materials-breadcrumb" class="udl-breadcrumb" aria-label="Ubicació dins dels materials">
+      <span class="current" aria-current="page">Materials</span>
+    </nav>
+    <div class="udl-explorer-controls">
+      <input
+        type="search"
+        id="udl-materials-search"
+        class="udl-search-input"
+        placeholder="Filtra recursos..."
+        aria-label="Filtra recursos per títol o codi"
+      >
+      <button type="button" id="udl-bundles-toggle" class="udl-btn udl-btn-ghost udl-btn-sm" aria-expanded="false" aria-controls="udl-bundles-drawer">
+        Paquets .zip
+      </button>
+    </div>
+  </div>
+
+  <!-- On-Demand Bulk ZIP Archives List -->
+  <section id="udl-bundles-drawer" class="udl-bundles-panel" hidden aria-label="Paquets de descàrrega en format ZIP">
+    <div class="udl-bundles-panel-header">
+      <div>
+        <h2 class="udl-section-title">Paquets de descàrrega (.zip)</h2>
+        <p class="udl-section-desc">Tots els documents PDF compilats per estudiar sense connexió.</p>
+      </div>
+      <button type="button" id="udl-bundles-close" class="udl-link-btn">Tanca</button>
+    </div>
+    <div id="udl-bundles-list" class="udl-clean-list"></div>
+  </section>
+
+  <!-- Hierarchical Stage Container (Materials -> Bloc -> Categoria) -->
+  <div id="udl-materials-stage" aria-live="polite"></div>
+</div>
+```

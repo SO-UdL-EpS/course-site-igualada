@@ -44,7 +44,7 @@ Són els mateixos que al full anterior, amb tres afegits per a les polítiques n
 
 **Llegenda**: **E** execució · **W** E/S · **P** preparat · **B** bloquejat esperant un *lock* · **C** execució dins d'una secció crítica · **F** finalitzat. A l'MLFQ, el número que acompanya E o P és el **nivell** del procés (0 = el més alt).
 
-Podeu utiltizar [plantilla](./src/template.xlsx)
+Podeu utilitzar la [plantilla de càlcul (.xlsx)](./src/template.xlsx){download="SO-Bloc3-Plantilla-Planificacio.xlsx"} per resoldre els diagrames de Gantt i comprovar les mètriques.
 
 ## Problema 3 · Cues multinivell sense retroalimentació
 

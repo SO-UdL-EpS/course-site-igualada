@@ -3,7 +3,7 @@ title: "Pralab 02: Del `v[i]` al punter"
 author: "Jordi Mateo Fornés"
 format:
   udl-course-html:
-    toc: false
+    toc: true
     number-sections: false
 ---
 
@@ -19,7 +19,7 @@ int v[5] = {10, 20, 30, 40, 50};
 
 ---
 
-### Part A — `v` decau a punter
+## Part A — `v` decau a punter
 
 ```{.c}
 int *p = v;
@@ -177,7 +177,7 @@ L'aritmètica d'un punter està relacionada amb el tipus de l'objecte al qual ap
 
 ---
 
-### Part B — Strings
+## Part B — Strings
 
 Recuperem les cadenes de caràcters:
 
@@ -237,7 +237,7 @@ Quin valor tindrà cadascuna d'aquestes expressions?
 
 ---
 
-### Part C — Construïm `strlen`
+## Part C — Construïm `strlen`
 
 :::{.exerciciprog}
 Sense mirar la solució encara, escriu una funció `mini_strlen` que recorri `s` amb un punter fins trobar `'\0'` i retorni la seva longitud (sense comptar el `'\0'`).

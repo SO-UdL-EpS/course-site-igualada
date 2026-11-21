@@ -21,6 +21,8 @@ Aquests exercicis es poden resoldre amb **paper i llapis**. Per a cadascun, **di
 
 ---
 
+## Exercici 1
+
 ::: {.exercici}
 Quants processos es creen en executar el següent codi i quina és la seqüència d'esdeveniments?
 
@@ -69,6 +71,8 @@ Els valors dels PID són només exemples i poden variar en cada execució.
 
 ---
 
+## Exercici 2
+
 ::: {.exercici}
 Quantes vegades s'imprimirà `OS`? Justifica la resposta. Canviaria alguna cosa si `ls` no es trobés a la ruta indicada?
 
@@ -100,6 +104,8 @@ Compte amb la ruta: `"bin/ls"` (sense la `/` inicial) és una ruta **relativa** 
 </details>
 
 ---
+
+## Exercici 3
 
 ::: {.exercici}
 Quantes vegades `wait(st)` retorna `-1`? Dibuixa l'arbre de processos i anota, per a cada procés, quins `wait` executa.
@@ -151,6 +157,8 @@ sequenceDiagram
 </details>
 
 ---
+
+## Exercici 4
 
 ::: {.exercici}
 Quantes vegades `wait(st)` retorna `-1`? Fixa't en la diferència amb l'exercici anterior: ara qui fa el segon `fork` és el **pare**.
@@ -205,6 +213,8 @@ sequenceDiagram
 
 ---
 
+## Exercici 5
+
 ::: {.exercici}
 Analitza el següent codi i respon les preguntes:
 
@@ -253,6 +263,8 @@ Child: int a is 2 at 0x7ffd5c3a1a4c
 
 ---
 
+## Exercici 6
+
 ::: {.exercici}
 Analitza el següent codi i justifica quin serà el resultat de la seva execució. Arriba el pare a veure el `6` que escriu el fill?
 
@@ -293,6 +305,8 @@ The last digit of pi is 5
 </details>
 
 ---
+
+## Exercici 7
 
 ::: {.exercici}
 Quina és la sortida del següent codi? Dibuixa l'arbre de processos, **prediu la sortida** (en pot haver-hi més d'una) i després compila'l i executa'l diverses vegades.
@@ -358,6 +372,8 @@ Aquest és exactament el motiu pel qual, en la nostra mini-shell, el fill fa `_e
 </details>
 
 ---
+
+## Exercici 8
 
 ::: {.exercici}
 Indica quin és el resultat de l'execució del següent codi: nombre de processos creats, parentiu, informació per `stdout`, processos zombis, etc. Analitza'l en **dos casos**: que el PID del procés inicial sigui **parell**, o que sigui **senar**. Fixa't que `pid` es calcula **una sola vegada**, abans del bucle.

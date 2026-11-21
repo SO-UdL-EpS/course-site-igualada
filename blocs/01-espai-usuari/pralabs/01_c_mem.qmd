@@ -3,7 +3,7 @@ title: "Pralab 01: Del C a la memòria (I)"
 author: "Jordi Mateo Fornés"
 format:
   udl-course-html:
-    toc: false
+    toc: true
     number-sections: false
 ---
 
@@ -55,7 +55,7 @@ En aquest pralab comencem a mirar la programació amb C des d'un altre punt de v
 
 ---
 
-### Part A — On estan les dades? 
+## Part A — On estan les dades? 
 
 Comencem amb aquest programa:
 
@@ -124,7 +124,7 @@ flowchart LR
 
 ---
 
-### Part B — Què és un punter? 
+## Part B — Què és un punter? 
 
 Introduïm ara:
 
@@ -192,7 +192,7 @@ L'operador `*` permet accedir a l'objecte que es troba a l'adreça emmagatzemada
 
 ---
 
-### Part C — Arrays
+## Part C — Arrays
 
 Partim de:
 

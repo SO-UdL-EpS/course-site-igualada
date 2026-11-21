@@ -1,103 +1,1356 @@
 // ============================================================
-// _dashboard.scss — homepage widgets
+// _dashboard.scss — Unified Design System Surfaces (Vercel & Cursor Inspired)
+// - Minimalist Single-Hero Homepage (`index.html`)
+// - Scalable Hierarchical Materials Workspace (`materials.html`)
+// - Minimalist Single-Column Grade Calculator (`calculadora.html`)
+// - Separated Professor Configuration Modal (`#calc-prof-modal`)
 // ============================================================
 
-.udl-dashboard {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: var(--udl-space-lg);
-  margin: var(--udl-space-xl) 0;
+.udl-page-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+  min-width: 0;
+}
 
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+// ============================================================
+// 1. Minimalist Homepage (`index.html`) — Single Hero + Recent Materials
+// ============================================================
+
+.udl-home-minimal {
+  max-width: 760px;
+  margin: 0 auto;
+  width: 100%;
+  gap: 2.25rem;
+  padding-top: 1.5rem;
+
+  @media (max-width: 640px) {
+    padding-top: 0.5rem;
+    gap: 1.65rem;
   }
 }
 
-.udl-widget {
-  border: 1px solid var(--udl-border);
-  border-radius: var(--udl-radius-lg);
-  padding: var(--udl-space-lg);
-  background: var(--udl-surface);
-  margin-bottom: var(--udl-space-md);
-  box-shadow: var(--udl-shadow-card);
-}
-.udl-widget h4 {
-  font-size: var(--udl-text-sm);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--udl-text-muted);
-  margin-top: 0;
-  display: flex;
-  align-items: center;
-  gap: 0.5em;
-
-  .bi { color: var(--udl-primary); font-size: 1.05em; }
-}
-
-// Hero: current module call-to-action
 .udl-hero {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--udl-space-lg);
-  // The pattern is embedded as a base64 data URI rather than referenced by
-  // path. Sass/CSS is compiled once into a single stylesheet, so any
-  // relative path here would be resolved against wherever Quarto places
-  // that compiled file — not against each page that uses it — and a
-  // domain-absolute "/assets/..." path breaks whenever the site is served
-  // from a subpath instead of the domain root. A data URI has no path to
-  // resolve at all, so it works regardless of deployment location.
-  background:
-    url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgNDAwIDQwMCI+CiAgPGRlZnM+CiAgICA8cGF0dGVybiBpZD0idWRsLWhlcm8tZG90cyIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPGNpcmNsZSBjeD0iNCIgY3k9IjQiIHI9IjEuNiIgZmlsbD0iI2ZmZmZmZiIgZmlsbC1vcGFjaXR5PSIwLjE2Ii8+CiAgICA8L3BhdHRlcm4+CiAgICA8cGF0dGVybiBpZD0idWRsLWhlcm8tbGluZXMiIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgcGF0dGVyblRyYW5zZm9ybT0icm90YXRlKDQ1KSI+CiAgICAgIDxsaW5lIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSI4MCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utb3BhY2l0eT0iMC4wNiIgc3Ryb2tlLXdpZHRoPSI0MCIvPgogICAgPC9wYXR0ZXJuPgogIDwvZGVmcz4KICA8cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0idXJsKCN1ZGwtaGVyby1saW5lcykiLz4KICA8cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0idXJsKCN1ZGwtaGVyby1kb3RzKSIvPgo8L3N2Zz4K"),
-    linear-gradient(135deg, var(--udl-primary), var(--udl-primary-dark));
-  background-size: cover;
-  background-blend-mode: overlay;
-  color: #fff;
-  border-radius: var(--udl-radius-lg);
-  padding: var(--udl-space-xl) var(--udl-space-xl);
-  margin-bottom: var(--udl-space-xl);
-  box-shadow: var(--udl-shadow-hover);
+  padding: 2.5rem 2.25rem;
+  border-radius: 12px;
+  background: var(--udl-surface);
+  border: 1px solid var(--udl-border);
 
-  @media (max-width: 768px) { flex-direction: column; align-items: flex-start; }
+  @media (max-width: 640px) {
+    padding: 1.5rem 1.15rem;
+    border-radius: 10px;
+  }
+
+  // Strictly constrain any SVG or icon inside the hero so it is never oversized
+  svg,
+  .udl-hero-mark svg {
+    width: 18px !important;
+    height: 18px !important;
+    max-width: 18px !important;
+    max-height: 18px !important;
+    flex-shrink: 0;
+  }
 
   .udl-hero-eyebrow {
-    opacity: 0.85;
-    font-size: var(--udl-text-sm);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-family: var(--udl-font-mono);
+    font-size: 0.74rem;
     font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--udl-text-muted);
+    margin-bottom: 0.55rem;
+    line-height: 1.4;
+
+    .udl-hero-mark {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      background: var(--udl-surface-sunken);
+      border: 1px solid var(--udl-border);
+      color: var(--udl-primary);
+      flex-shrink: 0;
+    }
   }
-  h2 { color: #fff; border: none; margin: 0.25em 0 0.4em; }
-  p { opacity: 0.92; max-width: 32em; }
-  .udl-button {
-    background: #fff;
-    color: var(--udl-primary-dark) !important;
+
+  .udl-hero-title {
+    font-family: var(--udl-font-heading);
+    font-size: clamp(1.95rem, 4vw, 2.6rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: var(--udl-text);
+    margin: 0 0 0.35rem;
+    line-height: 1.12;
+  }
+
+  .udl-hero-subtitle {
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: var(--udl-text-muted);
+    margin: 0 0 0.9rem;
+    line-height: 1.4;
+  }
+
+  .udl-hero-lead {
+    font-size: clamp(0.92rem, 1.5vw, 1.02rem);
+    line-height: 1.62;
+    color: var(--udl-text-secondary);
+    max-width: 62ch;
+    margin: 0 0 1.5rem;
+  }
+
+  .udl-hero-cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.65rem;
+
+    @media (max-width: 480px) {
+      .udl-btn {
+        width: 100%;
+      }
+    }
+  }
+}
+
+.udl-recent-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+
+  .udl-recent-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0 0.1rem;
+
+    .udl-recent-title {
+      font-family: var(--udl-font-mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--udl-text-muted);
+      margin: 0;
+      border: none;
+      padding: 0;
+    }
+  }
+
+  .udl-recent-empty {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.85rem 1rem;
+    font-size: 0.84rem;
+    color: var(--udl-text-muted);
+
+    a {
+      font-weight: 600;
+      color: var(--udl-primary);
+      text-decoration: none;
+      &:hover { text-decoration: underline; }
+    }
+  }
+}
+
+// ============================================================
+// 2. Shared Tokens, Code Pills & Section Headers
+// ============================================================
+
+.udl-section-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem;
+
+  .udl-section-title {
+    font-family: var(--udl-font-heading);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--udl-text);
+    margin: 0;
+    border: none;
+    padding: 0;
+  }
+
+  .udl-section-desc {
+    font-size: 0.82rem;
+    color: var(--udl-text-muted);
+    margin: 0.15rem 0 0;
+  }
+}
+
+.udl-code-pill,
+.udl-type-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.14rem 0.48rem;
+  border-radius: 5px;
+  background: var(--udl-surface-sunken);
+  border: 1px solid var(--udl-border);
+  color: var(--udl-text-secondary);
+  font-family: var(--udl-font-mono);
+  font-size: 0.71rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.udl-mono {
+  font-family: var(--udl-font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.8rem;
+}
+
+// ============================================================
+// 3. Materials (`materials.html`) — Single Centered Column
+//    + 3-Level Hierarchical Stage (Scales to 30+ Thematic Blocks)
+// ============================================================
+
+// Single centered column (no sidebar): the page container sets the width, see _page.scss
+.udl-materials-page {
+  gap: 1.1rem;
+  padding-top: 0.35rem;
+}
+
+.udl-explorer-topbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid var(--udl-border);
+
+  .udl-explorer-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex: 0 1 340px;
+
+    .udl-search-input { flex: 1 1 auto; }
+    .udl-btn { flex-shrink: 0; }
+
+    @media (max-width: 640px) {
+      flex: 1 1 100%;
+    }
+  }
+
+  .udl-search-input {
+    width: 100%;
+    min-width: 0;
+    height: 32px;
+    padding: 0 0.65rem;
+    border-radius: 6px;
+    border: 1px solid var(--udl-border-strong);
+    background: var(--udl-surface);
+    color: var(--udl-text);
+    font-size: 0.8125rem;
+    box-sizing: border-box;
+
+    &:focus {
+      outline: 2px solid var(--udl-primary);
+      border-color: transparent;
+    }
+
+    @media (max-width: 640px) {
+      height: 38px;
+      font-size: 16px; // Prevents iOS auto-zoom
+    }
+  }
+}
+
+.udl-bundles-panel {
+  padding: 0.95rem 1.05rem;
+  background: var(--udl-surface);
+  border: 1px solid var(--udl-border-strong);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+
+  .udl-bundles-panel-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+}
+
+// ============================================================
+// ============================================================
+// Level 1: Zero-Friction Expandable Resource Explorer (`materials.html`)
+// Bloc -> Categoria (Teoria / Pralabs / Activitats) -> Recurs
+// ============================================================
+.udl-exp-list {
+  display: flex;
+  flex-direction: column;
+  background: var(--udl-surface);
+  border: 1px solid var(--udl-border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.udl-exp-block {
+  border-bottom: 1px solid var(--udl-border);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.udl-exp-block-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding-right: 0.85rem;
+  transition: background 120ms ease;
+
+  &:hover {
+    background: var(--udl-surface-sunken);
+  }
+
+  @media (max-width: 640px) {
+    padding-right: 0.65rem;
+  }
+}
+
+.udl-exp-block-trigger {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem 0.65rem;
+  padding: 0.95rem 0.75rem 0.95rem 1.05rem;
+  min-height: 52px;
+  border: none;
+  background: transparent;
+  color: var(--udl-text);
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--udl-font-body);
+
+  &:focus-visible {
+    outline: 2px solid var(--udl-primary);
+    outline-offset: -2px;
+    border-radius: 6px;
+  }
+
+  &[aria-expanded="true"] .udl-exp-chevron {
+    transform: rotate(90deg);
+    color: var(--udl-primary);
+  }
+
+  @media (max-width: 640px) {
+    padding: 0.85rem 0.5rem 0.85rem 0.85rem;
+  }
+
+  .udl-block-num {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.14rem 0.48rem;
+    border-radius: 5px;
+    background: var(--udl-surface-sunken);
+    border: 1px solid var(--udl-border);
+    font-family: var(--udl-font-mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--udl-primary);
+    flex-shrink: 0;
+  }
+
+  .udl-exp-block-title {
+    font-family: var(--udl-font-heading);
+    font-size: 0.98rem;
+    font-weight: 600;
+    color: var(--udl-text);
+    line-height: 1.35;
+    overflow-wrap: break-word;
+    flex: 1 1 220px;
+    min-width: 0;
+  }
+
+  .udl-exp-count {
+    font-family: var(--udl-font-mono);
+    font-size: 0.73rem;
+    color: var(--udl-text-muted);
+    white-space: nowrap;
+    margin-left: auto;
+  }
+}
+
+.udl-exp-zip-btn {
+  flex-shrink: 0;
+
+  @media (max-width: 520px) {
+    display: none;
+  }
+}
+
+.udl-exp-chevron {
+  color: var(--udl-text-muted);
+  transition: transform 140ms ease, color 140ms ease;
+  flex-shrink: 0;
+}
+
+.udl-exp-block-panel {
+  border-top: 1px solid var(--udl-border);
+  background: color-mix(in srgb, var(--udl-surface-sunken) 45%, var(--udl-surface));
+  padding: 0.65rem 1.05rem 0.95rem 2.2rem;
+
+  &[hidden] {
+    display: none !important;
+  }
+
+  @media (max-width: 640px) {
+    padding: 0.55rem 0.7rem 0.8rem 0.85rem;
+  }
+}
+
+.udl-exp-block-desc {
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--udl-text-muted);
+  margin: 0 0 0.65rem;
+  max-width: 72ch;
+}
+
+.udl-exp-cat-list {
+  display: flex;
+  flex-direction: column;
+  background: var(--udl-surface);
+  border: 1px solid var(--udl-border);
+  border-radius: 9px;
+  overflow: hidden;
+}
+
+.udl-exp-cat {
+  border-bottom: 1px solid var(--udl-border);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.udl-exp-cat-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.68rem 0.9rem;
+  min-height: 44px;
+  border: none;
+  background: transparent;
+  color: var(--udl-text);
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--udl-font-body);
+  transition: background 120ms ease;
+
+  &:hover {
+    background: var(--udl-surface-sunken);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--udl-primary);
+    outline-offset: -2px;
+  }
+
+  &[aria-expanded="true"] .udl-exp-chevron {
+    transform: rotate(90deg);
+    color: var(--udl-primary);
+  }
+
+  .udl-exp-cat-title {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--udl-text);
+  }
+
+  .udl-exp-cat-count {
+    font-family: var(--udl-font-mono);
+    font-size: 0.72rem;
+    color: var(--udl-text-muted);
+    margin-left: auto;
+  }
+}
+
+.udl-exp-cat-panel {
+  border-top: 1px solid var(--udl-border);
+  background: var(--udl-surface);
+
+  &[hidden] {
+    display: none !important;
+  }
+
+  .udl-clean-row {
+    padding-left: 1.85rem;
+
+    @media (max-width: 640px) {
+      padding-left: 0.8rem;
+    }
+  }
+}
+
+.udl-subsections-vertical-list,
+.udl-clean-list {
+  display: flex;
+  flex-direction: column;
+  background: var(--udl-surface);
+  border: 1px solid var(--udl-border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+// ============================================================
+// Level 2 & Level 3: Block Header, Subsection Rows & Document Rows
+// ============================================================
+.udl-stage-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+
+  .udl-stage-eyebrow {
+    font-family: var(--udl-font-mono);
+    font-size: 0.71rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--udl-primary);
+    margin-bottom: 0.15rem;
+  }
+
+  .udl-stage-title {
+    font-family: var(--udl-font-heading);
+    font-size: clamp(1.18rem, 2.2vw, 1.4rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--udl-text);
+    margin: 0 0 0.2rem;
+    border: none;
+    padding: 0;
+  }
+
+  .udl-stage-desc {
+    font-size: 0.84rem;
+    color: var(--udl-text-muted);
+    margin: 0;
+    max-width: 65ch;
+  }
+
+  .udl-stage-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+}
+
+// Level 2: Subsection Row (Teoria / Pralabs / Activitats)
+.udl-sub-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 1.15rem;
+  border-bottom: 1px solid var(--udl-border);
+  text-decoration: none !important;
+  color: var(--udl-text);
+  transition: background 120ms ease;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: var(--udl-surface-sunken);
+
+    .udl-sub-row-title {
+      color: var(--udl-primary);
+    }
+  }
+
+  .udl-sub-row-main {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+  }
+
+  .udl-sub-row-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--udl-text);
+    transition: color 120ms ease;
+  }
+
+  .udl-sub-row-desc {
+    font-size: 0.8rem;
+    color: var(--udl-text-muted);
+  }
+
+  .udl-sub-row-right {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    flex-shrink: 0;
+    color: var(--udl-text-muted);
+  }
+}
+
+// Compact Sibling Subsection Switcher inside Level 3
+.udl-sub-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.32rem;
+  margin-bottom: 0.9rem;
+
+  .udl-sub-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    height: 30px;
+    padding: 0 0.7rem;
+    border-radius: 9999px;
+    border: 1px solid var(--udl-border);
+    background: var(--udl-surface);
+    color: var(--udl-text-secondary);
+    font-size: 0.79rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 120ms ease;
+
+    &:hover {
+      border-color: var(--udl-primary);
+      color: var(--udl-primary);
+    }
+
+    &.is-active {
+      background: var(--udl-primary);
+      border-color: var(--udl-primary);
+      color: #ffffff;
+      font-weight: 600;
+
+      .udl-sub-tab-count {
+        color: inherit;
+        opacity: 0.85;
+      }
+    }
+
+    .udl-sub-tab-count {
+      font-family: var(--udl-font-mono);
+      font-size: 0.7rem;
+      color: var(--udl-text-muted);
+    }
+  }
+}
+
+body.quarto-dark .udl-sub-tabs .udl-sub-tab.is-active {
+  color: #0b111c;
+}
+
+// Level 3: Clean Document Rows
+.udl-clean-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem;
+  padding: 0.72rem 1rem;
+  border-bottom: 1px solid var(--udl-border);
+  transition: background 120ms ease;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: var(--udl-surface-sunken);
+  }
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.55rem;
+    padding: 0.75rem 0.85rem;
+  }
+
+  .udl-clean-row-main {
+    display: flex;
+    align-items: baseline;
+    gap: 0.65rem;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .udl-clean-row-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.14rem;
+    min-width: 0;
+  }
+
+  .udl-clean-row-title-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.45rem;
+  }
+
+  .udl-clean-row-title {
+    font-size: 0.89rem;
+    font-weight: 600;
+    color: var(--udl-text);
+    text-decoration: none;
+    line-height: 1.35;
+    overflow-wrap: break-word;
+
+    &:hover {
+      color: var(--udl-primary);
+      text-decoration: underline;
+    }
+  }
+
+  .udl-clean-row-meta-tag {
+    font-family: var(--udl-font-mono);
+    font-size: 0.69rem;
+    font-weight: 500;
+    color: var(--udl-text-muted);
     white-space: nowrap;
   }
+
+  .udl-clean-row-sub {
+    font-size: 0.77rem;
+    color: var(--udl-text-muted);
+    line-height: 1.4;
+    overflow-wrap: break-word;
+  }
+
+  .udl-clean-row-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem;
+    flex-shrink: 0;
+
+    @media (max-width: 480px) {
+      width: 100%;
+      .udl-btn {
+        flex: 1 1 auto;
+      }
+    }
+  }
 }
 
-// Progress bar
-.udl-progress {
-  height: 8px;
-  border-radius: 999px;
-  background: var(--udl-surface-sunken);
-  overflow: hidden;
-  margin: var(--udl-space-xs) 0 var(--udl-space-sm);
-}
-.udl-progress-bar {
-  height: 100%;
-  background: linear-gradient(90deg, var(--udl-primary), var(--udl-secondary));
+.udl-empty-state {
+  padding: 1.5rem 1rem;
+  text-align: center;
+  background: var(--udl-surface);
+  border: 1px solid var(--udl-border);
+  border-radius: 10px;
+  color: var(--udl-text-muted);
+  font-size: 0.85rem;
 }
 
-// Deadline / announcement list rows
-.udl-list-row {
+// ============================================================
+// 4. Course Guide Action Strip (`guia.html`)
+// ============================================================
+
+.udl-guide-actions {
   display: flex;
-  justify-content: space-between;
-  gap: var(--udl-space-sm);
-  padding: var(--udl-space-sm) 0;
-  border-bottom: 1px solid var(--udl-border);
-  font-size: var(--udl-text-sm);
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-bottom: 1.25rem;
 
-  &:last-child { border-bottom: none; }
-  .udl-list-row-date { color: var(--udl-text-muted); white-space: nowrap; }
+  @media (max-width: 540px) {
+    .udl-btn {
+      flex: 1 1 100%;
+    }
+  }
+}
+
+// ============================================================
+// 5. Minimalist Single-Column Grade Calculator (`calculadora.html`)
+//    Primary: Sticky Result Bar · Secondary: Clean Grouped Inputs
+//    Tertiary: Expandable Details · Zero Nested Input Cards
+// ============================================================
+
+.udl-calc-minimal-shell {
+  max-width: 680px;
+  margin: 0 auto;
+  width: 100%;
+  gap: 1.1rem;
+  padding-top: 0.35rem;
+}
+
+.udl-calc-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--udl-border);
+
+  .udl-calc-header-titles {
+    display: flex;
+    flex-direction: column;
+    gap: 0.12rem;
+    min-width: 0;
+  }
+
+  .udl-calc-page-title {
+    font-family: var(--udl-font-heading);
+    font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0;
+    color: var(--udl-text);
+  }
+
+  .udl-calc-subtitle-meta {
+    font-family: var(--udl-font-mono);
+    font-size: 0.74rem;
+    color: var(--udl-text-muted);
+  }
+
+  .udl-calc-header-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem;
+
+    @media (max-width: 520px) {
+      width: 100%;
+      .udl-calc-year-select {
+        flex: 1 1 auto;
+      }
+    }
+  }
+}
+
+.udl-calc-year-select {
+  height: 32px;
+  padding: 0 0.65rem;
+  border-radius: 6px;
+  border: 1px solid var(--udl-border-strong);
+  background: var(--udl-surface);
+  color: var(--udl-text);
+  font-family: var(--udl-font-body);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  max-width: 100%;
+
+  &:focus {
+    outline: 2px solid var(--udl-primary);
+    border-color: transparent;
+  }
+
+  @media (max-width: 640px) {
+    height: 38px;
+    font-size: 16px; // Prevents mobile auto-zoom
+  }
+}
+
+// Area C: Compact Result & Required-Grades Panel (Placed immediately after grade inputs)
+.udl-calc-result-panel {
+  background: var(--udl-surface);
+  border: 1px solid var(--udl-border-strong);
+  border-radius: 10px;
+  padding: 1rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+
+  @media (max-width: 640px) {
+    padding: 0.85rem 0.9rem;
+  }
+
+  .udl-calc-result-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .udl-calc-result-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.4rem 0.75rem;
+  }
+
+  .udl-calc-result-goal {
+    font-family: var(--udl-font-mono);
+    font-size: 0.73rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--udl-text-muted);
+  }
+
+  .udl-calc-result-count {
+    font-size: 0.78rem;
+    color: var(--udl-text-secondary);
+  }
+
+  .udl-calc-req-main {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .udl-calc-req-headline {
+    font-family: var(--udl-font-heading);
+    font-size: clamp(0.98rem, 2vw, 1.08rem);
+    font-weight: 700;
+    color: var(--udl-text);
+    margin: 0;
+    line-height: 1.35;
+  }
+
+  .udl-calc-req-detail {
+    font-size: 0.82rem;
+    color: var(--udl-text-secondary);
+    margin: 0;
+    line-height: 1.45;
+  }
+
+  .udl-calc-example-box {
+    background: var(--udl-surface-sunken);
+    border: 1px solid var(--udl-border);
+    border-radius: 8px;
+    padding: 0.65rem 0.85rem;
+
+    &[hidden] {
+      display: none !important;
+    }
+
+    .udl-calc-example-title {
+      font-size: 0.73rem;
+      font-weight: 600;
+      color: var(--udl-text-muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .udl-calc-example-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.28rem;
+    }
+
+    .udl-calc-example-item {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.5rem;
+      font-size: 0.81rem;
+      color: var(--udl-text-secondary);
+
+      .udl-calc-example-name {
+        min-width: 0;
+        overflow-wrap: break-word;
+      }
+
+      .udl-calc-example-val {
+        font-family: var(--udl-font-mono);
+        font-variant-numeric: tabular-nums;
+        font-weight: 700;
+        color: var(--udl-primary);
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+    }
+  }
+
+  .udl-calc-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    margin: 0;
+    padding-top: 0.7rem;
+    border-top: 1px solid var(--udl-border);
+
+    @media (max-width: 480px) {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .udl-calc-metric {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+
+      dt {
+        font-size: 0.71rem;
+        color: var(--udl-text-muted);
+        font-weight: 500;
+      }
+
+      dd {
+        margin: 0;
+        font-family: var(--udl-font-mono);
+        font-variant-numeric: tabular-nums;
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: var(--udl-text);
+      }
+    }
+  }
+}
+
+.udl-calc-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.18rem 0.58rem;
+  border-radius: 9999px;
+  font-size: 0.73rem;
+  font-weight: 600;
+  white-space: nowrap;
+
+  &.is-pass {
+    background: color-mix(in srgb, var(--udl-success) 14%, transparent);
+    color: var(--udl-success);
+  }
+  &.is-fail {
+    background: color-mix(in srgb, var(--udl-warning) 14%, transparent);
+    color: var(--udl-warning);
+  }
+  &.is-warn {
+    background: color-mix(in srgb, var(--udl-exam) 15%, transparent);
+    color: var(--udl-exam);
+  }
+  &.is-neutral {
+    background: var(--udl-surface-sunken);
+    color: var(--udl-text-secondary);
+    border: 1px solid var(--udl-border);
+  }
+}
+
+.udl-calc-alert {
+  padding: 0.55rem 0.85rem;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--udl-exam) 12%, var(--udl-surface));
+  border: 1px solid var(--udl-exam);
+  color: var(--udl-text);
+  font-size: 0.8rem;
+  line-height: 1.4;
+
+  &[hidden] {
+    display: none !important;
+  }
+}
+
+// Secondary Elements: Clean Grouped Grade Inputs (Table-like Hairline Rows)
+.udl-calc-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 0.95rem;
+}
+
+.udl-calc-group {
+  background: var(--udl-surface);
+  border: 1px solid var(--udl-border);
+  border-radius: 10px;
+  overflow: hidden;
+
+  .udl-calc-group-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.65rem 1rem;
+    background: var(--udl-surface-sunken);
+    border-bottom: 1px solid var(--udl-border);
+
+    .udl-section-title {
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--udl-text);
+      margin: 0;
+      border: none;
+      padding: 0;
+    }
+
+    .udl-section-desc {
+      font-size: 0.73rem;
+      color: var(--udl-text-muted);
+      margin: 0.1rem 0 0;
+    }
+  }
+}
+
+// Single-line compact grade row (Works with one thumb on mobile without stacking into huge cards)
+.udl-calc-row {
+  display: flex;
+  flex-direction: column;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--udl-border);
+  background: var(--udl-surface);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.6rem 0.8rem;
+  }
+
+  .udl-calc-line-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.65rem;
+    min-height: 36px;
+  }
+
+  .udl-calc-row-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.08rem;
+    min-width: 0;
+    flex: 1;
+
+    label {
+      display: inline-flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.38rem;
+      font-size: 0.86rem;
+      color: var(--udl-text);
+      cursor: pointer;
+      line-height: 1.3;
+    }
+
+    .udl-calc-weight {
+      font-family: var(--udl-font-mono);
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--udl-text-muted);
+    }
+
+    .udl-calc-meta {
+      font-size: 0.72rem;
+      color: var(--udl-text-muted);
+    }
+  }
+
+  .udl-calc-row-inputs {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-shrink: 0;
+  }
+
+  // Secondary recovery sub-row (only visible when "Recuperació" is toggled on)
+  .udl-calc-rec-drawer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-top: 0.45rem;
+    padding-top: 0.45rem;
+    border-top: 1px dashed var(--udl-border);
+    font-size: 0.78rem;
+    color: var(--udl-text-secondary);
+
+    &[hidden] {
+      display: none !important;
+    }
+  }
+}
+
+.udl-calc-num-input {
+  width: 74px;
+  height: 34px;
+  padding: 0 0.5rem;
+  border-radius: 6px;
+  border: 1px solid var(--udl-border-strong);
+  background: var(--udl-surface-sunken);
+  color: var(--udl-text);
+  font-family: var(--udl-font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-align: right;
+  box-sizing: border-box;
+
+  &:focus {
+    outline: 2px solid var(--udl-primary);
+    border-color: transparent;
+    background: var(--udl-surface);
+  }
+
+  @media (max-width: 640px) {
+    width: 78px;
+    height: 38px;
+    font-size: 16px; // Prevents mobile browser auto-zoom
+  }
+}
+
+.udl-rec-pill-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  height: 28px;
+  padding: 0 0.52rem;
+  border-radius: 9999px;
+  border: 1px solid var(--udl-border);
+  background: var(--udl-surface-sunken);
+  color: var(--udl-text-muted);
+  font-size: 0.71rem;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  transition: all 120ms ease;
+
+  &:hover {
+    border-color: var(--udl-border-strong);
+    color: var(--udl-text);
+  }
+
+  &.is-active {
+    background: var(--udl-nav-active-bg);
+    border-color: var(--udl-primary);
+    color: var(--udl-primary);
+  }
+
+  input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+}
+
+// Tertiary Information: Expandable Calculation Details (`<details>`)
+.udl-calc-details {
+  background: var(--udl-surface);
+  border: 1px solid var(--udl-border);
+  border-radius: 10px;
+  overflow: hidden;
+
+  .udl-calc-details-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.7rem 1rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--udl-text-secondary);
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &:hover {
+      background: var(--udl-surface-sunken);
+      color: var(--udl-text);
+    }
+  }
+
+  &[open] .udl-calc-details-chevron {
+    transform: rotate(180deg);
+  }
+
+  .udl-calc-details-body {
+    padding: 0.85rem 1rem;
+    border-top: 1px solid var(--udl-border);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .udl-calc-breakdown {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    font-size: 0.8rem;
+
+    > div {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 0.5rem;
+      padding-bottom: 0.3rem;
+      border-bottom: 1px solid var(--udl-border);
+
+      dt {
+        color: var(--udl-text-muted);
+      }
+      dd {
+        margin: 0;
+        font-family: var(--udl-font-mono);
+        font-weight: 600;
+        color: var(--udl-text);
+      }
+    }
+  }
+
+  .udl-calc-formula-box {
+    padding: 0.5rem 0.7rem;
+    border-radius: 6px;
+    background: var(--udl-surface-sunken);
+    border: 1px solid var(--udl-border);
+
+    .udl-calc-formula-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--udl-text-muted);
+      margin-bottom: 0.15rem;
+    }
+
+    code {
+      display: block;
+      font-size: 0.73rem;
+      color: var(--udl-text-secondary);
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.4;
+    }
+  }
+
+  .udl-calc-policy-note {
+    font-size: 0.75rem;
+    line-height: 1.45;
+    color: var(--udl-text-muted);
+    margin: 0;
+  }
 }

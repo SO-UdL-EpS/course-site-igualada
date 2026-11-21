@@ -8,20 +8,21 @@ format:
     theme: [simple, ../../../_extensions/udl-course/styles/revealjs.scss, ../../../styles/slides.scss]
     filters: [../../../_extensions/udl-course/components.lua]
     transition: fade
-    slide-number: true
+    slide-number: false
     incremental: true
     chalkboard: false
+    menu: false
+    controls: false
     slide-level: 2
     width: 1600
     height: 900
     margin: 0.08
     center: false
-    footer: 'Sistemes Operatius (SO) &nbsp; <a href="/index.html" class="home-link" aria-label="Inici"><svg class="home-icon" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 52 C27 43 39 31 60 12 C78 30 93 42 108 51" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M25 48 C25 64 25 76 24 87 C35 84 45 85 53 87 M95 48 C95 64 95 76 97 87 C87 84 77 85 68 87" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M51 87V70 C51 64 55 60 60 60 C65 60 69 64 69 70V87Z" fill="currentColor"/><path d="M82 29V17 C82 14 84 13 87 13H94 C96 13 97 15 96 17 C94 20 93 24 94 32Z" fill="currentColor"/></svg></a>'
     include-in-header:
       - text: |
           <link rel="stylesheet"
-                href="https://cdn.jsdelivr.net/npm/asciinema-player@3.9.0/dist/bundle/asciinema-player.css">
-          <script src="https://cdn.jsdelivr.net/npm/asciinema-player@3.9.0/dist/bundle/asciinema-player.min.js"></script>
+                href="../../../assets/vendor/asciinema/asciinema-player.css">
+          <script src="../../../assets/vendor/asciinema/asciinema-player.min.js"></script>
 resources:
   - cast/07/*.cast
 ---
@@ -53,7 +54,7 @@ Com transforma Linux una petició d'un programa d'usuari en una operació **segu
 ## Què fa el punt d'entrada?
 
 :::{style="text-align:center"}
-![](figures/07/syscall-entry.png){ width=40%}
+![](figures/07/syscall-entry.png){width=40% fig-alt="Esquema sobre syscall entry (07_syscalls_kernel)"}
 :::
 
 - La instrucció `syscall` / `svc` fa el mínim: **privilegi + salt a l'entrada fixa**.
@@ -66,7 +67,7 @@ Una syscall **no és simplement canviar de stack**: l'entrada al kernel *prepara
 ## User stack i kernel stack
 
 :::{style="text-align:center"}
-![](figures/07/syscall-stacks.png){ width=40% }
+![](figures/07/syscall-stacks.png){width=40% fig-alt="Esquema sobre syscall stacks (07_syscalls_kernel)"}
 :::
 
 - El kernel **no pot confiar en el `SP` d'usuari** (podria apuntar a qualsevol lloc): usa **la seva pila**, una per fil/tasca.
@@ -78,7 +79,7 @@ Una syscall **no és simplement canviar de stack**: l'entrada al kernel *prepara
 :::: {.columns}
 ::: {.column width="50%"}
 
-![](figures/07/syscall-pt_regs.png)
+![](figures/07/syscall-pt_regs.png){fig-alt="Esquema sobre syscall pt regs (07_syscalls_kernel)"}
 
 
 :::
@@ -133,7 +134,7 @@ Aquesta dema s'atura just a l'entrada de la **syscall**, i el `pt_regs` que veu 
 
 :::: {.columns}
 ::: {.column width="65%"}
-![](figures/07/syscall-address-space.png)
+![](figures/07/syscall-address-space.png){fig-alt="Esquema sobre syscall address space (07_syscalls_kernel)"}
 :::
 ::: {.column width="35%"}
 - Les adreces que veu el programa són **virtuals**: la CPU (MMU) les tradueix a memòria física amb l'ajuda del kernel.
@@ -188,7 +189,7 @@ Esdeveniment **síncron** generat per la CPU quan una instrucció no es pot comp
 ## *Page fault*: dues sortides {.smaller}
 
 :::{style="text-align:center"}
-![](figures/07/syscall-page-fault.png){width=60%}
+![](figures/07/syscall-page-fault.png){width=60% fig-alt="Esquema sobre syscall page fault (07_syscalls_kernel)"}
 :::
 
 ::: {.concepte title="Idea clau"}
@@ -222,7 +223,7 @@ Un `malloc` de 256 MiB gairebé no dispara cap **page fault**, perquè només re
 ## Com sap Linux quina operació ha de fer?
 
 :::{style="text-align:center"}
-![](figures/07/syscall-dispatcher.png){ width=50%}
+![](figures/07/syscall-dispatcher.png){width=50% fig-alt="Esquema sobre syscall dispatcher (07_syscalls_kernel)"}
 :::
 
 
@@ -235,7 +236,7 @@ Quina funció del kernel s'executa? I si el número no existeix?
 
 :::: {.columns}
 ::: {.column width="65%"}
-![](figures/07/syscall-table.png)
+![](figures/07/syscall-table.png){fig-alt="Esquema sobre syscall table (07_syscalls_kernel)"}
 :::
 ::: {.column width="35%"}
 ::: {.concepte title="Això és un model"}
@@ -263,7 +264,7 @@ SYSCALL_DEFINE3(write, unsigned int, fd,
 
 ## El camí complet
 
-![](figures/07/syscall-complet.png)
+![](figures/07/syscall-complet.png){fig-alt="Esquema sobre syscall complet (07_syscalls_kernel)"}
 
 
 # Part 4 · Els arguments no són fiables {.center}
@@ -289,7 +290,7 @@ Pot el kernel confiar en **qualsevol** punter que li dona el programa?
 ## Quatre casos 
 
 :::{style="text-align:center"}
-![](figures/07/syscall-efault.png){width=60%}
+![](figures/07/syscall-efault.png){width=60% fig-alt="Esquema sobre syscall efault (07_syscalls_kernel)"}
 :::
 
 ::: {.concepte title="No només es valida el punter"}
@@ -322,7 +323,7 @@ Si el kernel tractés **un valor controlat per l'usuari** com una adreça de mem
 
 ::: 
 ::: {.column width="55%"}
-![](figures/07/syscall-efault-danger.png)
+![](figures/07/syscall-efault-danger.png){fig-alt="Esquema sobre syscall efault danger (07_syscalls_kernel)"}
 :::
 :::
 
@@ -400,7 +401,7 @@ El kernel **valida-ho-tot a l'entrada** i retorna un error concret (`-EFAULT`, `
 
 :::: {.columns}
 ::: {.column width="65%"}
-![](figures/07/syscall-page-fault-kernel.png)
+![](figures/07/syscall-page-fault-kernel.png){fig-alt="Esquema sobre syscall page fault kernel (07_syscalls_kernel)"}
 :::
 ::: {.column width="35%"}
 
@@ -420,7 +421,7 @@ Llista de les **instruccions concretes** del kernel que poden accedir a memòria
 :::
 
 :::{style="text-align:center"}
-![](figures/07/syscall-exception-table.png){width=40%}
+![](figures/07/syscall-exception-table.png){width=40% fig-alt="Esquema sobre syscall exception table (07_syscalls_kernel)"}
 :::
 
 **Resultat**: un accés invàlid a memòria d'usuari es converteix en un **`-EFAULT`** i **no** en un *crash* del kernel.
@@ -431,7 +432,7 @@ Llista de les **instruccions concretes** del kernel que poden accedir a memòria
 
 :::: {.columns}
 ::: {.column width="55%"}
-![](figures/07/syscall-retorn.png)
+![](figures/07/syscall-retorn.png){fig-alt="Esquema sobre syscall retorn (07_syscalls_kernel)"}
 :::
 ::: {.column width="45%"}
 ```{.c code-line-numbers="false" }
@@ -523,7 +524,7 @@ static bool do_syscall_x64(struct pt_regs *regs, int nr)
 
 ## Annex B · `get_user` i la taula d'excepcions { visibility="uncounted"}
 
-![](figures/07/syscall-get_user.png)
+![](figures/07/syscall-get_user.png){fig-alt="Esquema sobre syscall get user (07_syscalls_kernel)"}
 
 
 ## Annex C · Dues aproximacions per validar { visibility="uncounted"}

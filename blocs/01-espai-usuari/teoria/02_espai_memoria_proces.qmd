@@ -8,15 +8,16 @@ format:
     theme: [simple, ../../../_extensions/udl-course/styles/revealjs.scss, ../../../styles/slides.scss]
     filters: [../../../_extensions/udl-course/components.lua]
     transition: fade
-    slide-number: true
+    slide-number: false
     incremental: true
     chalkboard: false
+    menu: false
+    controls: false
     slide-level: 2
     width: 1600
     height: 900
     margin: 0.08
     center: false
-    footer: 'Sistemes Operatius (SO) &nbsp; <a href="/index.html" class="home-link" aria-label="Inici"><svg class="home-icon" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 52 C27 43 39 31 60 12 C78 30 93 42 108 51" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M25 48 C25 64 25 76 24 87 C35 84 45 85 53 87 M95 48 C95 64 95 76 97 87 C87 84 77 85 68 87" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M51 87V70 C51 64 55 60 60 60 C65 60 69 64 69 70V87Z" fill="currentColor"/><path d="M82 29V17 C82 14 84 13 87 13H94 C96 13 97 15 96 17 C94 20 93 24 94 32Z" fill="currentColor"/></svg></a>'
 ---
 
 # Introducció
@@ -52,7 +53,7 @@ Stack · Heap · Data · Text
 
 ### Procés
 
-![](figures/02_espai_memoria/espai_adreces.png){ width=100%}
+![](figures/02_espai_memoria/espai_adreces.png){width=100% fig-alt="Esquema sobre espai adreces (02_espai_memoria_proces)"}
 :::
 ::: {.column width="60%"}
 
@@ -98,7 +99,7 @@ executables del programa.
 :::{.columns}
 ::: {.column width="50%"}
 
-![](figures/02_espai_memoria/codi_no_dades.png){ width=100%}
+![](figures/02_espai_memoria/codi_no_dades.png){width=100% fig-alt="Esquema sobre codi no dades (02_espai_memoria_proces)"}
 
 :::
 :::{.column width="50%"}
@@ -161,7 +162,7 @@ d'ELF més endavant sense haver de corregir el model.
 :::
 :::{.column width="50%"}
 
-![](figures/02_espai_memoria/data.png){ width=100%}
+![](figures/02_espai_memoria/data.png){width=100% fig-alt="Esquema sobre data (02_espai_memoria_proces)"}
 :::
 :::
 
@@ -253,7 +254,7 @@ Cada crida de funció necessita **informació pròpia**, per això s'apila un no
 :::
 :::{.column width="70%"}
 
-![](figures/02_espai_memoria/crida_activacio.png){ width=100%}
+![](figures/02_espai_memoria/crida_activacio.png){width=100% fig-alt="Esquema sobre crida activacio (02_espai_memoria_proces)"}
 
 :::
 :::
@@ -263,7 +264,7 @@ Cada crida de funció necessita **informació pròpia**, per això s'apila un no
 :::{.columns}
 ::: {.column width="30%"}
 
-![](figures/02_espai_memoria/stackframe.png){ width=100%}
+![](figures/02_espai_memoria/stackframe.png){width=100% fig-alt="Esquema sobre stackframe (02_espai_memoria_proces)"}
 
 :::
 ::: {.column width="70%"}
@@ -344,7 +345,7 @@ int *create(void)
 :::
 :::{.column width="40%"}
 
-![](figures/02_espai_memoria/stack_heap.png){ width=100%}
+![](figures/02_espai_memoria/stack_heap.png){width=100% fig-alt="Esquema sobre stack heap (02_espai_memoria_proces)"}
 
 :::
 :::
@@ -397,7 +398,7 @@ Tot `malloc()` hauria de tenir el seu `free()` corresponent. Encara no cal saber
 :::
 ::: {.column width="50%"}
 
-![](figures/02_espai_memoria/data.png){ width=100%}
+![](figures/02_espai_memoria/data.png){width=100% fig-alt="Esquema sobre data (02_espai_memoria_proces)"}
 
 :::
 ::: 
@@ -456,7 +457,7 @@ void foo(void)
 ::: {.column width="60%"}
 
 
-![](figures/02_espai_memoria/x86_64.png){ width=90%}
+![](figures/02_espai_memoria/x86_64.png){width=90% fig-alt="Esquema sobre x86 64 (02_espai_memoria_proces)"}
 
 :::
 ::: {.column width="40%"}
@@ -477,7 +478,7 @@ El retorn sempre s'apila automàticament. Cert en x86 (`call`/`ret`), fals en AR
 :::{.columns}
 ::: {.column width="60%"}
 
-![](figures/02_espai_memoria/arm.png){ width=90%}
+![](figures/02_espai_memoria/arm.png){width=90% fig-alt="Esquema sobre arm (02_espai_memoria_proces)"}
 
 :::
 ::: {.column width="40%"}

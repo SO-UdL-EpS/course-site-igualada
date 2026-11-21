@@ -3,7 +3,7 @@ title: "Pralab 05 (III): shell: redireccions (`<`, `>`, `>>`)"
 author: "Jordi Mateo Fornés"
 format:
   udl-course-html:
-    toc: false
+    toc: true
     number-sections: false
 ---
 
@@ -25,9 +25,9 @@ Fins ara la shell llegeix una línia, la parteix en comandes amb `;`, executa ca
 Aquest és el codi de la Part F de la sessió passada, en la versió `sigaction`. **Si no has acabat el refactor, parteix d'aquí: és la solució.** Si vas triar la versió `signal`, tot el que fem avui funciona igual.
 
 
-### Part G — Redireccions (`<`, `>`, `>>`)
+## Part G — Redireccions (`<`, `>`, `>>`)
 
-#### G.1 — Descriptors de fitxer i `dup2`
+### G.1 — Descriptors de fitxer i `dup2`
 
 Quan `ls` escriu amb `write(1, ...)`, no sap què hi ha darrere aquell `1`. Cada procés té una **taula de descriptors de fitxer**: un enter (`0`, `1`, `2`, `3`...) per cada fitxer obert. Els tres primers són, per convenció, l'entrada, la sortida i l'error estàndard, i **tots els programes** hi llegeixen i hi escriuen sense preguntar si hi ha un terminal, un fitxer o un pipe.
 
@@ -48,7 +48,7 @@ Conseqüència: una redirecció és un `open` + `dup2` que fa **el fill**, entre
 :::
 
 
-#### G.2 — Els indicadors d'`open`
+### G.2 — Els indicadors d'`open`
 
 Cada operador obre el fitxer d'una manera diferent:
 
@@ -56,7 +56,7 @@ Cada operador obre el fitxer d'una manera diferent:
 - `>`: `O_WRONLY | O_CREAT | O_TRUNC`
 - `>>`: `O_WRONLY | O_CREAT | O_APPEND`
 
-#### G.3 — Analitzar les redireccions
+### G.3 — Analitzar les redireccions
 
 Fins ara una comanda era només un `argv`. Ara en té tres coses: els arguments, el fitxer d'entrada i el de sortida (amb el mode `>` o `>>`). Una funció no pot retornar tot això amb un sol `int`, així que ho agrupem en un `struct`. A la sessió vinent, cada comanda d'un pipeline en tindrà un; per això l'anomenem **etapa**:
 
@@ -153,7 +153,7 @@ int analitza_etapa(char *text, struct etapa *e)
 
 </details>
 
-#### G.4 — Aplicar-les al fill
+### G.4 — Aplicar-les al fill
 
 Tres funcions petites, de baix a dalt:
 
@@ -296,7 +296,7 @@ Fixa't en els detalls (cadascun és una decisió que s'ha pres llegint el `man`)
 | `perror(fitxer)` | El missatge diu **quin fitxer** ha fallat: `no_existeix: No such file or directory`. |
 
 
-### Part H — La shell amb redireccions
+## Part H — La shell amb redireccions
 
 Aquest és el programa que hem construït, **net i ordenat**. Només hi ha la versió `sigaction` de la gestió de senyals.
 

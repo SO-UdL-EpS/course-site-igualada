@@ -5,6 +5,10 @@ on:
 
 name: Quarto Publish
 
+concurrency:
+  group: "pages-publish-${{ github.ref }}"
+  cancel-in-progress: true
+
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
@@ -14,12 +18,33 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
 
-      - name: Render and Publish
+      - name: Synchronize and validate course catalog
+        run: python3 scripts/sync_course.py sync
+
+      - name: Run static content and broken-link audit
+        run: python3 scripts/audit_content.py
+
+      - name: Render Quarto site
+        run: quarto render
+
+      - name: Build pre-rendered PDFs and bulk ZIP archives
+        run: python3 scripts/build_pdfs.py --docs-dir docs
+
+      - name: Verify rendered output, links, and PDF/ZIP integrity
+        run: python3 scripts/verify_build.py
+
+      - name: Publish pre-rendered site and PDFs to GitHub Pages
         uses: quarto-dev/quarto-actions/publish@v2
         with:
           target: gh-pages
+          render: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
