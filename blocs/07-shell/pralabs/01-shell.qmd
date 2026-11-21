@@ -1,8 +1,12 @@
 ---
-title: "Pralab 01: Primers scripts en Bash"
+title: "Bash scripting (I)"
 subtitle: "Bloc 7 · Shell Scripting"
 author: "Jordi Mateo Fornés"
 description: "Shebang, permisos, codis de retorn ($?), test, validació d'arguments, PATH i perfil.sh."
+format:
+  udl-course-html:
+    toc: false
+    number-sections: false
 ---
 
 ## Introducció

@@ -430,7 +430,7 @@
         "code": "P3",
         "title": "Examen Competencial Pràctic 3",
         "category": "practical",
-        "weight": 0.10,
+        "weight": 0.1,
         "maxScore": 10.0,
         "recoverable": false,
         "dates": "G1: 17/11/2026 · G2: 18/11/2026",
@@ -441,7 +441,7 @@
         "code": "P4",
         "title": "Examen Competencial Pràctic 4",
         "category": "practical",
-        "weight": 0.10,
+        "weight": 0.1,
         "maxScore": 10.0,
         "recoverable": false,
         "dates": "G1: 22/12/2026 · G2: 23/12/2026",
@@ -874,6 +874,28 @@
               "qmd": "blocs/03-sched/teoria/02-sched.qmd",
               "href": "blocs/03-sched/teoria/02-sched.html",
               "pdf": "SO-Bloc3-T02-Planificacio-II.pdf"
+            },
+            {
+              "id": "b3-t03",
+              "code": "T03",
+              "kind": "slide",
+              "typeLabel": "Presentació",
+              "title": "Planificació de processos (III)",
+              "subtitle": "Justícia i repartiment proporcional",
+              "qmd": "blocs/03-sched/teoria/03-sched.qmd",
+              "href": "blocs/03-sched/teoria/03-sched.html",
+              "pdf": "SO-Bloc3-T03-Planificacio-de-processos-III.pdf"
+            },
+            {
+              "id": "b3-t04",
+              "code": "T04",
+              "kind": "slide",
+              "typeLabel": "Presentació",
+              "title": "Planificació de processos (IV)",
+              "subtitle": "CFS i EEVDF",
+              "qmd": "blocs/03-sched/teoria/04-sched.qmd",
+              "href": "blocs/03-sched/teoria/04-sched.html",
+              "pdf": "SO-Bloc3-T04-Planificacio-de-processos-IV.pdf"
             }
           ]
         },
@@ -962,6 +984,17 @@
               "qmd": "blocs/07-shell/pralabs/01-shell.qmd",
               "href": "blocs/07-shell/pralabs/01-shell.html",
               "pdf": "SO-Bloc7-Pralab01-Primers-scripts-Bash.pdf"
+            },
+            {
+              "id": "b7-p02",
+              "code": "Pralab 02",
+              "kind": "pralab",
+              "typeLabel": "Laboratori",
+              "title": "Bash scripting (II)",
+              "subtitle": "Bloc 7 · Pralabs",
+              "qmd": "blocs/07-shell/pralabs/02-shell.qmd",
+              "href": "blocs/07-shell/pralabs/02-shell.html",
+              "pdf": "SO-Bloc7-Pralab-02-Bash-scripting-II.pdf"
             }
           ]
         }

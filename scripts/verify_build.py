@@ -281,8 +281,13 @@ def main():
         if len(academic_years) < 3:
             errors.append(f"Expected at least 3 academicYears in manifest.json, got {len(academic_years)}")
 
-        if len(items) != 36:
-            errors.append(f"Expected 36 PDFs in manifest.json, got {len(items)}")
+        expected_item_count = sum(
+            len(s.get("items", []))
+            for b in blocks
+            for s in b.get("subsections", [])
+        )
+        if len(items) != expected_item_count or expected_item_count == 0:
+            errors.append(f"Expected {expected_item_count} PDFs in manifest.json, got {len(items)}")
 
         for item_id, info in items.items():
             pdf_file = DOCS / info["pdfHref"]
@@ -306,9 +311,11 @@ def main():
                     if bad is not None:
                         errors.append(f"Corrupted file {bad} inside ZIP {zf_path}")
 
+    pdf_count = len(manifest.get("items", {})) if manifest_path.exists() else 0
+    zip_count = len({b["filename"] for b in manifest.get("bundles", {}).values()}) if manifest_path.exists() else 0
     print(
         f"Checked {len(html_files)} HTML pages, {total_links_checked} local references, "
-        f"Iteration 3 DOM invariants, zero mosaic grids, 36 PDFs, and 7 ZIP archives."
+        f"DOM invariants, zero mosaic grids, {pdf_count} PDFs, and {zip_count} ZIP archives."
     )
     for w in warnings:
         print(f"WARN:  {w}")

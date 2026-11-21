@@ -1,0 +1,379 @@
+---
+title: "Planificació de processos (IV)"
+subtitle: "CFS i EEVDF"
+author: "Jordi Mateo Fornés"
+format:
+  revealjs:
+    theme: [simple, ../../../_extensions/udl-course/styles/revealjs.scss, ../../../styles/slides.scss]
+    filters: [../../../_extensions/udl-course/components.lua]
+    transition: fade
+    slide-number: false
+    code-line-numbers: false
+    incremental: true
+    chalkboard: false
+    menu: false
+    controls: false
+    slide-level: 2
+    width: 1600
+    height: 900
+    margin: 0.08
+    center: false
+---
+
+## Objectius de la sessió
+
+::: {.objectius title="En acabar la sessió, has de ser capaç de"}
+-   Situar els planificadors de Linux en el temps i explicar per què es van substituir.
+-   Explicar l'**O(1)** com una MLFQ amb heurístiques i identificar-ne els problemes.
+-   Calcular el `vruntime` i el *slice* de **CFS** amb els pesos reals del kernel.
+-   Explicar la limitació de fons de CFS: **pes i latència van lligats**.
+-   Resoldre a mà una planificació **EEVDF** (temps virtual, elegibilitat i deadline virtual).
+-   Relacionar-ho amb el que hi ha a Debian bookworm (CFS) i trixie (EEVDF).
+:::
+
+::: {.prerequisits title="Necessites recordar"}
+-   MLFQ.
+-   Stride, temps virtual, WFQ i WF²Q, lag.
+:::
+
+# Història
+
+## Trenta anys de planificadors
+
+::: nonincremental
+| Versió | Any | Planificador | Idea clau |
+|----|---|---|--------------|
+| 2.4 | 2001 | O(n) | Èpoques; a cada decisió es recorren **tots** els preparats |
+| 2.6.0 | 2003 | O(1) | 140 cues de prioritat i heurístiques d'interactivitat |
+| 2.6.23 | 2007 | **CFS** | Repartiment proporcional amb `vruntime`; apareixen les **classes** de planificació |
+| 3.14 | 2014 | `SCHED_DEADLINE` | Temps real per terminis |
+| 6.6 | 2023 | **EEVDF** | Substitueix la selecció de CFS; es completa a la 6.12 |
+| 6.12 | 2024 | `sched_ext` | Planificadors escrits en BPF |
+:::
+
+-   Les polítiques POSIX `SCHED_FIFO` i `SCHED_RR` existeixen des de molt abans i conviuen amb tots aquests planificadors.
+
+## Temps real: `SCHED_FIFO` i `SCHED_RR`
+
+-   Prioritat estàtica de **1 a 99**; sempre per davant dels processos normals.
+-   `SCHED_FIFO`: s'executa fins que es bloqueja, acaba o **arriba un procés de prioritat més alta**. No té quantum.
+-   `SCHED_RR`: igual, però amb **quantum** entre processos de la **mateixa** prioritat (per defecte 100 ms).
+
+::: {.errorcomu title="SCHED_FIFO no és «no apropiatiu»" .fragment}
+Un procés `SCHED_FIFO` **sí** que pot ser expulsat, per un procés de temps real més prioritari. El que no té és quantum: entre processos de la mateixa prioritat, no cedeix la CPU per temps.
+:::
+
+# El planificador O(1)
+
+## O(1): estructura
+
+-   **140 nivells de prioritat**: 0–99 temps real, 100–139 normals. **Número més baix = més prioritat.**
+-   Prioritat estàtica d'un procés normal: $120 + \text{nice}$ (`nice` −20 → 100, `nice` 19 → 139).
+-   Per a cada CPU, **dues matrius** de 140 cues: **actius** i **expirats**, cadascuna amb un mapa de bits.
+-   Triar = buscar el primer bit a 1 del mapa (cost constant) i agafar el primer de la cua.
+-   Quan un procés esgota el quantum, passa als **expirats**. Quan els actius queden buits, s'intercanvien les dues matrius.
+
+## O(1): quantum i prioritat dinàmica
+
+**Quantum** segons la prioritat **estàtica**: `nice` −20 → 800 ms · `nice` 0 → 100 ms · `nice` 19 → 5 ms.
+
+**Prioritat dinàmica** segons el temps que el procés passa dormint (`sleep_avg`):
+
+$$\text{prioritat} = \text{estàtica} - (\text{bonus} - 5), \qquad \text{bonus} \in [0, 10]$$
+
+-   Un procés que dorm molt (interactiu) rep bonus 10 → **puja 5** nivells.
+-   Un procés que no dorm mai (càlcul) rep bonus 0 → **baixa 5** nivells.
+-   Els processos considerats **interactius** tornen als **actius** en esgotar el quantum, no als expirats.
+
+::: {.reflexio title="Us sona?" .fragment}
+És una **MLFQ**: prioritat que puja o baixa segons el comportament. I té els mateixos problemes: les heurístiques es poden enganyar (com l'Othello) i és difícil ajustar-les.
+:::
+
+# CFS: Completely Fair Scheduler
+
+## La idea: una CPU ideal
+
+-   Model ideal: una CPU que executa **tots** els processos preparats **alhora**, cadascun a la fracció $w_i / \sum w_j$. És el **GPS**.
+-   La CPU real no pot: CFS porta el compte de quant ha rebut cada procés i executa sempre el que **va més endarrerit**.
+-   El compte és el **`vruntime`**: el temps de CPU rebut, ponderat pel pes.
+
+::: {.concepte title="CFS és stride" .fragment}
+`vruntime` = *pass* de l'stride. Triar el `vruntime` mínim = triar el *pass* mínim. La diferència: CFS mesura temps real executat (en nanosegons), no quanta.
+:::
+
+## `vruntime` i pesos
+
+Cada vegada que un procés s'executa durant $\Delta t$:
+
+$$v_i \mathrel{+}= \Delta t \cdot \frac{1024}{w_i}$$
+
+-   El `vruntime` **només avança mentre el procés s'executa**: dormint o esperant no canvia.
+-   1024 és el pes de `nice` 0: per a un procés de `nice` 0, el `vruntime` avança com el temps real.
+
+::: nonincremental
+| `nice` | −10 | −5 | 0 | 1 | 5 | 10 | 19 |
+|:------:|:---:|:--:|:-:|:-:|:-:|:--:|:--:|
+| Pes $w$ | 9548 | 3121 | **1024** | 820 | 335 | 110 | 15 |
+| $1024/w$ | 0.11 | 0.33 | **1** | 1.25 | 3.06 | 9.31 | 68.3 |
+:::
+
+-   Cada nivell de `nice` multiplica el pes per ≈ 1.25: **≈ 10 % de CPU** respecte d'un veí.
+
+::: {.errorcomu title="Els factors no són lineals"}
+`nice` 5 **no** fa avançar el `vruntime` el doble de ràpid: el fa avançar **3.06** vegades més ràpid. Feu servir sempre la taula de pesos.
+:::
+
+## CFS: exemple
+
+- A (`nice` 0, $w = 1024$)
+- B (`nice` 5, $w = 335$). 
+- Model simplificat: es decideix a cada tick d'1 ms; empats, A.
+
+:::{.fragment}
+::: nonincremental
+| Tick | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 |
+|------|---|---|---|---|---|---|---|---|---|---|----|----|
+| $v_A$ | 0 | 1 | 1 | 2 | 3 | 4 | 4 | 5 | 6 | 7 | 7 | 8 |
+| $v_B$ | 0 | 0 | 3.06 | 3.06 | 3.06 | 3.06 | 6.11 | 6.11 | 6.11 | 6.11 | 9.17 | 9.17 |
+| Executa | A | B | A | A | A | B | A | A | A | B | A | A |
+:::
+:::
+
+-   En 12 ticks: A en rep 9 (75 %) i B 3 (25 %).
+-   Ideal: $\frac{1024}{1024+335} = 75.4\,\%$ i $\frac{335}{1024+335} = 24.6\,\%$.
+
+:::{.concepte .fragment}
+CFS no assigna prioritats dinàmiques com O(1), sinó que utilitza un comptador que permet comparar el servei rebut per cada procés.
+:::
+
+## CFS: quant temps s'executa cada procés?
+
+CFS no té un quantum fix. Fixa un **període** (latència objectiu) i el reparteix proporcionalment:
+
+$$\text{slice}_i = \text{període} \cdot \frac{w_i}{\sum_j w_j}, \qquad \text{període} = \max\!\left(\text{sched_latency},\ n \cdot \text{min_granularity}\right)$$
+
+
+
+:::{.columns}
+:::: {.column width="50%"}
+
+- **sched_latency**: latència objectiu per donar oportunitat d'execució als processos.
+- **min_granularity**: temps mínim d'execució.
+- **n**: nombre de processos preparats.
+
+-   Valors base: `sched_latency` = 6 ms i `min_granularity` = 0.75 ms (el kernel els escala segons el nombre de CPU).
+
+:::{.idea .fragment}
+Amb molts processos, el període creix: cap *slice* baixa de `min_granularity`, per limitar els canvis de context.
+:::
+
+:::
+::: {.column width="50%"}
+
+:::{.exemple .fragment}
+- Assumeix 1 CPU, amb tres processos (A,B,C) amb `nice` 0, 0 i 5
+- **A**:  $\frac{1024}{1024+1024+335} \dot 6ms$ = **2.58**
+- **B**:  $\frac{1024}{1024+1024+335} \dot 6ms$ = **2.58**
+- **C**:  $\frac{335}{1024+1024+335} \dot 6ms$ = **0.84**
+:::
+
+
+
+:::
+:::
+
+## Processos nous i processos que es desperten
+
+::: {.reflexio title="El problema del pass 0 de l'stride"}
+Si un procés nou comencés amb `vruntime` = 0, executaria fins a atrapar tots els altres.
+:::
+
+-   CFS manté `min_vruntime`: el mínim de la cua, que **mai no decreix**.
+-   **Procés nou**: comença a `min_vruntime` i, a més, se li suma un *slice* (`START_DEBIT`): s'incorpora al final de la ronda.
+-   **Procés que es desperta**: $v_i = \max\left(v_i,\ \text{min_vruntime} - \tfrac{\text{sched_latency}}{2}\right)$. Rep un **crèdit acotat** per haver dormit, no tot el temps que ha dormit.
+
+:::{.definicio .fragment title="min_vruntime"}
+És una referència global del progrés dels processos de la cua de planificació. Representa el valor mínim de vruntime i serveix per evitar que els processos nous o que es desperten comencin en una posició excessivament avantatjosa.
+:::
+
+::: {.errorcomu title="Un procés nou no té vruntime = 0" .fragment}
+Si fos així, n'hi hauria prou amb fer `fork()` repetidament per monopolitzar la CPU.
+:::
+
+## La limitació de fons de CFS
+
+-   A CFS, el **pes** decideix dues coses alhora:
+    -   **quanta** CPU rep un procés (la seva fracció);
+    -   **amb quina freqüència** la rep (el seu *slice* i la seva posició a l'arbre).
+-   Un procés interactiu que necessita **poca CPU però molt sovint** (àudio, interfície) no ho pot demanar.
+-   Les úniques sortides són **pujar-li el pes** (rep més CPU de la que necessita) o confiar en **heurístiques** de despertar (crèdit per dormir, preempció en despertar-se).
+
+::: {.concepte title="El que voldríem" .fragment}
+Dos paràmetres independents: el **pes** (quanta CPU) i la **mida de la petició** (cada quant temps). És exactament el que separa WF²Q: el pes del flux i la mida dels paquets.
+:::
+
+# EEVDF
+
+## EEVDF: Earliest Eligible Virtual Deadline First
+
+Stoica i Abdel-Wahab (1995). Linux el fa servir des de la 6.6 (completat a la 6.12).
+
+-   Cada procés té un **pes** $w_i$ i fa **peticions** de CPU de mida $r_i$ (el *slice*).
+-   Temps virtual del sistema: $\dfrac{dV}{dt} = \dfrac{1}{\sum_{j \in A(t)} w_j}$.
+-   Per a cada petició: **temps virtual elegible** $ve_i$ i **deadline virtual** $vd_i$.
+
+:::{.fragment}
+$$vd_i = ve_i + \frac{r_i}{w_i}$$
+:::
+
+::: {.definicio title="Regla d'EEVDF" .fragment}
+Un procés és **elegible** si $ve_i \le V(t)$. D'entre els elegibles, s'executa el de **$vd$ mínim**.
+:::
+
+-   És **WF²Q** amb peticions de CPU en lloc de paquets: $ve$ ↔ $S$, $vd$ ↔ $F$.
+
+::: notes
+**Temps: 2'.** Feu la correspondència amb 04c en veu alta: $S_i^k = \max(F_i^{k-1}, V(a))$ és el $ve$; $F = S + L/w$ és el $vd = ve + r/w$. La regla d'elegibilitat és la de WF²Q.
+
+Ara els dos paràmetres que buscàvem són independents: $w$ decideix la fracció (com de ràpid avança $ve$ al llarg del temps) i $r$ decideix com de lluny queda el deadline (com aviat serà triat).
+:::
+
+## Lag i elegibilitat
+
+$$
+\operatorname{lag}_i(t)
+=
+\underbrace{S_i^{\mathrm{ideal}}(t)}_{\text{servei a la CPU ideal}}
+-
+\underbrace{s_i(t)}_{\text{servei rebut}}
+$$
+
+-   **Elegible** ($ve_i \le V$) ⟺ $\text{lag}_i \ge 0$: el procés ha rebut **com a molt** el que li toca.
+-   Un procés que ha rebut **més** del que li toca ($\text{lag} < 0$) ha d'esperar, encara que tingui el deadline més proper.
+-   El lag de cada procés queda **acotat** per la mida de la petició més gran (i del quantum). **Justícia amb garantia**, sense heurístiques.
+
+## Convenis per als exercicis
+
+::: nonincremental
+| Situació | Regla |
+|----------|-------|
+| Ritme del temps virtual | $dV/dt = 1/\sum w_{\text{actius}}$ |
+| Arribada d'un procés a l'instant $t$ | $ve = V(t)$ |
+| Nova petició en acabar-ne una | $ve_{nou} = vd_{anterior}$ |
+| Deadline | $vd = ve + r/w$ |
+| Elecció | $vd$ mínim entre els que tenen $ve \le V(t)$ |
+:::
+
+-   La CPU s'assigna en quanta d'1 tick: a cada tick es torna a decidir.
+-   Cada procés consumeix exactament el temps que demana.
+
+::: {.examtip title="Abans de triar, comprova l'elegibilitat" .fragment}
+L'error més freqüent és triar directament el $vd$ mínim. Primer descarta els processos amb $ve > V(t)$.
+:::
+
+## EEVDF: Exercici I
+
+Suposa:
+
+- **A** ($w = 1$, $r = 1$)
+- **B** ($w = 3$, $r = 1$) 
+- **A** i **B** arriben a $t = 0$ 
+- Fan peticions contínuament. 
+- Empats: B.
+
+Fes la planificació de $t=0$ fins a $t=5$.
+
+## EEVDF: exemple tipus examen
+
+A ($w = 1$, $r = 1$) i B ($w = 3$, $r = 1$) arriben a $t = 0$ i fan peticions contínuament. Empats: B.
+
+::: nonincremental
+| $t$ | $V$ | A: $ve$ | A: $vd$ | B: $ve$ | B: $vd$ | Elegibles | Executa |
+|:---:|:---:|:-------:|:-------:|:-------:|:-------:|:---------:|:-------:|
+| 0 | 0 | 0 | 1 | 0 | 1/3 | A, B | B |
+| 1 | 1/4 | 0 | 1 | 1/3 | 2/3 | **A** | **A** |
+| 2 | 1/2 | 1 | 2 | 1/3 | 2/3 | B | B |
+| 3 | 3/4 | 1 | 2 | 2/3 | 1 | B | B |
+| 4 | 1 | 1 | 2 | 1 | 4/3 | A, B | B |
+| 5 | 5/4 | 1 | 2 | 4/3 | 5/3 | **A** | **A** |
+:::
+
+-   A $t = 1$, B té el deadline més proper (2/3 < 1), però **no és elegible** ($1/3 > 1/4$): s'executa A.
+-   En 4 ticks, B en rep 3 i A 1: exactament $3 : 1$.
+
+## La mida de la petició decideix la latència
+
+Mateix pes, peticions diferents. B (càlcul, $r = 4$ ms) s'està executant: $ve_B = 8$, $vd_B = 12$. A $V = 10$ es desperta A, amb lag 0: $ve_A = V = 10$.
+
+::: nonincremental
+| Petició d'A | $vd_A = 10 + r_A$ | Comparació amb $vd_B = 12$ | Què passa |
+|:-----------:|:-----------------:|:--------------------------:|-----------|
+| $r_A = 1$ ms | 11 | 11 < 12 | **A va primer** |
+| $r_A = 4$ ms | 14 | 14 > 12 | A espera que B acabi la petició |
+:::
+
+-   Tots dos reben la **mateixa fracció** de CPU (mateix pes): la mida de la petició només canvia **quan** la reben.
+-   Un procés que demana peticions curtes obté **poca latència sense rebre més CPU**: el que CFS no podia oferir.
+
+## Del paper al kernel
+
+::: nonincremental
+| Paper | Kernel de Linux (6.6+) |
+|-------|------------------------|
+| $V(t)$ integrat | Mitjana dels `vruntime` ponderada pels pesos (`avg_vruntime`) |
+| $ve_i$ | `vruntime` del procés; elegible si `vruntime` $\le V$ |
+| $vd_i = ve_i + r_i/w_i$ | `deadline` = `vruntime` + *slice* $\cdot 1024/w_i$ |
+| Mida de la petició $r_i$ | *Slice*: per defecte ≈ 0.75 ms (escalat segons el nombre de CPU) |
+| Arribada amb $ve = V$ | Un procés nou comença a `avg_vruntime` (lag 0) |
+| Lag conservat en dormir | El lag es guarda en dormir i es restaura en despertar (acotat) |
+:::
+
+-   Des de la 6.12, un procés pot demanar la seva pròpia mida de petició amb `sched_setattr()` (camp `sched_runtime`, entre 0.1 i 100 ms).
+
+## CFS i EEVDF, cara a cara
+
+::: nonincremental
+| | CFS | EEVDF |
+|---|-----|-------|
+| Model | Repartiment proporcional (stride) | Repartiment proporcional + deadlines (WF²Q) |
+| Tria | `vruntime` mínim | Deadline virtual mínim entre els **elegibles** |
+| Quanta CPU | Pes | Pes |
+| Cada quant | Pes (i heurístiques de despertar) | **Mida de la petició** |
+| Justícia | Sense cota formal | **Lag acotat** |
+| Processos que dormen | Crèdit de mitja latència | Es conserva el **lag** |
+:::
+
+::: {.errorcomu title="EEVDF no és temps real" .fragment}
+EEVDF continua sent un planificador de repartiment proporcional per a processos normals. Les garanties de temps real a Linux són `SCHED_FIFO`, `SCHED_RR` i `SCHED_DEADLINE`.
+:::
+
+# Linux avui
+
+## Classes de planificació
+
+Quan el kernel ha de triar, pregunta a les classes per ordre. La primera que té un procés preparat, guanya.
+
+::: nonincremental
+| Ordre | Classe | Polítiques |
+|:-----:|--------|-----------|
+| 1 | stop | Fils interns del kernel (migració entre CPU) |
+| 2 | deadline | `SCHED_DEADLINE` |
+| 3 | rt | `SCHED_FIFO`, `SCHED_RR` |
+| 4 | fair | `SCHED_OTHER` (= `SCHED_NORMAL`), `SCHED_BATCH`, `SCHED_IDLE` → **CFS / EEVDF** |
+| 5 | ext | `SCHED_EXT` (6.12+, planificadors en BPF) |
+| 6 | idle | Fil ociós de la CPU |
+:::
+
+-   **Debian bookworm** (kernel 6.1): la classe *fair* és **CFS**.
+-   **Debian trixie** (kernel 6.12): la classe *fair* és **EEVDF**, i hi ha `sched_ext`.
+
+## Resum
+
+::: {.resum}
+-   **O(1)**: 140 cues, quantum segons `nice` i prioritat dinàmica per heurística. És una MLFQ i en té els problemes.
+-   **CFS**: repartiment proporcional. $v_i \mathrel{+}= \Delta t \cdot 1024/w_i$ només mentre s'executa; tria el `vruntime` mínim; els nous comencen a `min_vruntime`.
+-   La limitació de CFS: el **pes** decideix alhora quanta CPU i cada quant.
+-   **EEVDF**: WF²Q per a la CPU. Elegible si $ve \le V$; tria el $vd = ve + r/w$ mínim. El pes decideix la fracció; la **mida de la petició**, la latència. Lag acotat.
+-   Debian bookworm té CFS; trixie, EEVDF i `sched_ext`.
+:::
+
