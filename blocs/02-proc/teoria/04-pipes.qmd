@@ -8,15 +8,16 @@ format:
     theme: [simple, ../../../_extensions/udl-course/styles/revealjs.scss, ../../../styles/slides.scss]
     filters: [../../../_extensions/udl-course/components.lua]
     transition: fade
-    slide-number: true
+    slide-number: false
     incremental: true
     chalkboard: false
+    menu: false
+    controls: false
     slide-level: 2
     width: 1600
     height: 900
     margin: 0.08
     center: false
-    footer: 'Sistemes Operatius (SO) &nbsp; <a href="/index.html" class="home-link" aria-label="Inici"><svg class="home-icon" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 52 C27 43 39 31 60 12 C78 30 93 42 108 51" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M25 48 C25 64 25 76 24 87 C35 84 45 85 53 87 M95 48 C95 64 95 76 97 87 C87 84 77 85 68 87" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M51 87V70 C51 64 55 60 60 60 C65 60 69 64 69 70V87Z" fill="currentColor"/><path d="M82 29V17 C82 14 84 13 87 13H94 C96 13 97 15 96 17 C94 20 93 24 94 32Z" fill="currentColor"/></svg></a>'
 
 ---
 
@@ -25,7 +26,7 @@ format:
 Les pipes es poden implementar com a buffers circulars basats en memòria assignada pel sistema operatiu. Aquestes pipes es coneixen com a pipes sense nom i són transitòries. Una pipe *sense nom* deixa d'existir quan tots els processos que la tenen assiganda **acaben** o **tanquen** els seus descriptors associats a la pipe.
 
 ::: {style="text-align:center"}
-![](figures/04/pipe.png){width="30%"}
+![Comunicació entre processos mitjançant canonades (pipes) i descriptors de fitxer](figures/04/pipe.png){width="30%" fig-alt="Comunicació entre processos mitjançant canonades (pipes) i descriptors de fitxer"}
 :::
 
 Els pipes es creen en el moment que s'obren mitjançant la crida a sistema `pipe()` *(unistd.h)* o amb la sintaxis `|`.
@@ -47,19 +48,19 @@ RETORNA:  0 on success
 ## Comunicació unidireccional (I)
 
 ::: {style="text-align:center"}
-![](figures/04/pipe0.png)
+![](figures/04/pipe0.png){fig-alt="Esquema sobre pipe0 (04-pipes)"}
 :::
 
 ## Comunicació unidireccional (II)
 
 ::: {style="text-align:center"}
-![](figures/04/pipe1.png)
+![](figures/04/pipe1.png){fig-alt="Esquema sobre pipe1 (04-pipes)"}
 :::
 
 ## Comunicació unidireccional (III)
 
 ::: {style="text-align:center"}
-![](figures/04/pipe2.png){width="65%"}
+![](figures/04/pipe2.png){width="65%" fig-alt="Esquema sobre pipe2 (04-pipes)"}
 :::
 
 ## Comunicació unidireccional (IV)
@@ -98,13 +99,13 @@ void main(){
 ::: {.column width="45%"}
 ### Pipe 1
 
-![](figures/04/pipe-bi-1.png)
+![](figures/04/pipe-bi-1.png){fig-alt="Esquema sobre pipe bi 1 (04-pipes)"}
 :::
 
 ::: {.column width="45%"}
 ### Pipe2
 
-![](figures/04/pipe-bi-2.png)
+![](figures/04/pipe-bi-2.png){fig-alt="Esquema sobre pipe bi 2 (04-pipes)"}
 :::
 :::::
 
@@ -284,7 +285,7 @@ exit(EXIT_SUCCESS);
 Per utilitzar *pipes* amb la crida a sistema *exec* i simular el comportament del sistema operatiu quan interactuem amb la *shell*, necessitem redireccionar la sortida i l'entrada de la pipe a *descriptors de fitxers* predefinits assignats a cada procés.
 
 ::: {style="text-align:center"}
-![](figures/04/red_pipe.png){width="55%"}
+![](figures/04/red_pipe.png){width="55%" fig-alt="Esquema sobre red pipe (04-pipes)"}
 :::
 
 -   Tancant els descriptors estàndard.
@@ -303,7 +304,7 @@ int dup2(int fdold, int fdnew)
 ## Exemple a linux: `ls | wc -l` (I)
 
 :::{style="text-align:center"}
-![](figures/04/ls-wc.png){width="80%"}
+![](figures/04/ls-wc.png){width="80%" fig-alt="Esquema sobre ls wc (04-pipes)"}
 :::
 
 ## Exemple a linux: `ls | wc -l` (II) 
@@ -315,7 +316,7 @@ int dup2(int fdold, int fdnew)
 
 ## Exemple a linux: `ls | wc -l` (III)
 
-![](figures/04/ls-wc2.png)
+![](figures/04/ls-wc2.png){fig-alt="Esquema sobre ls wc2 (04-pipes)"}
 
 ## Implementació amb C `ls | wc -l` 
 

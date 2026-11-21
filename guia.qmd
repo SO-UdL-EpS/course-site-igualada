@@ -1,0 +1,99 @@
+---
+title: "Guia docent"
+subtitle: "Objectius, metodologia, programa temàtic, normativa d'avaluació i recursos de Sistemes Operatius (105012)"
+format:
+  udl-course-html:
+    toc: true
+    toc-depth: 3
+---
+
+```{=html}
+<div class="udl-guide-actions">
+  <a class="udl-btn udl-btn-primary" href="https://guiadocent.udl.cat/html/2026-27_105012" target="_blank" rel="noopener">Guia docent oficial UdL ↗</a>
+  <a class="udl-btn udl-btn-secondary" href="course-info/presentation-slides.html">Obrir diapositives de presentació</a>
+  <a class="udl-btn udl-btn-secondary" href="downloads/pdf/SO-Info-Presentacio-del-curs.pdf" download="SO-Info-Presentacio-del-curs.pdf">Descarrega presentació (PDF)</a>
+  <a class="udl-btn udl-btn-ghost" href="calculadora.html">Simulador de qualificació</a>
+</div>
+```
+
+## Dades generals de l'assignatura
+
+| Camp | Informació |
+|:---|:---|
+| **Assignatura** | Sistemes Operatius (Codi `105012`) |
+| **Titulació** | Grau en Enginyeria Informàtica (Campus Igualada) |
+| **Curs i semestre** | 2n curs · 1r semestre · Curs acadèmic 2026–27 |
+| **Departament** | Departament d'Enginyeria Informàtica i Disseny Digital (Universitat de Lleida) |
+| **Professor responsable** | Dr. Jordi Mateo Fornés ([jordi.mateo@udl.cat](mailto:jordi.mateo@udl.cat)) |
+| **Requisits previs recomanats** | Estructura de Computadors I · Programació I · Programació II |
+
+## Objectius d'aprenentatge
+
+1. **Comprendre l'arquitectura dels sistemes operatius**: analitzar com s'estructuren internament i quins subsistemes els formen (processos, planificació, memòria, entrada/sortida i sistema de fitxers).
+2. **Conèixer els serveis del sistema**: identificar les abstraccions i garanties que l'espai de nucli ofereix a les aplicacions i als usuaris (el sistema operatiu com a *il·lusionista*, *àrbitre* i *pega*).
+3. **Programar a nivell de sistema en C**: utilitzar la interfície POSIX i les crides al sistema en entorns Unix/Linux (**Debian**) amb gestió rigorosa de la memòria, els processos i la comunicació entre processos.
+4. **Avaluar críticament les polítiques de gestió de recursos**: mesurar i comparar algorismes de planificació de CPU, tècniques d'assignació de memòria i mecanismes de sincronització.
+
+## Metodologia docent
+
+L'assignatura combina tres modalitats de treball complementàries:
+
+- **Sessions de teoria (4 h / setmana — dilluns 2 h, dimarts 1 h i dimecres 1 h, tots els grups junts)**: presentació interactiva dels conceptes fonamentals, discussió de casos pràctics en C i preparació directa per a les proves escrites i competencials.
+- **Sessions de laboratori / Pralabs (2 h / setmana per grup de laboratori)**: activitats pràctiques guiades (*Hands-On* i *CodeLabs*) sobre una màquina de referència Linux per consolidar la programació en C, l'ús del depurador GDB, l'anàlisi amb Valgrind i la construcció d'una *minishell*.
+- **Treball autònom**: resolució de les col·leccions de problemes de cada bloc, lectura de documentació tècnica i pàgines de manual (`man`), i preparació continuada de les proves competencials.
+
+## Programa temàtic
+
+| Bloc | Títol | Continguts essencials |
+|:---|:---|:---|
+| **Bloc 1** | Desenvolupament de Programari en Espai d'Usuari | Rols i funcions del SO, mode usuari i mode nucli, espai de memòria d'un procés (`text`, `data`, `bss`, `heap`, `stack`), marcs d'activació i ABI de registres, compilació i enllaçat en C, estructures, punters i camí complet de les crides al sistema (`syscall`). |
+| **Bloc 2** | Execució i Comunicació de Processos | Model d'estats d'un procés i PCB (`task_struct`), creació i control (`fork`, `exec`, `wait`, processos zombis i orfes), senyals POSIX (`kill`, `sigaction`, màscares), redirecció de descriptors (`dup2`) i canonades (`pipe` i `mkfifo`). |
+| **Bloc 3** | Planificació i Coordinació de Recursos | Criteris i mètriques de planificació, polítiques no apropiatives i apropiatives (`FCFS`, `SJF`, `SRTF`, `Round Robin`, prioritats i *aging*), cues multinivell (`MLQ`, `MLFQ`) i planificació a Linux. |
+| **Bloc 4** | Gestió de Memòria i Memòria Virtual | Organització de la memòria, assignació i protecció, memòria virtual, paginació sota demanda i algorismes de reemplaçament de pàgines. |
+| **Bloc 5 / 7** | Automatització en Shell i Espai de Nucli | Intèrpret d'ordres Bash, variables d'entorn, expansions, estructures de control, automatització d'administració i introducció als mecanismes d'extensió i instrumentació del nucli Linux. |
+
+## Sistema d'avaluació i qualificació
+
+L'avaluació és **individual** i es basa en dues proves teòriques escrites (`T1`, `T2`), quatre proves competencials pràctiques de laboratori (`P1`–`P4`) i una bonificació opcional per contribucions als materials docents oberts (`B`):
+
+| Codi | Activitat d'avaluació | Ponderació | Recuperable | Dates (G1 / G2) |
+|:---|:---|:---:|:---:|:---|
+| **T1** | Examen Escrit Teòric 1 | **25%** | Sí | Calendari oficial EPS |
+| **T2** | Examen Escrit Teòric 2 | **25%** | Sí | Calendari oficial EPS |
+| **P1** | Examen Competencial Pràctic 1 | **15%** | No | G1: `29/09/2026` · G2: `30/09/2026` |
+| **P2** | Examen Competencial Pràctic 2 | **15%** | No | G1: `20/10/2026` · G2: `21/10/2026` |
+| **P3** | Examen Competencial Pràctic 3 | **10%** | No | G1: `17/11/2026` · G2: `18/11/2026` |
+| **P4** | Examen Competencial Pràctic 4 | **10%** | No | G1: `22/12/2026` · G2: `23/12/2026` |
+| **B** | Contribucions als materials oberts | **Fins a +0,5 p** | No | Durant tot el quadrimestre |
+
+### Fórmula de la nota final
+
+$$
+NF = \min(0.25\,T_1 + 0.25\,T_2 + 0.15\,P_1 + 0.15\,P_2 + 0.10\,P_3 + 0.10\,P_4 + B,\; 10)
+$$
+
+- **Criteri de superació**: cal obtenir una nota final $NF \ge 5,0$ sobre $10$.
+- **Sense nota mínima parcial**: no s'estableix cap nota mínima en cap activitat d'avaluació individual per promitjar.
+- **Normativa dels exàmens teòrics (`T1` i `T2`)**: proves escrites individuals i presencials. Es permet portar **un únic full DIN A4 escrit exclusivament a mà pel mateix estudiant** per totes dues cares (s'entrega amb l'examen). No es permet cap dispositiu electrònic ni calculadora.
+- **Normativa de recuperació**: `T1` i `T2` es poden recuperar de manera independent durant la setmana de recuperació. **La qualificació obtinguda a la prova de recuperació substitueix íntegrament la nota original**.
+- **Normativa dels exàmens competencials pràctics (`P1`–`P4`)**: proves individuals als laboratoris del centre en un entorn controlat (**QEMU** sense connexió a Internet), utilitzant les eines i els manuals (`man`) locals del sistema. No són recuperables.
+
+## Ús d'Intel·ligència Artificial Generativa i integritat acadèmica
+
+- **Ús formatiu permès**: les eines d'IAG es poden emprar durant l'estudi autònom per aclarir conceptes, explorar estratègies de resolució o depurar exemples. L'estudiant és responsable de comprendre i validar qualsevol resposta; quan una activitat ho permeti, cal declarar explícitament les parts afectades i els *prompts* utilitzats.
+- **Ús no permès**: presentar com a propi codi generat per IAG sense comprensió, o utilitzar eines no autoritzades durant una prova d'avaluació, es considera **frau acadèmic** i s'aplicarà la normativa sancionadora vigent de la Universitat de Lleida.
+
+## Entorn de programari i bibliografia
+
+### Programari de referència
+
+- **Sistema operatiu i virtualització**: **Debian 13** / **Ubuntu 24.04** sobre **QEMU** (entorn oficial de les proves competencials; VirtualBox o VMware són vàlids per treballar a casa).
+- **Compilació, depuració i control de versions**: `GCC`, `GDB`, `Valgrind`, `GNU Make`, `strace`, `Git` i editor de terminal (`NeoVim` / `vim` / `nano`) o `VS Code`.
+
+### Bibliografia bàsica
+
+- **Andrew S. Tanenbaum, Herbert Bos**. *Modern Operating Systems*, 5a edició, Pearson, 2023.
+- **Remzi H. Arpaci-Dusseau, Andrea C. Arpaci-Dusseau**. *Operating Systems: Three Easy Pieces (OSTEP)*, Arpaci-Dusseau Books.
+- **Michael Kerrisk**. *The Linux Programming Interface*, No Starch Press.
+- **Greg Kroah-Hartman**. *Linux Kernel in a Nutshell*, O'Reilly Media.
+- **Tutoria per correu electrònic**: [jordi.mateo@udl.cat](mailto:jordi.mateo@udl.cat) indicant a l'assumpte `Sistemes Operatius (SO) - [Tema/Bloc] - [Breu descripció del dubte]`.

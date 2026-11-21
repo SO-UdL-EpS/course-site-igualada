@@ -8,20 +8,21 @@ format:
     theme: [simple, ../../../_extensions/udl-course/styles/revealjs.scss, ../../../styles/slides.scss]
     filters: [../../../_extensions/udl-course/components.lua]
     transition: fade
-    slide-number: true
+    slide-number: false
     incremental: true
     chalkboard: false
+    menu: false
+    controls: false
     slide-level: 2
     width: 1600
     height: 900
     margin: 0.08
     center: false
-    footer: 'Sistemes Operatius (SO) &nbsp; <a href="/index.html" class="home-link" aria-label="Inici"><svg class="home-icon" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 52 C27 43 39 31 60 12 C78 30 93 42 108 51" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M25 48 C25 64 25 76 24 87 C35 84 45 85 53 87 M95 48 C95 64 95 76 97 87 C87 84 77 85 68 87" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M51 87V70 C51 64 55 60 60 60 C65 60 69 64 69 70V87Z" fill="currentColor"/><path d="M82 29V17 C82 14 84 13 87 13H94 C96 13 97 15 96 17 C94 20 93 24 94 32Z" fill="currentColor"/></svg></a>'
     include-in-header:
       - text: |
           <link rel="stylesheet"
-                href="https://cdn.jsdelivr.net/npm/asciinema-player@3.9.0/dist/bundle/asciinema-player.css">
-          <script src="https://cdn.jsdelivr.net/npm/asciinema-player@3.9.0/dist/bundle/asciinema-player.min.js"></script>
+                href="../../../assets/vendor/asciinema/asciinema-player.css">
+          <script src="../../../assets/vendor/asciinema/asciinema-player.min.js"></script>
 resources:
   - cast/04_construccio_programa/gcc-make-demo.cast
 ---
@@ -93,21 +94,21 @@ No donar encara la resposta.
 :::{.columns}
 :::: {.column width="25%"}
 
-![](figures/04_construccio_programa/compilar1.png)
+![](figures/04_construccio_programa/compilar1.png){fig-alt="Esquema sobre compilar1 (04_construccio_progama_c)"}
 
 :::
 :::: {.column width="25%" .fragment}
 
-![](figures/04_construccio_programa/compilar2.png)
+![](figures/04_construccio_programa/compilar2.png){fig-alt="Esquema sobre compilar2 (04_construccio_progama_c)"}
 
 :::
 :::: {.column width="25%" .fragment}
 
-![](figures/04_construccio_programa/compilar3.png)
+![](figures/04_construccio_programa/compilar3.png){fig-alt="Esquema sobre compilar3 (04_construccio_progama_c)"}
 
 :::
 :::: {.column width="25%" .fragment}
-![](figures/04_construccio_programa/compilar4.png)
+![](figures/04_construccio_programa/compilar4.png){fig-alt="Esquema sobre compilar4 (04_construccio_progama_c)"}
 :::
 :::
 
@@ -134,7 +135,7 @@ Quan diem informalment *compilar un programa*, estem agrupant diverses etapes di
 ## El pipeline
 
 :::{style="text-align:center;"}
-![](figures/04_construccio_programa/pipeline.png)
+![](figures/04_construccio_programa/pipeline.png){fig-alt="Esquema sobre pipeline (04_construccio_progama_c)"}
 :::
 
 ::: {.concepte}
@@ -171,7 +172,7 @@ Què significa realment aquest `#include`?
 :::{.columns }
 ::: {.column width="35%"}
 
-![](figures/04_construccio_programa/include1.png)
+![](figures/04_construccio_programa/include1.png){fig-alt="Esquema sobre include1 (04_construccio_progama_c)"}
 
 ---
 
@@ -255,7 +256,7 @@ Perquè diversos fitxers poden utilitzar una funció sense haver-ne de copiar la
 ## Un programa pot tenir molts fitxers
 
 :::{style="text-align:center;"}
-![](figures/04_construccio_programa/manyfiles.png){width=60%}
+![](figures/04_construccio_programa/manyfiles.png){width=60% fig-alt="Esquema sobre manyfiles (04_construccio_progama_c)"}
 :::
 
 
@@ -268,7 +269,7 @@ Hem de compilar-ho tot com un únic fitxer?
 ## Compilació separada
 
 :::{style="text-align:center;"}
-![](figures/04_construccio_programa/manyfiles2.png){width=60%}
+![](figures/04_construccio_programa/manyfiles2.png){width=60% fig-alt="Esquema sobre manyfiles2 (04_construccio_progama_c)"}
 :::
 
 
@@ -281,7 +282,7 @@ La **compilació separada** permet compilar cada fitxer `.c` independentment i o
 ::::: {.columns}
 ::: {.column width="50%"}
 
-![](figures/04_construccio_programa/o.png)
+![](figures/04_construccio_programa/o.png){fig-alt="Esquema sobre o (04_construccio_progama_c)"}
 
 
 :::
@@ -323,7 +324,7 @@ main.c  main.o  mathutils.c  mathutils.h  mathutils.o
 gcc main.o mathutils.o -o programa
 ```
 
-![](figures/04_construccio_programa/linker.png)
+![](figures/04_construccio_programa/linker.png){fig-alt="Esquema sobre linker (04_construccio_progama_c)"}
 
 ::: {.reflexio}
 Quina cosa nova ha hagut de fer el linker, que `gcc -c` no feia?
@@ -343,7 +344,7 @@ int main(void)
 }
 ```
 
-![](figures/04_construccio_programa/linker2.png)
+![](figures/04_construccio_programa/linker2.png){fig-alt="Esquema sobre linker2 (04_construccio_progama_c)"}
 
 ::: {.concepte}
 `main.o` sap que existeix `suma`, però no necessàriament on estarà definitivament el seu codi dins de l'executable. `mathutils.o` **proporciona** `suma`.
@@ -354,7 +355,7 @@ int main(void)
 ## Símbols
 
 :::{style="text-align:center;"}
-![](figures/04_construccio_programa/linker3.png){width=60%}
+![](figures/04_construccio_programa/linker3.png){width=60% fig-alt="Esquema sobre linker3 (04_construccio_progama_c)"}
 :::
 
 ::: {.concepte}
@@ -438,7 +439,7 @@ Si `printf` no està implementada a `main.c`, d'on surt?
 ::::: {.columns}
 ::: {.column width="50%"}
 
-![](figures/04_construccio_programa/llibreria.png)
+![](figures/04_construccio_programa/llibreria.png){fig-alt="Esquema sobre llibreria (04_construccio_progama_c)"}
 
 :::
 ::: {.column width="50%"}
@@ -460,7 +461,7 @@ double x = sqrt(25.0);
 ::::: {.columns}
 ::: {.column width="50%"}
 
-![](figures/04_construccio_programa/h_vs_lib.png)
+![](figures/04_construccio_programa/h_vs_lib.png){fig-alt="Esquema sobre h vs lib (04_construccio_progama_c)"}
 
 :::
 ::: {.column width="50%"}
@@ -497,7 +498,7 @@ Es pot utilitzar `-L` que permet indicar al linker directoris addicionals on bus
 ## Llibreries estàtiques i dinàmiques
 
 :::{style="text-align:center;"}
-![](figures/04_construccio_programa/static_vs_shared.png){width="70%"}
+![](figures/04_construccio_programa/static_vs_shared.png){width="70%" fig-alt="Esquema sobre static vs shared (04_construccio_progama_c)"}
 :::
 
 ::: {.concepte}
@@ -575,7 +576,7 @@ programa: main.o mathutils.o
 
 :::{style="text-align:center;"}
 
-![](figures/04_construccio_programa/dependencies.png){width="50%"}
+![](figures/04_construccio_programa/dependencies.png){width="50%" fig-alt="Esquema sobre dependencies (04_construccio_progama_c)"}
 
 :::
 
@@ -779,13 +780,13 @@ AsciinemaPlayer.create(
 ## El mapa complet
 
 :::{style="text-align:center;"}
-![](figures/04_construccio_programa/resum.png){width="50%"}
+![](figures/04_construccio_programa/resum.png){width="50%" fig-alt="Esquema sobre resum (04_construccio_progama_c)"}
 :::
 
 ## Connexió amb la sessió de memòria
 
 :::{style="text-align:center;"}
-![](figures/04_construccio_programa/memproc.png){width="50%"}
+![](figures/04_construccio_programa/memproc.png){width="50%" fig-alt="Esquema sobre memproc (04_construccio_progama_c)"}
 :::
 
 ::: {.bonapractica}

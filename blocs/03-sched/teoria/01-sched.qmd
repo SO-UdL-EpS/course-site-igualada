@@ -7,20 +7,16 @@ format:
     theme: [simple, ../../../_extensions/udl-course/styles/revealjs.scss, ../../../styles/slides.scss]
     filters: [../../../_extensions/udl-course/components.lua]
     transition: fade
-    slide-number: true
+    slide-number: false
     incremental: true
     chalkboard: false
+    menu: false
+    controls: false
     slide-level: 2
     width: 1600
     height: 900
     margin: 0.08
     center: false
-    footer: 'Sistemes Operatius (SO) &nbsp; <a href="/index.html" class="home-link" aria-label="Inici"><svg class="home-icon" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 52 C27 43 39 31 60 12 C78 30 93 42 108 51" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M25 48 C25 64 25 76 24 87 C35 84 45 85 53 87 M95 48 C95 64 95 76 97 87 C87 84 77 85 68 87" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M51 87V70 C51 64 55 60 60 60 C65 60 69 64 69 70V87Z" fill="currentColor"/><path d="M82 29V17 C82 14 84 13 87 13H94 C96 13 97 15 96 17 C94 20 93 24 94 32Z" fill="currentColor"/></svg></a>'
-    include-in-header:
-      - text: |
-          <link rel="stylesheet"
-                href="https://cdn.jsdelivr.net/npm/asciinema-player@3.9.0/dist/bundle/asciinema-player.css">
-          <script src="https://cdn.jsdelivr.net/npm/asciinema-player@3.9.0/dist/bundle/asciinema-player.min.js"></script>
 ---
 
 ## Objectius de la sessió
@@ -65,7 +61,7 @@ Separar mecanisme i política és un principi de disseny de SO: podem canviar la
 
 Els processos alternen **ràfegues de CPU** (*bursts*) i **esperes d'E/S**.
 
-![](figures/01/cicle-burst.png){width="75%"}
+![](figures/01/cicle-burst.png){width="75%" fig-alt="Esquema sobre cicle burst (01-sched)"}
 
 -   **Limitat per CPU** (*CPU-bound*): poques ràfegues, llargues.
 -   **Limitat per E/S** (*I/O-bound*): moltes ràfegues, curtes.
@@ -77,7 +73,7 @@ Cada decisió de planificació és, de fet, una decisió sobre a qui donem la CP
 
 ## Per què cal planificar?
 
-![](figures/01/scheduling-intro-04.png){width="70%"}
+![](figures/01/scheduling-intro-04.png){width="70%" fig-alt="Esquema sobre scheduling intro 04 (01-sched)"}
 
 -   Amb **multiprogramació** hi ha diversos processos preparats a memòria i una sola CPU.
 -   Mentre un procés espera E/S, la CPU pot servir-ne un altre.
@@ -103,7 +99,7 @@ No. Però permeten raonar i comparar polítiques. Quan els trenquem (diversos fi
 
 ## Els quatre punts de decisió
 
-![](figures/01/scheduling-trigger-decision.png){width="70%"}
+![](figures/01/scheduling-trigger-decision.png){width="70%" fig-alt="Esquema sobre scheduling trigger decision (01-sched)"}
 
 ::: nonincremental
 1.  **Execució → Espera**: el procés demana E/S o fa `wait()`.
@@ -122,7 +118,7 @@ En els casos 1 i 4 el procés deixa la CPU voluntàriament: no hi ha opció, cal
 El SO pot **retirar la CPU** a un procés que encara la vol utilitzar, en els punts 2 i 3, normalment gràcies a la **interrupció de rellotge**.
 :::
 
-![](figures/01/scheduling-sched-preemption.png){width="55%"}
+![](figures/01/scheduling-sched-preemption.png){width="55%" fig-alt="Esquema sobre scheduling sched preemption (01-sched)"}
 
 -   **No apropiativa**: només es planifica als punts 1 i 4. Un procés conserva la CPU fins que es bloqueja o acaba.
 -   **Apropiativa**: millor temps de resposta i justícia, a canvi de més **canvis de context** i d'haver de protegir les dades del nucli.

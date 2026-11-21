@@ -8,15 +8,16 @@ format:
     theme: [simple, ../../../_extensions/udl-course/styles/revealjs.scss, ../../../styles/slides.scss]
     filters: [../../../_extensions/udl-course/components.lua]
     transition: fade
-    slide-number: true
+    slide-number: false
     incremental: true
     chalkboard: false
+    menu: false
+    controls: false
     slide-level: 2
     width: 1600
     height: 900
     margin: 0.08
     center: false
-    footer: 'Sistemes Operatius (SO) &nbsp; <a href="/index.html" class="home-link" aria-label="Inici"><svg class="home-icon" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 52 C27 43 39 31 60 12 C78 30 93 42 108 51" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M25 48 C25 64 25 76 24 87 C35 84 45 85 53 87 M95 48 C95 64 95 76 97 87 C87 84 77 85 68 87" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M51 87V70 C51 64 55 60 60 60 C65 60 69 64 69 70V87Z" fill="currentColor"/><path d="M82 29V17 C82 14 84 13 87 13H94 C96 13 97 15 96 17 C94 20 93 24 94 32Z" fill="currentColor"/></svg></a>'
 ---
 
 # Introducció
@@ -44,7 +45,7 @@ El món esta interconnectat per xarxes i informació que es genera i es processa
 :::
 
 ::: {.column width="60%"}
-![](figures/iot-context.jpg){width="85%"}
+![](figures/iot-context.jpg){width="85%" fig-alt="Esquema sobre iot context (01_rols_funcions)"}
 :::
 :::::
 
@@ -140,7 +141,7 @@ Cada iteració crea nous processos. Aquests processos també continuen executant
 Un **sistema operatiu (SO)** és el software que **gestiona els recursos del sistema**, **proporciona abstraccions del hardware** i **ofereix un entorn segur per executar programes**.
 :::
 
-![](figures/os-diagram.png)
+![](figures/os-diagram.png){fig-alt="Esquema sobre os diagram (01_rols_funcions)"}
 
 ## Què és un procés?
 
@@ -209,7 +210,7 @@ El programa no accedeix directament al dispositiu de sortida, sinó que crida a 
 :::
 
 ::: {.column width="50%"}
-![](figures/esquema1.png)
+![](figures/esquema1.png){fig-alt="Esquema sobre esquema1 (01_rols_funcions)"}
 :::
 :::::
 
@@ -236,7 +237,7 @@ El programa no accedeix directament al dispositiu de sortida, sinó que crida a 
 ::::
 
 ::: {.column width="50%"}
-![](figures/esquema2.png)
+![](figures/esquema2.png){fig-alt="Esquema sobre esquema2 (01_rols_funcions)"}
 :::
 ::::::
 
@@ -283,7 +284,7 @@ Què creieu que s'imprimirà?
 ## Anàlisi: què fa aquest programa? (II)
 
 ::: center
-![](figures/prog_A_B_Memory.png){width="80%"}
+![](figures/prog_A_B_Memory.png){width="80%" fig-alt="Esquema sobre prog A B Memory (01_rols_funcions)"}
 :::
 
 ::: {.fragment .concepte}
@@ -293,7 +294,7 @@ Cada execució del mateix programa genera un **procés diferent**, amb el seu pr
 ## Anàlisi: què fa aquest programa? (III)
 
 ::: center
-![](figures/prog_A_executing.png)
+![](figures/prog_A_executing.png){fig-alt="Esquema sobre prog A executing (01_rols_funcions)"}
 :::
 
 ::: {.fragment .concepte}
@@ -303,7 +304,7 @@ El *scheduler* assigna el processador a un procés durant un temps determinat i 
 ## Anàlisi: què fa aquest programa? (IV)
 
 ::: center
-![](figures/prog_B_executing.png)
+![](figures/prog_B_executing.png){fig-alt="Esquema sobre prog B executing (01_rols_funcions)"}
 :::
 
 ::: {.fragment .errorcomu}
@@ -466,7 +467,7 @@ Els dos processos mostren la **mateixa** adreça — però no interfereixen entr
 ::::::: columns
 :::: {.column width="40%"}
 ::: center
-![](figures/os-vm.png)
+![](figures/os-vm.png){fig-alt="Esquema sobre os vm (01_rols_funcions)"}
 :::
 ::::
 

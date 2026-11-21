@@ -3,7 +3,7 @@ title: "Pralab 04: Memòria dinàmica (II): Punters a punters"
 author: "Jordi Mateo Fornés"
 format:
   udl-course-html:
-    toc: false
+    toc: true
     number-sections: false
 ---
 
@@ -45,7 +45,7 @@ Les mides que veuràs (`sizeof(int)` és 4 i un punter en ocupa 8) són les del 
 
 ---
 
-### Part A — Punter a punter
+## Part A — Punter a punter
 
 Crea `01_ptrptr.c`:
 
@@ -198,9 +198,9 @@ argv --> +--------+
 
 ---
 
-### Part B — Per què necessitem `int **`
+## Part B — Per què necessitem `int **`
 
-#### B.1 — Modificar el que apunta un punter
+### B.1 — Modificar el que apunta un punter
 
 Crea `03_set.c`:
 
@@ -237,7 +237,7 @@ Imprimeix `x = 42`. La funció rep l'**adreça** de `x` i, com al Pralab 01 amb 
 
 </details>
 
-#### B.2 — Modificar el propi punter
+### B.2 — Modificar el propi punter
 
 Ara volem una funció que faci que un punter del cridant apunti a un bloc nou. Crea `04_modifica.c`:
 
@@ -307,7 +307,7 @@ Si esborres els dos `printf` de dins de `modifica`, `gcc -Wextra` t'avisa: `para
 Si passo un punter a una funció, la funció pot canviar el meu punter. Fals. **C passa sempre els arguments per valor**, també els punters: la funció té la seva **pròpia variable** `p`, on es copia el valor de la `p` del cridant. Pot canviar el que hi ha **darrere** de l'adreça (com `posa42`), però no la variable del cridant.
 :::
 
-#### B.3 — La solució: passar l'adreça del punter
+### B.3 — La solució: passar l'adreça del punter
 
 :::{.resultat}
 Per modificar una variable de tipus **`T`** des d'una funció, cal passar-ne l'adreça, de tipus **`T *`**. La pregunta per decidir el tipus del paràmetre és: **què vull modificar?**
@@ -413,7 +413,7 @@ int main(void)
 
 ---
 
-### Part C — Array dinàmic + `int **`
+## Part C — Array dinàmic + `int **`
 
 Ara ho ajuntem tot. Volem tres funcions per gestionar un vector d'enters al heap. Crea `06_vector.c` amb aquest `main` i escriu tu les tres funcions:
 

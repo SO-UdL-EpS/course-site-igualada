@@ -1,0 +1,1013 @@
+{
+  "schemaVersion": 2,
+  "course": {
+    "code": "105012",
+    "title": "Sistemes Operatius",
+    "shortTitle": "SO · UdL",
+    "degree": "Grau en Enginyeria Informàtica",
+    "campus": "Campus Igualada",
+    "university": "Universitat de Lleida",
+    "department": "Departament d'Enginyeria Informàtica i Disseny Digital",
+    "academicYear": "2026–27",
+    "semester": "2n curs · 1r semestre",
+    "professor": {
+      "name": "Dr. Jordi Mateo Fornés",
+      "email": "jordi.mateo@udl.cat",
+      "role": "Professor agregat",
+      "officeHours": "Sol·licitud per correu electrònic amb l'assumpte: Sistemes Operatius (SO) - [Bloc] - [Consulta]"
+    },
+    "links": {
+      "officialGuide": "https://guiadocent.udl.cat/html/2026-27_105012",
+      "repository": "https://github.com/SO-UdL-EpS/course-site"
+    },
+    "schedule": {
+      "theory": "4 h / setmana (Dl 2h · Dt 1h · Dc 1h, tots els grups)",
+      "lab": "2 h / setmana per grup de laboratori (G1 i G2)",
+      "environment": "Debian 13 / Ubuntu 24.04 · QEMU · GCC · GDB · Valgrind · Make · Git"
+    }
+  },
+  "activeAcademicYear": "2026–2027",
+  "academicYears": [
+    {
+      "year": "2026–2027",
+      "label": "Curs 2026–2027 (Vigent)",
+      "isDefault": true,
+      "passThreshold": 5.0,
+      "maxGrade": 10.0,
+      "enforceWeightSum100": true,
+      "recoveryPolicy": "Els exàmens teòrics T1 i T2 són recuperables de manera independent durant la setmana de recuperació. La qualificació obtinguda a la recuperació substitueix íntegrament la nota original. Les proves competencials pràctiques (P1–P4) i la bonificació (B) no són recuperables.",
+      "categories": [
+        {
+          "id": "theory",
+          "title": "Bloc Teòric",
+          "description": "Proves escrites individuals i presencials. Permès 1 full DIN A4 manuscrit. Recuperables independentment (la nota de recuperació substitueix la nota original).",
+          "weight": 50,
+          "minGrade": null,
+          "isBonus": false,
+          "items": [
+            {
+              "id": "T1",
+              "code": "T1",
+              "title": "Examen Escrit Teòric 1",
+              "weight": 25,
+              "maxScore": 10.0,
+              "minGrade": null,
+              "recoverable": true,
+              "recoveryMode": "replace",
+              "defaultScore": 6.5,
+              "meta": "Recuperable · Calendari oficial EPS · 1 full DIN A4 manuscrit"
+            },
+            {
+              "id": "T2",
+              "code": "T2",
+              "title": "Examen Escrit Teòric 2",
+              "weight": 25,
+              "maxScore": 10.0,
+              "minGrade": null,
+              "recoverable": true,
+              "recoveryMode": "replace",
+              "defaultScore": 6.5,
+              "meta": "Recuperable · Calendari oficial EPS · 1 full DIN A4 manuscrit"
+            }
+          ]
+        },
+        {
+          "id": "practical",
+          "title": "Exàmens Competencials Pràctics",
+          "description": "Proves individuals de laboratori en entorn QEMU controlat sense connexió a Internet. No són recuperables.",
+          "weight": 50,
+          "minGrade": null,
+          "isBonus": false,
+          "items": [
+            {
+              "id": "P1",
+              "code": "P1",
+              "title": "Espai d'usuari i memòria en C",
+              "weight": 15,
+              "maxScore": 10.0,
+              "minGrade": null,
+              "recoverable": false,
+              "defaultScore": 7.0,
+              "meta": "G1: 29/09/2026 · G2: 30/09/2026"
+            },
+            {
+              "id": "P2",
+              "code": "P2",
+              "title": "Creació i gestió de processos",
+              "weight": 15,
+              "maxScore": 10.0,
+              "minGrade": null,
+              "recoverable": false,
+              "defaultScore": 7.0,
+              "meta": "G1: 20/10/2026 · G2: 21/10/2026"
+            },
+            {
+              "id": "P3",
+              "code": "P3",
+              "title": "Pipes, FIFOs i senyals POSIX",
+              "weight": 10,
+              "maxScore": 10.0,
+              "minGrade": null,
+              "recoverable": false,
+              "defaultScore": 7.0,
+              "meta": "G1: 17/11/2026 · G2: 18/11/2026"
+            },
+            {
+              "id": "P4",
+              "code": "P4",
+              "title": "Planificació i automatització en Bash",
+              "weight": 10,
+              "maxScore": 10.0,
+              "minGrade": null,
+              "recoverable": false,
+              "defaultScore": 7.0,
+              "meta": "G1: 22/12/2026 · G2: 23/12/2026"
+            }
+          ]
+        },
+        {
+          "id": "bonus",
+          "title": "Bonificació per contribucions obertes",
+          "description": "Puntuació addicional directa sobre la nota final per Pull Requests acceptats al repositori obert del curs.",
+          "weight": 0,
+          "maxPoints": 0.5,
+          "minGrade": null,
+          "isBonus": true,
+          "items": [
+            {
+              "id": "B",
+              "code": "B",
+              "title": "Contribucions als materials docents",
+              "weight": 100,
+              "maxScore": 0.5,
+              "step": 0.05,
+              "minGrade": null,
+              "recoverable": false,
+              "defaultScore": 0.25,
+              "meta": "Fins a +0,5 punts addicionals · Pull Requests durant el curs"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "year": "2025–2026",
+      "label": "Curs 2025–2026 (Històric)",
+      "isDefault": false,
+      "passThreshold": 5.0,
+      "maxGrade": 10.0,
+      "enforceWeightSum100": true,
+      "recoveryPolicy": "Els exàmens teòrics (T1, T2) i la Pràctica 2 (LAB2) són recuperables. Es requereix una qualificació mínima de 3,50 sobre 10 en el Bloc Teòric per promitjar amb la resta d'activitats.",
+      "categories": [
+        {
+          "id": "theory",
+          "title": "Exàmens Teòrics",
+          "description": "Proves escrites individuals (50%). Es requereix una mitjana mínima de 3,50 sobre 10 en aquest bloc.",
+          "weight": 50,
+          "minGrade": 3.5,
+          "isBonus": false,
+          "items": [
+            {
+              "id": "T1",
+              "code": "T1",
+              "title": "Parcial Teòric 1",
+              "weight": 25,
+              "maxScore": 10.0,
+              "minGrade": null,
+              "recoverable": true,
+              "recoveryMode": "replace",
+              "defaultScore": 6.0,
+              "meta": "Recuperable · Pes 25%"
+            },
+            {
+              "id": "T2",
+              "code": "T2",
+              "title": "Parcial Teòric 2",
+              "weight": 25,
+              "maxScore": 10.0,
+              "minGrade": null,
+              "recoverable": true,
+              "recoveryMode": "replace",
+              "defaultScore": 6.0,
+              "meta": "Recuperable · Pes 25%"
+            }
+          ]
+        },
+        {
+          "id": "practical",
+          "title": "Laboratoris Pràctics",
+          "description": "Lliuraments i defensa de pràctiques de laboratori (35%).",
+          "weight": 35,
+          "minGrade": null,
+          "isBonus": false,
+          "items": [
+            {
+              "id": "LAB1",
+              "code": "LAB1",
+              "title": "Pràctica 1: Programació C i Processos",
+              "weight": 15,
+              "maxScore": 10.0,
+              "minGrade": null,
+              "recoverable": false,
+              "defaultScore": 7.0,
+              "meta": "No recuperable · Pes 15%"
+            },
+            {
+              "id": "LAB2",
+              "code": "LAB2",
+              "title": "Pràctica 2: Minishell i IPC",
+              "weight": 20,
+              "maxScore": 10.0,
+              "minGrade": null,
+              "recoverable": true,
+              "recoveryMode": "replace",
+              "defaultScore": 7.0,
+              "meta": "Recuperable · Pes 20%"
+            }
+          ]
+        },
+        {
+          "id": "activities",
+          "title": "Activitats i Seguiment",
+          "description": "Exercicis de classe i problemes d'avaluació contínua (15%).",
+          "weight": 15,
+          "minGrade": null,
+          "isBonus": false,
+          "items": [
+            {
+              "id": "ACT",
+              "code": "ACT",
+              "title": "Lliuraments d'activitats i problemes",
+              "weight": 15,
+              "maxScore": 10.0,
+              "minGrade": null,
+              "recoverable": false,
+              "defaultScore": 7.5,
+              "meta": "Avaluació contínua · Pes 15%"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "year": "2027–2028",
+      "label": "Curs 2027–2028 (Configuració 40/40/20)",
+      "isDefault": false,
+      "passThreshold": 5.0,
+      "maxGrade": 10.0,
+      "enforceWeightSum100": true,
+      "recoveryPolicy": "Ponderació distribuïda en Teoria (40%), Laboratori Pràctic (40%) i Activitats Contínues (20%), més bonificació opcional per contribucions obertes (+0,5 p).",
+      "categories": [
+        {
+          "id": "theory",
+          "title": "Bloc Teòric",
+          "description": "Proves escrites individuals i recuperables (40%).",
+          "weight": 40,
+          "minGrade": null,
+          "isBonus": false,
+          "items": [
+            {
+              "id": "T1",
+              "code": "T1",
+              "title": "Examen Teòric 1",
+              "weight": 20,
+              "maxScore": 10.0,
+              "minGrade": null,
+              "recoverable": true,
+              "recoveryMode": "replace",
+              "defaultScore": 6.5,
+              "meta": "Recuperable · Pes 20%"
+            },
+            {
+              "id": "T2",
+              "code": "T2",
+              "title": "Examen Teòric 2",
+              "weight": 20,
+              "maxScore": 10.0,
+              "minGrade": null,
+              "recoverable": true,
+              "recoveryMode": "replace",
+              "defaultScore": 6.5,
+              "meta": "Recuperable · Pes 20%"
+            }
+          ]
+        },
+        {
+          "id": "practical",
+          "title": "Proves Pràctiques de Laboratori",
+          "description": "Avaluació competencial en entorn Linux/QEMU (40%).",
+          "weight": 40,
+          "minGrade": null,
+          "isBonus": false,
+          "items": [
+            {
+              "id": "P1",
+              "code": "P1",
+              "title": "Prova Competencial 1 (Espai d'Usuari i Processos)",
+              "weight": 20,
+              "maxScore": 10.0,
+              "minGrade": null,
+              "recoverable": true,
+              "recoveryMode": "replace",
+              "defaultScore": 7.0,
+              "meta": "Recuperable · Pes 20%"
+            },
+            {
+              "id": "P2",
+              "code": "P2",
+              "title": "Prova Competencial 2 (IPC, Planificació i Bash)",
+              "weight": 20,
+              "maxScore": 10.0,
+              "minGrade": null,
+              "recoverable": true,
+              "recoveryMode": "replace",
+              "defaultScore": 7.0,
+              "meta": "Recuperable · Pes 20%"
+            }
+          ]
+        },
+        {
+          "id": "activities",
+          "title": "Activitats i Reptes",
+          "description": "Seguiment de laboratoris i col·leccions de problemes (20%).",
+          "weight": 20,
+          "minGrade": null,
+          "isBonus": false,
+          "items": [
+            {
+              "id": "A1",
+              "code": "A1",
+              "title": "Activitats guiades i reptes de programació",
+              "weight": 20,
+              "maxScore": 10.0,
+              "minGrade": null,
+              "recoverable": false,
+              "defaultScore": 7.5,
+              "meta": "Avaluació contínua · Pes 20%"
+            }
+          ]
+        },
+        {
+          "id": "bonus",
+          "title": "Bonificació per contribucions obertes",
+          "description": "Puntuació addicional directa (+0,5 punts màxim) per millores al repositori docent.",
+          "weight": 0,
+          "maxPoints": 0.5,
+          "minGrade": null,
+          "isBonus": true,
+          "items": [
+            {
+              "id": "B",
+              "code": "B",
+              "title": "Contribucions als materials oberts",
+              "weight": 100,
+              "maxScore": 0.5,
+              "step": 0.05,
+              "minGrade": null,
+              "recoverable": false,
+              "defaultScore": 0.25,
+              "meta": "Fins a +0,5 punts addicionals"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "evaluation": {
+    "passThreshold": 5.0,
+    "maxGrade": 10.0,
+    "minimumPerActivity": false,
+    "formulaLatex": "NF = \\min(0.25\\,T_1 + 0.25\\,T_2 + 0.15\\,P_1 + 0.15\\,P_2 + 0.10\\,P_3 + 0.10\\,P_4 + B,\\; 10)",
+    "formulaText": "NF = min(0,25·T1 + 0,25·T2 + 0,15·P1 + 0,15·P2 + 0,10·P3 + 0,10·P4 + B, 10)",
+    "recoveryPolicy": "Els exàmens teòrics T1 i T2 són recuperables de manera independent durant la setmana de recuperació. La qualificació obtinguda a la recuperació substitueix íntegrament la nota original. Les proves competencials pràctiques (P1–P4) i el bonus (B) no són recuperables.",
+    "items": [
+      {
+        "id": "T1",
+        "code": "T1",
+        "title": "Examen Escrit Teòric 1",
+        "category": "theory",
+        "weight": 0.25,
+        "maxScore": 10.0,
+        "recoverable": true,
+        "dates": "Calendari oficial EPS",
+        "notes": "Individual i presencial. Permès 1 full DIN A4 manuscrit original per les dues cares."
+      },
+      {
+        "id": "T2",
+        "code": "T2",
+        "title": "Examen Escrit Teòric 2",
+        "category": "theory",
+        "weight": 0.25,
+        "maxScore": 10.0,
+        "recoverable": true,
+        "dates": "Calendari oficial EPS",
+        "notes": "Individual i presencial. Permès 1 full DIN A4 manuscrit original per les dues cares."
+      },
+      {
+        "id": "P1",
+        "code": "P1",
+        "title": "Examen Competencial Pràctic 1",
+        "category": "practical",
+        "weight": 0.15,
+        "maxScore": 10.0,
+        "recoverable": false,
+        "dates": "G1: 29/09/2026 · G2: 30/09/2026",
+        "notes": "Desenvolupament en espai d'usuari i memòria en C. Entorn controlat QEMU sense Internet."
+      },
+      {
+        "id": "P2",
+        "code": "P2",
+        "title": "Examen Competencial Pràctic 2",
+        "category": "practical",
+        "weight": 0.15,
+        "maxScore": 10.0,
+        "recoverable": false,
+        "dates": "G1: 20/10/2026 · G2: 21/10/2026",
+        "notes": "Creació i gestió de processos en Linux. Entorn controlat QEMU sense Internet."
+      },
+      {
+        "id": "P3",
+        "code": "P3",
+        "title": "Examen Competencial Pràctic 3",
+        "category": "practical",
+        "weight": 0.10,
+        "maxScore": 10.0,
+        "recoverable": false,
+        "dates": "G1: 17/11/2026 · G2: 18/11/2026",
+        "notes": "Comunicació entre processos, pipes, FIFOs i senyals. Entorn controlat QEMU sense Internet."
+      },
+      {
+        "id": "P4",
+        "code": "P4",
+        "title": "Examen Competencial Pràctic 4",
+        "category": "practical",
+        "weight": 0.10,
+        "maxScore": 10.0,
+        "recoverable": false,
+        "dates": "G1: 22/12/2026 · G2: 23/12/2026",
+        "notes": "Planificació, integració i automatització en Bash. Entorn controlat QEMU sense Internet."
+      },
+      {
+        "id": "B",
+        "code": "Bonus",
+        "title": "Contribucions als materials oberts",
+        "category": "bonus",
+        "weight": 1.0,
+        "maxScore": 0.5,
+        "recoverable": false,
+        "dates": "Durant tot el quadrimestre",
+        "notes": "Fins a +0,5 punts addicionals mitjançant Pull Requests acceptats al repositori de l'assignatura."
+      }
+    ]
+  },
+  "blocks": [
+    {
+      "id": "01",
+      "slug": "01-espai-usuari",
+      "archiveFolder": "Bloc-1-Espai-Usuari",
+      "number": "Bloc 1",
+      "title": "Desenvolupament de Programari en Espai d'Usuari",
+      "shortTitle": "Espai d'Usuari",
+      "description": "Arquitectura del sistema operatiu, espai d'adreces d'un procés, pila d'execució, compilació i enllaçat en C, estructures de dades, punters, memòria dinàmica i frontera amb el nucli mitjançant crides al sistema.",
+      "zipId": "zip-bloc1",
+      "zipFilename": "SO-Bloc1-Espai-Usuari-PDFs.zip",
+      "subsections": [
+        {
+          "id": "teoria",
+          "title": "Teoria",
+          "description": "Presentacions de classe sobre els fonaments del sistema operatiu, l'espai de memòria, l'ABI de crides de funció, la construcció d'executables i el camí de les crides al sistema.",
+          "items": [
+            {
+              "id": "b1-t01",
+              "code": "T01",
+              "kind": "slide",
+              "typeLabel": "Presentació",
+              "title": "Rols i funcions d'un sistema operatiu",
+              "subtitle": "Il·lusionista, àrbitre i pega · abstraccions, virtualització i protecció de recursos",
+              "qmd": "blocs/01-espai-usuari/teoria/01_rols_funcions.qmd",
+              "href": "blocs/01-espai-usuari/teoria/01_rols_funcions.html",
+              "pdf": "SO-Bloc1-T01-Rols-i-funcions.pdf"
+            },
+            {
+              "id": "b1-t02",
+              "code": "T02",
+              "kind": "slide",
+              "typeLabel": "Presentació",
+              "title": "L'espai de memòria d'un procés",
+              "subtitle": "Segments de memòria (text, data, bss, heap, stack), adreces virtuals i temps de vida",
+              "qmd": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.qmd",
+              "href": "blocs/01-espai-usuari/teoria/02_espai_memoria_proces.html",
+              "pdf": "SO-Bloc1-T02-Espai-de-memoria.pdf"
+            },
+            {
+              "id": "b1-t03",
+              "code": "T03",
+              "kind": "slide",
+              "typeLabel": "Presentació",
+              "title": "Crides de funció: CPU, registres i stack",
+              "subtitle": "Marcs d'activació (stack frames), registres RSP/RBP/RIP, convencions de crida (ABI) i GDB",
+              "qmd": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.qmd",
+              "href": "blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.html",
+              "pdf": "SO-Bloc1-T03-Crides-funcions-stack.pdf"
+            },
+            {
+              "id": "b1-t04",
+              "code": "T04",
+              "kind": "slide",
+              "typeLabel": "Presentació",
+              "title": "Com es construeix un programa C?",
+              "subtitle": "Preprocessament, compilació, assemblat, enllaçat (.o, biblioteques estàtiques/dinàmiques) i Make",
+              "qmd": "blocs/01-espai-usuari/teoria/04_construccio_progama_c.qmd",
+              "href": "blocs/01-espai-usuari/teoria/04_construccio_progama_c.html",
+              "pdf": "SO-Bloc1-T04-Construccio-programa-C.pdf"
+            },
+            {
+              "id": "b1-t05",
+              "code": "T05",
+              "kind": "slide",
+              "typeLabel": "Presentació",
+              "title": "De variables a estructures de dades",
+              "subtitle": "Punters, estructures (struct), alineament de memòria, punters a estructures i llistes enllaçades",
+              "qmd": "blocs/01-espai-usuari/teoria/05_variables_estructures.qmd",
+              "href": "blocs/01-espai-usuari/teoria/05_variables_estructures.html",
+              "pdf": "SO-Bloc1-T05-Variables-i-estructures.pdf"
+            },
+            {
+              "id": "b1-t06",
+              "code": "T06",
+              "kind": "slide",
+              "typeLabel": "Presentació",
+              "title": "System calls: del programa C al kernel",
+              "subtitle": "Frontera usuari/nucli, wrappers de libc, instrucció syscall, ABI x86-64/ARM64 i strace",
+              "qmd": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.qmd",
+              "href": "blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.html",
+              "pdf": "SO-Bloc1-T06-Syscalls-del-C-al-kernel.pdf"
+            },
+            {
+              "id": "b1-t07",
+              "code": "T07",
+              "kind": "slide",
+              "typeLabel": "Presentació",
+              "title": "System calls: dins del kernel",
+              "subtitle": "Pila de nucli, pt_regs, sys_call_table, copy_from_user, page faults i taula d'excepcions (EFAULT)",
+              "qmd": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.qmd",
+              "href": "blocs/01-espai-usuari/teoria/07_syscalls_kernel.html",
+              "pdf": "SO-Bloc1-T07-Syscalls-dins-del-kernel.pdf"
+            }
+          ]
+        },
+        {
+          "id": "pralabs",
+          "title": "Pralabs",
+          "description": "Guions de laboratori pràctic sobre representació en memòria, punters, aritmètica d'adreces, gestió del heap amb malloc/free i punters dobles.",
+          "items": [
+            {
+              "id": "b1-p01",
+              "code": "Pralab 01",
+              "kind": "pralab",
+              "typeLabel": "Laboratori",
+              "title": "Del C a la memòria (I)",
+              "subtitle": "On viuen les variables, sizeof, adreces (&x), desreferència (*p) i representació d'arrays",
+              "qmd": "blocs/01-espai-usuari/pralabs/01_c_mem.qmd",
+              "href": "blocs/01-espai-usuari/pralabs/01_c_mem.html",
+              "pdf": "SO-Bloc1-Pralab01-Del-C-a-la-memoria-I.pdf"
+            },
+            {
+              "id": "b1-p02",
+              "code": "Pralab 02",
+              "kind": "pralab",
+              "typeLabel": "Laboratori",
+              "title": "Del v[i] al punter",
+              "subtitle": "Decaïment d'arrays a punter, aritmètica de punters, cadenes de caràcters i implementació de strlen",
+              "qmd": "blocs/01-espai-usuari/pralabs/02_c_mem.qmd",
+              "href": "blocs/01-espai-usuari/pralabs/02_c_mem.html",
+              "pdf": "SO-Bloc1-Pralab02-Del-vi-al-punter.pdf"
+            },
+            {
+              "id": "b1-p03",
+              "code": "Pralab 03",
+              "kind": "pralab",
+              "typeLabel": "Laboratori",
+              "title": "Memòria dinàmica (I): malloc, free i lifetime",
+              "subtitle": "Reserva al heap, temps de vida de variables, punters penjants, fuites i detecció amb Valgrind",
+              "qmd": "blocs/01-espai-usuari/pralabs/03_c_heap.qmd",
+              "href": "blocs/01-espai-usuari/pralabs/03_c_heap.html",
+              "pdf": "SO-Bloc1-Pralab03-Memoria-dinamica-I.pdf"
+            },
+            {
+              "id": "b1-p04",
+              "code": "Pralab 04",
+              "kind": "pralab",
+              "typeLabel": "Laboratori",
+              "title": "Memòria dinàmica (II): Punters a punters",
+              "subtitle": "Doble indirecció (**pp), argv/argc, paràmetres d'eixida i taules dinàmiques de cadenes",
+              "qmd": "blocs/01-espai-usuari/pralabs/04_c_ptrptr.qmd",
+              "href": "blocs/01-espai-usuari/pralabs/04_c_ptrptr.html",
+              "pdf": "SO-Bloc1-Pralab04-Punters-a-punters.pdf"
+            }
+          ]
+        },
+        {
+          "id": "activitats",
+          "title": "Activitats",
+          "description": "Lectures tècniques, inspecció de la pila amb GDB i projectes de programació modular en C.",
+          "items": [
+            {
+              "id": "b1-a01",
+              "code": "Act 01",
+              "kind": "activitat",
+              "typeLabel": "Activitat",
+              "title": "Lectura: The UNIX Time-Sharing System",
+              "subtitle": "Lectura guiada de l'article clàssic de Ritchie i Thompson (1974) sobre el disseny d'UNIX",
+              "qmd": "blocs/01-espai-usuari/activitats/01_rols_funcions.qmd",
+              "href": "blocs/01-espai-usuari/activitats/01_rols_funcions.html",
+              "pdf": "SO-Bloc1-Act01-UNIX-Time-Sharing-System.pdf"
+            },
+            {
+              "id": "b1-a02",
+              "code": "Act 02",
+              "kind": "activitat",
+              "typeLabel": "Activitat",
+              "title": "Què passa quan faig foo()?",
+              "subtitle": "Predicció i verificació amb GDB dels registres, la pila i els marcs d'activació",
+              "qmd": "blocs/01-espai-usuari/activitats/02_espai_funcions.qmd",
+              "href": "blocs/01-espai-usuari/activitats/02_espai_funcions.html",
+              "pdf": "SO-Bloc1-Act02-Que-passa-quan-faig-foo.pdf"
+            },
+            {
+              "id": "b1-a03",
+              "code": "Act 03",
+              "kind": "activitat",
+              "typeLabel": "Activitat",
+              "title": "Exercicis amb C · Apuntadors i arrays",
+              "subtitle": "9 exercicis progressius de consolidació, ampliació i reptes sobre punters i cadenes",
+              "qmd": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.qmd",
+              "href": "blocs/01-espai-usuari/activitats/01_c_punters_arrays.html",
+              "pdf": "SO-Bloc1-Act03-Apuntadors-i-arrays.pdf"
+            },
+            {
+              "id": "b1-a04",
+              "code": "Act 04",
+              "kind": "activitat",
+              "typeLabel": "Activitat",
+              "title": "Exercicis amb C · Pokémon",
+              "subtitle": "Projecte guiat amb struct, typedef, memòria dinàmica, tipus opacs, modularitat (.h/.c) i Makefile",
+              "qmd": "blocs/01-espai-usuari/activitats/03_pokemon.qmd",
+              "href": "blocs/01-espai-usuari/activitats/03_pokemon.html",
+              "pdf": "SO-Bloc1-Act04-Exercicis-C-Pokemon.pdf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "02",
+      "slug": "02-proc",
+      "archiveFolder": "Bloc-2-Processos",
+      "number": "Bloc 2",
+      "title": "Execució i Comunicació de Processos",
+      "shortTitle": "Processos",
+      "description": "Model d'execució de processos a Linux, estats i PCB, creació i control amb fork/exec/wait, notificacions asíncrones amb senyals POSIX, redirecció d'E/S i comunicació per canonades (pipes i FIFOs).",
+      "zipId": "zip-bloc2",
+      "zipFilename": "SO-Bloc2-Processos-PDFs.zip",
+      "subsections": [
+        {
+          "id": "teoria",
+          "title": "Teoria",
+          "description": "Presentacions sobre l'abstracció de procés, cicle de vida, primitiva fork/exec, senyals i comunicació entre processos (IPC).",
+          "items": [
+            {
+              "id": "b2-t01",
+              "code": "T01",
+              "kind": "slide",
+              "typeLabel": "Presentació",
+              "title": "Processos: concepte, estats i PCB",
+              "subtitle": "Model de 5 estats, estats reals a Linux (R, S, D, T, Z), PCB (task_struct), /proc i jerarquia",
+              "qmd": "blocs/02-proc/teoria/01-procs.qmd",
+              "href": "blocs/02-proc/teoria/01-procs.html",
+              "pdf": "SO-Bloc2-T01-Processos-estats-PCB.pdf"
+            },
+            {
+              "id": "b2-t02",
+              "code": "T02",
+              "kind": "slide",
+              "typeLabel": "Presentació",
+              "title": "Processos: Creació",
+              "subtitle": "Mecanisme fork(), copy-on-write, família exec(), wait()/waitpid(), processos zombis i orfes",
+              "qmd": "blocs/02-proc/teoria/02-create.qmd",
+              "href": "blocs/02-proc/teoria/02-create.html",
+              "pdf": "SO-Bloc2-T02-Processos-Creacio.pdf"
+            },
+            {
+              "id": "b2-t03",
+              "code": "T03",
+              "kind": "slide",
+              "typeLabel": "Presentació",
+              "title": "Processos: Senyals",
+              "subtitle": "Notificacions asíncrones, senyals POSIX, kill(), signal(), sigaction(), màscares i temporitzadors",
+              "qmd": "blocs/02-proc/teoria/03-signals.qmd",
+              "href": "blocs/02-proc/teoria/03-signals.html",
+              "pdf": "SO-Bloc2-T03-Processos-Senyals.pdf"
+            },
+            {
+              "id": "b2-t04",
+              "code": "T04",
+              "kind": "slide",
+              "typeLabel": "Presentació",
+              "title": "Processos: Pipes i redirecció d'E/S",
+              "subtitle": "Taula de descriptors de fitxer, dup() i dup2(), canonades anònimes amb pipe() i pipelines",
+              "qmd": "blocs/02-proc/teoria/04-pipes.qmd",
+              "href": "blocs/02-proc/teoria/04-pipes.html",
+              "pdf": "SO-Bloc2-T04-Processos-Pipes-i-redireccio.pdf"
+            },
+            {
+              "id": "b2-t05",
+              "code": "T05",
+              "kind": "slide",
+              "typeLabel": "Presentació",
+              "title": "Processos: Pipes amb nom (FIFO)",
+              "subtitle": "Fitxers especials FIFO al sistema de fitxers, mkfifo(), semàntica de bloqueig i client-servidor",
+              "qmd": "blocs/02-proc/teoria/05-fifos.qmd",
+              "href": "blocs/02-proc/teoria/05-fifos.html",
+              "pdf": "SO-Bloc2-T05-Processos-FIFOs.pdf"
+            }
+          ]
+        },
+        {
+          "id": "pralabs",
+          "title": "Pralabs",
+          "description": "Desenvolupament incremental d'un intèrpret d'ordres propi (Minishell) en C al llarg de tres sessions de laboratori.",
+          "items": [
+            {
+              "id": "b2-p01",
+              "code": "Pralab 05·I",
+              "kind": "pralab",
+              "typeLabel": "Laboratori",
+              "title": "Minishell (I): getline, fork, exec i wait",
+              "subtitle": "Lectura segura de línies amb getline(), creació de processos fills i recol·lecció d'estat amb macros WIF*",
+              "qmd": "blocs/02-proc/pralabs/01_minishell.qmd",
+              "href": "blocs/02-proc/pralabs/01_minishell.html",
+              "pdf": "SO-Bloc2-Pralab05-I-Minishell.pdf"
+            },
+            {
+              "id": "b2-p02",
+              "code": "Pralab 05·II",
+              "kind": "pralab",
+              "typeLabel": "Laboratori",
+              "title": "Minishell (II): strtok, cd, exit i senyals",
+              "subtitle": "Tokenització d'arguments, ordres internes (built-ins), seqüències (;, &&, ||) i tractament de SIGINT",
+              "qmd": "blocs/02-proc/pralabs/02_minishell.qmd",
+              "href": "blocs/02-proc/pralabs/02_minishell.html",
+              "pdf": "SO-Bloc2-Pralab05-II-Minishell.pdf"
+            },
+            {
+              "id": "b2-p03",
+              "code": "Pralab 05·III",
+              "kind": "pralab",
+              "typeLabel": "Laboratori",
+              "title": "Minishell (III): redireccions i pipes",
+              "subtitle": "Implementació de redireccions (<, >, >>) amb open+dup2 i connexió de processos amb pipe()",
+              "qmd": "blocs/02-proc/pralabs/03_minishell.qmd",
+              "href": "blocs/02-proc/pralabs/03_minishell.html",
+              "pdf": "SO-Bloc2-Pralab05-III-Minishell.pdf"
+            }
+          ]
+        },
+        {
+          "id": "activitats",
+          "title": "Activitats",
+          "description": "Col·leccions de problemes resolts pas a pas sobre arbres de processos, zombis, recobriment d'imatge, pipes i sincronització.",
+          "items": [
+            {
+              "id": "b2-a01",
+              "code": "Act 01",
+              "kind": "activitat",
+              "typeLabel": "Activitat",
+              "title": "Problemes de classe · fork() i wait()",
+              "subtitle": "9 exercicis amb solució raonada i diagrames de seqüència sobre arbres de processos i sincronització",
+              "qmd": "blocs/02-proc/activitats/01-fork-wait.qmd",
+              "href": "blocs/02-proc/activitats/01-fork-wait.html",
+              "pdf": "SO-Bloc2-Act01-Problemes-fork-wait.pdf"
+            },
+            {
+              "id": "b2-a02",
+              "code": "Act 02",
+              "kind": "activitat",
+              "typeLabel": "Activitat",
+              "title": "Exercicis de creació de processos en C",
+              "subtitle": "8 problemes sobre clonació d'espai de memòria, buffers d'stdio, bucles de fork i codis de retorn",
+              "qmd": "blocs/02-proc/activitats/02-create.qmd",
+              "href": "blocs/02-proc/activitats/02-create.html",
+              "pdf": "SO-Bloc2-Act02-Exercicis-creacio-processos.pdf"
+            },
+            {
+              "id": "b2-a03",
+              "code": "Act 03",
+              "kind": "activitat",
+              "typeLabel": "Activitat",
+              "title": "Problemes de classe · zombis, orfes i exec()",
+              "subtitle": "10 exercicis resolts sobre recobriment d'imatge amb execl/execvp, estats Z i adopció per init/systemd",
+              "qmd": "blocs/02-proc/activitats/03-exec.qmd",
+              "href": "blocs/02-proc/activitats/03-exec.html",
+              "pdf": "SO-Bloc2-Act03-Problemes-zombis-orfes-exec.pdf"
+            },
+            {
+              "id": "b2-a04",
+              "code": "Act 04",
+              "kind": "activitat",
+              "typeLabel": "Activitat",
+              "title": "Exercicis de Pipes, FIFOs i dup en C",
+              "subtitle": "15 problemes resolts en 4 blocs: descriptors, EOF/SIGPIPE, pipelines multiprocés i FIFOs",
+              "qmd": "blocs/02-proc/activitats/04-pipes.qmd",
+              "href": "blocs/02-proc/activitats/04-pipes.html",
+              "pdf": "SO-Bloc2-Act04-Exercicis-Pipes-FIFOs-dup.pdf"
+            },
+            {
+              "id": "b2-a05",
+              "code": "Act 05",
+              "kind": "activitat",
+              "typeLabel": "Activitat",
+              "title": "Exercici progressiu · Generador de loteria",
+              "subtitle": "Cas pràctic complet que evoluciona des de waitpid() fins a sincronització amb senyals i pipes",
+              "qmd": "blocs/02-proc/activitats/05-loteria.qmd",
+              "href": "blocs/02-proc/activitats/05-loteria.html",
+              "pdf": "SO-Bloc2-Act05-Exercici-Loteria.pdf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "03",
+      "slug": "03-sched",
+      "archiveFolder": "Bloc-3-Planificacio",
+      "number": "Bloc 3",
+      "title": "Planificació de Processos",
+      "shortTitle": "Planificació",
+      "description": "Criteris i mètriques de planificació de CPU, polítiques apropiatives i no apropiatives (FCFS, Round Robin, SJF/SRTF, Prioritats), cues multinivell (MLQ/MLFQ) i planificació a Linux.",
+      "zipId": "zip-bloc3",
+      "zipFilename": "SO-Bloc3-Planificacio-PDFs.zip",
+      "subsections": [
+        {
+          "id": "teoria",
+          "title": "Teoria",
+          "description": "Presentacions sobre mètriques de rendiment, algorismes clàssics de planificació i cues multinivell.",
+          "items": [
+            {
+              "id": "b3-t01",
+              "code": "T01",
+              "kind": "slide",
+              "typeLabel": "Presentació",
+              "title": "Planificació de processos (I)",
+              "subtitle": "Ràfegues CPU-E/S, planificació apropiativa vs. no apropiativa, mètriques, FCFS i Round Robin",
+              "qmd": "blocs/03-sched/teoria/01-sched.qmd",
+              "href": "blocs/03-sched/teoria/01-sched.html",
+              "pdf": "SO-Bloc3-T01-Planificacio-I.pdf"
+            },
+            {
+              "id": "b3-t02",
+              "code": "T02",
+              "kind": "slide",
+              "typeLabel": "Presentació",
+              "title": "Planificació de processos (II)",
+              "subtitle": "Prioritats, fam i envelliment (aging), SJF/SRTF, cues multinivell (MLQ/MLFQ) i CFS/EEVDF a Linux",
+              "qmd": "blocs/03-sched/teoria/02-sched.qmd",
+              "href": "blocs/03-sched/teoria/02-sched.html",
+              "pdf": "SO-Bloc3-T02-Planificacio-II.pdf"
+            }
+          ]
+        },
+        {
+          "id": "activitats",
+          "title": "Activitats",
+          "description": "Problemes resolts amb diagrames de Gantt per a 1 i 2 CPU, càlcul de temps de retorn i d'espera, i plantilla de full de càlcul.",
+          "items": [
+            {
+              "id": "b3-a01",
+              "code": "Act 01",
+              "kind": "activitat",
+              "typeLabel": "Activitat",
+              "title": "Problemes de planificació · FCFS i Round Robin",
+              "subtitle": "Convenis de resolució, diagrames de Gantt per a 1 i 2 CPU i comparativa de quantum",
+              "qmd": "blocs/03-sched/activitats/01-sched.qmd",
+              "href": "blocs/03-sched/activitats/01-sched.html",
+              "pdf": "SO-Bloc3-Act01-FCFS-i-Round-Robin.pdf",
+              "extraDownload": {
+                "label": "Plantilla .xlsx",
+                "href": "blocs/03-sched/activitats/src/template.xlsx",
+                "downloadName": "SO-Bloc3-Plantilla-Planificacio.xlsx"
+              }
+            },
+            {
+              "id": "b3-a02",
+              "code": "Act 02",
+              "kind": "activitat",
+              "typeLabel": "Activitat",
+              "title": "Problemes de planificació · Prioritats, SJF/SRTF i cues multinivell",
+              "subtitle": "9 problemes complets (28 apartats resolts) amb cues multinivell amb i sense retroalimentació",
+              "qmd": "blocs/03-sched/activitats/02-sched.qmd",
+              "href": "blocs/03-sched/activitats/02-sched.html",
+              "pdf": "SO-Bloc3-Act02-Prioritats-SJF-MLFQ.pdf",
+              "extraDownload": {
+                "label": "Plantilla .xlsx",
+                "href": "blocs/03-sched/activitats/src/template.xlsx",
+                "downloadName": "SO-Bloc3-Plantilla-Planificacio.xlsx"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "07",
+      "slug": "07-shell",
+      "archiveFolder": "Bloc-7-Shell-Scripting",
+      "number": "Bloc 7",
+      "title": "Shell Scripting en Bash",
+      "shortTitle": "Shell Scripting",
+      "description": "Automatització de tasques d'administració i desenvolupament en Bash: variables d'entorn, expansions, estructures de control, codis de retorn i validació d'arguments.",
+      "zipId": "zip-bloc7",
+      "zipFilename": "SO-Bloc7-Shell-Scripting-PDFs.zip",
+      "subsections": [
+        {
+          "id": "teoria",
+          "title": "Teoria",
+          "description": "Presentació dels fonaments de l'intèrpret d'ordres Bash, sintaxi d'expansió i construcció d'scripts.",
+          "items": [
+            {
+              "id": "b7-t01",
+              "code": "T01",
+              "kind": "slide",
+              "typeLabel": "Presentació",
+              "title": "Shell scripting (I)",
+              "subtitle": "Intèrpret d'ordres, variables d'entorn, cometes, expansions de paràmetres, aritmètica i arrays",
+              "qmd": "blocs/07-shell/teoria/01-shell.qmd",
+              "href": "blocs/07-shell/teoria/01-shell.html",
+              "pdf": "SO-Bloc7-T01-Shell-Scripting-I.pdf"
+            }
+          ]
+        },
+        {
+          "id": "pralabs",
+          "title": "Pralabs",
+          "description": "Laboratori pràctic per escriure, depurar i executar els primers scripts d'automatització en Bash.",
+          "items": [
+            {
+              "id": "b7-p01",
+              "code": "Pralab 01",
+              "kind": "pralab",
+              "typeLabel": "Laboratori",
+              "title": "Primers scripts en Bash",
+              "subtitle": "Shebang, permisos, codis de retorn ($?), test i [ ], validació d'arguments, PATH i perfil.sh",
+              "qmd": "blocs/07-shell/pralabs/01-shell.qmd",
+              "href": "blocs/07-shell/pralabs/01-shell.html",
+              "pdf": "SO-Bloc7-Pralab01-Primers-scripts-Bash.pdf"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "00",
+      "slug": "course-info",
+      "archiveFolder": "00-Informacio-General",
+      "number": "Informació General",
+      "title": "Presentació i Guia de Contribució",
+      "shortTitle": "Informació del curs",
+      "description": "Presentació inicial de l'assignatura (objectius, metodologia, calendari i normativa d'avaluació) i guia pas a pas per contribuir als materials oberts amb Git i GitHub.",
+      "zipId": "zip-all",
+      "zipFilename": "SO-Curs-Complet-PDFs.zip",
+      "subsections": [
+        {
+          "id": "general",
+          "title": "Documents generals",
+          "description": "Diapositives de presentació del curs i guia d'aportacions Open Source (+0,5 punts).",
+          "items": [
+            {
+              "id": "info-pres",
+              "code": "Info 01",
+              "kind": "slide",
+              "typeLabel": "Presentació",
+              "title": "Presentació del curs",
+              "subtitle": "Metodologia, temari, criteris d'avaluació, calendari d'exàmens i eines de treball",
+              "qmd": "course-info/presentation-slides.qmd",
+              "href": "course-info/presentation-slides.html",
+              "pdf": "SO-Info-Presentacio-del-curs.pdf"
+            },
+            {
+              "id": "info-contrib",
+              "code": "Info 02",
+              "kind": "guide",
+              "typeLabel": "Guia",
+              "title": "Contribuir als materials (fins a +0,5 punts)",
+              "subtitle": "Flux de treball amb Git, Fork i Pull Request al repositori obert de l'assignatura",
+              "qmd": "course-info/contributions/contribute.qmd",
+              "href": "course-info/contributions/contribute.html",
+              "pdf": "SO-Info-Contribuir-als-materials.pdf"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

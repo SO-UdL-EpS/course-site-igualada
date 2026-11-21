@@ -3,7 +3,8 @@ title: "Contribuir als materials"
 subtitle: "Participa en la millora dels materials oberts de l'assignatura"
 format:
   udl-course-html:
-    toc: false
+    toc: true
+    toc-depth: 3
 ---
 
 Els materials d'aquesta assignatura es desenvolupen seguint una filosofia de **codi obert (*open source*)**: els materials poden ser revisats, millorats, ampliats i corregits amb la participació de la comunitat.
@@ -58,9 +59,9 @@ Estàs fent una **proposta de canvi** perquè el responsable del projecte la pug
 Aquesta és una de les idees fonamentals del desenvolupament *open source*: els canvis es poden proposar, discutir, revisar i, finalment, acceptar o rebutjar.
 :::
 
-# El procés de contribució
+## El procés de contribució
 
-## 1. Fes un *fork* del repositori
+### 1. Fes un *fork* del repositori
 
 El primer pas és crear una còpia del repositori de l'assignatura al teu compte de GitHub.
 
@@ -101,13 +102,13 @@ git clone URL
 Per exemple:
 
 ```bash
-git clone https://github.com/el-teu-usuari/amsa.git
+git clone https://github.com/el-teu-usuari/course-site.git
 ```
 
 A continuació, entra al directori del projecte:
 
 ```bash
-cd amsa
+cd course-site
 ```
 
 A partir d'aquest moment treballaràs sobre una còpia local del repositori.

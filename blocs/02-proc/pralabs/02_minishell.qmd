@@ -3,7 +3,7 @@ title: "Pralab 05 (II): shell: `strtok`, `;` i senyals"
 author: "Jordi Mateo Fornés"
 format:
   udl-course-html:
-    toc: false
+    toc: true
     number-sections: false
 ---
 
@@ -98,7 +98,7 @@ gcc -Wall -Wextra -g -O0 -o shell shell.c
 
 ---
 
-### Part C — Arreglem l'error amb `strtok`
+## Part C — Arreglem l'error amb `strtok`
 
 Per trossejar una línia en paraules la biblioteca ja ens dona una eina: `strtok`.
 
@@ -123,7 +123,7 @@ Obre `man 3 strtok` i respon:
 
 </details>
 
-#### La shell funcional
+### La shell funcional
 
 Substituïm el cos del bucle. Ja no cal el `printf("has escrit...")`. Posem els tokens en un array de punters acabat en `NULL`, que és el que `execvp` espera:
 
@@ -195,7 +195,7 @@ Però un `ls -l ; pwd` de debò són **dues** comandes, i la nostra shell en pot
 
 ---
 
-### Part D — Diverses comandes amb `;`
+## Part D — Diverses comandes amb `;`
 
 Si `strtok` ens serveix per partir en paraules, també ens servirà per partir en comandes: primer pel `;`, i després cada comanda per espais. Escrit amb dos bucles:
 
@@ -266,7 +266,7 @@ Aquest és el límit de `strtok`: **només pot tenir una cadena en curs de tross
 
 </details>
 
-#### Dues fases separades
+### Dues fases separades
 
 Solució primer analitzem *tota* la línia en comandes, i només quan hem acabat analitzem cada comanda en paraules.
 
@@ -371,7 +371,7 @@ int main(void)
 
 ---
 
-### Part E — Senyals
+## Part E — Senyals
 
 Ja tenim una shell amb diverses comandes. Però falta una cosa: què passa quan algú prem **Ctrl-C**?
 
@@ -381,7 +381,7 @@ Ja tenim una shell amb diverses comandes. Però falta una cosa: què passa quan 
 - Alguns no es poden capturar ni ignorar: **`SIGKILL`** i **`SIGSTOP`**.
 :::
 
-#### E.1 — Un fill que mor per un senyal
+### E.1 — Un fill que mor per un senyal
 
 Arrenca la shell, escriu `sleep 30` i prem **Ctrl-C**.
 
@@ -402,7 +402,7 @@ Això no és el que volem: Ctrl-C ha de matar `sleep`, però **no la shell**.
 
 </details>
 
-#### La shell ignora `SIGINT`, el fill no
+### La shell ignora `SIGINT`, el fill no
 
 La idea: la **shell ignora** `SIGINT`, i el **fill** el manté actiu. Afegeix `#include <signal.h>` i, al principi del `main`:
 
@@ -445,7 +445,7 @@ La solució és que el **fill restauri l'acció per defecte abans de l'`exec`**:
 Afegeix aquesta línia al fill d'`executa`, compila i comprova-ho.
 
 
-#### `SIGSTOP` i `SIGTSTP`: Ctrl-Z no és el que sembla
+### `SIGSTOP` i `SIGTSTP`: Ctrl-Z no és el que sembla
 
 Ctrl-C té un germà: **Ctrl-Z**. Provem de protegir la shell igual que amb `SIGINT`.
 
@@ -493,7 +493,7 @@ Fer-ho bé (poder aturar un procés amb Ctrl-Z, reprendre'l amb `fg`, tenir-ne d
 
 Deixem, doncs, `signal(SIGTSTP, SIG_IGN);` al `main` i el fill només restaura `SIGINT`.
 
-#### El mateix, amb `sigaction`
+### El mateix, amb `sigaction`
 
 Fins ara hem fet servir `signal`, que és curta però té mala fama: el seu comportament **varia entre sistemes** (`man 2 signal`). `sigaction` és la crida de debò: tot és explícit i no depèn de la plataforma. Aquí tens el mateix que fem fins ara escrit amb cadascuna:
 
@@ -564,7 +564,7 @@ posa_senyal(SIGINT, SIG_DFL);
 
 ---
 
-#### El programa complet
+### El programa complet
 
 Aquest és el programa que hem construït a classe, en dues versions. Totes dues tracten les comandes exactament igual; només canvia com es gestiona `SIGINT`:
 
@@ -871,7 +871,7 @@ int executa(char **argv)
 
 ---
 
-### Part F · Refactor
+## Part F · Refactor
 
 Aquesta part no es fa a classe per manca de temps: la fas a casa, partint de la versió del programa complet que prefereixis. L'objectiu és **reordenar el codi** en funcions petites, amb noms descriptius i valors de retorn clars, perquè sigui més fàcil de llegir, mantenir i provar.
 

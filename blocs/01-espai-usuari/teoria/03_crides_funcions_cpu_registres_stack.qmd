@@ -8,20 +8,21 @@ format:
     theme: [simple, ../../../_extensions/udl-course/styles/revealjs.scss, ../../../styles/slides.scss]
     filters: [../../../_extensions/udl-course/components.lua]
     transition: fade
-    slide-number: true
+    slide-number: false
     incremental: true
     chalkboard: false
+    menu: false
+    controls: false
     slide-level: 2
     width: 1600
     height: 900
     margin: 0.08
     center: false
-    footer: 'Sistemes Operatius (SO) &nbsp; <a href="/index.html" class="home-link" aria-label="Inici"><svg class="home-icon" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 52 C27 43 39 31 60 12 C78 30 93 42 108 51" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M25 48 C25 64 25 76 24 87 C35 84 45 85 53 87 M95 48 C95 64 95 76 97 87 C87 84 77 85 68 87" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M51 87V70 C51 64 55 60 60 60 C65 60 69 64 69 70V87Z" fill="currentColor"/><path d="M82 29V17 C82 14 84 13 87 13H94 C96 13 97 15 96 17 C94 20 93 24 94 32Z" fill="currentColor"/></svg></a>'
     include-in-header:
       - text: |
           <link rel="stylesheet"
-                href="https://cdn.jsdelivr.net/npm/asciinema-player@3.9.0/dist/bundle/asciinema-player.css">
-          <script src="https://cdn.jsdelivr.net/npm/asciinema-player@3.9.0/dist/bundle/asciinema-player.min.js"></script>
+                href="../../../assets/vendor/asciinema/asciinema-player.css">
+          <script src="../../../assets/vendor/asciinema/asciinema-player.min.js"></script>
 resources:
   - cast/03_crides_funcions_cpu_registres_stack/gdb-demo.cast
 ---
@@ -59,7 +60,7 @@ Què passa realment quan fem `foo()`?
 :::{.columns}
 ::: {.column width="50%"}
 
-![](figures/02_espai_memoria/espai_adreces.png){ width=90%}
+![](figures/02_espai_memoria/espai_adreces.png){width=90% fig-alt="Esquema sobre espai adreces (03_crides_funcions_cpu_registres_stack)"}
 
 :::
 ::: {.column width="50%"}
@@ -85,7 +86,7 @@ Però què fa la CPU quan executem aquesta crida?
 
 ::: {.columns}
 ::: {.column width="50%"}
-![](figures/03_crides_funcions_cpu_registres_stack/instruccions.png){ width=90%}
+![](figures/03_crides_funcions_cpu_registres_stack/instruccions.png){width=90% fig-alt="Esquema sobre instruccions (03_crides_funcions_cpu_registres_stack)"}
 :::
 ::: {.column width="50%"}
 
@@ -112,7 +113,7 @@ Com sap la CPU quina instrucció ha d'executar?
 
 ::: {.columns}
 ::: {.column width="50%"}
-![](figures/03_crides_funcions_cpu_registres_stack/rip.png){ width=90%}
+![](figures/03_crides_funcions_cpu_registres_stack/rip.png){width=90% fig-alt="Esquema sobre rip (03_crides_funcions_cpu_registres_stack)"}
 
 :::
 ::: {.column width="50%"}
@@ -150,7 +151,7 @@ Quan `foo()` acaba, com sap la CPU on ha de tornar?
 :::
 ::: {.column width="50%"}
 
-![](figures/03_crides_funcions_cpu_registres_stack/call-ret.png){ width=80%}
+![](figures/03_crides_funcions_cpu_registres_stack/call-ret.png){width=80% fig-alt="Esquema sobre call ret (03_crides_funcions_cpu_registres_stack)"}
 
 :::
 :::
@@ -160,7 +161,7 @@ Quan `foo()` acaba, com sap la CPU on ha de tornar?
 ::: {.columns}
 ::: {.column width="65%"}
 
-![](figures/03_crides_funcions_cpu_registres_stack/call-ret1.png){ width=80%}
+![](figures/03_crides_funcions_cpu_registres_stack/call-ret1.png){width=80% fig-alt="Esquema sobre call ret1 (03_crides_funcions_cpu_registres_stack)"}
 
 :::
 ::: {.column width="35%"}
@@ -179,7 +180,7 @@ Una crida de funció necessita conservar el punt al qual haurà de tornar.
 
 
 :::{style="text-align:center;"}
-![](figures/03_crides_funcions_cpu_registres_stack/call-ret2.png){ width=70%}
+![](figures/03_crides_funcions_cpu_registres_stack/call-ret2.png){width=70% fig-alt="Esquema sobre call ret2 (03_crides_funcions_cpu_registres_stack)"}
 :::
 
 ## BL i RET (AArch64)
@@ -187,7 +188,7 @@ Una crida de funció necessita conservar el punt al qual haurà de tornar.
 ::: {.columns}
 ::: {.column width="60%"}
 
-![](figures/03_crides_funcions_cpu_registres_stack/bl-ret.png)
+![](figures/03_crides_funcions_cpu_registres_stack/bl-ret.png){fig-alt="Esquema sobre bl ret (03_crides_funcions_cpu_registres_stack)"}
 
 
 :::
@@ -225,7 +226,7 @@ La **STACK** és una regió de memòria que creix cap a adreces més baixes. Per
 ::::: {.columns}
 ::: {.column width="65%"}
 
-![](figures/03_crides_funcions_cpu_registres_stack/rsp-sp.png)
+![](figures/03_crides_funcions_cpu_registres_stack/rsp-sp.png){fig-alt="Esquema sobre rsp sp (03_crides_funcions_cpu_registres_stack)"}
 
 :::
 ::: {.column width="35%"}
@@ -263,7 +264,7 @@ Què passa amb `RSP` quan reservem i alliberem aquest espai?
 
 :::
 ::: {.column width="65%"}
-![](figures/03_crides_funcions_cpu_registres_stack/rsp.png){ width=90%}
+![](figures/03_crides_funcions_cpu_registres_stack/rsp.png){width=90% fig-alt="Esquema sobre rsp (03_crides_funcions_cpu_registres_stack)"}
 
 :::
 :::
@@ -275,7 +276,7 @@ Què passa amb `RSP` quan reservem i alliberem aquest espai?
 ::: {.column width="50%"}
 
 
-![](figures/02_espai_memoria/stackframe.png){ width=75%}
+![](figures/02_espai_memoria/stackframe.png){width=75% fig-alt="Esquema sobre stackframe (03_crides_funcions_cpu_registres_stack)"}
 
 :::
 ::: {.column width="50%"}
@@ -316,7 +317,7 @@ void foo(void)
 :::
 ::: {.column width="75%"}
 
-![](figures/03_crides_funcions_cpu_registres_stack/rsp-problema.png)
+![](figures/03_crides_funcions_cpu_registres_stack/rsp-problema.png){fig-alt="Esquema sobre rsp problema (03_crides_funcions_cpu_registres_stack)"}
 
 
 :::
@@ -346,7 +347,7 @@ void foo(void)
 ::: {.column width="50%"}
 
 :::{style="text-align:center;"}
-![](figures/03_crides_funcions_cpu_registres_stack/rbp.png)
+![](figures/03_crides_funcions_cpu_registres_stack/rbp.png){fig-alt="Esquema sobre rbp (03_crides_funcions_cpu_registres_stack)"}
 :::
 
 :::
@@ -377,7 +378,7 @@ El paper conceptual és el mateix però els registres tenen noms diferents.
 
 
 :::{style="text-align:center;"}
-![](figures/03_crides_funcions_cpu_registres_stack/construint-frame.png){ width=55%}
+![](figures/03_crides_funcions_cpu_registres_stack/construint-frame.png){width=55% fig-alt="Esquema sobre construint frame (03_crides_funcions_cpu_registres_stack)"}
 :::
 
 ::: {.bonapractica .fragment}
@@ -387,7 +388,7 @@ Aquest és el patró clàssic. Els compiladors moderns poden ometre el frame poi
 ## Destruint el frame
 
 :::{style="text-align:center;"}
-![](figures/03_crides_funcions_cpu_registres_stack/destruint-frame.png){ width=70%}
+![](figures/03_crides_funcions_cpu_registres_stack/destruint-frame.png){width=70% fig-alt="Esquema sobre destruint frame (03_crides_funcions_cpu_registres_stack)"}
 :::
 
 # Arguments i ABI
@@ -424,7 +425,7 @@ C defineix la funció. **L'ABI defineix com caller i callee es comuniquen.**
 ::::: {.columns}
 ::: {.column width="70%"}
 
-![](figures/02_espai_memoria/x86_64.png){ width=90%}
+![](figures/02_espai_memoria/x86_64.png){width=90% fig-alt="Esquema sobre x86 64 (03_crides_funcions_cpu_registres_stack)"}
 
 :::
 ::: {.column width="30%"}
@@ -438,7 +439,7 @@ Arguments 1–6 (enters/punters) → `RDI, RSI, RDX, RCX, R8, R9`. Valor de reto
 
 ::::: {.columns}
 ::: {.column width="70%"}
-![](figures/02_espai_memoria/arm.png){ width=90%}
+![](figures/02_espai_memoria/arm.png){width=90% fig-alt="Esquema sobre arm (03_crides_funcions_cpu_registres_stack)"}
 
 :::
 ::: {.column width="30%"}
@@ -458,7 +459,7 @@ La *calling convention* és específica de l'ABI: 6 registres en System V AMD64,
 ::::: {.columns}
 ::: {.column width="70%"}
 
-![](figures/03_crides_funcions_cpu_registres_stack/no-caben.png)
+![](figures/03_crides_funcions_cpu_registres_stack/no-caben.png){fig-alt="Esquema sobre no caben (03_crides_funcions_cpu_registres_stack)"}
 
 :::
 ::: {.column width="30%"}
@@ -504,7 +505,7 @@ Si `foo()` modifica `RBX`, qui ha de garantir que el valor original es conserva?
 ## AArch64: caller / callee saved
 
 :::{style="text-align:center;"}
-![](figures/03_crides_funcions_cpu_registres_stack/caller-callee.png){ width=80%}
+![](figures/03_crides_funcions_cpu_registres_stack/caller-callee.png){width=80% fig-alt="Esquema sobre caller callee (03_crides_funcions_cpu_registres_stack)"}
 :::
 
 # Síntesi
@@ -533,7 +534,7 @@ int suma(int a, int b)
 :::
 
 :::{style="text-align:center;"}
-![](figures/03_crides_funcions_cpu_registres_stack/complet.png){width=80%}
+![](figures/03_crides_funcions_cpu_registres_stack/complet.png){width=80% fig-alt="Diagrama complet de la crida a funcions, registres de la CPU i pila d'execució (stack)"}
 :::
 
 ## Ho podem observar?

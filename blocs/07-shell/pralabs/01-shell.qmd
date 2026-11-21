@@ -1,3 +1,10 @@
+---
+title: "Pralab 01: Primers scripts en Bash"
+subtitle: "Bloc 7 · Shell Scripting"
+author: "Jordi Mateo Fornés"
+description: "Shebang, permisos, codis de retorn ($?), test, validació d'arguments, PATH i perfil.sh."
+---
+
 ## Introducció
 
 Fins ara has escrit ordres una a una a la terminal. Però tot el que fas a mà es pot **guardar en un fitxer** i executar quan vulguis: això és un *script*. I darrere de cada script hi ha el mateix mecanisme que fa servir la teva shell: llançar **processos**, esperar que acabin i **mirar com han acabat**.
@@ -17,9 +24,9 @@ shell → script → permisos → codi de retorn → test → arguments → erro
 
 ---
 
-### Part A · Quina shell tinc i el meu primer script
+## Part A · Quina shell tinc i el meu primer script
 
-#### A.1 — Quina és la meva shell?
+### A.1 — Quina és la meva shell?
 
 ::: {.exercici}
 Prediu què imprimiran aquestes ordres i comprova-ho:
@@ -49,7 +56,7 @@ Per canviar la shell de *login* (afecta sessions futures, no l'actual) existeix 
 
 </details>
 
-#### A.2 — El primer script
+### A.2 — El primer script
 
 Crea `hola.sh`:
 
@@ -85,7 +92,7 @@ Un detall: el missatge diu "estàs utilitzant la shell: `$SHELL`", però ja hem 
 
 </details>
 
-#### A.3 — Fer-lo executable
+### A.3 — Fer-lo executable
 
 ::: {.exercici}
 Prediu què passarà i comprova-ho:
@@ -140,9 +147,9 @@ Per això un script executat normalment **no pot canviar el directori ni les var
 
 ---
 
-### Part B · Codis de retorn i `test`
+## Part B · Codis de retorn i `test`
 
-#### B.1 — El codi de retorn `$?`
+### B.1 — El codi de retorn `$?`
 
 Tot procés acaba amb un **codi de sortida**: `0` vol dir èxit i qualsevol altre valor (1–255) indica error. La shell el guarda a `$?`.
 
@@ -202,7 +209,7 @@ Si féssim `echo "...: $?"` just després de cada `ls` també funcionaria, però
 
 </details>
 
-#### B.2 — `test` i `[ ]`
+### B.2 — `test` i `[ ]`
 
 Per decidir qüestions com "existeix aquest fitxer?" la shell té `test`, que **no imprimeix res**: només retorna `0` (cert) o `1` (fals).
 
@@ -231,7 +238,7 @@ Els valors són `0`, `1` i `1`.
 
 </details>
 
-#### B.3 — `&&` i `||`
+### B.3 — `&&` i `||`
 
 Aquests operadors usen **el codi de retorn** de l'ordre anterior:
 
@@ -262,7 +269,7 @@ L'última línia mostra la trampa: `true && false || echo "D"` executa `D` encar
 
 </details>
 
-#### B.4 — `existeix.sh`
+### B.4 — `existeix.sh`
 
 ::: {.exercici}
 Crea `existeix.sh`: rep **un nom de fitxer com a argument** i mostra un missatge indicant si existeix o no. Encara **no** podem usar `if`: fes servir `[ ]` amb `&&` i `||`.
@@ -293,7 +300,7 @@ Si `$1` està buit, `[ -f ]` sense cometes també canvia de significat (només t
 
 </details>
 
-#### B.5 — Encadenar-ho tot: fitxer, directori o una altra cosa
+### B.5 — Encadenar-ho tot: fitxer, directori o una altra cosa
 
 Ara volem distingir **tres casos més un d'error**: fitxer regular, directori, un altre tipus d'element (un dispositiu, un *socket*...) o que no existeixi.
 
@@ -388,9 +395,9 @@ Fixa't que cada branca és exclusiva per construcció: això és exactament el q
 
 ---
 
-### Part C · Arguments i gestió d'errors
+## Part C · Arguments i gestió d'errors
 
-#### C.1 — Arguments posicionals
+### C.1 — Arguments posicionals
 
 Quan crides `./script.sh a b c`, la shell guarda els valors en variables especials:
 
@@ -433,7 +440,7 @@ Quan hagis de **passar** tots els arguments a una altra ordre, fes servir `"$@"`
 
 </details>
 
-#### C.2 — Gestionar l'error: `exit` i stderr
+### C.2 — Gestionar l'error: `exit` i stderr
 
 Fins ara els nostres scripts acaben sempre amb codi `0`, **encara que hi hagi hagut un error**. Un altre programa que el cridés no s'adonaria que ha fallat.
 
@@ -477,7 +484,7 @@ echo "Primer argument: $1, Total arguments: $#"
 La versió que només feia `[ $# -eq 0 ] && echo "Error..." || echo "..."` també mostrava el missatge, però acabava amb `0`. **Un missatge d'error no és el mateix que un error**: el segon ho ha de dir el codi de retorn.
 :::
 
-#### C.3 — Un script que crea scripts, i instal·lar-lo
+### C.3 — Un script que crea scripts, i instal·lar-lo
 
 Fins ara hem hagut d'escriure el *shebang* a mà a cada script. Automatitzem-ho, i de passada tanquem el cercle amb el `$PATH` de A.3.
 
@@ -534,9 +541,9 @@ echo "Script $1 creat."
 
 ---
 
-### Part D · Interacció i tasca final
+## Part D · Interacció i tasca final
 
-#### D.1 — `read`
+### D.1 — `read`
 
 `read` llegeix una línia de l'**entrada estàndard** i la desa en una variable.
 
@@ -574,7 +581,7 @@ Amb `echo Anna | ./saluda.sh`, `read` llegeix d'**stdin**, que ara és el pipe, 
 
 </details>
 
-#### D.2 — Tasca final: `perfil.sh`
+### D.2 — Tasca final: `perfil.sh`
 
 ::: {.exercici}
 Crea `perfil.sh` (al teu directori personal, `~`) que:
@@ -615,7 +622,7 @@ Recorda `chmod +x perfil.sh` (A.3).
 
 </details>
 
-#### D.3 — Executar-lo en iniciar sessió
+### D.3 — Executar-lo en iniciar sessió
 
 :::{.bonapractica}
 **Prova primer a mà.** Abans de tocar res de configuració, assegura't que `./perfil.sh` funciona perfectament. I fes aquest apartat en una **VM** o amb una **segona sessió oberta**: un error a `~/.profile` pot fer incòmode iniciar sessió, i la segona sessió et permet desfer-ho.

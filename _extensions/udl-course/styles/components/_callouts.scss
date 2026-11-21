@@ -45,12 +45,75 @@ details.udl-component {
       margin-right: 0.5em;
       transition: transform var(--udl-transition-fast);
     }
+    &:focus-visible {
+      outline: 2px solid var(--udl-primary);
+      outline-offset: -2px;
+    }
   }
 
   &[open] summary::before { transform: rotate(90deg); }
 
   .udl-component-body {
     padding: 0 var(--udl-space-lg) var(--udl-space-md);
+  }
+}
+
+// Raw <details> blocks used across Pralabs/Activitats to wrap .udl-solucio
+main.content details:not(.udl-component):not(.udl-calc-details) {
+  border: 1px solid var(--udl-border);
+  border-left: 4px solid var(--udl-success);
+  border-radius: var(--udl-radius);
+  background: var(--udl-surface);
+  margin: var(--udl-space-md) 0 var(--udl-space-lg);
+  box-shadow: var(--udl-shadow-card);
+  overflow: hidden;
+
+  > summary {
+    padding: 0.65rem 1.1rem;
+    font-weight: 600;
+    font-size: var(--udl-text-sm);
+    color: var(--udl-success);
+    background: color-mix(in srgb, var(--udl-success) 7%, var(--udl-surface));
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background var(--udl-transition-fast);
+
+    &::-webkit-details-marker { display: none; }
+    &::before {
+      content: "▸";
+      display: inline-block;
+      font-size: 0.95em;
+      transition: transform var(--udl-transition-fast);
+    }
+    &:hover {
+      background: color-mix(in srgb, var(--udl-success) 13%, var(--udl-surface));
+    }
+    &:focus-visible {
+      outline: 2px solid var(--udl-primary);
+      outline-offset: -2px;
+    }
+  }
+
+  &[open] > summary {
+    border-bottom: 1px solid var(--udl-border);
+    &::before { transform: rotate(90deg); }
+  }
+
+  > :not(summary) {
+    margin-left: var(--udl-space-md);
+    margin-right: var(--udl-space-md);
+  }
+
+  // Avoid double-border when .udl-solucio sits directly inside <details>
+  > .udl-solucio {
+    border-left: none;
+    background: transparent;
+    margin: 0;
+    padding: var(--udl-space-md) var(--udl-space-lg);
   }
 }
 
@@ -71,6 +134,7 @@ $groups: (
   reflexio:      var(--udl-outcome),
 
   examtip:       var(--udl-exam),
+  pista:         var(--udl-exam),
   errorcomu:     var(--udl-warning),
   bonapractica:  var(--udl-success),
   solucio:       var(--udl-success),

@@ -32,6 +32,8 @@ En tots els exemples s'usa `printf("...\n")`. En un terminal, `stdout` és *line
 
 ---
 
+## Exercici 1
+
 ::: {.exercici}
 Analitza el codi i respon:
 
@@ -73,6 +75,8 @@ sequenceDiagram
 </details>
 
 ---
+
+## Exercici 2
 
 ::: {.exercici}
 ```{.c}
@@ -118,6 +122,8 @@ sequenceDiagram
 
 ---
 
+## Exercici 3
+
 ::: {.exercici}
 ```{.c}
 int main(void) {
@@ -150,6 +156,8 @@ Els quatre processos (`P`, `C1`, `C2`, `C1b`) arriben al `printf`.
 </details>
 
 ---
+
+## Exercici 4
 
 ::: {.exercici}
 Completa els buits perquè el pare mostri el codi amb què ha acabat el fill.
@@ -184,6 +192,8 @@ Abans d'usar `WEXITSTATUS` convé comprovar `WIFEXITED(st)`: el valor només té
 
 ---
 
+
+## Exercici 5
 
 ::: {.exercici}
 ```{.c}
@@ -225,6 +235,8 @@ flowchart TD
 </details>
 
 ---
+
+## Exercici 6
 
 ::: {.exercici}
 ```{.c}
@@ -270,6 +282,8 @@ flowchart TD
 </details>
 
 ---
+
+## Exercici 7
 
 ::: {.exercici}
 ```{.c}
@@ -321,6 +335,8 @@ sequenceDiagram
 
 ---
 
+## Exercici 8
+
 ::: {.exercici}
 El pare crea `N` fills; el fill `i` acaba amb `exit(i)`. El pare espera **tots** els fills i en suma els codis.
 
@@ -370,6 +386,8 @@ Sortida: `suma=10` (1 + 2 + 3 + 4).
 </details>
 
 ---
+
+## Exercici 9
 
 ::: {.exercici}
 ```{.c}

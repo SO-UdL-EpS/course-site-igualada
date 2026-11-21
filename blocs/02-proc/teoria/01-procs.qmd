@@ -8,20 +8,21 @@ format:
     theme: [simple, ../../../_extensions/udl-course/styles/revealjs.scss, ../../../styles/slides.scss]
     filters: [../../../_extensions/udl-course/components.lua]
     transition: fade
-    slide-number: true
+    slide-number: false
     incremental: true
     chalkboard: false
+    menu: false
+    controls: false
     slide-level: 2
     width: 1600
     height: 900
     margin: 0.08
     center: false
-    footer: 'Sistemes Operatius (SO) &nbsp; <a href="/index.html" class="home-link" aria-label="Inici"><svg class="home-icon" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 52 C27 43 39 31 60 12 C78 30 93 42 108 51" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M25 48 C25 64 25 76 24 87 C35 84 45 85 53 87 M95 48 C95 64 95 76 97 87 C87 84 77 85 68 87" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M51 87V70 C51 64 55 60 60 60 C65 60 69 64 69 70V87Z" fill="currentColor"/><path d="M82 29V17 C82 14 84 13 87 13H94 C96 13 97 15 96 17 C94 20 93 24 94 32Z" fill="currentColor"/></svg></a>'
     include-in-header:
       - text: |
           <link rel="stylesheet"
-                href="https://cdn.jsdelivr.net/npm/asciinema-player@3.9.0/dist/bundle/asciinema-player.css">
-          <script src="https://cdn.jsdelivr.net/npm/asciinema-player@3.9.0/dist/bundle/asciinema-player.min.js"></script>
+                href="../../../assets/vendor/asciinema/asciinema-player.css">
+          <script src="../../../assets/vendor/asciinema/asciinema-player.min.js"></script>
 resources:
   - cast/01/*.cast
 ---
@@ -91,7 +92,7 @@ AsciinemaPlayer.create(
 ## Un procés són tres coses 
 
 :::{style="text-align:center"}
-![](figures/01/proces.png){ width=50%}
+![](figures/01/proces.png){width=50% fig-alt="Esquema sobre proces (01-procs)"}
 :::
 
 ::: {.concepte title="Dues il·lusions"}
@@ -158,7 +159,7 @@ grep ctxt /proc/$$/status
 ::::: columns
 ::: {.column width="50%"}
 
-![](figures/01/5-estats.png)
+![](figures/01/5-estats.png){fig-alt="Esquema sobre 5 estats (01-procs)"}
 
 :::
 
@@ -195,7 +196,7 @@ Per veure ,és informació sobre els processos poder fer `man ps` i llegir la se
 | **X** | `EXIT_DEAD` | Mort (no es veu mai) |
 
 :::{.exemple}
-Podeu consultar [sched.h](https://elixir.bootlin.com/linux/v7.2.8/source/include/linux/sched.h#L108) es representen els estats de les tasques. **TASK_RUNNING** indica que la tasca és runnable: pot executar-se, tant si està esperant que el planificador li assigni la CPU com si s'està executant en aquell moment. En canvi, **TASK_INTERRUPTIBLE** i **TASK_UNINTERRUPTIBLE** representen diferents formes d'espera (dormit).
+Podeu consultar a [`include/linux/sched.h`](https://elixir.bootlin.com/linux/v6.16.4/source/include/linux/sched.h#L108) com es representen els estats de les tasques. **TASK_RUNNING** indica que la tasca és *runnable*: pot executar-se, tant si està esperant que el planificador li assigni la CPU com si s'està executant en aquell moment. En canvi, **TASK_INTERRUPTIBLE** i **TASK_UNINTERRUPTIBLE** representen diferents formes d'espera (dormit).
 :::
 
 ## `R` no vol dir «executant-se» 
@@ -399,7 +400,7 @@ AsciinemaPlayer.create(
 ::::: columns
 ::: {.column width="55%"}
 
-![](figures/01/jera.png)
+![](figures/01/jera.png){fig-alt="Esquema sobre jera (01-procs)"}
 
 :::
 
@@ -434,7 +435,7 @@ AsciinemaPlayer.create(
 
 ::::: columns
 ::: {.column width="50%"}
-![](figures/01/grups.png)
+![](figures/01/grups.png){fig-alt="Esquema sobre grups (01-procs)"}
 :::
 
 ::: {.column width="50%"}

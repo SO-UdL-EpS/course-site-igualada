@@ -3,7 +3,7 @@ title: "Pralab 05: shell (I): `getline()`,`fork()`, `wait()`, `execvp()`"
 author: "Jordi Mateo Fornés"
 format:
   udl-course-html:
-    toc: false
+    toc: true
     number-sections: false
 ---
 
@@ -15,7 +15,7 @@ Cada cop que obres una terminal i escrius `ls -l ; pwd`, hi ha un programa que f
 
 El cor de qualsevol shell és aquest cicle, i el construirem peça a peça:
 
-![](figures/01/shell.png)
+![](figures/01/shell.png){fig-alt="Esquema sobre shell (01_minishell)"}
 
 :::{.programari}
 - `gcc`. **Sistema de referència: Debian bookworm, amb gcc 12.2.**
@@ -50,9 +50,9 @@ Abans de cridar una funció per primera vegada, llegeix **SYNOPSIS** i **RETURN 
 
 ---
 
-### Part A · El prompt de la mini-shell (Lectura de línia)
+## Part A · El prompt de la mini-shell (Lectura de línia)
 
-#### A.1 — Quina funció triem per llegir?
+### A.1 — Quina funció triem per llegir?
 
 La primera idea que ve al cap és `scanf`. Anem a posar-la a prova.
 
@@ -223,7 +223,7 @@ int main(void)
 }
 ```
 
-#### A.2 — Treure el salt de línia 
+### A.2 — Treure el salt de línia 
 
 `getline` ens dona `"ls -l\n"`. Si el passéssim tal qual a `execvp`, buscaria un programa que es digui `ls\n`. Hem de treure el `\n`. Tenim tres maneres de fer-ho:
 
@@ -248,7 +248,7 @@ A (a), en canvi, **assumim que el `\n` hi és**, i si no hi és, esborrem l'últ
 
 </details>
 
-#### A.3 — El bucle complet
+### A.3 — El bucle complet
 
 Crea `shell.c`:
 
@@ -335,14 +335,14 @@ Aquesta solució encara no és perfecta: si l'usuari escriu `q` amb espais, tabu
 
 ---
 
-### Part B — Executar una comanda
+## Part B — Executar una comanda
 
 Ja sabem llegir una línia. Ara toca fer que el programa **executi** el que l'usuari escriu. En Unix això no es fa amb una sola crida: es fa amb tres peces que cooperen.
 
-![](figures/01/fork.png)
+![](figures/01/fork.png){fig-alt="Esquema sobre fork (01_minishell)"}
 
 
-#### B.1 —`fork` 
+### B.1 —`fork` 
 
 ::: {.exercici}
 Sense compilar-lo, prediu què imprimeix aquest programa i **quantes vegades** apareix cada línia. Després compila'l i comprova-ho.
@@ -388,7 +388,7 @@ fi (pid 4312)
 
 </details>
 
-#### B.2 — Esperar el fill i llegir com ha acabat
+### B.2 — Esperar el fill i llegir com ha acabat
 
 Sense `wait`, el pare pot continuar (i tornar a mostrar el prompt) abans que el fill acabi, i el fill queda com a **zombie** quan acaba. Per això el pare ha d'esperar.
 
@@ -427,7 +427,7 @@ if (pid == 0) {
 
 </details>
 
-#### B.3 — Llegim `execvp`
+### B.3 — Llegim `execvp`
 
 Aquesta és la crida on és més fàcil equivocar-se, i **tota la informació és al `man`**.
 
@@ -461,7 +461,7 @@ execvp(args[0], args);
 
 </details>
 
-#### B.4 — La funció `executa`
+### B.4 — La funció `executa`
 
 ```{.c}
 int executa(char **argv)
@@ -501,7 +501,7 @@ Fixa't en els detalls (cadascun és una decisió que s'ha pres llegint el `man`)
 | `128 + WTERMSIG(status)` | Convenció del shell per a un procés mort per senyal (p. ex. `139` = `SIGSEGV`). |
 | `wait(&status)` + macros | `wait` retorna el PID del fill i omple `status`; és `executa` qui el desempaqueta (`WEXITSTATUS`, `WTERMSIG`) i retorna el codi, de manera que el pare (el bucle del shell) podrà decidir què fer amb ell. |
 
-#### B.5 — Primera versió de la mini-shell
+### B.5 — Primera versió de la mini-shell
 
 Aquest és **el punt on vam deixar la sessió**. Funciona a mitges. :)
 

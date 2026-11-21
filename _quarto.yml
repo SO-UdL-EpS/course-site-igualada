@@ -1,112 +1,56 @@
 project:
   type: website
   output-dir: docs
+  render:
+    - index.qmd
+    - materials.qmd
+    - calculadora.qmd
+    - guia.qmd
+    - course-info/presentation-slides.qmd
+    - course-info/contributions/contribute.qmd
+    - blocs/**/*.qmd
+  resources:
+    - assets/icons.svg
+    - assets/js/grade-engine.js
+    - assets/js/course-ui.js
+    - assets/vendor/asciinema/asciinema-player.css
+    - assets/vendor/asciinema/asciinema-player.min.js
+    - blocs/03-sched/activitats/src/template.xlsx
+    - data/course-catalog.json
+
+lang: ca
 
 website:
-  title: "Sistemes Operatius"
-  description: "Grau en Enginyeria Informàtica · Campus Igualada"
-  page-navigation: true
+  title: "SO"
+  description: "Sistemes Operatius · Grau en Enginyeria Informàtica · Campus Igualada · Universitat de Lleida"
+  page-navigation: false
+  bread-crumbs: false
   favicon: assets/logo.svg
+
+  search:
+    location: navbar
+    type: overlay
 
   page-footer:
     left: |
-      Universitat de Lleida · Departament d'Enginyeria Informàtica i Disseny Digital
+      Universitat de Lleida · Grau en Enginyeria Informàtica (Campus Igualada)
     right: |
-      Construït amb Quarto
-
+      [Materials](/materials.qmd) · [Calculadora](/calculadora.qmd) · [Guia docent](/guia.qmd) · [Contribuir (+0,5p)](/course-info/contributions/contribute.qmd) · [Guia oficial UdL](https://guiadocent.udl.cat/html/2026-27_105012) · [GitHub](https://github.com/SO-UdL-EpS/course-site)
 
   navbar:
-    background: "#141e2f"
     title: "SO"
     left:
       - text: "Inici"
         href: index.qmd
+      - text: "Materials"
+        href: materials.qmd
+      - text: "Calculadora"
+        href: calculadora.qmd
       - text: "Guia docent"
-        href: https://guiadocent.udl.cat/html/2026-27_105012
-    right:
-      - icon: github
-        href: https://github.com/SO-UdL-EpS/course-site
-  sidebar:
-    logo: assets/logo.png
-    logo-alt: "AMSA Logo"
-
-    style: floating
-    collapse-level: 3
-    contents:
-    - href: course-info/presentation-slides.qmd
-      text: "Presentació del curs"
-    - href: course-info/contributions/contribute.qmd
-      text: "Contribueix al curs"
-    - section: "Blocs"
-      contents:
-        - section: "Bloc 1 · Desenvolupament de Programari en Espai d'Usuari"
-          contents:
-            - section: Teoria
-              contents:
-              - href: blocs/01-espai-usuari/teoria/01_rols_funcions.qmd
-              - href: blocs/01-espai-usuari/teoria/02_espai_memoria_proces.qmd
-              - href: blocs/01-espai-usuari/teoria/03_crides_funcions_cpu_registres_stack.qmd
-              - href: blocs/01-espai-usuari/teoria/04_construccio_progama_c.qmd
-              - href: blocs/01-espai-usuari/teoria/05_variables_estructures.qmd
-              - href: blocs/01-espai-usuari/teoria/06_syscalls_del_c_al_kernel.qmd
-              - href: blocs/01-espai-usuari/teoria/07_syscalls_kernel.qmd
-            - section: "Pralabs"
-              contents: 
-              - href: blocs/01-espai-usuari/pralabs/01_c_mem.qmd
-              - href: blocs/01-espai-usuari/pralabs/02_c_mem.qmd
-              - href: blocs/01-espai-usuari/pralabs/03_c_heap.qmd
-              - href: blocs/01-espai-usuari/pralabs/04_c_ptrptr.qmd
-            - section: "Activitats"
-              contents:
-              - href: blocs/01-espai-usuari/activitats/01_c_punters_arrays.qmd
-              - href: blocs/01-espai-usuari/activitats/01_rols_funcions.qmd
-              - href: blocs/01-espai-usuari/activitats/02_espai_funcions.qmd
-              - href: blocs/01-espai-usuari/activitats/03_pokemon.qmd
-
-        - section: "Bloc 2 · Processos"
-          contents:
-            - section: Teoria
-              contents:
-              - href: blocs/02-proc/teoria/01-procs.qmd
-              - href: blocs/02-proc/teoria/02-create.qmd
-              - href: blocs/02-proc/teoria/03-signals.qmd
-              - href: blocs/02-proc/teoria/04-pipes.qmd
-              - href: blocs/02-proc/teoria/05-fifos.qmd
-            - section: "Activitats"
-              contents:
-              - href: blocs/02-proc/activitats/02-create.qmd
-              - href: blocs/02-proc/activitats/03-exec.qmd
-              - href: blocs/02-proc/activitats/01-fork-wait.qmd
-              - href: blocs/02-proc/activitats/04-pipes.qmd
-              - href: blocs/02-proc/activitats/05-loteria.qmd
-            - section: "Pralabs"
-              contents:
-              - href: blocs/02-proc/pralabs/01_minishell.qmd
-              - href: blocs/02-proc/pralabs/02_minishell.qmd
-              - href: blocs/02-proc/pralabs/03_minishell.qmd
-        - section: "Bloc 3 · Planificació"
-          contents:
-            - section: "Teoria"
-              contents:
-                - href: blocs/03-sched/teoria/01-sched.qmd
-                - href: blocs/03-sched/teoria/02-sched.qmd
-            - section: "Activitats"
-              contents:
-                - href: blocs/03-sched/activitats/01-sched.qmd
-                - href: blocs/03-sched/activitats/02-sched.qmd
-
-        - section: "Bloc 7 · Shell Scripting"
-          contents:
-            - section: Teoria
-              contents:
-                - href: blocs/07-shell/teoria/01-shell.qmd
-                - href: blocs/07-shell/teoria/02-shell.qmd
-            - section: Pralabs
-              contents:
-                - href: blocs/07-shell/pralabs/01-shell.qmd
-    
-
+        href: guia.qmd
 
 format:
   udl-course-html:
     toc: true
+    toc-depth: 4
+    link-external-newwindow: true

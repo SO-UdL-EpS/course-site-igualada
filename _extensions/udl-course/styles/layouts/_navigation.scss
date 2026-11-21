@@ -1,63 +1,591 @@
 // ============================================================
-// _navigation.scss — top navbar
-//
-// Dark navy bar (matching the logo's "dark card" treatment,
-// assets/logo.svg gradient) instead of a plain light Bootstrap
-// navbar — this is deliberate brand presence, not a default.
+// _navigation.scss — Responsive floating navigation
+// Desktop (> 640px): [ Inici | Materials | Calculadora | Guia docent ] [ Recents ] [ Theme ]
+// Mobile  (<= 640px): [ Menu ] [ Theme ] + full-screen fixed overlay
 // ============================================================
 
-$os-nav-bg:   #141e2f;
-$os-nav-text: #e6e9ef;
-$os-nav-muted: #8b96a8;
+$udl-nav-h: 40px;
 
 #quarto-header {
-  background: $os-nav-bg !important;
-  border-bottom: 2px solid var(--udl-primary);
-  box-shadow: 0 1px 8px rgba(0,0,0,0.15);
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100%;
+  z-index: 1050;
+  background: transparent !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+  padding: calc(0.65rem + env(safe-area-inset-top)) max(0.75rem, env(safe-area-inset-right)) 0.25rem max(0.75rem, env(safe-area-inset-left));
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  pointer-events: none;
+  transform: none !important;
+  transition: none !important;
 }
 
-.navbar-brand {
-  font-family: var(--udl-font-heading);
-  font-weight: 700;
-  color: $os-nav-text !important;
-  display: flex;
+// Shared capsule surface
+#quarto-header > nav.navbar,
+#quarto-header > .udl-nav-recents-capsule,
+#quarto-header > .udl-nav-theme-capsule,
+#quarto-header > .udl-nav-menu-capsule {
+  pointer-events: auto;
+  box-sizing: border-box;
+  height: $udl-nav-h;
+  min-height: $udl-nav-h;
+  margin: 0 !important;
+  background: var(--udl-nav-surface) !important;
+  backdrop-filter: saturate(160%) blur(12px);
+  -webkit-backdrop-filter: saturate(160%) blur(12px);
+  border: 1px solid var(--udl-nav-border);
+  border-radius: 9999px;
+  box-shadow: var(--udl-nav-shadow);
+  display: inline-flex;
   align-items: center;
-  gap: 0.5em;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+// Main capsule: links only (no brand, no toggler, no search, no tools)
+#quarto-header > nav.navbar {
+  width: fit-content;
+  padding: 0 0.25rem;
+
+  > .navbar-container {
+    width: auto;
+    max-width: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+
+  .navbar-brand-container,
+  .navbar-toggler,
+  #quarto-search,
+  .quarto-navbar-tools { display: none !important; }
+
+  .navbar-collapse {
+    display: flex !important;
+    flex-basis: auto !important;
+    flex-grow: 0 !important;
+    align-items: center;
+    width: auto;
+    padding: 0;
+    margin: 0;
+    border: 0;
+  }
+
+  .navbar-nav {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    gap: 0.1rem;
+    margin: 0 !important;
+    padding: 0;
+  }
 }
 
 .navbar-nav .nav-link {
   font-family: var(--udl-font-body);
-  color: $os-nav-muted !important;
-  border-radius: var(--udl-radius-sm);
-  transition: color var(--udl-transition-fast), background var(--udl-transition-fast);
-}
-.navbar-nav .nav-link:hover,
-.navbar-nav .nav-link.active {
-  background: rgba(255,255,255,0.06);
-  color: #ffffff !important;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--udl-nav-muted) !important;
+  border-radius: 9999px;
+  height: 30px;
+  padding: 0 0.78rem !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 120ms ease, background 120ms ease;
+  text-decoration: none !important;
+  white-space: nowrap;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--udl-nav-hover-bg);
+    color: var(--udl-nav-text) !important;
+  }
+
+  &.active,
+  &[aria-current="page"] {
+    background: var(--udl-nav-active-bg);
+    color: var(--udl-nav-active-text) !important;
+    font-weight: 600;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--udl-primary);
+    outline-offset: 2px;
+  }
 }
 
-// Search box + icons (GitHub, search) also sit on the dark bar
-#quarto-header .quarto-color-scheme-toggle,
-#quarto-header .bi,
-#quarto-header a.nav-link i.bi {
-  color: $os-nav-muted;
-}
-#quarto-header input.aa-Input,
-#quarto-search input {
-  color: $os-ink !important;
+// Recents capsule + theme capsule + mobile menu capsule share one control size
+#quarto-header > .udl-nav-recents-capsule {
+  position: relative;
+  padding: 0 0.25rem;
 }
 
-// Breadcrumbs: Course › Module › Lecture
+#quarto-header > .udl-nav-theme-capsule {
+  width: auto;
+  padding: 0 0.25rem;
+}
+
+#quarto-header > .udl-nav-menu-capsule {
+  width: $udl-nav-h;
+  padding: 0;
+}
+
+.udl-nav-menu-btn {
+  width: 30px !important;
+  height: 30px !important;
+  min-width: 30px !important;
+  max-width: 30px !important;
+  border-radius: 50% !important;
+  border: 1px solid transparent;
+  background: transparent;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  color: var(--udl-nav-muted) !important;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--udl-nav-hover-bg);
+    color: var(--udl-nav-text) !important;
+  }
+  &:focus-visible {
+    outline: 2px solid var(--udl-primary);
+    outline-offset: 2px;
+  }
+}
+
+// Unified Sun/Moon Theme Switch (Desktop capsule + Mobile overlay)
+.udl-theme-switch {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  height: 30px;
+  padding: 0 0.15rem !important;
+  margin: 0 !important;
+  border-radius: 9999px !important;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--udl-nav-muted);
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+
+  &:hover {
+    background: var(--udl-nav-hover-bg);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--udl-primary);
+    outline-offset: 2px;
+  }
+
+  .udl-theme-opt {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--udl-nav-muted);
+    transition: background 120ms ease, color 120ms ease;
+
+    svg {
+      width: 15px;
+      height: 15px;
+      display: block;
+      flex-shrink: 0;
+    }
+  }
+
+  &[data-theme="light"] .udl-theme-opt.is-sun,
+  &[data-theme="dark"] .udl-theme-opt.is-moon {
+    background: var(--udl-nav-active-bg);
+    color: var(--udl-nav-active-text);
+  }
+}
+
+// Hamburger / close icon (CSS-drawn, morphs to X while expanded)
+.udl-nav-menu-icon {
+  position: relative;
+  width: 14px;
+  height: 10px;
+  display: inline-block;
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1.5px;
+    border-radius: 2px;
+    background: currentColor;
+  }
+  &::before { top: 0; box-shadow: 0 4.25px 0 currentColor; }
+  &::after { bottom: 0; }
+}
+
+.udl-nav-menu-btn[aria-expanded="true"] .udl-nav-menu-icon {
+  &::before { top: 4.25px; transform: rotate(45deg); box-shadow: none; }
+  &::after { bottom: 4.25px; transform: rotate(-45deg); }
+}
+
+// Menu capsule exists only on mobile
+#quarto-header > .udl-nav-menu-capsule { display: none; }
+
+// Inline SVG Icon alignment helper
+.udl-svg-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+// Recents button + popover
+.udl-nav-recents-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.udl-nav-recents-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  height: 30px;
+  padding: 0 0.72rem;
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--udl-nav-muted);
+  font-family: var(--udl-font-body);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 120ms ease, color 120ms ease;
+
+  &:hover {
+    background: var(--udl-nav-hover-bg);
+    color: var(--udl-nav-text);
+  }
+
+  &[aria-expanded="true"] {
+    background: var(--udl-nav-active-bg);
+    color: var(--udl-nav-active-text);
+    font-weight: 600;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--udl-primary);
+    outline-offset: 2px;
+  }
+
+  .udl-recents-count-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--udl-primary);
+    display: inline-block;
+  }
+}
+
+.udl-nav-recents-popover {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 1085;
+  width: min(350px, calc(100vw - 1.5rem));
+  background: var(--udl-surface-elevated);
+  color: var(--udl-text);
+  border: 1px solid var(--udl-border-strong);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.14);
+  padding: 0.5rem;
+
+  .udl-popover-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.25rem 0.45rem 0.45rem;
+    border-bottom: 1px solid var(--udl-border);
+    margin-bottom: 0.25rem;
+
+    .udl-popover-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--udl-text-muted);
+    }
+    .udl-popover-clear {
+      background: transparent;
+      border: none;
+      color: var(--udl-primary);
+      font-size: 0.73rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 0.1rem 0.25rem;
+      &:hover { text-decoration: underline; }
+    }
+  }
+
+  .udl-popover-empty {
+    padding: 0.85rem 0.5rem;
+    font-size: 0.8rem;
+    color: var(--udl-text-muted);
+    text-align: center;
+  }
+
+  .udl-popover-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    max-height: 290px;
+    overflow-y: auto;
+  }
+
+  .udl-popover-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.45rem;
+    padding: 0.38rem 0.45rem;
+    border-radius: 7px;
+    transition: background 120ms ease;
+
+    &:hover {
+      background: var(--udl-surface-sunken);
+    }
+
+    .udl-popover-item-link {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      flex: 1;
+      text-decoration: none;
+
+      .udl-popover-item-title {
+        font-size: 0.81rem;
+        font-weight: 600;
+        color: var(--udl-text);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .udl-popover-item-meta {
+        font-size: 0.71rem;
+        color: var(--udl-text-muted);
+      }
+    }
+
+    .udl-popover-item-pdf {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+      padding: 0.18rem 0.45rem;
+      border-radius: 9999px;
+      border: 1px solid var(--udl-border);
+      background: var(--udl-surface);
+      color: var(--udl-text-secondary);
+      font-family: var(--udl-font-mono);
+      font-size: 0.69rem;
+      font-weight: 600;
+      text-decoration: none;
+      flex-shrink: 0;
+
+      &:hover {
+        border-color: var(--udl-primary);
+        color: var(--udl-primary);
+      }
+    }
+  }
+}
+
+// ============================================================
+// Mobile (<= 640px): compact header (hamburger only) + full-screen fixed overlay
+// ============================================================
+@media (max-width: 640px) {
+  #quarto-header {
+    justify-content: flex-start;
+    padding: calc(0.5rem + env(safe-area-inset-top)) max(0.65rem, env(safe-area-inset-right)) 0.25rem max(0.65rem, env(safe-area-inset-left));
+  }
+  #quarto-header > nav.navbar,
+  #quarto-header > .udl-nav-recents-capsule,
+  #quarto-header > .udl-nav-theme-capsule { display: none !important; }
+  #quarto-header > .udl-nav-menu-capsule { display: inline-flex; }
+}
+
+// The overlay is never rendered above the mobile breakpoint
+@media (min-width: 641px) {
+  .udl-nav-overlay { display: none !important; }
+}
+
+.udl-nav-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 1040;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 4.5rem max(1.25rem, env(safe-area-inset-right)) max(1.5rem, env(safe-area-inset-bottom)) max(1.25rem, env(safe-area-inset-left));
+  background: var(--udl-background);
+  color: var(--udl-text);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  opacity: 0;
+  transition: opacity 140ms ease;
+
+  &[hidden] { display: none !important; }
+  &.is-open { opacity: 1; }
+}
+
+.udl-nav-overlay-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.udl-nav-overlay-list li { margin: 0; padding: 0; border-bottom: 1px solid var(--udl-border); }
+.udl-nav-overlay-list li:first-child { border-top: 1px solid var(--udl-border); }
+
+.udl-nav-overlay-link {
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+  padding: 0 0.25rem;
+  font-family: var(--udl-font-heading);
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--udl-text) !important;
+  text-decoration: none !important;
+  transition: color 120ms ease, background 120ms ease;
+
+  &:hover { background: var(--udl-surface-sunken); }
+  &:focus-visible { outline: 2px solid var(--udl-primary); outline-offset: -2px; border-radius: 6px; }
+
+  &.is-active {
+    color: var(--udl-primary) !important;
+    &::after {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+      margin-left: 0.65rem;
+    }
+  }
+}
+
+.udl-nav-overlay-recents {
+  margin-top: auto;
+  color: var(--udl-text-muted);
+
+  .udl-popover-header { padding-left: 0.1rem; padding-right: 0.1rem; }
+  .udl-popover-list { max-height: 28dvh; }
+  .udl-popover-item { padding-left: 0.1rem; padding-right: 0.1rem; }
+  .udl-popover-item-title { color: var(--udl-text-secondary); font-size: 0.88rem; }
+}
+
+.udl-nav-overlay-theme {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--udl-border);
+
+  .udl-nav-overlay-theme-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--udl-text-secondary);
+  }
+
+  .udl-nav-overlay-theme-btn {
+    height: 38px;
+    padding: 0 0.28rem !important;
+    background: var(--udl-surface);
+    border: 1px solid var(--udl-border-strong);
+
+    .udl-theme-opt {
+      width: 30px;
+      height: 30px;
+    }
+  }
+}
+
+// Scroll lock without layout shift (scroll position restored on close)
+html.udl-nav-locked body {
+  position: fixed;
+  left: 0;
+  right: 0;
+  width: 100%;
+  overflow: hidden;
+}
+html.udl-nav-locked #quarto-header { z-index: 1060; }
+
+@media (prefers-reduced-motion: reduce) {
+  .udl-nav-overlay { transition: none; }
+}
+
+// ============================================================
+// Lightweight Breadcrumb Navigation (`Materials / Bloc 1 / Activitats / Act 01`)
+// ============================================================
 .udl-breadcrumb {
   display: flex;
-  gap: var(--udl-space-2xs);
-  font-size: var(--udl-text-sm);
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8125rem;
   color: var(--udl-text-muted);
-  margin-bottom: var(--udl-space-md);
+  margin: 0;
+  min-width: 0;
 
-  a { color: var(--udl-text-muted); }
-  a:hover { color: var(--udl-primary); }
+  a {
+    color: var(--udl-text-muted);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 120ms ease;
 
-  .sep { opacity: 0.5; }
+    &:hover {
+      color: var(--udl-text);
+      text-decoration: underline;
+    }
+  }
+
+  .sep {
+    opacity: 0.4;
+    user-select: none;
+    font-size: 0.75rem;
+  }
+
+  .current {
+    color: var(--udl-text);
+    font-weight: 600;
+    overflow-wrap: break-word;
+  }
 }

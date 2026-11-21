@@ -8,4 +8,4 @@ We welcome contributions to improve the course! If you find an error or have an 
 
 ## License
 
-This work is licensed under a [Creative Commons Attribution 4.0 International License](http://creativecommons.org/licenses/by/4.0/). See also [LICENSE](LICENSE.txt) for more information.
+This work is licensed under a [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/). See also [LICENSE](LICENSE) for more information.

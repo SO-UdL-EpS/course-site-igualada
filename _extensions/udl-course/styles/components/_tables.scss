@@ -1,14 +1,21 @@
 // ============================================================
-// _tables.scss — GitHub-style tables, not Bootstrap defaults
+// _tables.scss — Responsive, scrollable tables that never overflow mobile viewports
 // ============================================================
 
-.table, table:not(.reveal table) {
+main.content table,
+.table {
   width: 100%;
   border-collapse: collapse;
   font-size: var(--udl-text-sm);
   margin: var(--udl-space-lg) 0;
-  display: block;
-  overflow-x: auto; // responsive: scroll the table, not the page
+
+  @media (max-width: 720px) {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    font-size: 0.81rem;
+  }
 
   th {
     background: var(--udl-surface-sunken);
@@ -19,11 +26,21 @@
   }
 
   th, td {
-    padding: 0.55em 0.9em;
+    padding: 0.52em 0.85em;
     border-bottom: 1px solid var(--udl-border);
     border-right: none;
+
+    @media (max-width: 480px) {
+      padding: 0.45em 0.6em;
+    }
   }
 
   tr:last-child td { border-bottom: none; }
-  tr:hover td { background: color-mix(in srgb, var(--udl-primary) 3%, transparent); }
+  tr:hover td { background: color-mix(in srgb, var(--udl-primary) 4%, transparent); }
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
