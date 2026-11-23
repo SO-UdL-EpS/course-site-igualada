@@ -23,6 +23,9 @@ website:
         href: index.qmd
       - text: "Guia docent"
         href: https://guiadocent.udl.cat/html/2026-27_105012
+      - text: "Avaluació"
+        href: course-info/avaluacio.qmd
+
     right:
       - icon: github
         href: https://github.com/SO-UdL-EpS/course-site
