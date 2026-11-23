@@ -754,76 +754,82 @@ window.Quarto = {
 <p>Per superar l’assignatura cal obtenir una <strong>nota final</strong> igual o superior a <strong>5,0</strong>. No s’estableix cap nota mínima en cap activitat d’avaluació. Totes les activitats d’avaluació són de caràcter individual.</p>
 <table class="caption-top table">
 <colgroup>
-<col style="width: 19%">
-<col style="width: 47%">
-<col style="width: 8%">
-<col style="width: 11%">
-<col style="width: 13%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
 </colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: left;">Bloc d’Avaluació</th>
-<th style="text-align: left;">Activitat d’Avaluació</th>
-<th style="text-align: left;">Acrònim</th>
-<th style="text-align: left;">Ponderació</th>
-<th style="text-align: left;">Recuperable</th>
+<th style="text-align: left;"><strong>Bloc</strong></th>
+<th style="text-align: left;"><strong>Activitat d’avaluació</strong></th>
+<th style="text-align: center;"><strong>Acrònim</strong></th>
+<th style="text-align: center;"><strong>Ponderació</strong></th>
+<th style="text-align: center;"><strong>Recuperable</strong></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">Teòric 1</td>
 <td style="text-align: left;">Examen Escrit Teòric 1</td>
-<td style="text-align: left;">T1</td>
-<td style="text-align: left;">25 %</td>
-<td style="text-align: left;">Sí</td>
+<td style="text-align: center;">T1</td>
+<td style="text-align: center;">25 %</td>
+<td style="text-align: center;">Sí</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Teòric 2</td>
 <td style="text-align: left;">Examen Escrit Teòric 2</td>
-<td style="text-align: left;">T2</td>
-<td style="text-align: left;">25 %</td>
-<td style="text-align: left;">Sí</td>
+<td style="text-align: center;">T2</td>
+<td style="text-align: center;">25 %</td>
+<td style="text-align: center;">Sí</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Pràctic 1</td>
 <td style="text-align: left;">Examen Competencial Pràctic 1</td>
-<td style="text-align: left;">P1</td>
-<td style="text-align: left;">15 %</td>
-<td style="text-align: left;">No</td>
+<td style="text-align: center;">P1</td>
+<td style="text-align: center;">15 %</td>
+<td style="text-align: center;">No</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Pràctic 2</td>
 <td style="text-align: left;">Examen Competencial Pràctic 2</td>
-<td style="text-align: left;">P2</td>
-<td style="text-align: left;">15 %</td>
-<td style="text-align: left;">No</td>
+<td style="text-align: center;">P2</td>
+<td style="text-align: center;">15 %</td>
+<td style="text-align: center;">No</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Pràctic 3</td>
 <td style="text-align: left;">Examen Competencial Pràctic 3</td>
-<td style="text-align: left;">P3</td>
-<td style="text-align: left;">15 %</td>
-<td style="text-align: left;">No</td>
+<td style="text-align: center;">P3</td>
+<td style="text-align: center;">15 %</td>
+<td style="text-align: center;">No</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Projecte</td>
 <td style="text-align: left;">Projecte</td>
-<td style="text-align: left;">PR</td>
-<td style="text-align: left;">5 %</td>
-<td style="text-align: left;">No</td>
+<td style="text-align: center;">PR</td>
+<td style="text-align: center;">5 %</td>
+<td style="text-align: center;">No</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;"><strong>Total</strong></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"><strong>100 %</strong></td>
-<td style="text-align: left;"></td>
+<td style="text-align: left;">Bonus</td>
+<td style="text-align: left;">Contribucions als materials oberts</td>
+<td style="text-align: center;">B</td>
+<td style="text-align: center;">+0,5 punts</td>
+<td style="text-align: center;">No</td>
 </tr>
 </tbody>
 </table>
 <p>La nota final es calcula mitjançant la suma ponderada de les qualificacions de totes les activitats d’avaluació:</p>
 <p><span class="math display">\[
-NF = 0{,}25T_1 + 0{,}25T_2 + 0{,}15P_1 + 0{,}15P_2 + 0{,}15P_3 + 0{,}05PR
+NF =
+\min(
+0.25T1 + 0.25T2 +
+0.15P1 + 0.15P2 + 0.15P3 +
+0.05 PR +
+B,\ 10
+)
 \]</span></p>
 
 

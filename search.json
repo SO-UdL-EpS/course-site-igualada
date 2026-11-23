@@ -3378,7 +3378,7 @@
     "href": "course-info/avaluacio.html",
     "title": "Avaluació",
     "section": "",
-    "text": "Per superar l’assignatura cal obtenir una nota final igual o superior a 5,0. No s’estableix cap nota mínima en cap activitat d’avaluació. Totes les activitats d’avaluació són de caràcter individual.\n\n\n\n\n\n\n\n\n\n\nBloc d’Avaluació\nActivitat d’Avaluació\nAcrònim\nPonderació\nRecuperable\n\n\n\n\nTeòric 1\nExamen Escrit Teòric 1\nT1\n25 %\nSí\n\n\nTeòric 2\nExamen Escrit Teòric 2\nT2\n25 %\nSí\n\n\nPràctic 1\nExamen Competencial Pràctic 1\nP1\n15 %\nNo\n\n\nPràctic 2\nExamen Competencial Pràctic 2\nP2\n15 %\nNo\n\n\nPràctic 3\nExamen Competencial Pràctic 3\nP3\n15 %\nNo\n\n\nProjecte\nProjecte\nPR\n5 %\nNo\n\n\nTotal\n\n\n100 %\n\n\n\n\nLa nota final es calcula mitjançant la suma ponderada de les qualificacions de totes les activitats d’avaluació:\n\\[\nNF = 0{,}25T_1 + 0{,}25T_2 + 0{,}15P_1 + 0{,}15P_2 + 0{,}15P_3 + 0{,}05PR\n\\]"
+    "text": "Per superar l’assignatura cal obtenir una nota final igual o superior a 5,0. No s’estableix cap nota mínima en cap activitat d’avaluació. Totes les activitats d’avaluació són de caràcter individual.\n\n\n\n\n\n\n\n\n\n\nBloc\nActivitat d’avaluació\nAcrònim\nPonderació\nRecuperable\n\n\n\n\nTeòric 1\nExamen Escrit Teòric 1\nT1\n25 %\nSí\n\n\nTeòric 2\nExamen Escrit Teòric 2\nT2\n25 %\nSí\n\n\nPràctic 1\nExamen Competencial Pràctic 1\nP1\n15 %\nNo\n\n\nPràctic 2\nExamen Competencial Pràctic 2\nP2\n15 %\nNo\n\n\nPràctic 3\nExamen Competencial Pràctic 3\nP3\n15 %\nNo\n\n\nProjecte\nProjecte\nPR\n5 %\nNo\n\n\nBonus\nContribucions als materials oberts\nB\n+0,5 punts\nNo\n\n\n\nLa nota final es calcula mitjançant la suma ponderada de les qualificacions de totes les activitats d’avaluació:\n\\[\nNF =\n\\min(\n0.25T1 + 0.25T2 +\n0.15P1 + 0.15P2 + 0.15P3 +\n0.05 PR +\nB,\\ 10\n)\n\\]"
   },
   {
     "objectID": "course-info/contributions/contribute.html",
@@ -3682,7 +3682,7 @@
     "href": "course-info/presentation-slides.html#criteris-davaluació",
     "title": "Presentació del curs",
     "section": "Criteris d’Avaluació",
-    "text": "Criteris d’Avaluació\n\n\n\n\n\n\n\n\n\n\nBloc\nActivitat d’avaluació\nAcrònim\nPonderació\nRecuperable\n\n\n\n\nTeòric 1\nExamen Escrit Teòric 1\nT1\n25%\nSí\n\n\nTeòric 2\nExamen Escrit Teòric 2\nT2\n25%\nSí\n\n\nPràctic 1\nExamen Competencial Pràctic 1\nP1\n15%\nNo\n\n\nPràctic 2\nExamen Competencial Pràctic 2\nP2\n15%\nNo\n\n\nPràctic 3\nExamen Competencial Pràctic 3\nP3\n10%\nNo\n\n\nPràctic 4\nExamen Competencial Pràctic 4\nP4\n10%\nNo\n\n\nBonus\nContribucions als materials oberts\nB\n+0,5 punts\nNo\n\n\n\n\nPer superar l’assignatura cal obtenir una nota final igual o superior a 5,0.\nNo s’estableix cap nota mínima en cap activitat d’avaluació.\nTotes les activitats d’avaluació són individuals.",
+    "text": "Criteris d’Avaluació\n\n\n\n\n\n\n\n\n\n\nBloc\nActivitat d’avaluació\nAcrònim\nPonderació\nRecuperable\n\n\n\n\nTeòric 1\nExamen Escrit Teòric 1\nT1\n25 %\nSí\n\n\nTeòric 2\nExamen Escrit Teòric 2\nT2\n25 %\nSí\n\n\nPràctic 1\nExamen Competencial Pràctic 1\nP1\n15 %\nNo\n\n\nPràctic 2\nExamen Competencial Pràctic 2\nP2\n15 %\nNo\n\n\nPràctic 3\nExamen Competencial Pràctic 3\nP3\n15 %\nNo\n\n\nProjecte\nProjecte\nPR\n5 %\nNo\n\n\nBonus\nContribucions als materials oberts\nB\n+0,5 punts\nNo\n\n\n\n\nPer superar l’assignatura cal obtenir una nota final igual o superior a 5,0.\nNo s’estableix cap nota mínima en cap activitat d’avaluació.\nTotes les activitats d’avaluació són individuals.",
     "crumbs": [
       "Inici",
       "Presentació del curs"
@@ -3693,7 +3693,7 @@
     "href": "course-info/presentation-slides.html#càlcul-de-la-nota-final",
     "title": "Presentació del curs",
     "section": "Càlcul de la nota final",
-    "text": "Càlcul de la nota final\n\\[\nNF =\n\\min(\n0.25T1 + 0.25T2 +\n0.15P1 + 0.15P2 + 0.1P3 +\n0.1P4 +\nB,\\ 10\n)\n\\]\non:\n\nB és el bonus per contribucions als materials docents.\n0 ≤ B ≤ 0,5.\nLa nota final no pot superar els 10 punts.\n\n\nAbans de cada activitat d’avaluació es publicaran els criteris de correcció i els aspectes objecte d’avaluació.",
+    "text": "Càlcul de la nota final\n\\[\nNF =\n\\min(\n0.25T1 + 0.25T2 +\n0.15P1 + 0.15P2 + 0.15P3 +\n0.05 PR +\nB,\\ 10\n)\n\\]\non:\n\nB és el bonus per contribucions als materials docents.\n0 ≤ B ≤ 0,5.\nLa nota final no pot superar els 10 punts.\n\n\nAbans de cada activitat d’avaluació es publicaran els criteris de correcció i els aspectes objecte d’avaluació.",
     "crumbs": [
       "Inici",
       "Presentació del curs"
