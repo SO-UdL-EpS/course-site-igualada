@@ -6,18 +6,26 @@ author: "Jordi Mateo Fornés"
 
 Per superar l'assignatura cal obtenir una **nota final** igual o superior a **5,0**. No s'estableix cap nota mínima en cap activitat d'avaluació. Totes les activitats d'avaluació són de caràcter individual.
 
-| Bloc d'Avaluació | Activitat d'Avaluació         | Acrònim | Ponderació | Recuperable |
-| :--------------- | :--------------------------------------- | :------ | :--------- | :---------- |
+| **Bloc** | **Activitat d'avaluació** | **Acrònim** | **Ponderació** | **Recuperable** |
+|:--------------|:--------------|:-------------:|:-------------:|:-------------:|
 | Teòric 1        | Examen Escrit Teòric 1        | T1      | 25 %       | Sí          |
 | Teòric 2        | Examen Escrit Teòric 2        | T2      | 25 %       | Sí          |
 | Pràctic 1       | Examen Competencial Pràctic 1  | P1      | 15 %       | No          |
 | Pràctic 2       | Examen Competencial Pràctic 2  | P2      | 15 %       | No          |
 | Pràctic 3       | Examen Competencial Pràctic 3  | P3      | 15 %       | No          |
 | Projecte        | Projecte                       | PR      | 5 %        | No          |
-| **Total**       |                                |         | **100 %**  |             |
+| Bonus | Contribucions als materials oberts | B | +0,5 punts | No |
+
+
 
 La nota final es calcula mitjançant la suma ponderada de les qualificacions de totes les activitats d'avaluació:
 
 $$
-NF = 0{,}25T_1 + 0{,}25T_2 + 0{,}15P_1 + 0{,}15P_2 + 0{,}15P_3 + 0{,}05PR
+NF =
+\min(
+0.25T1 + 0.25T2 +
+0.15P1 + 0.15P2 + 0.15P3 +
+0.05 PR +
+B,\ 10
+)
 $$
