@@ -255,19 +255,6 @@ Jordi Mateo Fornés
 <li class="fragment"><p><strong>Mecanisme</strong>: com aturem un procés i en reprenem un altre sense que se n’adonin: desar i restaurar context, canviar d’espai d’adreces.</p></li>
 <li class="fragment"><p><strong>Política</strong>: entre tots els preparats, <strong>quin</strong> s’executa ara i durant quant de temps.</p></li>
 </ul>
-<aside class="notes">
-<p>Separar mecanisme i política és un principi de disseny de SO: podem canviar la política sense tocar el mecanisme. La rutina <code>selecciona()</code> és l’única cosa que canvia entre FCFS, RR, SJF o MLFQ. El despatxador (mecanisme) sempre fa el mateix: canvi de context, canvi de mode, salt a la instrucció del procés escollit. El temps que triga s’anomena latència de despatx.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
 </section>
 <section id="ràfegues-de-cpu-i-des" class="slide level2">
 <h2>Ràfegues de CPU i d’E/S</h2>
@@ -278,19 +265,6 @@ Jordi Mateo Fornés
 <li class="fragment"><strong>Limitat per E/S</strong> (<em>I/O-bound</em>): moltes ràfegues, curtes.</li>
 <li class="fragment">Empíricament, la majoria de ràfegues són <strong>curtes</strong>: la distribució està molt concentrada en pocs mil·lisegons.</li>
 </ul>
-<aside class="notes">
-<p>Cada decisió de planificació és, de fet, una decisió sobre a qui donem la CPU per a la seva propera ràfega. Aquesta idea serà clau per entendre SJF a la sessió 04b: el que es vol conèixer no és la durada total del procés sinó la de la propera ràfega.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
 </section>
 <section id="per-què-cal-planificar" class="slide level2">
 <h2>Per què cal planificar?</h2>
@@ -300,19 +274,6 @@ Jordi Mateo Fornés
 <li class="fragment">Mentre un procés espera E/S, la CPU pot servir-ne un altre.</li>
 <li class="fragment">Algú ha de decidir l’ordre: el <strong>planificador</strong>.</li>
 </ul>
-<aside class="notes">
-<p>Recordeu la diferència amb un sistema monoprogramat: només un procés a memòria, i quan espera E/S la CPU queda ociosa. La multiprogramació aprofita aquests forats; la planificació decideix com omplir-los.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
 </section>
 <section id="supòsits-simplificadors" class="slide level2">
 <h2>Supòsits simplificadors</h2>
@@ -341,19 +302,6 @@ Jordi Mateo Fornés
 <li><strong>Espera → Preparat</strong>: finalitza una E/S que el procés esperava.</li>
 <li><strong>Finalització</strong>: el procés crida <code>exit()</code>.</li>
 </ol>
-<aside class="notes">
-<p>En els casos 1 i 4 el procés deixa la CPU voluntàriament: no hi ha opció, cal triar-ne un altre. En els casos 2 i 3 el SO podria deixar continuar el procés actual o canviar-lo. Aquesta és exactament la diferència entre una política no apropiativa i una d’apropiativa.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
 </section>
 <section id="apropiació" class="slide level2">
 <h2>Apropiació</h2>
@@ -434,19 +382,6 @@ Jordi Mateo Fornés
 </tbody>
 </table>
 </div></div>
-<aside class="notes">
-<p>Si el procés fa E/S, el temps d’espera és el temps acumulat a la cua de preparats: T_retorn - T_cpu - T_E/S (suposant que els dispositius no tenen cua). El retorn normalitzat mesura quantes vegades més ha trigat respecte a si hagués tingut la CPU per a ell sol: un 1 és perfecte; un 5 vol dir que ha trigat 5 vegades el que necessitava. Penalitza molt els processos curts maltractats.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
 </section>
 <section id="mètriques-del-sistema" class="slide level2">
 <h2>Mètriques del sistema</h2>
@@ -519,19 +454,6 @@ Jordi Mateo Fornés
 </tbody>
 </table>
 </div>
-<aside class="notes">
-<p>Mateixa càrrega, mateixa política, i el temps d’espera mitjà passa de 17 a 3 només canviant l’ordre d’arribada. FCFS no té cap control sobre la qualitat del resultat.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
 </section>
 <section id="efecte-comboi" class="slide level2">
 <h2>Efecte comboi</h2>
@@ -717,19 +639,6 @@ Jordi Mateo Fornés
 </div>
 </div>
 </div>
-<aside class="notes">
-<p>Fixeu-vos que el procés pot deixar la CPU abans d’esgotar el quantum: perquè acaba o perquè es bloqueja. Només en el primer cas l’expulsa el rellotge. Quan torna d’E/S entra pel final de la cua, com qualsevol arribada.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
 </section>
 <section id="rr-elecció-del-quantum" class="slide level2">
 <h2>RR: elecció del quantum</h2>
@@ -743,19 +652,6 @@ Jordi Mateo Fornés
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-reflexio"></use></svg><span>Reflexió — El quantum ha de ser gran respecte al canvi de context</span></div>
 <p>Si <span class="math inline">\(q = 1\,ms\)</span> i el canvi de context costa <span class="math inline">\(1\,ms\)</span>, quin percentatge de CPU fa feina útil?</p>
 </div>
-<aside class="notes">
-<p>Resposta: el 50 %. La meitat del temps la CPU només canvia de procés. A més, cada canvi refreda les memòries cau, un cost que no es veu a la fórmula.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
 </section>
 <section id="rr-amb-q-20-exemple" class="slide level2">
 <h2>RR amb <span class="math inline">\(q = 20\)</span>: exemple</h2>
@@ -851,19 +747,6 @@ Jordi Mateo Fornés
 </div>
 </div>
 </div></div>
-<aside class="notes">
-<p>Espera de P1: (68-20) + (112-88) = 72. P2 acaba a 28 tot i necessitar només 8: el pitjor que li pot passar és esperar un torn de cadascun dels altres, (n-1)q = 60, però aquí li toca després de P1 i espera 20.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
 </section>
 <section id="impacte-del-quantum" class="slide level2 smaller">
 <h2>Impacte del quantum</h2>
@@ -962,19 +845,6 @@ Jordi Mateo Fornés
 <li class="fragment">L’efecte de <span class="math inline">\(q\)</span> <strong>no és monòton</strong>: <span class="math inline">\(q = 8\)</span> (just la ràfega de P2) és el millor RR d’aquesta càrrega.</li>
 </ul>
 </div>
-<aside class="notes">
-<p>Taula recalculada per simulació. La transparència original de Berkeley (CS162, Lec 11) té una errata a la fila q=1: hi posa P4 = 57 (acabant a 81); el valor correcte és 56 (acaba a 80). Millor FCFS: ordre P2, P4, P1, P3. Pitjor FCFS: P3, P1, P4, P2.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
 </section>
 <section id="rr-és-sempre-millor-que-fcfs" class="slide level2">
 <h2>RR és sempre millor que FCFS?</h2>
@@ -1200,19 +1070,6 @@ Jordi Mateo Fornés
 <li class="fragment">A <span class="math inline">\(t=3\)</span>: arriba C i B és expulsat alhora; per conveni C entra abans que B.</li>
 </ul>
 </div>
-<aside class="notes">
-<p>Compte: A acaba a 13 però només necessita 7, per tant T_N(A) = 13/7 = 1.86, no 1. Aquest és un error molt freqüent: el retorn normalitzat es calcula amb el T_retorn de cada procés en aquesta política, no amb el de FCFS.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
 </section>
 <section id="resum" class="slide level2">
 <h2>Resum</h2>
