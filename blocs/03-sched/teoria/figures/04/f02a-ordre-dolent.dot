@@ -1,0 +1,13 @@
+digraph f02a {
+  node [fontname="Helvetica", fontsize=14];
+  node [shape=circle, style=filled, fillcolor="#add8e6", width=0.55, fixedsize=true];
+  A; B; C;
+  node [shape=box, style=filled, fillcolor="#ffffe0", width=0.5, height=0.5, fixedsize=true];
+  R; S; T;
+  {rank=same; A; B; C;}
+  {rank=same; R; S; T;}
+  R -> A; S -> B; T -> C;                 // assignacions
+  A -> S [color="#c0392b", penwidth=2];   // peticions
+  B -> T [color="#c0392b", penwidth=2];
+  C -> R [color="#c0392b", penwidth=2, constraint=false];
+}

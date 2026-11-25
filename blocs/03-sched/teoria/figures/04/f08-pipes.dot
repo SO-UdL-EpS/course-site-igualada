@@ -1,0 +1,13 @@
+digraph f08 {
+  rankdir=LR;
+  node [fontname="Helvetica", fontsize=14];
+  pare [shape=circle, style=filled, fillcolor="#add8e6", width=0.9, fixedsize=true, label="pare"];
+  fill [shape=circle, style=filled, fillcolor="#add8e6", width=0.9, fixedsize=true, label="fill"];
+  node [shape=box, style=filled, fillcolor="#ffffe0", fixedsize=false];
+  p2c [label="pipe pare→fill\nplena (64 KiB)"];
+  c2p [label="pipe fill→pare\nplena (64 KiB)"];
+  pare -> p2c [label=" write()\n bloquejat", color="#c0392b", penwidth=2];
+  p2c -> fill [label=" només el fill\n la pot buidar", style=dashed];
+  fill -> c2p [label=" write()\n bloquejat", color="#c0392b", penwidth=2];
+  c2p -> pare [label=" només el pare\n la pot buidar", style=dashed];
+}

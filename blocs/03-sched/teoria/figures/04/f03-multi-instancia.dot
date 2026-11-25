@@ -1,0 +1,12 @@
+digraph f03 {
+  rankdir=LR;
+  node [fontname="Helvetica", fontsize=14];
+  node [shape=circle, style=filled, fillcolor="#add8e6", width=0.55, fixedsize=true];
+  P1; P2; P3; P4;
+  node [shape=box, style=filled, fillcolor="#ffffe0", width=0.7, height=0.6, fixedsize=true];
+  R1 [label="R1\n● ●"]; R2 [label="R2\n● ●"];
+  P1 -> R1 [color="#c0392b", penwidth=2];
+  R1 -> P2; R1 -> P3;
+  P3 -> R2 [color="#c0392b", penwidth=2];
+  R2 -> P1; R2 -> P4;
+}

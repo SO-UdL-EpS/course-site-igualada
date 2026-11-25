@@ -95,6 +95,8 @@ website:
                 - href: blocs/03-sched/teoria/02-sched.qmd
                 - href: blocs/03-sched/teoria/03-sched.qmd
                 - href: blocs/03-sched/teoria/04-sched.qmd 
+                - href: blocs/03-sched/teoria/01-deadlock.qmd
+                - href: blocs/03-sched/teoria/02-deadlock.qmd
             - section: "Activitats"
               contents:
                 - href: blocs/03-sched/activitats/01-sched.qmd
@@ -103,7 +105,7 @@ website:
 
 
 
-        - section: "Bloc 7 · Shell Scripting"
+        - section: "Bloc 5 · Shell Scripting"
           contents:
             - section: Teoria
               contents:

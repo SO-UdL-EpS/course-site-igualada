@@ -1,0 +1,16 @@
+digraph f05 {
+  rankdir=LR; compound=true;
+  node [fontname="Helvetica", fontsize=14];
+  subgraph cluster_rag { label="Graf d'assignació"; style=dashed;
+    node [shape=circle, style=filled, fillcolor="#add8e6", width=0.55, fixedsize=true];
+    p1 [label="P1"]; p2 [label="P2"]; p3 [label="P3"];
+    node [shape=box, style=filled, fillcolor="#ffffe0", width=0.5, height=0.5, fixedsize=true];
+    r1 [label="R1"]; r2 [label="R2"]; r3 [label="R3"];
+    p1 -> r1; r1 -> p2; p2 -> r3; r3 -> p3; p3 -> r2; r2 -> p1; p3 -> r1;
+  }
+  subgraph cluster_wfg { label="Graf d'espera"; style=dashed;
+    node [shape=circle, style=filled, fillcolor="#add8e6", width=0.55, fixedsize=true];
+    q1 [label="P1"]; q2 [label="P2"]; q3 [label="P3"];
+    q1 -> q2; q2 -> q3; q3 -> q1; q3 -> q2;
+  }
+}

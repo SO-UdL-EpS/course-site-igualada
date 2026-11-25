@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 300" font-family="Helvetica" font-size="18">
+  <rect x="5" y="5" width="510" height="290" rx="14" fill="#e8f6ef" stroke="#2e7d32" stroke-width="2"/>
+  <text x="24" y="36" fill="#2e7d32">Estats segurs</text>
+  <ellipse cx="320" cy="170" rx="180" ry="110" fill="#fff4e0" stroke="#e67e22" stroke-width="2"/>
+  <text x="250" y="90" fill="#b9600f">Estats insegurs</text>
+  <ellipse cx="360" cy="195" rx="95" ry="55" fill="#fde2e0" stroke="#c0392b" stroke-width="2"/>
+  <text x="300" y="202" fill="#c0392b">Interbloqueig</text>
+</svg>

@@ -56,11 +56,6 @@ while (true) {
   
 -   **Política**: entre tots els preparats, **quin** s'executa ara i durant quant de temps. 
 
-
-::: notes
-Separar mecanisme i política és un principi de disseny de SO: podem canviar la política sense tocar el mecanisme. La rutina `selecciona()` és l'única cosa que canvia entre FCFS, RR, SJF o MLFQ. El despatxador (mecanisme) sempre fa el mateix: canvi de context, canvi de mode, salt a la instrucció del procés escollit. El temps que triga s'anomena latència de despatx.
-:::
-
 ## Ràfegues de CPU i d'E/S
 
 Els processos alternen **ràfegues de CPU** (*bursts*) i **esperes d'E/S**.
@@ -71,10 +66,6 @@ Els processos alternen **ràfegues de CPU** (*bursts*) i **esperes d'E/S**.
 -   **Limitat per E/S** (*I/O-bound*): moltes ràfegues, curtes.
 -   Empíricament, la majoria de ràfegues són **curtes**: la distribució està molt concentrada en pocs mil·lisegons.
 
-::: notes
-Cada decisió de planificació és, de fet, una decisió sobre a qui donem la CPU per a la seva propera ràfega. Aquesta idea serà clau per entendre SJF a la sessió 04b: el que es vol conèixer no és la durada total del procés sinó la de la propera ràfega.
-:::
-
 ## Per què cal planificar?
 
 ![](figures/01/scheduling-intro-04.png){width="70%"}
@@ -82,10 +73,6 @@ Cada decisió de planificació és, de fet, una decisió sobre a qui donem la CP
 -   Amb **multiprogramació** hi ha diversos processos preparats a memòria i una sola CPU.
 -   Mentre un procés espera E/S, la CPU pot servir-ne un altre.
 -   Algú ha de decidir l'ordre: el **planificador**.
-
-::: notes
-Recordeu la diferència amb un sistema monoprogramat: només un procés a memòria, i quan espera E/S la CPU queda ociosa. La multiprogramació aprofita aquests forats; la planificació decideix com omplir-los.
-:::
 
 ## Supòsits simplificadors
 
@@ -110,10 +97,6 @@ No. Però permeten raonar i comparar polítiques. Quan els trenquem (diversos fi
 2.  **Execució → Preparat**: interrupció de rellotge (s'acaba el quantum).
 3.  **Espera → Preparat**: finalitza una E/S que el procés esperava.
 4.  **Finalització**: el procés crida `exit()`.
-:::
-
-::: notes
-En els casos 1 i 4 el procés deixa la CPU voluntàriament: no hi ha opció, cal triar-ne un altre. En els casos 2 i 3 el SO podria deixar continuar el procés actual o canviar-lo. Aquesta és exactament la diferència entre una política no apropiativa i una d'apropiativa.
 :::
 
 ## Apropiació
@@ -158,10 +141,6 @@ El SO pot **retirar la CPU** a un procés que encara la vol utilitzar, en els pu
 :::
 :::
 
-::: notes
-Si el procés fa E/S, el temps d'espera és el temps acumulat a la cua de preparats: T_retorn - T_cpu - T_E/S (suposant que els dispositius no tenen cua). El retorn normalitzat mesura quantes vegades més ha trigat respecte a si hagués tingut la CPU per a ell sol: un 1 és perfecte; un 5 vol dir que ha trigat 5 vegades el que necessitava. Penalitza molt els processos curts maltractats.
-:::
-
 ## Mètriques del sistema
 
 -   **Utilització de la CPU**: $\dfrac{\text{temps de CPU ocupada}}{\text{temps total}}$.
@@ -200,10 +179,6 @@ P1 = 24, P2 = 3, P3 = 3, tots arriben a $t=0$.
 | P1, P2, P3     | 0, 24, 27           | 17                 | 27                 |
 | P2, P3, P1     | 6, 0, 3             | 3                  | 13                 |
 :::
-:::
-
-::: notes
-Mateixa càrrega, mateixa política, i el temps d'espera mitjà passa de 17 a 3 només canviant l'ordre d'arribada. FCFS no té cap control sobre la qualitat del resultat.
 :::
 
 ## Efecte comboi
@@ -286,10 +261,6 @@ flowchart LR
     F --> A
 ```
 
-::: notes
-Fixeu-vos que el procés pot deixar la CPU abans d'esgotar el quantum: perquè acaba o perquè es bloqueja. Només en el primer cas l'expulsa el rellotge. Quan torna d'E/S entra pel final de la cua, com qualsevol arribada.
-:::
-
 ## RR: elecció del quantum
 
 -   $q \to \infty$: tornem a tenir **FCFS**.
@@ -299,10 +270,6 @@ Fixeu-vos que el procés pot deixar la CPU abans d'esgotar el quantum: perquè a
 
 ::: {.reflexio title="El quantum ha de ser gran respecte al canvi de context" .fragment}
 Si $q = 1\,ms$ i el canvi de context costa $1\,ms$, quin percentatge de CPU fa feina útil?
-:::
-
-::: notes
-Resposta: el 50 %. La meitat del temps la CPU només canvia de procés. A més, cada canvi refreda les memòries cau, un cost que no es veu a la fórmula.
 :::
 
 ## RR amb $q = 20$: exemple
@@ -346,10 +313,6 @@ gantt
 :::
 :::::
 
-::: notes
-Espera de P1: (68-20) + (112-88) = 72. P2 acaba a 28 tot i necessitar només 8: el pitjor que li pot passar és esperar un torn de cadascun dels altres, (n-1)q = 60, però aquí li toca després de P1 i espera 20.
-:::
-
 ## Impacte del quantum {.smaller}
 
 Mateixa càrrega (P1 = 53, P2 = 8, P3 = 68, P4 = 24):
@@ -369,10 +332,6 @@ Mateixa càrrega (P1 = 53, P2 = 8, P3 = 68, P4 = 24):
 ::: {.reflexio title="Què n'aprenem?"}
 -   RR **no** millora la millor FCFS en temps mitjà: la seva virtut és que **no depèn de l'ordre** i no té casos catastròfics.
 -   L'efecte de $q$ **no és monòton**: $q = 8$ (just la ràfega de P2) és el millor RR d'aquesta càrrega.
-:::
-
-::: notes
-Taula recalculada per simulació. La transparència original de Berkeley (CS162, Lec 11) té una errata a la fila q=1: hi posa P4 = 57 (acabant a 81); el valor correcte és 56 (acaba a 80). Millor FCFS: ordre P2, P4, P1, P3. Pitjor FCFS: P3, P1, P4, P2.
 :::
 
 ## RR és sempre millor que FCFS?
@@ -436,10 +395,6 @@ Si en un mateix instant arriba un procés nou i un altre és expulsat per fi de 
 
 -   Respecte a FCFS: $\bar{T}_{resposta}$ passa de 4.33 a 0.33 i $\bar{T}_N$ de 2.75 a 2.20, però $\bar{T}_{espera}$ empitjora (4.33 → 4.67).
 -   A $t=3$: arriba C i B és expulsat alhora; per conveni C entra abans que B.
-:::
-
-::: notes
-Compte: A acaba a 13 però només necessita 7, per tant T_N(A) = 13/7 = 1.86, no 1. Aquest és un error molt freqüent: el retorn normalitzat es calcula amb el T_retorn de cada procés en aquesta política, no amb el de FCFS.
 :::
 
 ## Resum

@@ -1,0 +1,12 @@
+digraph f04 {
+  node [fontname="Helvetica", fontsize=14];
+  node [shape=circle, style=filled, fillcolor="#add8e6", width=0.55, fixedsize=true];
+  A; B; C; D; E; F; G;
+  node [shape=box, style=filled, fillcolor="#ffffe0", width=0.5, height=0.5, fixedsize=true];
+  R; S; T; U; V; W;
+  R -> A; A -> S; C -> S; F -> S; W -> F;
+  D -> S; B -> T;
+  T -> E [color="#c0392b", penwidth=2]; E -> V [color="#c0392b", penwidth=2];
+  V -> G [color="#c0392b", penwidth=2]; G -> U [color="#c0392b", penwidth=2];
+  U -> D [color="#c0392b", penwidth=2]; D -> T [color="#c0392b", penwidth=2];
+}

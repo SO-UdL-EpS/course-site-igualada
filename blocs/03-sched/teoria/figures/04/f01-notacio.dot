@@ -1,0 +1,12 @@
+digraph f01 {
+  rankdir=TB; nodesep=0.5;
+  node [fontname="Helvetica", fontsize=14];
+  node [shape=circle, style=filled, fillcolor="#add8e6", width=0.55, fixedsize=true];
+  A; B; C; D;
+  node [shape=box, style=filled, fillcolor="#ffffe0", width=0.5, height=0.5, fixedsize=true];
+  R; S; T; U;
+  subgraph cluster_a { label="(a) A té R"; style=dashed; R -> A; }
+  subgraph cluster_b { label="(b) B demana S"; style=dashed; B -> S; }
+  subgraph cluster_c { label="(c) Cicle: interbloqueig"; style=dashed;
+    T -> D; D -> U; U -> C; C -> T; }
+}

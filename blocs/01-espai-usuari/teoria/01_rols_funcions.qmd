@@ -641,13 +641,6 @@ Cada aplicació que es vol comunicar amb la impressora ha d'incloure el seu prop
 Un procés intenta escriure en una zona de memòria que no li pertany. El sistema el finalitza immediatament amb un error.
 :::
 
-::: notes
-A → Àrbitre (repartiment del temps de processador, no de la protecció de memòria). 
-B → Àrbitre (aïllament d'espais d'adreces, mecanisme MMU). 
-C → Pega (no hi ha servei comú reutilitzable). 
-D → cap paper falla; és el sistema funcionant correctament.
-:::
-
 ## Crea una situació
 
 :::{.repte}
