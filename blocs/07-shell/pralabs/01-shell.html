@@ -73,7 +73,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../../../">
 <link href="../../../blocs/07-shell/pralabs/02-shell.html" rel="next">
-<link href="../../../blocs/07-shell/teoria/02-shell.qmd" rel="prev">
+<link href="../../../blocs/07-shell/teoria/02-shell.html" rel="prev">
 <link href="../../../assets/logo.svg" rel="icon" type="image/svg+xml">
 <script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
@@ -707,6 +707,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text">Shell scripting (I)</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/07-shell/teoria/02-shell.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Shell scripting (II)</span></a>
+  </div>
+</li>
       </ul>
   </li>
           <li class="sidebar-item sidebar-item-section">
@@ -725,6 +731,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <div class="sidebar-item-container"> 
   <a href="../../../blocs/07-shell/pralabs/02-shell.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Bash scripting (II)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/07-shell/pralabs/03-shell.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bash scripting (III)</span></a>
   </div>
 </li>
       </ul>
@@ -774,15 +786,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <blockquote class="blockquote">
 <p><strong>Com sap una shell si una ordre ha anat bé o ha fallat? I com ho podem fer servir en el nostre propi codi?</strong></p>
 </blockquote>
-<p>Aquesta sessió construeix la resposta peça a peça:</p>
-<pre class="text"><code>shell → script → permisos → codi de retorn → test → arguments → errors → instal·lació → read → perfil.sh</code></pre>
-<div class="programari udl-component udl-programari">
-<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-programari"></use></svg><span>Programari Necessari</span></div>
-<ul>
-<li><code>bash</code> (<strong>sistema de referència: Debian bookworm, amb bash 5.2</strong>) i un editor de text (<code>nano</code>, <code>vim</code>, <code>code</code>…).</li>
-<li>Eines de diagnòstic: <code>ps</code>, <code>env</code>, <code>type</code> i <code>man</code> (si no tens les pàgines del manual: <code>sudo apt install man-db</code>).</li>
-</ul>
-</div>
 <hr>
 <section id="part-a-quina-shell-tinc-i-el-meu-primer-script" class="level3">
 <h3 class="anchored" data-anchor-id="part-a-quina-shell-tinc-i-el-meu-primer-script">Part A · Quina shell tinc i el meu primer script</h3>
@@ -791,10 +794,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="exercici udl-component udl-exercici">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
 <p>Prediu què imprimiran aquestes ordres i comprova-ho:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$SHELL</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> /etc/shells</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$0</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ps</span> <span class="at">-p</span> <span class="va">$$</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$SHELL</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> /etc/shells</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$0</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ps</span> <span class="at">-p</span> <span class="va">$$</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Ara entra a una altra shell escrivint-ne el nom (<code>sh</code>, <code>dash</code>, <code>zsh</code>… la que tinguis) i torna a executar <code>echo $SHELL</code> i <code>echo $0</code>. Escriu <code>exit</code> per tornar.</p>
 <ol type="1">
 <li>Quina diferència hi ha entre <code>$SHELL</code> i <code>$0</code>?</li>
@@ -818,11 +821,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="a.2-el-primer-script" class="level4">
 <h4 class="anchored" data-anchor-id="a.2-el-primer-script">A.2 — El primer script</h4>
 <p>Crea <code>hola.sh</code>:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Hola, </span><span class="va">$USER</span><span class="st">! Estàs utilitzant la shell: </span><span class="va">$SHELL</span><span class="st">"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Hola, </span><span class="va">$USER</span><span class="st">! Estàs utilitzant la shell: </span><span class="va">$SHELL</span><span class="st">"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Executa’l amb:</p>
 <div class="terminal">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> hola.sh</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> hola.sh</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="exercici udl-component udl-exercici">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
@@ -852,12 +855,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="exercici udl-component udl-exercici">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
 <p>Prediu què passarà i comprova-ho:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./hola.sh</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-l</span> hola.sh</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> +x hola.sh</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-l</span> hola.sh</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">./hola.sh</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="ex">hola.sh</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./hola.sh</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-l</span> hola.sh</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> +x hola.sh</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-l</span> hola.sh</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="ex">./hola.sh</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="ex">hola.sh</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <ol type="1">
 <li>Per què falla el primer <code>./hola.sh</code>?</li>
 <li>Per què <code>bash hola.sh</code> funcionava <strong>sense</strong> permís d’execució?</li>
@@ -880,9 +883,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="exercici udl-component udl-exercici">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
 <p><strong>Ampliació (concepte de SO).</strong> Afegeix <code>echo "PID=$$ PARE=$PPID"</code> a <code>hola.sh</code> i compara aquestes dues maneres d’executar-lo:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"shell: </span><span class="va">$$</span><span class="st">"</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./hola.sh</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> hola.sh</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"shell: </span><span class="va">$$</span><span class="st">"</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./hola.sh</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> hola.sh</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Quin PID mostra cadascuna? Què en dedueixes?</p>
 </div>
 <details>
@@ -906,11 +909,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="exercici udl-component udl-exercici">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
 <p>Prediu què imprimiran i comprova-ho:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$?</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> noexisteix</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$?</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$?</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$?</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> noexisteix</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$?</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$?</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <ol type="1">
 <li>Quins valors surten? Per què el <strong>tercer</strong> <code>echo $?</code> mostra <code>0</code>?</li>
 <li>Si vull conservar el codi de <code>ls noexisteix</code> per fer-lo servir més tard, què he de fer?</li>
@@ -926,9 +929,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Surten <code>0</code>, <code>2</code> i <code>0</code>. <code>$?</code> conté <strong>només el codi de l’última ordre executada</strong>, i el segon <code>echo</code> (que va anar bé) ha sobreescrit el <code>2</code>. Qualsevol ordre, fins i tot <code>echo</code>, canvia <code>$?</code>.</li>
 <li>Guardar-lo <strong>immediatament</strong> en una variable:</li>
 </ol>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> noexisteix</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="va">rc</span><span class="op">=</span><span class="va">$?</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"ls ha retornat </span><span class="va">$rc</span><span class="st">"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> noexisteix</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="va">rc</span><span class="op">=</span><span class="va">$?</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"ls ha retornat </span><span class="va">$rc</span><span class="st">"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Les variables es creen amb <code>nom=valor</code> <strong>sense espais</strong> (<code>rc = $?</code> falla perquè la shell interpreta <code>rc</code> com una ordre) i es llegeixen amb <code>$nom</code>.</p>
 </div>
 </details>
@@ -942,13 +945,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </summary>
 <div class="solucio udl-component udl-solucio">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="va">rc1</span><span class="op">=</span><span class="va">$?</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> noexisteix</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="va">rc2</span><span class="op">=</span><span class="va">$?</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Codi de retorn de ls: </span><span class="va">$rc1</span><span class="st">"</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Codi de retorn de ls noexisteix: </span><span class="va">$rc2</span><span class="st">"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="va">rc1</span><span class="op">=</span><span class="va">$?</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> noexisteix</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="va">rc2</span><span class="op">=</span><span class="va">$?</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Codi de retorn de ls: </span><span class="va">$rc1</span><span class="st">"</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Codi de retorn de ls noexisteix: </span><span class="va">$rc2</span><span class="st">"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Si féssim <code>echo "...: $?"</code> just després de cada <code>ls</code> també funcionaria, però guardar-lo en una variable és la pràctica segura.</p>
 </div>
 </details>
@@ -959,9 +962,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="exercici udl-component udl-exercici">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
 <p>Llegeix <code>man test</code> (seccions <strong>DESCRIPTION</strong> i <strong>EXIT STATUS</strong>) i comprova:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="bu">test</span> <span class="at">-f</span> /etc/passwd <span class="kw">;</span> <span class="bu">echo</span> <span class="va">$?</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> <span class="ot">-d</span> /etc/passwd <span class="bu">]</span> <span class="kw">;</span> <span class="bu">echo</span> <span class="va">$?</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> <span class="ot">-e</span> /noexisteix <span class="bu">]</span> <span class="kw">;</span> <span class="bu">echo</span> <span class="va">$?</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">test</span> <span class="at">-f</span> /etc/passwd <span class="kw">;</span> <span class="bu">echo</span> <span class="va">$?</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> <span class="ot">-d</span> /etc/passwd <span class="bu">]</span> <span class="kw">;</span> <span class="bu">echo</span> <span class="va">$?</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> <span class="ot">-e</span> /noexisteix <span class="bu">]</span> <span class="kw">;</span> <span class="bu">echo</span> <span class="va">$?</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <ol type="1">
 <li>Quina diferència hi ha entre <code>-f</code>, <code>-d</code> i <code>-e</code>?</li>
 <li>Què imprimeix <code>type [</code>? Què implica això sobre els <strong>espais</strong> a <code>[ -f fitxer ]</code>?</li>
@@ -991,10 +994,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="exercici udl-component udl-exercici">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
 <p><strong>Prediu abans de provar.</strong> Què imprimeix cadascuna d’aquestes línies?</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">true</span>  <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"A"</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">false</span> <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"B"</span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">false</span> <span class="kw">||</span> <span class="bu">echo</span> <span class="st">"C"</span></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="fu">true</span>  <span class="kw">&amp;&amp;</span> <span class="fu">false</span> <span class="kw">||</span> <span class="bu">echo</span> <span class="st">"D"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">true</span>  <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"A"</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">false</span> <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"B"</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">false</span> <span class="kw">||</span> <span class="bu">echo</span> <span class="st">"C"</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="fu">true</span>  <span class="kw">&amp;&amp;</span> <span class="fu">false</span> <span class="kw">||</span> <span class="bu">echo</span> <span class="st">"D"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>L’última és la important: <code>A &amp;&amp; B || C</code>, <strong>és un <code>if/else</code>?</strong></p>
 </div>
 <details>
@@ -1014,8 +1017,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
 <p>Crea <code>existeix.sh</code>: rep <strong>un nom de fitxer com a argument</strong> i mostra un missatge indicant si existeix o no. Encara <strong>no</strong> podem usar <code>if</code>: fes servir <code>[ ]</code> amb <code>&amp;&amp;</code> i <code>||</code>.</p>
 <p>Després prova-ho amb un fitxer que tingui un espai al nom:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">touch</span> <span class="st">"el meu fitxer"</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./existeix.sh</span> <span class="st">"el meu fitxer"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">touch</span> <span class="st">"el meu fitxer"</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./existeix.sh</span> <span class="st">"el meu fitxer"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>I repeteix-ho treient les cometes de <code>"$1"</code> dins de l’script. Què passa? Per què?</p>
 </div>
 <details>
@@ -1024,8 +1027,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </summary>
 <div class="solucio udl-component udl-solucio">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> <span class="ot">-f</span> <span class="st">"</span><span class="va">$1</span><span class="st">"</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"El fitxer </span><span class="va">$1</span><span class="st"> existeix."</span> <span class="kw">||</span> <span class="bu">echo</span> <span class="st">"El fitxer </span><span class="va">$1</span><span class="st"> no existeix."</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> <span class="ot">-f</span> <span class="st">"</span><span class="va">$1</span><span class="st">"</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"El fitxer </span><span class="va">$1</span><span class="st"> existeix."</span> <span class="kw">||</span> <span class="bu">echo</span> <span class="st">"El fitxer </span><span class="va">$1</span><span class="st"> no existeix."</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Sense cometes, la shell <strong>divideix</strong> <code>$1</code> en paraules en expandir-lo: <code>[ -f el meu fitxer ]</code> són quatre arguments i <code>[</code> es queixa (<code>binary operator expected</code> o <code>too many arguments</code>). Amb cometes, <code>"$1"</code> és <strong>un únic argument</strong>, tingui els espais que tingui. Regla pràctica: <strong>cita sempre les variables</strong> (<code>"$1"</code>, <code>"$nom"</code>).</p>
 <p>Si <code>$1</code> està buit, <code>[ -f ]</code> sense cometes també canvia de significat (només té un argument, i <code>[</code> el tracta com un text no buit: és cert!). Amb <code>"$1"</code>, <code>[ -f "" ]</code> és simplement fals.</p>
 </div>
@@ -1037,16 +1040,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="exercici udl-component udl-exercici">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
 <p>Crea <code>tipus.sh</code> amb aquest primer intent. Les línies acaben en <code>||</code>, així que la shell continua llegint la línia següent com si fos una de sola.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> <span class="ot">-f</span> <span class="st">"</span><span class="va">$1</span><span class="st">"</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"El fitxer </span><span class="va">$1</span><span class="st"> existeix."</span> <span class="kw">||</span></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> <span class="ot">-d</span> <span class="st">"</span><span class="va">$1</span><span class="st">"</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"El directori </span><span class="va">$1</span><span class="st"> existeix."</span> <span class="kw">||</span></span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> <span class="ot">-e</span> <span class="st">"</span><span class="va">$1</span><span class="st">"</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"L'element </span><span class="va">$1</span><span class="st"> existeix, però no és ni un fitxer regular ni un directori."</span> <span class="kw">||</span></span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"L'element </span><span class="va">$1</span><span class="st"> no existeix."</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> <span class="ot">-f</span> <span class="st">"</span><span class="va">$1</span><span class="st">"</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"El fitxer </span><span class="va">$1</span><span class="st"> existeix."</span> <span class="kw">||</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> <span class="ot">-d</span> <span class="st">"</span><span class="va">$1</span><span class="st">"</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"El directori </span><span class="va">$1</span><span class="st"> existeix."</span> <span class="kw">||</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> <span class="ot">-e</span> <span class="st">"</span><span class="va">$1</span><span class="st">"</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"L'element </span><span class="va">$1</span><span class="st"> existeix, però no és ni un fitxer regular ni un directori."</span> <span class="kw">||</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"L'element </span><span class="va">$1</span><span class="st"> no existeix."</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><strong>Prediu</strong> què imprimirà amb cadascun d’aquests arguments i després comprova-ho:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./tipus.sh</span> /etc/passwd</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./tipus.sh</span> /etc</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="ex">./tipus.sh</span> /dev/null</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="ex">./tipus.sh</span> /noexisteix</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./tipus.sh</span> /etc/passwd</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./tipus.sh</span> /etc</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="ex">./tipus.sh</span> /dev/null</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="ex">./tipus.sh</span> /noexisteix</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Funciona sempre? Per què?</p>
 </div>
 <details>
@@ -1060,13 +1063,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <pre class="text"><code>((((T1 &amp;&amp; M1) || T2) &amp;&amp; M2) || T3) &amp;&amp; M3) || M4</code></pre>
 <p>Amb <code>/etc/passwd</code>: <code>T1 &amp;&amp; M1</code> dona <code>0</code>, el <code>|| T2</code> se salta, però el resultat segueix sent <code>0</code>, de manera que el <code>&amp;&amp; M2</code> <strong>s’executa igualment</strong>, i el mateix passa amb <code>M3</code>. El codi de retorn “arrossega” cap a la dreta.</p>
 <p><strong>Solució: agrupar.</strong> Volem que el <code>||</code> salti <strong>tot el bloc</strong> següent, no només la propera ordre. Cal imbricar amb claus:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> <span class="ot">-f</span> <span class="st">"</span><span class="va">$1</span><span class="st">"</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"El fitxer </span><span class="va">$1</span><span class="st"> existeix."</span> <span class="kw">||</span> <span class="kw">{</span></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="bu">[</span> <span class="ot">-d</span> <span class="st">"</span><span class="va">$1</span><span class="st">"</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"El directori </span><span class="va">$1</span><span class="st"> existeix."</span> <span class="kw">||</span> <span class="kw">{</span></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">[</span> <span class="ot">-e</span> <span class="st">"</span><span class="va">$1</span><span class="st">"</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"L'element </span><span class="va">$1</span><span class="st"> existeix, però no és ni un fitxer regular ni un directori."</span> <span class="kw">||</span></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"L'element </span><span class="va">$1</span><span class="st"> no existeix."</span></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">}</span></span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> <span class="ot">-f</span> <span class="st">"</span><span class="va">$1</span><span class="st">"</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"El fitxer </span><span class="va">$1</span><span class="st"> existeix."</span> <span class="kw">||</span> <span class="kw">{</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="bu">[</span> <span class="ot">-d</span> <span class="st">"</span><span class="va">$1</span><span class="st">"</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"El directori </span><span class="va">$1</span><span class="st"> existeix."</span> <span class="kw">||</span> <span class="kw">{</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">[</span> <span class="ot">-e</span> <span class="st">"</span><span class="va">$1</span><span class="st">"</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"L'element </span><span class="va">$1</span><span class="st"> existeix, però no és ni un fitxer regular ni un directori."</span> <span class="kw">||</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"L'element </span><span class="va">$1</span><span class="st"> no existeix."</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">}</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Ara, si el primer cas es compleix, el <code>||</code> salta el bloc sencer i no s’avalua res més. Recorda les regles de les claus: <strong>espai</strong> després de <code>{</code> i <code>;</code> o salt de línia abans de <code>}</code>.</p>
 <p>La imbricació té un cost evident: costa de llegir. Aquest és el motiu pel qual existeix <code>if</code>.</p>
 </div>
@@ -1078,23 +1081,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><code>{ ordres; }</code> s’executa <strong>dins de la shell actual</strong>.</li>
 <li><code>( ordres )</code> s’executa en un <strong>subshell</strong> (un procés fill, com a A.3): els canvis de variables, de directori i els <code>exit</code> <strong>hi moren</strong>.</li>
 </ul>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span> <span class="va">x</span><span class="op">=</span>1 <span class="kw">);</span> <span class="bu">echo</span> <span class="st">"x=</span><span class="va">$x</span><span class="st">"</span>     <span class="co"># x=   (el subshell ha desaparegut amb la variable)</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="kw">{</span> <span class="va">x</span><span class="op">=</span>1<span class="kw">;</span> <span class="kw">};</span> <span class="bu">echo</span> <span class="st">"x=</span><span class="va">$x</span><span class="st">"</span>    <span class="co"># x=1</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span> <span class="va">x</span><span class="op">=</span>1 <span class="kw">);</span> <span class="bu">echo</span> <span class="st">"x=</span><span class="va">$x</span><span class="st">"</span>     <span class="co"># x=   (el subshell ha desaparegut amb la variable)</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="kw">{</span> <span class="va">x</span><span class="op">=</span>1<span class="kw">;</span> <span class="kw">};</span> <span class="bu">echo</span> <span class="st">"x=</span><span class="va">$x</span><span class="st">"</span>    <span class="co"># x=1</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Per això a C.2 fem servir <code>{ ...; exit 1; }</code>: amb parèntesis, l’<code>exit</code> només sortiria del subshell i l’script continuaria. Per a un simple agrupament dins d’un script, fes servir <strong>claus</strong>.</p>
 </div>
 <div class="concepte udl-component udl-concepte" title="Avançament: la mateixa lògica amb `if`">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-concepte"></use></svg><span>Concepte — Avançament: la mateixa lògica amb `if`</span></div>
 <p>El comportament que hem buscat amb <code>&amp;&amp;</code>, <code>||</code> i claus s’escriu molt més net amb <code>if</code>, i <strong>no</strong> té el problema de l’ordre. Encara no l’expliquem (és el tema de la sessió següent), però pots llegir-lo i comprovar que fa el mateix:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">-f</span> <span class="st">"</span><span class="va">$1</span><span class="st">"</span> <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"El fitxer </span><span class="va">$1</span><span class="st"> existeix."</span></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="cf">elif</span> <span class="bu">[</span> <span class="ot">-d</span> <span class="st">"</span><span class="va">$1</span><span class="st">"</span> <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"El directori </span><span class="va">$1</span><span class="st"> existeix."</span></span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="cf">elif</span> <span class="bu">[</span> <span class="ot">-e</span> <span class="st">"</span><span class="va">$1</span><span class="st">"</span> <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"L'element </span><span class="va">$1</span><span class="st"> existeix, però no és ni un fitxer regular ni un directori."</span></span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span></span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"L'element </span><span class="va">$1</span><span class="st"> no existeix."</span></span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">-f</span> <span class="st">"</span><span class="va">$1</span><span class="st">"</span> <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"El fitxer </span><span class="va">$1</span><span class="st"> existeix."</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="cf">elif</span> <span class="bu">[</span> <span class="ot">-d</span> <span class="st">"</span><span class="va">$1</span><span class="st">"</span> <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"El directori </span><span class="va">$1</span><span class="st"> existeix."</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="cf">elif</span> <span class="bu">[</span> <span class="ot">-e</span> <span class="st">"</span><span class="va">$1</span><span class="st">"</span> <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"L'element </span><span class="va">$1</span><span class="st"> existeix, però no és ni un fitxer regular ni un directori."</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"L'element </span><span class="va">$1</span><span class="st"> no existeix."</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Fixa’t que cada branca és exclusiva per construcció: això és exactament el que calia forçar a mà amb les claus.</p>
 </div>
 <hr>
@@ -1134,9 +1137,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="exercici udl-component udl-exercici">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
 <p>Crea <code>arguments.sh</code> que mostri el primer argument, el nombre total i tots els arguments. Prediu què imprimirà cadascuna d’aquestes crides i comprova-ho:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./arguments.sh</span> hola mon</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./arguments.sh</span> <span class="st">"hola mon"</span></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="ex">./arguments.sh</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./arguments.sh</span> hola mon</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./arguments.sh</span> <span class="st">"hola mon"</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="ex">./arguments.sh</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Quina diferència veus entre la primera i la segona? Què passa a la tercera?</p>
 </div>
 <details>
@@ -1145,10 +1148,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </summary>
 <div class="solucio udl-component udl-solucio">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Primer argument: </span><span class="va">$1</span><span class="st">"</span></span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Total arguments: </span><span class="va">$#</span><span class="st">"</span></span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Tots: </span><span class="va">$@</span><span class="st">"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Primer argument: </span><span class="va">$1</span><span class="st">"</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Total arguments: </span><span class="va">$#</span><span class="st">"</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Tots: </span><span class="va">$@</span><span class="st">"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <ul>
 <li><code>hola mon</code> → primer: <code>hola</code>, total: <code>2</code>.</li>
 <li><code>"hola mon"</code> → primer: <code>hola mon</code>, total: <code>1</code>. Les cometes <strong>agrupen</strong> en un sol argument (el mateix motiu pel qual a B.4 calia <code>"$1"</code>).</li>
@@ -1169,10 +1172,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Si n’hi ha, mostri el primer i el total.</li>
 </ul>
 <p>Comprova el resultat amb:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./arguments.sh</span> <span class="kw">;</span> <span class="bu">echo</span> <span class="va">$?</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./arguments.sh</span> a b <span class="kw">;</span> <span class="bu">echo</span> <span class="va">$?</span></span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="ex">./arguments.sh</span> <span class="op">&gt;</span> sortida.txt</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> sortida.txt</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./arguments.sh</span> <span class="kw">;</span> <span class="bu">echo</span> <span class="va">$?</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./arguments.sh</span> a b <span class="kw">;</span> <span class="bu">echo</span> <span class="va">$?</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="ex">./arguments.sh</span> <span class="op">&gt;</span> sortida.txt</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> sortida.txt</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><em>Pistes:</em> <code>man bash</code>, secció <strong>SHELL BUILTIN COMMANDS</strong>, <code>exit</code>. Compara <code>$#</code> amb <code>0</code> usant <code>[ ]</code> i <code>-eq</code>. Busca què fa <code>&gt;&amp;2</code>.</p>
 </div>
 <details>
@@ -1181,9 +1184,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </summary>
 <div class="solucio udl-component udl-solucio">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> <span class="va">$#</span> <span class="ot">-eq</span> 0 <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="kw">{</span> <span class="bu">echo</span> <span class="st">"Error: no s'han passat arguments."</span> <span class="op">&gt;&amp;</span><span class="dv">2</span><span class="kw">;</span> <span class="bu">exit</span> 1<span class="kw">;</span> <span class="kw">}</span></span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Primer argument: </span><span class="va">$1</span><span class="st">, Total arguments: </span><span class="va">$#</span><span class="st">"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> <span class="va">$#</span> <span class="ot">-eq</span> 0 <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="kw">{</span> <span class="bu">echo</span> <span class="st">"Error: no s'han passat arguments."</span> <span class="op">&gt;&amp;</span><span class="dv">2</span><span class="kw">;</span> <span class="bu">exit</span> 1<span class="kw">;</span> <span class="kw">}</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Primer argument: </span><span class="va">$1</span><span class="st">, Total arguments: </span><span class="va">$#</span><span class="st">"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <ul>
 <li><code>exit 1</code> acaba l’script amb codi <code>1</code>: aquest és el <code>$?</code> que veurà qui l’hagi cridat. Tanquem el cercle amb B.1: <strong>ara som nosaltres qui defineix codis de retorn.</strong> La convenció és <code>0</code> èxit i <code>1</code>–<code>255</code> errors. Sense <code>exit</code>, l’script retorna el codi de l’última ordre executada.</li>
 <li><code>&gt;&amp;2</code> redirigeix la sortida al <strong>descriptor 2 (stderr)</strong>. Els errors han d’anar a stderr perquè es puguin separar de la sortida normal: <code>./arguments.sh &gt; sortida.txt</code> mostra l’error per pantalla en lloc d’amagar-lo dins del fitxer, i <code>sortida.txt</code> queda buit.</li>
@@ -1209,13 +1212,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Prova-ho: <code>./crea_script.sh nou.sh</code>, mira’n el contingut amb <code>cat</code> i executa’l.</li>
 </ol>
 <p>Després <strong>instal·la’l</strong> i compara:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> install <span class="at">-m</span> 0755 crea_script.sh /usr/local/bin/crea_script</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Equivalent (dos passos):</span></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="co">#   sudo mv crea_script.sh /usr/local/bin/crea_script</span></span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="co">#   sudo chmod 0755 /usr/local/bin/crea_script</span></span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> /tmp</span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="ex">crea_script</span> prova.sh</span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="ex">crea_script.sh</span> prova2.sh</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> install <span class="at">-m</span> 0755 crea_script.sh /usr/local/bin/crea_script</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Equivalent (dos passos):</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="co">#   sudo mv crea_script.sh /usr/local/bin/crea_script</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="co">#   sudo chmod 0755 /usr/local/bin/crea_script</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> /tmp</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="ex">crea_script</span> prova.sh</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="ex">crea_script.sh</span> prova2.sh</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <ul>
 <li>Quina de les dues ordres de <code>/tmp</code> funciona? Per què?</li>
 <li>Què hauries hagut de fer <strong>sense</strong> instal·lar-lo per cridar-lo des de <code>/tmp</code>?</li>
@@ -1227,12 +1230,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </summary>
 <div class="solucio udl-component udl-solucio">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> <span class="va">$#</span> <span class="ot">-eq</span> 1 <span class="bu">]</span> <span class="kw">||</span> <span class="kw">{</span> <span class="bu">echo</span> <span class="st">"Ús: </span><span class="va">$0</span><span class="st"> nom_script"</span> <span class="op">&gt;&amp;</span><span class="dv">2</span><span class="kw">;</span> <span class="bu">exit</span> 1<span class="kw">;</span> <span class="kw">}</span></span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> <span class="ot">-e</span> <span class="st">"</span><span class="va">$1</span><span class="st">"</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="kw">{</span> <span class="bu">echo</span> <span class="st">"Error: </span><span class="va">$1</span><span class="st"> ja existeix."</span> <span class="op">&gt;&amp;</span><span class="dv">2</span><span class="kw">;</span> <span class="bu">exit</span> 2<span class="kw">;</span> <span class="kw">}</span></span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'#!/bin/bash'</span> <span class="op">&gt;</span> <span class="st">"</span><span class="va">$1</span><span class="st">"</span></span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> +x <span class="st">"</span><span class="va">$1</span><span class="st">"</span></span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Script </span><span class="va">$1</span><span class="st"> creat."</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> <span class="va">$#</span> <span class="ot">-eq</span> 1 <span class="bu">]</span> <span class="kw">||</span> <span class="kw">{</span> <span class="bu">echo</span> <span class="st">"Ús: </span><span class="va">$0</span><span class="st"> nom_script"</span> <span class="op">&gt;&amp;</span><span class="dv">2</span><span class="kw">;</span> <span class="bu">exit</span> 1<span class="kw">;</span> <span class="kw">}</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> <span class="ot">-e</span> <span class="st">"</span><span class="va">$1</span><span class="st">"</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="kw">{</span> <span class="bu">echo</span> <span class="st">"Error: </span><span class="va">$1</span><span class="st"> ja existeix."</span> <span class="op">&gt;&amp;</span><span class="dv">2</span><span class="kw">;</span> <span class="bu">exit</span> 2<span class="kw">;</span> <span class="kw">}</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'#!/bin/bash'</span> <span class="op">&gt;</span> <span class="st">"</span><span class="va">$1</span><span class="st">"</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> +x <span class="st">"</span><span class="va">$1</span><span class="st">"</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Script </span><span class="va">$1</span><span class="st"> creat."</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <ul>
 <li><strong>Cometes simples</strong> a <code>'#!/bin/bash'</code>: a la terminal interactiva, amb cometes dobles bash intentaria expandir <code>!</code> com a història d’ordres (<code>event not found</code>). Dins d’un script no passaria, però és un bon hàbit.</li>
 <li><code>&gt;</code> <strong>sobreescriu</strong>: per això comprovem <code>[ -e "$1" ]</code> abans, o perdríem el contingut d’un script existent (tornarem a veure <code>&gt;</code> vs <code>&gt;&gt;</code> a D.2).</li>
@@ -1270,14 +1273,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </summary>
 <div class="solucio udl-component udl-solucio">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Quin és el teu nom?"</span></span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="bu">read</span> <span class="at">-r</span> <span class="va">nom</span></span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Hola, </span><span class="va">$nom</span><span class="st">! Benvingut/da!"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Quin és el teu nom?"</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="bu">read</span> <span class="at">-r</span> <span class="va">nom</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Hola, </span><span class="va">$nom</span><span class="st">! Benvingut/da!"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Variant amb <code>-p</code>:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="bu">read</span> <span class="at">-r</span> <span class="at">-p</span> <span class="st">"Quin és el teu nom? "</span> <span class="va">nom</span></span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Hola, </span><span class="va">$nom</span><span class="st">! Benvingut/da!"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="bu">read</span> <span class="at">-r</span> <span class="at">-p</span> <span class="st">"Quin és el teu nom? "</span> <span class="va">nom</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Hola, </span><span class="va">$nom</span><span class="st">! Benvingut/da!"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Amb <code>echo Anna | ./saluda.sh</code>, <code>read</code> llegeix d’<strong>stdin</strong>, que ara és el pipe, no el teclat: no espera ningú i funciona igualment. <code>read</code> <strong>no és interactiu per definició</strong>, sinó que depèn d’on vingui l’entrada. Un detall: amb <code>read -p</code>, quan stdin <strong>no és un terminal</strong>, bash no mostra la pregunta. Això serà important a D.3.</p>
 <p><code>-r</code> evita que <code>read</code> interpreti les barres invertides (<code>\</code>) com a caràcters d’escapada; és el costum recomanat. <code>read -s</code> amaga el que s’escriu (útil per contrasenyes).</p>
 </div>
@@ -1302,18 +1305,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </summary>
 <div class="solucio udl-component udl-solucio">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Benvingut/da al sistema!"</span></span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="bu">read</span> <span class="at">-r</span> <span class="at">-p</span> <span class="st">"Nom: "</span> <span class="va">nom</span></span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="bu">read</span> <span class="at">-r</span> <span class="at">-p</span> <span class="st">"Cognom: "</span> <span class="va">cognom</span></span>
-<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="kw">{</span></span>
-<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">"Nom: </span><span class="va">$nom</span><span class="st"> </span><span class="va">$cognom</span><span class="st">"</span></span>
-<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">"Directori: </span><span class="va">$(</span><span class="bu">pwd</span><span class="va">)</span><span class="st">"</span></span>
-<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">"Shell: </span><span class="va">$SHELL</span><span class="st">"</span></span>
-<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span> <span class="op">&gt;</span> ~/perfil.txt</span>
-<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Perfil desat a ~/perfil.txt"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Benvingut/da al sistema!"</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="bu">read</span> <span class="at">-r</span> <span class="at">-p</span> <span class="st">"Nom: "</span> <span class="va">nom</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="bu">read</span> <span class="at">-r</span> <span class="at">-p</span> <span class="st">"Cognom: "</span> <span class="va">cognom</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a><span class="kw">{</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">"Nom: </span><span class="va">$nom</span><span class="st"> </span><span class="va">$cognom</span><span class="st">"</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">"Directori: </span><span class="va">$(</span><span class="bu">pwd</span><span class="va">)</span><span class="st">"</span></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">"Shell: </span><span class="va">$SHELL</span><span class="st">"</span></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span> <span class="op">&gt;</span> ~/perfil.txt</span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Perfil desat a ~/perfil.txt"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Recorda <code>chmod +x perfil.sh</code> (A.3).</p>
 <ul>
 <li><code>&gt;</code> <strong>sobreescriu</strong> el fitxer a cada execució; <code>&gt;&gt;</code> <strong>hi afegeix</strong> al final (s’acumula). Amb <code>&gt;&gt;</code> pots afegir <code>date</code> per tenir un registre.</li>
@@ -1330,7 +1333,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><strong>Prova primer a mà.</strong> Abans de tocar res de configuració, assegura’t que <code>./perfil.sh</code> funciona perfectament. I fes aquest apartat en una <strong>VM</strong> o amb una <strong>segona sessió oberta</strong>: un error a <code>~/.profile</code> pot fer incòmode iniciar sessió, i la segona sessió et permet desfer-ho.</p>
 </div>
 <p>Afegeix <strong>al final</strong> de <code>~/.profile</code> la línia:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="ex">~/perfil.sh</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="ex">~/perfil.sh</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Tanca la sessió (<code>exit</code>) i torna a entrar.</p>
 <div class="exercici udl-component udl-exercici">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
@@ -1350,7 +1353,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><code>~/.profile</code> només el llegeix una <strong>shell de login</strong>. Hi entres per TTY (<code>Ctrl+Alt+F3</code>), per SSH o amb <code>bash -l</code>; els terminals gràfics nous normalment <strong>no</strong> són shells de login, i <code>exit</code> només tanca la finestra. Per provar-ho sense tancar la sessió: <code>bash -l</code> o <code>ssh localhost</code>. A més, si existeix <code>~/.bash_profile</code>, bash el llegeix <strong>en lloc de</strong> <code>.profile</code>; i amb zsh el fitxer és <code>~/.zprofile</code>.</li>
 <li>El <code>read</code> no té teclat del qual llegir: rep final d’entrada (EOF) o es queda <strong>bloquejat</strong> esperant, i l’script desa un <code>perfil.txt</code> buit o incomplet. Una versió segura executa l’script només si l’entrada és un terminal:</li>
 </ol>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> <span class="ot">-t</span> 0 <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="ex">~/perfil.sh</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> <span class="ot">-t</span> 0 <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="ex">~/perfil.sh</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>(<code>-t 0</code> és cert si el descriptor 0, stdin, és un terminal. Fixa’t que torna a ser <code>[ ]</code> + <code>&amp;&amp;</code>.) 3. Des de l’altra sessió, comenta la línia (<code>#</code>) o elimina-la amb un editor. En una VM, sempre queda el mode de recuperació.</p>
 <p>Aquest és un bon exemple de com <strong>el procés de login</strong> (<code>login</code> o <code>sshd</code>) llança la shell, que llegeix <code>/etc/profile</code> i després <code>~/.profile</code>: així es configura l’entorn d’un procés.</p>
 </div>
@@ -1888,8 +1891,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </script>
 <nav class="page-navigation" aria-label="Page">
   <div class="nav-page nav-page-previous">
-      <a href="../../../blocs/07-shell/teoria/02-shell.qmd" class="pagination-link" aria-label="">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"></span>
+      <a href="../../../blocs/07-shell/teoria/02-shell.html" class="pagination-link" aria-label="Shell scripting (II)">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Shell scripting (II)</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">

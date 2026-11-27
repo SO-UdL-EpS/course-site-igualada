@@ -72,6 +72,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../../../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../../../">
+<link href="../../../blocs/07-shell/pralabs/03-shell.html" rel="next">
 <link href="../../../blocs/07-shell/pralabs/01-shell.html" rel="prev">
 <link href="../../../assets/logo.svg" rel="icon" type="image/svg+xml">
 <script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
@@ -706,6 +707,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text">Shell scripting (I)</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/07-shell/teoria/02-shell.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Shell scripting (II)</span></a>
+  </div>
+</li>
       </ul>
   </li>
           <li class="sidebar-item sidebar-item-section">
@@ -724,6 +731,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <div class="sidebar-item-container"> 
   <a href="../../../blocs/07-shell/pralabs/02-shell.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Bash scripting (II)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../../blocs/07-shell/pralabs/03-shell.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bash scripting (III)</span></a>
   </div>
 </li>
       </ul>
@@ -773,18 +786,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <blockquote class="blockquote">
 <p><strong>Si a bash tot és text, com sumem números, com guardem una llista o com relacionem una clau amb un valor?</strong></p>
 </blockquote>
-<pre class="text"><code>variables → entorn → aritmètica → if → case → bucles → arrays → diccionaris → joc → repte</code></pre>
-<div class="programari udl-component udl-programari">
-<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-programari"></use></svg><span>Programari Necessari</span></div>
-<ul>
-<li><code>bash</code> (<strong>sistema de referència: Debian bookworm, amb bash 5.2</strong>) i un editor de text.</li>
-<li>Totes les eines que farem servir (<code>expr</code>, <code>printf</code>, <code>shuf</code>…) ja hi són instal·lades per defecte.</li>
-</ul>
-</div>
-<div class="bonapractica udl-component udl-bonapractica">
-<div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-bonapractica"></use></svg><span>Bona Pràctica</span></div>
-<p>Si no acabes a classe, D.4 (el joc) i el <strong>repte final</strong> es poden fer a casa. Les seccions anteriors els preparen tots dos.</p>
-</div>
 <hr>
 <section id="part-a-variables-i-entorn" class="level3">
 <h3 class="anchored" data-anchor-id="part-a-variables-i-entorn">Part A · Variables i entorn</h3>
@@ -801,10 +802,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </summary>
 <div class="solucio udl-component udl-solucio">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="va">NOM</span><span class="op">=</span><span class="st">"Anna"</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="va">EDAT</span><span class="op">=</span>20</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Hola, el meu nom és </span><span class="va">$NOM</span><span class="st"> i tinc </span><span class="va">$EDAT</span><span class="st"> anys."</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="va">NOM</span><span class="op">=</span><span class="st">"Anna"</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="va">EDAT</span><span class="op">=</span>20</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Hola, el meu nom és </span><span class="va">$NOM</span><span class="st"> i tinc </span><span class="va">$EDAT</span><span class="st"> anys."</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Recorda: <code>nom=valor</code> <strong>sense espais</strong>, cometes dobles perquè s’expandeixin les variables, i <code>chmod +x</code> abans de fer <code>./variables.sh</code>.</p>
 </div>
 </details>
@@ -815,13 +816,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="exercici udl-component udl-exercici">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
 <p>Esborra les dues assignacions de <code>variables.sh</code> (deixa només l’<code>echo</code>). <strong>Prediu</strong> què imprimirà cadascun d’aquests tres blocs i comprova-ho:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="va">NOM</span><span class="op">=</span>Anna <span class="va">EDAT</span><span class="op">=</span>20 <span class="ex">./variables.sh</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="va">NOM</span><span class="op">=</span>Anna</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="va">EDAT</span><span class="op">=</span>20</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">./variables.sh</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">NOM</span> <span class="va">EDAT</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./variables.sh</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">env</span> <span class="kw">|</span> <span class="fu">grep</span> <span class="at">-E</span> <span class="st">'^(NOM|EDAT)='</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="va">NOM</span><span class="op">=</span>Anna <span class="va">EDAT</span><span class="op">=</span>20 <span class="ex">./variables.sh</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="va">NOM</span><span class="op">=</span>Anna</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="va">EDAT</span><span class="op">=</span>20</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">./variables.sh</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">NOM</span> <span class="va">EDAT</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./variables.sh</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">env</span> <span class="kw">|</span> <span class="fu">grep</span> <span class="at">-E</span> <span class="st">'^(NOM|EDAT)='</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <ol type="1">
 <li>Per què el segon bloc imprimeix el missatge <strong>buit</strong>, si les variables estan definides a la terminal?</li>
 <li>Quina diferència hi ha entre el primer bloc i el tercer?</li>
@@ -852,8 +853,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="solucio udl-component udl-solucio">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
 <p><code>${VAR:-valor}</code> s’expandeix a <code>valor</code> si <code>VAR</code> no existeix o és buida; si no, al contingut de <code>VAR</code>. <strong>No</strong> modifica la variable.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Hola, el meu nom és </span><span class="va">${NOM</span><span class="op">:-</span>desconegut<span class="va">}</span><span class="st"> i tinc </span><span class="va">${EDAT</span><span class="op">:-</span><span class="pp">?</span><span class="va">}</span><span class="st"> anys."</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Hola, el meu nom és </span><span class="va">${NOM</span><span class="op">:-</span>desconegut<span class="va">}</span><span class="st"> i tinc </span><span class="va">${EDAT</span><span class="op">:-</span><span class="pp">?</span><span class="va">}</span><span class="st"> anys."</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </details>
 <hr>
@@ -866,9 +867,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="exercici udl-component udl-exercici">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
 <p>Crea <code>suma.sh</code> amb dues variables <code>NUM1=5</code> i <code>NUM2=10</code>. <strong>Prediu</strong> què imprimeix cadascuna d’aquestes línies abans d’executar-les:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"La suma és: </span><span class="va">$NUM1</span><span class="st"> + </span><span class="va">$NUM2</span><span class="st">"</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="va">RESULTAT</span><span class="op">=</span><span class="va">$NUM1</span>+<span class="va">$NUM2</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"La suma és: </span><span class="va">$RESULTAT</span><span class="st">"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"La suma és: </span><span class="va">$NUM1</span><span class="st"> + </span><span class="va">$NUM2</span><span class="st">"</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="va">RESULTAT</span><span class="op">=</span><span class="va">$NUM1</span>+<span class="va">$NUM2</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"La suma és: </span><span class="va">$RESULTAT</span><span class="st">"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Per què no surt <code>15</code>?</p>
 </div>
 <details>
@@ -883,17 +884,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="b.2-tres-maneres-de-fer-aritmètica-r3" class="level4">
 <h4 class="anchored" data-anchor-id="b.2-tres-maneres-de-fer-aritmètica-r3">B.2 — Tres maneres de fer aritmètica (R3)</h4>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">let</span> <span class="va">RESULTAT</span><span class="op">=</span><span class="va">NUM1</span><span class="op">+</span><span class="va">NUM2</span>          <span class="co"># builtin de bash</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="va">RESULTAT</span><span class="op">=</span><span class="va">$((NUM1</span> <span class="op">+</span> <span class="va">NUM2))</span>       <span class="co"># expansió aritmètica (POSIX)</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="va">RESULTAT</span><span class="op">=</span><span class="va">$(</span><span class="fu">expr</span> <span class="va">$NUM1</span> + <span class="va">$NUM2)</span>  <span class="co"># programa extern</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">let</span> <span class="va">RESULTAT</span><span class="op">=</span><span class="va">NUM1</span><span class="op">+</span><span class="va">NUM2</span>          <span class="co"># builtin de bash</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="va">RESULTAT</span><span class="op">=</span><span class="va">$((NUM1</span> <span class="op">+</span> <span class="va">NUM2))</span>       <span class="co"># expansió aritmètica (POSIX)</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="va">RESULTAT</span><span class="op">=</span><span class="va">$(</span><span class="fu">expr</span> <span class="va">$NUM1</span> + <span class="va">$NUM2)</span>  <span class="co"># programa extern</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="exercici udl-component udl-exercici">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
 <p>Modifica <code>suma.sh</code> perquè calculi la suma correctament de les tres maneres. Després <strong>prediu</strong> i comprova:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">expr</span> <span class="va">$NUM1</span>+<span class="va">$NUM2</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">expr</span> <span class="va">$NUM1</span> <span class="pp">*</span> <span class="va">$NUM2</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">expr</span> <span class="va">$NUM1</span> <span class="dt">\*</span> <span class="va">$NUM2</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$((</span><span class="dv">7</span> <span class="op">/</span> <span class="dv">2</span><span class="va">))</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="bu">type</span> let expr</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">expr</span> <span class="va">$NUM1</span>+<span class="va">$NUM2</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">expr</span> <span class="va">$NUM1</span> <span class="pp">*</span> <span class="va">$NUM2</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">expr</span> <span class="va">$NUM1</span> <span class="dt">\*</span> <span class="va">$NUM2</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$((</span><span class="dv">7</span> <span class="op">/</span> <span class="dv">2</span><span class="va">))</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="bu">type</span> let expr</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <ol type="1">
 <li>Per què <code>expr</code> és tan estricte amb els espais i amb <code>*</code>?</li>
 <li>Per què dins de <code>$(( ))</code> podem escriure <code>NUM1</code> sense <code>$</code>?</li>
@@ -907,18 +908,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </summary>
 <div class="solucio udl-component udl-solucio">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="va">NUM1</span><span class="op">=</span>5</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="va">NUM2</span><span class="op">=</span>10</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="bu">let</span> <span class="va">RESULTAT</span><span class="op">=</span><span class="va">NUM1</span><span class="op">+</span><span class="va">NUM2</span></span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"let:   </span><span class="va">$RESULTAT</span><span class="st">"</span></span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="va">RESULTAT</span><span class="op">=</span><span class="va">$((NUM1</span> <span class="op">+</span> <span class="va">NUM2))</span></span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"</span><span class="dt">\$</span><span class="st">(()): </span><span class="va">$RESULTAT</span><span class="st">"</span></span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="va">RESULTAT</span><span class="op">=</span><span class="va">$(</span><span class="fu">expr</span> <span class="va">$NUM1</span> + <span class="va">$NUM2)</span></span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"expr:  </span><span class="va">$RESULTAT</span><span class="st">"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="va">NUM1</span><span class="op">=</span>5</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="va">NUM2</span><span class="op">=</span>10</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="bu">let</span> <span class="va">RESULTAT</span><span class="op">=</span><span class="va">NUM1</span><span class="op">+</span><span class="va">NUM2</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"let:   </span><span class="va">$RESULTAT</span><span class="st">"</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="va">RESULTAT</span><span class="op">=</span><span class="va">$((NUM1</span> <span class="op">+</span> <span class="va">NUM2))</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"</span><span class="dt">\$</span><span class="st">(()): </span><span class="va">$RESULTAT</span><span class="st">"</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="va">RESULTAT</span><span class="op">=</span><span class="va">$(</span><span class="fu">expr</span> <span class="va">$NUM1</span> + <span class="va">$NUM2)</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"expr:  </span><span class="va">$RESULTAT</span><span class="st">"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <ol type="1">
 <li><code>expr</code> és un <strong>programa extern</strong> (<code>type expr</code> → <code>/usr/bin/expr</code>): rep cada operand i cada operador com un <strong>argument separat</strong>. <code>5+10</code> és un sol argument, i <code>expr</code> el retorna tal qual. <code>*</code>, sense escapar, la shell l’expandeix com a <strong>comodí</strong> amb els noms dels fitxers del directori abans que <code>expr</code> el vegi; per això cal <code>\*</code>.</li>
 <li>Dins de <code>$(( ))</code> la shell interpreta qualsevol nom com una variable. També accepta espais lliurement.</li>
@@ -934,24 +935,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="part-c-decisions-if-i-case">Part C · Decisions: <code>if</code> i <code>case</code></h3>
 <section id="c.1-if-avalua-codis-de-retorn" class="level4">
 <h4 class="anchored" data-anchor-id="c.1-if-avalua-codis-de-retorn">C.1 — <code>if</code> avalua codis de retorn</h4>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="ex">ORDRE</span><span class="kw">;</span> <span class="cf">then</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="ex">...</span>         <span class="co"># ORDRE ha retornat 0</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="cf">elif</span> <span class="ex">ALTRA_ORDRE</span><span class="kw">;</span> <span class="cf">then</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="ex">...</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="ex">...</span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="ex">ORDRE</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="ex">...</span>         <span class="co"># ORDRE ha retornat 0</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="cf">elif</span> <span class="ex">ALTRA_ORDRE</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="ex">...</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="ex">...</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>[ ]</code> és només l’ordre que fem servir més sovint, però en pot anar qualsevol altra.</p>
 <div class="exercici udl-component udl-exercici">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
 <p><strong>Prediu</strong> quines lletres s’imprimeixen:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="fu">ls</span> /etc <span class="op">&gt;</span> /dev/null<span class="kw">;</span> <span class="cf">then</span> <span class="bu">echo</span> <span class="st">"A"</span><span class="kw">;</span> <span class="cf">fi</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="fu">grep</span> <span class="at">-q</span> root /etc/passwd<span class="kw">;</span> <span class="cf">then</span> <span class="bu">echo</span> <span class="st">"B"</span><span class="kw">;</span> <span class="cf">fi</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> 0 <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span> <span class="bu">echo</span> <span class="st">"C"</span><span class="kw">;</span> <span class="cf">fi</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="st">""</span> <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span> <span class="bu">echo</span> <span class="st">"D"</span><span class="kw">;</span> <span class="cf">fi</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="fu">false</span><span class="kw">;</span> <span class="cf">then</span> <span class="bu">echo</span> <span class="st">"E"</span><span class="kw">;</span> <span class="cf">else</span> <span class="bu">echo</span> <span class="st">"F"</span><span class="kw">;</span> <span class="cf">fi</span></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> 10 <span class="ot">-lt</span> 9 <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span> <span class="bu">echo</span> <span class="st">"G"</span><span class="kw">;</span> <span class="cf">fi</span></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">[[</span> 10 <span class="ot">&lt;</span> 9 <span class="kw">]];</span> <span class="cf">then</span> <span class="bu">echo</span> <span class="st">"H"</span><span class="kw">;</span> <span class="cf">fi</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="fu">ls</span> /etc <span class="op">&gt;</span> /dev/null<span class="kw">;</span> <span class="cf">then</span> <span class="bu">echo</span> <span class="st">"A"</span><span class="kw">;</span> <span class="cf">fi</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="fu">grep</span> <span class="at">-q</span> root /etc/passwd<span class="kw">;</span> <span class="cf">then</span> <span class="bu">echo</span> <span class="st">"B"</span><span class="kw">;</span> <span class="cf">fi</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> 0 <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span> <span class="bu">echo</span> <span class="st">"C"</span><span class="kw">;</span> <span class="cf">fi</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="st">""</span> <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span> <span class="bu">echo</span> <span class="st">"D"</span><span class="kw">;</span> <span class="cf">fi</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="fu">false</span><span class="kw">;</span> <span class="cf">then</span> <span class="bu">echo</span> <span class="st">"E"</span><span class="kw">;</span> <span class="cf">else</span> <span class="bu">echo</span> <span class="st">"F"</span><span class="kw">;</span> <span class="cf">fi</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> 10 <span class="ot">-lt</span> 9 <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span> <span class="bu">echo</span> <span class="st">"G"</span><span class="kw">;</span> <span class="cf">fi</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">[[</span> 10 <span class="ot">&lt;</span> 9 <span class="kw">]];</span> <span class="cf">then</span> <span class="bu">echo</span> <span class="st">"H"</span><span class="kw">;</span> <span class="cf">fi</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Per què surt <code>C</code>? Per què surt <code>H</code>, si 10 no és més petit que 9?</p>
 </div>
 <details>
@@ -974,7 +975,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="concepte udl-component udl-concepte" title="`[ ]` o `[[ ]]`?">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-concepte"></use></svg><span>Concepte — `[ ]` o `[[ ]]`?</span></div>
 <p><code>[[ ]]</code> és una extensió de bash (no és POSIX) amb avantatges: no divideix les variables en paraules (si oblides les cometes no es trenca), accepta <code>&amp;&amp;</code> i <code>||</code> a dins i té <code>=~</code> per a expressions regulars:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[[</span> <span class="va">$1</span> <span class="ot">=~</span> <span class="pp">^</span><span class="op">[</span><span class="ss">0</span><span class="op">-</span><span class="ss">9</span><span class="op">]</span><span class="pp">+</span><span class="op">$</span> <span class="kw">]]</span> <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"És un enter positiu"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[[</span> <span class="va">$1</span> <span class="ot">=~</span> <span class="pp">^</span><span class="op">[</span><span class="ss">0</span><span class="op">-</span><span class="ss">9</span><span class="op">]</span><span class="pp">+</span><span class="op">$</span> <span class="kw">]]</span> <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">"És un enter positiu"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>En aquesta assignatura pots fer servir qualsevol de les dues. Si l’script ha de funcionar amb <code>sh</code>, fes servir <code>[ ]</code>.</p>
 </div>
 <div class="exercici udl-component udl-exercici">
@@ -987,12 +988,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </summary>
 <div class="solucio udl-component udl-solucio">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="va">$#</span> <span class="ot">-eq</span> 0 <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"Error: no s'han passat arguments."</span> <span class="op">&gt;&amp;</span><span class="dv">2</span></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">exit</span> 1</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Primer argument: </span><span class="va">$1</span><span class="st">, Total arguments: </span><span class="va">$#</span><span class="st">"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="va">$#</span> <span class="ot">-eq</span> 0 <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"Error: no s'han passat arguments."</span> <span class="op">&gt;&amp;</span><span class="dv">2</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">exit</span> 1</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Primer argument: </span><span class="va">$1</span><span class="st">, Total arguments: </span><span class="va">$#</span><span class="st">"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Fa exactament el mateix que <code>[ $# -eq 0 ] &amp;&amp; { ...; exit 1; }</code>, però es llegeix d’un cop d’ull, i no té la trampa del <code>A &amp;&amp; B || C</code>.</p>
 </div>
 </details>
@@ -1000,11 +1001,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="c.2-calculadora-amb-case-r4" class="level4">
 <h4 class="anchored" data-anchor-id="c.2-calculadora-amb-case-r4">C.2 — Calculadora amb <code>case</code> (R4)</h4>
 <p>Quan hem de comparar <strong>una mateixa variable</strong> amb moltes opcions, <code>case</code> és més net que una cadena d’<code>elif</code>:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="cf">case</span> <span class="st">"</span><span class="va">$VARIABLE</span><span class="st">"</span> <span class="kw">in</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="ss">opcio1</span><span class="kw">)</span>        <span class="ex">ordres</span> <span class="cf">;;</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="ss">opcio2</span><span class="kw">|</span><span class="ss">opcio3</span><span class="kw">)</span> <span class="ex">ordres</span> <span class="cf">;;</span>     <span class="co"># | = qualsevol de les dues</span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="pp">*</span><span class="kw">)</span>             <span class="ex">ordres</span> <span class="cf">;;</span>     <span class="co"># cas per defecte</span></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="cf">esac</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="cf">case</span> <span class="st">"</span><span class="va">$VARIABLE</span><span class="st">"</span> <span class="kw">in</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="ss">opcio1</span><span class="kw">)</span>        <span class="ex">ordres</span> <span class="cf">;;</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="ss">opcio2</span><span class="kw">|</span><span class="ss">opcio3</span><span class="kw">)</span> <span class="ex">ordres</span> <span class="cf">;;</span>     <span class="co"># | = qualsevol de les dues</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="pp">*</span><span class="kw">)</span>             <span class="ex">ordres</span> <span class="cf">;;</span>     <span class="co"># cas per defecte</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="cf">esac</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Els patrons són els mateixos <strong>comodins</strong> que la shell fa servir per als noms de fitxer (<code>*</code>, <code>?</code>, <code>[abc]</code>).</p>
 <div class="exercici udl-component udl-exercici">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
@@ -1018,12 +1019,12 @@ El resultat de la suma entre 5 i 3 és: 8</code></pre>
 <li>Divisió per zero: error i codi <code>3</code>.</li>
 </ol>
 <p>Comprova-ho i <strong>prediu</strong> abans el resultat de les dues últimes línies:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./calculadora.sh</span> 5 3 suma <span class="kw">;</span> <span class="bu">echo</span> <span class="va">$?</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./calculadora.sh</span> 7 2 divisio <span class="kw">;</span> <span class="bu">echo</span> <span class="va">$?</span></span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="ex">./calculadora.sh</span> 5 0 divisio <span class="kw">;</span> <span class="bu">echo</span> <span class="va">$?</span></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="ex">./calculadora.sh</span> 5 3 potencia <span class="kw">;</span> <span class="bu">echo</span> <span class="va">$?</span></span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="ex">./calculadora.sh</span> 5 3 <span class="kw">;</span> <span class="bu">echo</span> <span class="va">$?</span></span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="ex">./calculadora.sh</span> 5 hola suma <span class="kw">;</span> <span class="bu">echo</span> <span class="va">$?</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./calculadora.sh</span> 5 3 suma <span class="kw">;</span> <span class="bu">echo</span> <span class="va">$?</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./calculadora.sh</span> 7 2 divisio <span class="kw">;</span> <span class="bu">echo</span> <span class="va">$?</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="ex">./calculadora.sh</span> 5 0 divisio <span class="kw">;</span> <span class="bu">echo</span> <span class="va">$?</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="ex">./calculadora.sh</span> 5 3 potencia <span class="kw">;</span> <span class="bu">echo</span> <span class="va">$?</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="ex">./calculadora.sh</span> 5 3 <span class="kw">;</span> <span class="bu">echo</span> <span class="va">$?</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="ex">./calculadora.sh</span> 5 hola suma <span class="kw">;</span> <span class="bu">echo</span> <span class="va">$?</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <details>
 <summary>
@@ -1031,47 +1032,47 @@ El resultat de la suma entre 5 i 3 és: 8</code></pre>
 </summary>
 <div class="solucio udl-component udl-solucio">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="va">$#</span> <span class="ot">-ne</span> 3 <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"Ús: </span><span class="va">$0</span><span class="st"> num1 num2 operacio"</span> <span class="op">&gt;&amp;</span><span class="dv">2</span></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">exit</span> 1</span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="va">NUM1</span><span class="op">=</span><span class="va">$1</span></span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="va">NUM2</span><span class="op">=</span><span class="va">$2</span></span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="va">OPERACIO</span><span class="op">=</span><span class="va">$3</span></span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="cf">case</span> <span class="st">"</span><span class="va">$OPERACIO</span><span class="st">"</span> <span class="kw">in</span></span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>    <span class="ss">suma</span><span class="kw">)</span>          <span class="va">RESULTAT</span><span class="op">=</span><span class="va">$((NUM1</span> <span class="op">+</span> <span class="va">NUM2))</span> <span class="cf">;;</span></span>
-<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>    <span class="ss">resta</span><span class="kw">)</span>         <span class="va">RESULTAT</span><span class="op">=</span><span class="va">$((NUM1</span> <span class="op">-</span> <span class="va">NUM2))</span> <span class="cf">;;</span></span>
-<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>    <span class="ss">multiplicacio</span><span class="kw">)</span> <span class="va">RESULTAT</span><span class="op">=</span><span class="va">$((NUM1</span> <span class="op">*</span> <span class="va">NUM2))</span> <span class="cf">;;</span></span>
-<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>    <span class="ss">divisio</span><span class="kw">)</span></span>
-<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="bu">[</span> <span class="st">"</span><span class="va">$NUM2</span><span class="st">"</span> <span class="ot">-eq</span> 0 <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
-<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>            <span class="bu">echo</span> <span class="st">"Error: divisió per zero."</span> <span class="op">&gt;&amp;</span><span class="dv">2</span></span>
-<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>            <span class="bu">exit</span> 3</span>
-<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">fi</span></span>
-<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>        <span class="va">RESULTAT</span><span class="op">=</span><span class="va">$((NUM1</span> <span class="op">/</span> <span class="va">NUM2))</span></span>
-<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">;;</span></span>
-<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>    <span class="pp">*</span><span class="kw">)</span></span>
-<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>        <span class="bu">echo</span> <span class="st">"Error: operació no vàlida: </span><span class="va">$OPERACIO</span><span class="st">"</span> <span class="op">&gt;&amp;</span><span class="dv">2</span></span>
-<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>        <span class="bu">exit</span> 2</span>
-<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a>        <span class="cf">;;</span></span>
-<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a><span class="cf">esac</span></span>
-<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"El resultat de la </span><span class="va">$OPERACIO</span><span class="st"> entre </span><span class="va">$NUM1</span><span class="st"> i </span><span class="va">$NUM2</span><span class="st"> és: </span><span class="va">$RESULTAT</span><span class="st">"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="va">$#</span> <span class="ot">-ne</span> 3 <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"Ús: </span><span class="va">$0</span><span class="st"> num1 num2 operacio"</span> <span class="op">&gt;&amp;</span><span class="dv">2</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">exit</span> 1</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="va">NUM1</span><span class="op">=</span><span class="va">$1</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="va">NUM2</span><span class="op">=</span><span class="va">$2</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="va">OPERACIO</span><span class="op">=</span><span class="va">$3</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="cf">case</span> <span class="st">"</span><span class="va">$OPERACIO</span><span class="st">"</span> <span class="kw">in</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>    <span class="ss">suma</span><span class="kw">)</span>          <span class="va">RESULTAT</span><span class="op">=</span><span class="va">$((NUM1</span> <span class="op">+</span> <span class="va">NUM2))</span> <span class="cf">;;</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>    <span class="ss">resta</span><span class="kw">)</span>         <span class="va">RESULTAT</span><span class="op">=</span><span class="va">$((NUM1</span> <span class="op">-</span> <span class="va">NUM2))</span> <span class="cf">;;</span></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>    <span class="ss">multiplicacio</span><span class="kw">)</span> <span class="va">RESULTAT</span><span class="op">=</span><span class="va">$((NUM1</span> <span class="op">*</span> <span class="va">NUM2))</span> <span class="cf">;;</span></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>    <span class="ss">divisio</span><span class="kw">)</span></span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="bu">[</span> <span class="st">"</span><span class="va">$NUM2</span><span class="st">"</span> <span class="ot">-eq</span> 0 <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>            <span class="bu">echo</span> <span class="st">"Error: divisió per zero."</span> <span class="op">&gt;&amp;</span><span class="dv">2</span></span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>            <span class="bu">exit</span> 3</span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">fi</span></span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>        <span class="va">RESULTAT</span><span class="op">=</span><span class="va">$((NUM1</span> <span class="op">/</span> <span class="va">NUM2))</span></span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">;;</span></span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>    <span class="pp">*</span><span class="kw">)</span></span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a>        <span class="bu">echo</span> <span class="st">"Error: operació no vàlida: </span><span class="va">$OPERACIO</span><span class="st">"</span> <span class="op">&gt;&amp;</span><span class="dv">2</span></span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a>        <span class="bu">exit</span> 2</span>
+<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a>        <span class="cf">;;</span></span>
+<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a><span class="cf">esac</span></span>
+<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"El resultat de la </span><span class="va">$OPERACIO</span><span class="st"> entre </span><span class="va">$NUM1</span><span class="st"> i </span><span class="va">$NUM2</span><span class="st"> és: </span><span class="va">$RESULTAT</span><span class="st">"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Resultats: <code>8</code> (codi 0), <code>3</code> (0, divisió entera), error (3), error (2), ús (1).</p>
 <p>L’última és la sorpresa: <code>./calculadora.sh 5 hola suma</code> imprimeix <strong><code>5</code></strong> amb codi <code>0</code>. Dins de <code>$(( ))</code>, <code>hola</code> s’interpreta com el <strong>nom d’una variable</strong>; com que no existeix, val <code>0</code>. L’script dona un resultat incorrecte sense queixar-se. Per evitar-ho cal validar els números abans d’operar:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="ot">! </span><span class="kw">[[</span> <span class="va">$NUM1</span> <span class="ot">=~</span> <span class="pp">^</span><span class="ss">-</span><span class="pp">?</span><span class="op">[</span><span class="ss">0</span><span class="op">-</span><span class="ss">9</span><span class="op">]</span><span class="pp">+</span><span class="op">$</span> <span class="kw">&amp;&amp;</span> <span class="va">$NUM2</span> <span class="ot">=~</span> <span class="pp">^</span><span class="ss">-</span><span class="pp">?</span><span class="op">[</span><span class="ss">0</span><span class="op">-</span><span class="ss">9</span><span class="op">]</span><span class="pp">+</span><span class="op">$</span> <span class="kw">]];</span> <span class="cf">then</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"Error: els operands han de ser enters."</span> <span class="op">&gt;&amp;</span><span class="dv">2</span></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">exit</span> 1</span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="ot">! </span><span class="kw">[[</span> <span class="va">$NUM1</span> <span class="ot">=~</span> <span class="pp">^</span><span class="ss">-</span><span class="pp">?</span><span class="op">[</span><span class="ss">0</span><span class="op">-</span><span class="ss">9</span><span class="op">]</span><span class="pp">+</span><span class="op">$</span> <span class="kw">&amp;&amp;</span> <span class="va">$NUM2</span> <span class="ot">=~</span> <span class="pp">^</span><span class="ss">-</span><span class="pp">?</span><span class="op">[</span><span class="ss">0</span><span class="op">-</span><span class="ss">9</span><span class="op">]</span><span class="pp">+</span><span class="op">$</span> <span class="kw">]];</span> <span class="cf">then</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"Error: els operands han de ser enters."</span> <span class="op">&gt;&amp;</span><span class="dv">2</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">exit</span> 1</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>(<code>!</code> inverteix el codi de retorn de l’ordre que el segueix.)</p>
 </div>
 </details>
 <div class="exercici udl-component udl-exercici">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
 <p><strong>Ampliació.</strong> Fes que la calculadora accepti també els símbols <code>+</code>, <code>-</code>, <code>x</code> i <code>/</code>. Després prova:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./calculadora.sh</span> 6 3 <span class="pp">*</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./calculadora.sh</span> 6 3 <span class="pp">*</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Què passa? Per què? Com ho ha d’escriure l’usuari?</p>
 </div>
 <details>
@@ -1080,11 +1081,11 @@ El resultat de la suma entre 5 i 3 és: 8</code></pre>
 </summary>
 <div class="solucio udl-component udl-solucio">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="cf">case</span> <span class="st">"</span><span class="va">$OPERACIO</span><span class="st">"</span> <span class="kw">in</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    <span class="ss">suma</span><span class="kw">|</span><span class="ss">+</span><span class="kw">)</span>          <span class="va">RESULTAT</span><span class="op">=</span><span class="va">$((NUM1</span> <span class="op">+</span> <span class="va">NUM2))</span> <span class="cf">;;</span></span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    <span class="ss">resta</span><span class="kw">|</span><span class="ss">-</span><span class="kw">)</span>         <span class="va">RESULTAT</span><span class="op">=</span><span class="va">$((NUM1</span> <span class="op">-</span> <span class="va">NUM2))</span> <span class="cf">;;</span></span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    <span class="ss">multiplicacio</span><span class="kw">|</span><span class="ss">x</span><span class="kw">)</span> <span class="va">RESULTAT</span><span class="op">=</span><span class="va">$((NUM1</span> <span class="op">*</span> <span class="va">NUM2))</span> <span class="cf">;;</span></span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    <span class="ss">divisio</span><span class="kw">|</span><span class="ss">/</span><span class="kw">)</span>       <span class="ex">...</span> <span class="cf">;;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="cf">case</span> <span class="st">"</span><span class="va">$OPERACIO</span><span class="st">"</span> <span class="kw">in</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    <span class="ss">suma</span><span class="kw">|</span><span class="ss">+</span><span class="kw">)</span>          <span class="va">RESULTAT</span><span class="op">=</span><span class="va">$((NUM1</span> <span class="op">+</span> <span class="va">NUM2))</span> <span class="cf">;;</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="ss">resta</span><span class="kw">|</span><span class="ss">-</span><span class="kw">)</span>         <span class="va">RESULTAT</span><span class="op">=</span><span class="va">$((NUM1</span> <span class="op">-</span> <span class="va">NUM2))</span> <span class="cf">;;</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="ss">multiplicacio</span><span class="kw">|</span><span class="ss">x</span><span class="kw">)</span> <span class="va">RESULTAT</span><span class="op">=</span><span class="va">$((NUM1</span> <span class="op">*</span> <span class="va">NUM2))</span> <span class="cf">;;</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    <span class="ss">divisio</span><span class="kw">|</span><span class="ss">/</span><span class="kw">)</span>       <span class="ex">...</span> <span class="cf">;;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Amb <code>*</code> sense cometes, la shell l’<strong>expandeix</strong> amb els noms de tots els fitxers del directori <strong>abans</strong> de llançar l’script. L’script rep molts més de 3 arguments i surt amb l’error d’ús. L’usuari hauria d’escriure <code>'*'</code> o <code>\*</code> (el mateix problema que amb <code>expr</code>). Per això fem servir <code>x</code>.</p>
 <p>Si vols acceptar <code>*</code> dins del <code>case</code>, també l’has d’escapar: <code>\*)</code>. Sense escapar, seria el cas per defecte i ho capturaria tot.</p>
 </div>
@@ -1096,22 +1097,22 @@ El resultat de la suma entre 5 i 3 és: 8</code></pre>
 <h3 class="anchored" data-anchor-id="part-d-bucles-i-estructures-de-dades">Part D · Bucles i estructures de dades</h3>
 <section id="d.1-for-i-while" class="level4">
 <h4 class="anchored" data-anchor-id="d.1-for-i-while">D.1 — <code>for</code> i <code>while</code></h4>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> VAR <span class="kw">in</span> llista de paraules<span class="kw">;</span> <span class="cf">do</span></span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    <span class="ex">ordres</span></span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="ex">ORDRE</span><span class="kw">;</span> <span class="cf">do</span>      <span class="co"># repeteix mentre ORDRE retorni 0</span></span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    <span class="ex">ordres</span></span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> VAR <span class="kw">in</span> llista de paraules<span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    <span class="ex">ordres</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="ex">ORDRE</span><span class="kw">;</span> <span class="cf">do</span>      <span class="co"># repeteix mentre ORDRE retorni 0</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    <span class="ex">ordres</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="exercici udl-component udl-exercici">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
 <p><strong>Prediu</strong> què imprimeix cada bucle i comprova-ho:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> x <span class="kw">in</span> a b c<span class="kw">;</span> <span class="cf">do</span> <span class="bu">echo</span> <span class="st">"[</span><span class="va">$x</span><span class="st">]"</span><span class="kw">;</span> <span class="cf">done</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> x <span class="kw">in</span> <span class="st">"a b c"</span><span class="kw">;</span> <span class="cf">do</span> <span class="bu">echo</span> <span class="st">"[</span><span class="va">$x</span><span class="st">]"</span><span class="kw">;</span> <span class="cf">done</span></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> f <span class="kw">in</span> <span class="pp">*</span>.sh<span class="kw">;</span> <span class="cf">do</span> <span class="bu">echo</span> <span class="st">"Script: </span><span class="va">$f</span><span class="st">"</span><span class="kw">;</span> <span class="cf">done</span></span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> f <span class="kw">in</span> <span class="pp">*</span>.noexisteix<span class="kw">;</span> <span class="cf">do</span> <span class="bu">echo</span> <span class="st">"Script: </span><span class="va">$f</span><span class="st">"</span><span class="kw">;</span> <span class="cf">done</span></span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="kw">((</span><span class="va">i</span> <span class="op">=</span> <span class="dv">1</span><span class="kw">;</span> <span class="va">i</span> <span class="op">&lt;=</span> <span class="dv">3</span><span class="kw">;</span> <span class="va">i</span><span class="op">++</span><span class="kw">));</span> <span class="cf">do</span> <span class="bu">echo</span> <span class="st">"</span><span class="va">$i</span><span class="st">"</span><span class="kw">;</span> <span class="cf">done</span></span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="va">i</span><span class="op">=</span>3<span class="kw">;</span> <span class="cf">while</span> <span class="bu">[</span> <span class="va">$i</span> <span class="ot">-gt</span> 0 <span class="bu">]</span><span class="kw">;</span> <span class="cf">do</span> <span class="bu">echo</span> <span class="st">"</span><span class="va">$i</span><span class="st">"</span><span class="kw">;</span> <span class="va">i</span><span class="op">=</span><span class="va">$((i</span> <span class="op">-</span> <span class="dv">1</span><span class="va">))</span><span class="kw">;</span> <span class="cf">done</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> x <span class="kw">in</span> a b c<span class="kw">;</span> <span class="cf">do</span> <span class="bu">echo</span> <span class="st">"[</span><span class="va">$x</span><span class="st">]"</span><span class="kw">;</span> <span class="cf">done</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> x <span class="kw">in</span> <span class="st">"a b c"</span><span class="kw">;</span> <span class="cf">do</span> <span class="bu">echo</span> <span class="st">"[</span><span class="va">$x</span><span class="st">]"</span><span class="kw">;</span> <span class="cf">done</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> f <span class="kw">in</span> <span class="pp">*</span>.sh<span class="kw">;</span> <span class="cf">do</span> <span class="bu">echo</span> <span class="st">"Script: </span><span class="va">$f</span><span class="st">"</span><span class="kw">;</span> <span class="cf">done</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> f <span class="kw">in</span> <span class="pp">*</span>.noexisteix<span class="kw">;</span> <span class="cf">do</span> <span class="bu">echo</span> <span class="st">"Script: </span><span class="va">$f</span><span class="st">"</span><span class="kw">;</span> <span class="cf">done</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="kw">((</span><span class="va">i</span> <span class="op">=</span> <span class="dv">1</span><span class="kw">;</span> <span class="va">i</span> <span class="op">&lt;=</span> <span class="dv">3</span><span class="kw">;</span> <span class="va">i</span><span class="op">++</span><span class="kw">));</span> <span class="cf">do</span> <span class="bu">echo</span> <span class="st">"</span><span class="va">$i</span><span class="st">"</span><span class="kw">;</span> <span class="cf">done</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="va">i</span><span class="op">=</span>3<span class="kw">;</span> <span class="cf">while</span> <span class="bu">[</span> <span class="va">$i</span> <span class="ot">-gt</span> 0 <span class="bu">]</span><span class="kw">;</span> <span class="cf">do</span> <span class="bu">echo</span> <span class="st">"</span><span class="va">$i</span><span class="st">"</span><span class="kw">;</span> <span class="va">i</span><span class="op">=</span><span class="va">$((i</span> <span class="op">-</span> <span class="dv">1</span><span class="va">))</span><span class="kw">;</span> <span class="cf">done</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Fixa’t en el quart bucle: què imprimeix si no hi ha cap fitxer que coincideixi?</p>
 </div>
 <details>
@@ -1131,12 +1132,12 @@ El resultat de la suma entre 5 i 3 és: 8</code></pre>
 </section>
 <section id="d.2-arrays-r5" class="level4">
 <h4 class="anchored" data-anchor-id="d.2-arrays-r5">D.2 — Arrays (R5)</h4>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="va">A</span><span class="op">=</span><span class="va">(</span><span class="st">"u"</span> <span class="st">"dos"</span> <span class="st">"tres"</span><span class="va">)</span>   <span class="co"># declarar</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"</span><span class="va">${A</span><span class="op">[</span><span class="dv">0</span><span class="op">]</span><span class="va">}</span><span class="st">"</span>         <span class="co"># un element (els índexs comencen a 0)</span></span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"</span><span class="va">${A</span><span class="op">[@]</span><span class="va">}</span><span class="st">"</span>         <span class="co"># tots els elements</span></span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"</span><span class="va">${</span><span class="op">!</span><span class="va">A</span><span class="op">[@]</span><span class="va">}</span><span class="st">"</span>        <span class="co"># tots els índexs</span></span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"</span><span class="va">${</span><span class="op">#</span><span class="va">A</span><span class="op">[@]</span><span class="va">}</span><span class="st">"</span>        <span class="co"># nombre d'elements</span></span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a><span class="va">A</span><span class="op">+=</span><span class="va">(</span><span class="st">"quatre"</span><span class="va">)</span>          <span class="co"># afegir al final</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="va">A</span><span class="op">=</span><span class="va">(</span><span class="st">"u"</span> <span class="st">"dos"</span> <span class="st">"tres"</span><span class="va">)</span>   <span class="co"># declarar</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"</span><span class="va">${A</span><span class="op">[</span><span class="dv">0</span><span class="op">]</span><span class="va">}</span><span class="st">"</span>         <span class="co"># un element (els índexs comencen a 0)</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"</span><span class="va">${A</span><span class="op">[@]</span><span class="va">}</span><span class="st">"</span>         <span class="co"># tots els elements</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"</span><span class="va">${</span><span class="op">!</span><span class="va">A</span><span class="op">[@]</span><span class="va">}</span><span class="st">"</span>        <span class="co"># tots els índexs</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"</span><span class="va">${</span><span class="op">#</span><span class="va">A</span><span class="op">[@]</span><span class="va">}</span><span class="st">"</span>        <span class="co"># nombre d'elements</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="va">A</span><span class="op">+=</span><span class="va">(</span><span class="st">"quatre"</span><span class="va">)</span>          <span class="co"># afegir al final</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="exercici udl-component udl-exercici">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
 <p>Crea <code>arrays.sh</code> amb dos arrays: un amb 4 fruites del diable i un altre amb els seus usuaris, en el mateix ordre. L’script ha de llistar quin personatge té quina fruita.</p>
@@ -1167,9 +1168,9 @@ El resultat de la suma entre 5 i 3 és: 8</code></pre>
 </tbody>
 </table>
 <p>Després <strong>prediu</strong> i comprova:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$FRUITES</span></span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> f <span class="kw">in</span> <span class="va">${FRUITES</span><span class="op">[@]</span><span class="va">}</span><span class="kw">;</span> <span class="cf">do</span> <span class="bu">echo</span> <span class="st">"[</span><span class="va">$f</span><span class="st">]"</span><span class="kw">;</span> <span class="cf">done</span></span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> f <span class="kw">in</span> <span class="st">"</span><span class="va">${FRUITES</span><span class="op">[@]</span><span class="va">}</span><span class="st">"</span><span class="kw">;</span> <span class="cf">do</span> <span class="bu">echo</span> <span class="st">"[</span><span class="va">$f</span><span class="st">]"</span><span class="kw">;</span> <span class="cf">done</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$FRUITES</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> f <span class="kw">in</span> <span class="va">${FRUITES</span><span class="op">[@]</span><span class="va">}</span><span class="kw">;</span> <span class="cf">do</span> <span class="bu">echo</span> <span class="st">"[</span><span class="va">$f</span><span class="st">]"</span><span class="kw">;</span> <span class="cf">done</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> f <span class="kw">in</span> <span class="st">"</span><span class="va">${FRUITES</span><span class="op">[@]</span><span class="va">}</span><span class="st">"</span><span class="kw">;</span> <span class="cf">do</span> <span class="bu">echo</span> <span class="st">"[</span><span class="va">$f</span><span class="st">]"</span><span class="kw">;</span> <span class="cf">done</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Finalment, afegeix una cinquena parella amb <code>+=</code> (per exemple, <code>Ope-Ope no Mi</code> i <code>Law</code>) i comprova que el bucle principal la mostra <strong>sense tocar-lo</strong>.</p>
 </div>
 <details>
@@ -1178,17 +1179,17 @@ El resultat de la suma entre 5 i 3 és: 8</code></pre>
 </summary>
 <div class="solucio udl-component udl-solucio">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="va">FRUITES</span><span class="op">=</span><span class="va">(</span><span class="st">"Hito-Hito no Mi"</span> <span class="st">"Mera-Mera no Mi"</span> <span class="st">"Gura-Gura no Mi"</span> <span class="st">"Magu-Magu no Mi"</span><span class="va">)</span></span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="va">USUARIS</span><span class="op">=</span><span class="va">(</span><span class="st">"Luffy"</span> <span class="st">"Ace/Sabo"</span> <span class="st">"Barbablanca/Barbanegra"</span> <span class="st">"Akainu"</span><span class="va">)</span></span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="va">FRUITES</span><span class="op">+=</span><span class="va">(</span><span class="st">"Ope-Ope no Mi"</span><span class="va">)</span></span>
-<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a><span class="va">USUARIS</span><span class="op">+=</span><span class="va">(</span><span class="st">"Law"</span><span class="va">)</span></span>
-<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="st">"</span><span class="va">${</span><span class="op">!</span><span class="va">FRUITES</span><span class="op">[@]</span><span class="va">}</span><span class="st">"</span><span class="kw">;</span> <span class="cf">do</span></span>
-<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"</span><span class="va">${USUARIS</span><span class="op">[</span><span class="va">$i</span><span class="op">]</span><span class="va">}</span><span class="st"> té la </span><span class="va">${FRUITES</span><span class="op">[</span><span class="va">$i</span><span class="op">]</span><span class="va">}</span><span class="st">"</span></span>
-<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span>
-<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Total: </span><span class="va">${</span><span class="op">#</span><span class="va">FRUITES</span><span class="op">[@]</span><span class="va">}</span><span class="st"> fruites"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="va">FRUITES</span><span class="op">=</span><span class="va">(</span><span class="st">"Hito-Hito no Mi"</span> <span class="st">"Mera-Mera no Mi"</span> <span class="st">"Gura-Gura no Mi"</span> <span class="st">"Magu-Magu no Mi"</span><span class="va">)</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="va">USUARIS</span><span class="op">=</span><span class="va">(</span><span class="st">"Luffy"</span> <span class="st">"Ace/Sabo"</span> <span class="st">"Barbablanca/Barbanegra"</span> <span class="st">"Akainu"</span><span class="va">)</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="va">FRUITES</span><span class="op">+=</span><span class="va">(</span><span class="st">"Ope-Ope no Mi"</span><span class="va">)</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a><span class="va">USUARIS</span><span class="op">+=</span><span class="va">(</span><span class="st">"Law"</span><span class="va">)</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="st">"</span><span class="va">${</span><span class="op">!</span><span class="va">FRUITES</span><span class="op">[@]</span><span class="va">}</span><span class="st">"</span><span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"</span><span class="va">${USUARIS</span><span class="op">[</span><span class="va">$i</span><span class="op">]</span><span class="va">}</span><span class="st"> té la </span><span class="va">${FRUITES</span><span class="op">[</span><span class="va">$i</span><span class="op">]</span><span class="va">}</span><span class="st">"</span></span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Total: </span><span class="va">${</span><span class="op">#</span><span class="va">FRUITES</span><span class="op">[@]</span><span class="va">}</span><span class="st"> fruites"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <ul>
 <li><code>echo $FRUITES</code> mostra només el <strong>primer</strong> element: sense índex, <code>$A</code> equival a <code>${A[0]}</code>.</li>
 <li><code>${FRUITES[@]}</code> <strong>sense cometes</strong> divideix per espais: surten 12 elements (<code>[Hito-Hito]</code>, <code>[no]</code>, <code>[Mi]</code>…).</li>
@@ -1243,17 +1244,17 @@ El resultat de la suma entre 5 i 3 és: 8</code></pre>
 </summary>
 <div class="solucio udl-component udl-solucio">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="bu">declare</span> <span class="at">-A</span> <span class="va">REGNES</span><span class="op">=</span><span class="va">(</span></span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">[</span><span class="st">"Dressrosa"</span><span class="op">]</span><span class="va">=</span><span class="st">"Doflamingo"</span></span>
-<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">[</span><span class="st">"WholeCake"</span><span class="op">]</span><span class="va">=</span><span class="st">"Big Mom"</span></span>
-<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">[</span><span class="st">"Wano"</span><span class="op">]</span><span class="va">=</span><span class="st">"Kaido"</span></span>
-<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">[</span><span class="st">"Alabasta"</span><span class="op">]</span><span class="va">=</span><span class="st">"Cobra"</span></span>
-<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="va">)</span></span>
-<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> REGNE <span class="kw">in</span> <span class="st">"</span><span class="va">${</span><span class="op">!</span><span class="va">REGNES</span><span class="op">[@]</span><span class="va">}</span><span class="st">"</span><span class="kw">;</span> <span class="cf">do</span></span>
-<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"A </span><span class="va">$REGNE</span><span class="st"> governa </span><span class="va">${REGNES</span><span class="op">[</span><span class="va">$REGNE</span><span class="op">]</span><span class="va">}</span><span class="st">"</span></span>
-<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="bu">declare</span> <span class="at">-A</span> <span class="va">REGNES</span><span class="op">=</span><span class="va">(</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">[</span><span class="st">"Dressrosa"</span><span class="op">]</span><span class="va">=</span><span class="st">"Doflamingo"</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">[</span><span class="st">"WholeCake"</span><span class="op">]</span><span class="va">=</span><span class="st">"Big Mom"</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">[</span><span class="st">"Wano"</span><span class="op">]</span><span class="va">=</span><span class="st">"Kaido"</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">[</span><span class="st">"Alabasta"</span><span class="op">]</span><span class="va">=</span><span class="st">"Cobra"</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a><span class="va">)</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> REGNE <span class="kw">in</span> <span class="st">"</span><span class="va">${</span><span class="op">!</span><span class="va">REGNES</span><span class="op">[@]</span><span class="va">}</span><span class="st">"</span><span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"A </span><span class="va">$REGNE</span><span class="st"> governa </span><span class="va">${REGNES</span><span class="op">[</span><span class="va">$REGNE</span><span class="op">]</span><span class="va">}</span><span class="st">"</span></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <ol type="1">
 <li>Amb pocs elements poden sortir en l’ordre d’inserció per casualitat, però en afegir-ne més l’ordre canvia. Un diccionari és una <strong>taula hash</strong>: l’ordre <strong>no està garantit</strong>. Si el necessites, ordena les claus: <code>printf '%s\n' "${!REGNES[@]}" | sort</code>.</li>
 <li>Sense <code>declare -A</code>, bash crea un array <strong>indexat</strong> normal. Avalua cada clau com a <strong>expressió aritmètica</strong>: <code>Dressrosa</code> es pren per una variable inexistent, que val <code>0</code>. Les quatre assignacions van a l’índex <code>0</code> i cadascuna sobreescriu l’anterior. Resultat: <code>A 0 governa Cobra</code>, i <code>declare -p</code> mostra <code>declare -a REGNES=([0]="Cobra")</code>. Cap missatge d’error.</li>
@@ -1280,33 +1281,33 @@ El resultat de la suma entre 5 i 3 és: 8</code></pre>
 </summary>
 <div class="solucio udl-component udl-solucio">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="bu">declare</span> <span class="at">-A</span> <span class="va">FRUITES</span><span class="op">=</span><span class="va">(</span></span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">[</span><span class="st">"Luffy"</span><span class="op">]</span><span class="va">=</span><span class="st">"Hito-Hito no Mi"</span></span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">[</span><span class="st">"Ace/Sabo"</span><span class="op">]</span><span class="va">=</span><span class="st">"Mera-Mera no Mi"</span></span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">[</span><span class="st">"Barbablanca/Barbanegra"</span><span class="op">]</span><span class="va">=</span><span class="st">"Gura-Gura no Mi"</span></span>
-<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">[</span><span class="st">"Akainu"</span><span class="op">]</span><span class="va">=</span><span class="st">"Magu-Magu no Mi"</span></span>
-<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a><span class="va">)</span></span>
-<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Personatges disponibles:"</span></span>
-<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a><span class="bu">printf</span> <span class="st">'  - %s\n'</span> <span class="st">"</span><span class="va">${</span><span class="op">!</span><span class="va">FRUITES</span><span class="op">[@]</span><span class="va">}</span><span class="st">"</span></span>
-<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a><span class="bu">read</span> <span class="at">-r</span> <span class="at">-p</span> <span class="st">"Escull un personatge: "</span> <span class="va">P</span></span>
-<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">-z</span> <span class="st">"</span><span class="va">$P</span><span class="st">"</span> <span class="bu">]</span> <span class="kw">||</span> <span class="bu">[</span> <span class="ot">-z</span> <span class="st">"</span><span class="va">${FRUITES</span><span class="op">[</span><span class="va">$P</span><span class="op">]</span><span class="va">}</span><span class="st">"</span> <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
-<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"Personatge no vàlid!"</span> <span class="op">&gt;&amp;</span><span class="dv">2</span></span>
-<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>    <span class="bu">exit</span> 1</span>
-<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span>
-<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Fruites possibles:"</span></span>
-<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a><span class="bu">printf</span> <span class="st">'  - %s\n'</span> <span class="st">"</span><span class="va">${FRUITES</span><span class="op">[@]</span><span class="va">}</span><span class="st">"</span></span>
-<span id="cb30-20"><a href="#cb30-20" aria-hidden="true" tabindex="-1"></a><span class="bu">read</span> <span class="at">-r</span> <span class="at">-p</span> <span class="st">"Quina és la fruita de </span><span class="va">$P</span><span class="st">? "</span> <span class="va">R</span></span>
-<span id="cb30-21"><a href="#cb30-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-22"><a href="#cb30-22" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="st">"</span><span class="va">$R</span><span class="st">"</span> <span class="ot">=</span> <span class="st">"</span><span class="va">${FRUITES</span><span class="op">[</span><span class="va">$P</span><span class="op">]</span><span class="va">}</span><span class="st">"</span> <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
-<span id="cb30-23"><a href="#cb30-23" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"Correcte! </span><span class="va">$P</span><span class="st"> té la </span><span class="va">${FRUITES</span><span class="op">[</span><span class="va">$P</span><span class="op">]</span><span class="va">}</span><span class="st">."</span></span>
-<span id="cb30-24"><a href="#cb30-24" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span></span>
-<span id="cb30-25"><a href="#cb30-25" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"Incorrecte! La fruita de </span><span class="va">$P</span><span class="st"> és la </span><span class="va">${FRUITES</span><span class="op">[</span><span class="va">$P</span><span class="op">]</span><span class="va">}</span><span class="st">."</span></span>
-<span id="cb30-26"><a href="#cb30-26" aria-hidden="true" tabindex="-1"></a>    <span class="bu">exit</span> 1</span>
-<span id="cb30-27"><a href="#cb30-27" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="bu">declare</span> <span class="at">-A</span> <span class="va">FRUITES</span><span class="op">=</span><span class="va">(</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">[</span><span class="st">"Luffy"</span><span class="op">]</span><span class="va">=</span><span class="st">"Hito-Hito no Mi"</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">[</span><span class="st">"Ace/Sabo"</span><span class="op">]</span><span class="va">=</span><span class="st">"Mera-Mera no Mi"</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">[</span><span class="st">"Barbablanca/Barbanegra"</span><span class="op">]</span><span class="va">=</span><span class="st">"Gura-Gura no Mi"</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">[</span><span class="st">"Akainu"</span><span class="op">]</span><span class="va">=</span><span class="st">"Magu-Magu no Mi"</span></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="va">)</span></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Personatges disponibles:"</span></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a><span class="bu">printf</span> <span class="st">'  - %s\n'</span> <span class="st">"</span><span class="va">${</span><span class="op">!</span><span class="va">FRUITES</span><span class="op">[@]</span><span class="va">}</span><span class="st">"</span></span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a><span class="bu">read</span> <span class="at">-r</span> <span class="at">-p</span> <span class="st">"Escull un personatge: "</span> <span class="va">P</span></span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">-z</span> <span class="st">"</span><span class="va">$P</span><span class="st">"</span> <span class="bu">]</span> <span class="kw">||</span> <span class="bu">[</span> <span class="ot">-z</span> <span class="st">"</span><span class="va">${FRUITES</span><span class="op">[</span><span class="va">$P</span><span class="op">]</span><span class="va">}</span><span class="st">"</span> <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"Personatge no vàlid!"</span> <span class="op">&gt;&amp;</span><span class="dv">2</span></span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>    <span class="bu">exit</span> 1</span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Fruites possibles:"</span></span>
+<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a><span class="bu">printf</span> <span class="st">'  - %s\n'</span> <span class="st">"</span><span class="va">${FRUITES</span><span class="op">[@]</span><span class="va">}</span><span class="st">"</span></span>
+<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a><span class="bu">read</span> <span class="at">-r</span> <span class="at">-p</span> <span class="st">"Quina és la fruita de </span><span class="va">$P</span><span class="st">? "</span> <span class="va">R</span></span>
+<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-22"><a href="#cb29-22" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="st">"</span><span class="va">$R</span><span class="st">"</span> <span class="ot">=</span> <span class="st">"</span><span class="va">${FRUITES</span><span class="op">[</span><span class="va">$P</span><span class="op">]</span><span class="va">}</span><span class="st">"</span> <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb29-23"><a href="#cb29-23" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"Correcte! </span><span class="va">$P</span><span class="st"> té la </span><span class="va">${FRUITES</span><span class="op">[</span><span class="va">$P</span><span class="op">]</span><span class="va">}</span><span class="st">."</span></span>
+<span id="cb29-24"><a href="#cb29-24" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span></span>
+<span id="cb29-25"><a href="#cb29-25" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"Incorrecte! La fruita de </span><span class="va">$P</span><span class="st"> és la </span><span class="va">${FRUITES</span><span class="op">[</span><span class="va">$P</span><span class="op">]</span><span class="va">}</span><span class="st">."</span></span>
+<span id="cb29-26"><a href="#cb29-26" aria-hidden="true" tabindex="-1"></a>    <span class="bu">exit</span> 1</span>
+<span id="cb29-27"><a href="#cb29-27" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <ul>
 <li><strong>Per què <code>printf</code> i no <code>echo "${FRUITES[@]}"</code>?</strong> <code>echo</code> ho posa tot en una línia separat per espais. Com que les fruites ja contenen espais, no es veu on acaba una i on comença l’altra.</li>
 <li><strong>Per què primer <code>[ -z "$P" ]</code>?</strong> Amb <code>P</code> buit, <code>${FRUITES[$P]}</code> dona l’error <code>bad array subscript</code>. El <code>||</code> del primer <code>[ ]</code> ja és cert i el segon no s’arriba a avaluar.</li>
@@ -1325,7 +1326,7 @@ El resultat de la suma entre 5 i 3 és: 8</code></pre>
 <div class="solucio udl-component udl-solucio">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
 <p>Barreja les fruites abans de mostrar-les:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="bu">printf</span> <span class="st">'  - %s\n'</span> <span class="st">"</span><span class="va">${FRUITES</span><span class="op">[@]</span><span class="va">}</span><span class="st">"</span> <span class="kw">|</span> <span class="fu">shuf</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="bu">printf</span> <span class="st">'  - %s\n'</span> <span class="st">"</span><span class="va">${FRUITES</span><span class="op">[@]</span><span class="va">}</span><span class="st">"</span> <span class="kw">|</span> <span class="fu">shuf</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>shuf</code> reordena les línies que rep a l’atzar. Un altre exemple de per què <code>printf</code> amb un element per línia és útil: el podem connectar amb qualsevol eina que treballi per línies.</p>
 </div>
 </details>
@@ -1339,34 +1340,34 @@ El resultat de la suma entre 5 i 3 és: 8</code></pre>
 </summary>
 <div class="solucio udl-component udl-solucio">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-solucio"></use></svg><span>Solució</span></div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb32"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="bu">declare</span> <span class="at">-A</span> <span class="va">FRUITES</span><span class="op">=</span><span class="va">(</span></span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">[</span><span class="st">"Luffy"</span><span class="op">]</span><span class="va">=</span><span class="st">"Hito-Hito no Mi"</span></span>
-<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">[</span><span class="st">"Ace/Sabo"</span><span class="op">]</span><span class="va">=</span><span class="st">"Mera-Mera no Mi"</span></span>
-<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">[</span><span class="st">"Barbablanca/Barbanegra"</span><span class="op">]</span><span class="va">=</span><span class="st">"Gura-Gura no Mi"</span></span>
-<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">[</span><span class="st">"Akainu"</span><span class="op">]</span><span class="va">=</span><span class="st">"Magu-Magu no Mi"</span></span>
-<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a><span class="va">)</span></span>
-<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a><span class="va">PS3</span><span class="op">=</span><span class="st">"Tria un número: "</span></span>
-<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Escull un personatge:"</span></span>
-<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a><span class="cf">select</span> P <span class="kw">in</span> <span class="st">"</span><span class="va">${</span><span class="op">!</span><span class="va">FRUITES</span><span class="op">[@]</span><span class="va">}</span><span class="st">"</span><span class="kw">;</span> <span class="cf">do</span></span>
-<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>    <span class="bu">[</span> <span class="ot">-n</span> <span class="st">"</span><span class="va">$P</span><span class="st">"</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="cf">break</span></span>
-<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"Opció no vàlida."</span> <span class="op">&gt;&amp;</span><span class="dv">2</span></span>
-<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span>
-<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Quina és la fruita de </span><span class="va">$P</span><span class="st">?"</span></span>
-<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a><span class="cf">select</span> R <span class="kw">in</span> <span class="st">"</span><span class="va">${FRUITES</span><span class="op">[@]</span><span class="va">}</span><span class="st">"</span><span class="kw">;</span> <span class="cf">do</span></span>
-<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a>    <span class="bu">[</span> <span class="ot">-n</span> <span class="st">"</span><span class="va">$R</span><span class="st">"</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="cf">break</span></span>
-<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"Opció no vàlida."</span> <span class="op">&gt;&amp;</span><span class="dv">2</span></span>
-<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span>
-<span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-23"><a href="#cb32-23" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="st">"</span><span class="va">$R</span><span class="st">"</span> <span class="ot">=</span> <span class="st">"</span><span class="va">${FRUITES</span><span class="op">[</span><span class="va">$P</span><span class="op">]</span><span class="va">}</span><span class="st">"</span> <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
-<span id="cb32-24"><a href="#cb32-24" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"Correcte! </span><span class="va">$P</span><span class="st"> té la </span><span class="va">${FRUITES</span><span class="op">[</span><span class="va">$P</span><span class="op">]</span><span class="va">}</span><span class="st">."</span></span>
-<span id="cb32-25"><a href="#cb32-25" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span></span>
-<span id="cb32-26"><a href="#cb32-26" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"Incorrecte! La fruita de </span><span class="va">$P</span><span class="st"> és la </span><span class="va">${FRUITES</span><span class="op">[</span><span class="va">$P</span><span class="op">]</span><span class="va">}</span><span class="st">."</span></span>
-<span id="cb32-27"><a href="#cb32-27" aria-hidden="true" tabindex="-1"></a>    <span class="bu">exit</span> 1</span>
-<span id="cb32-28"><a href="#cb32-28" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="bu">declare</span> <span class="at">-A</span> <span class="va">FRUITES</span><span class="op">=</span><span class="va">(</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">[</span><span class="st">"Luffy"</span><span class="op">]</span><span class="va">=</span><span class="st">"Hito-Hito no Mi"</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">[</span><span class="st">"Ace/Sabo"</span><span class="op">]</span><span class="va">=</span><span class="st">"Mera-Mera no Mi"</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">[</span><span class="st">"Barbablanca/Barbanegra"</span><span class="op">]</span><span class="va">=</span><span class="st">"Gura-Gura no Mi"</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">[</span><span class="st">"Akainu"</span><span class="op">]</span><span class="va">=</span><span class="st">"Magu-Magu no Mi"</span></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a><span class="va">)</span></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a><span class="va">PS3</span><span class="op">=</span><span class="st">"Tria un número: "</span></span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Escull un personatge:"</span></span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a><span class="cf">select</span> P <span class="kw">in</span> <span class="st">"</span><span class="va">${</span><span class="op">!</span><span class="va">FRUITES</span><span class="op">[@]</span><span class="va">}</span><span class="st">"</span><span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>    <span class="bu">[</span> <span class="ot">-n</span> <span class="st">"</span><span class="va">$P</span><span class="st">"</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="cf">break</span></span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"Opció no vàlida."</span> <span class="op">&gt;&amp;</span><span class="dv">2</span></span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Quina és la fruita de </span><span class="va">$P</span><span class="st">?"</span></span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a><span class="cf">select</span> R <span class="kw">in</span> <span class="st">"</span><span class="va">${FRUITES</span><span class="op">[@]</span><span class="va">}</span><span class="st">"</span><span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a>    <span class="bu">[</span> <span class="ot">-n</span> <span class="st">"</span><span class="va">$R</span><span class="st">"</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="cf">break</span></span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"Opció no vàlida."</span> <span class="op">&gt;&amp;</span><span class="dv">2</span></span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="st">"</span><span class="va">$R</span><span class="st">"</span> <span class="ot">=</span> <span class="st">"</span><span class="va">${FRUITES</span><span class="op">[</span><span class="va">$P</span><span class="op">]</span><span class="va">}</span><span class="st">"</span> <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"Correcte! </span><span class="va">$P</span><span class="st"> té la </span><span class="va">${FRUITES</span><span class="op">[</span><span class="va">$P</span><span class="op">]</span><span class="va">}</span><span class="st">."</span></span>
+<span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span></span>
+<span id="cb31-26"><a href="#cb31-26" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"Incorrecte! La fruita de </span><span class="va">$P</span><span class="st"> és la </span><span class="va">${FRUITES</span><span class="op">[</span><span class="va">$P</span><span class="op">]</span><span class="va">}</span><span class="st">."</span></span>
+<span id="cb31-27"><a href="#cb31-27" aria-hidden="true" tabindex="-1"></a>    <span class="bu">exit</span> 1</span>
+<span id="cb31-28"><a href="#cb31-28" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>select</code> és un bucle: numera les opcions, mostra el missatge de <code>PS3</code> i torna a preguntar fins que fem <code>break</code>. Si el número no és vàlid, la variable queda buida.</p>
 </div>
 </details>
@@ -1378,23 +1379,23 @@ El resultat de la suma entre 5 i 3 és: 8</code></pre>
 <div class="exercici udl-component udl-exercici">
 <div class="udl-component-title"><svg class="udl-icon" aria-hidden="true"><use href="../../../assets/icons.svg#icon-exercici"></use></svg><span>Exercici</span></div>
 <p>Analitza aquest script <strong>sense executar-lo</strong>. Quin resultat esperes? Després executa’l i explica per què el resultat és diferent.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="op">&gt;</span> ch01.data <span class="op">&lt;&lt; 'EOT'</span></span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="st">102</span></span>
-<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="st">071</span></span>
-<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="st">210</span></span>
-<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a><span class="st">153</span></span>
-<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a><span class="op">EOT</span></span>
-<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> ch01.data</span>
-<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a><span class="bu">declare</span> <span class="at">-i</span> <span class="va">SUM</span><span class="op">=</span>0</span>
-<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="bu">read</span> <span class="va">X</span><span class="kw">;</span> <span class="cf">do</span></span>
-<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>    <span class="va">SUM</span><span class="op">+=</span><span class="va">$X</span></span>
-<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span> <span class="op">&lt;</span> ch01.data</span>
-<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Suma: </span><span class="va">$SUM</span><span class="st"> (esperat: 536)"</span></span>
-<span id="cb33-17"><a href="#cb33-17" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-f</span> ch01.data</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb32"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="op">&gt;</span> ch01.data <span class="op">&lt;&lt; 'EOT'</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="st">102</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="st">071</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="st">210</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a><span class="st">153</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a><span class="op">EOT</span></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> ch01.data</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a><span class="bu">declare</span> <span class="at">-i</span> <span class="va">SUM</span><span class="op">=</span>0</span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="bu">read</span> <span class="va">X</span><span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>    <span class="va">SUM</span><span class="op">+=</span><span class="va">$X</span></span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span> <span class="op">&lt;</span> ch01.data</span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Suma: </span><span class="va">$SUM</span><span class="st"> (esperat: 536)"</span></span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-f</span> ch01.data</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <ol type="1">
 <li>Per què el resultat no és 536? Quin número és el culpable?</li>
 <li>Què passaria si esborressis <code>declare -i</code>?</li>
@@ -1414,9 +1415,9 @@ El resultat de la suma entre 5 i 3 és: 8</code></pre>
 <li><code>declare -i</code> marca <code>SUM</code> com a <strong>enter</strong>: el <code>+=</code> passa a ser una suma aritmètica. Sense això, <code>+=</code> sobre una cadena <strong>concatena</strong>, i el resultat seria <code>0102071210153</code>. Tornem a B.1: per defecte, tot és text.</li>
 <li>Cal forçar la <strong>base 10</strong> amb el prefix <code>10#</code>:</li>
 </ol>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb34"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="bu">read</span> <span class="at">-r</span> <span class="va">X</span><span class="kw">;</span> <span class="cf">do</span></span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>    <span class="va">SUM</span><span class="op">+=</span><span class="va">$((</span><span class="dt">10#</span><span class="va">$X))</span></span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span> <span class="op">&lt;</span> ch01.data</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="bu">read</span> <span class="at">-r</span> <span class="va">X</span><span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>    <span class="va">SUM</span><span class="op">+=</span><span class="va">$((</span><span class="dt">10#</span><span class="va">$X))</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span> <span class="op">&lt;</span> ch01.data</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Una alternativa és passar cada número per <code>bc</code>, que no fa servir la convenció octal (<code>echo 071 | bc</code> dona <code>71</code>), però això llança un procés per línia i <code>bc</code> no sempre és instal·lat.</p>
 <ol start="4" type="1">
 <li>Dona l’error <code>value too great for base (error token is "08")</code>. És el mateix fenomen: <code>08</code> comença per <code>0</code>, per tant és octal, i el <code>8</code> no existeix en base 8. Les dades amb zeros a l’esquerra (dates, hores, codis, mesos com <code>08</code> o <code>09</code>) són una font clàssica d’errors en scripts reals.</li>
@@ -1961,6 +1962,9 @@ El resultat de la suma entre 5 i 3 és: 8</code></pre>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
+      <a href="../../../blocs/07-shell/pralabs/03-shell.html" class="pagination-link" aria-label="Bash scripting (III)">
+        <span class="nav-page-text">Bash scripting (III)</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
   </div>
 </nav>
 </div> <!-- /content -->
