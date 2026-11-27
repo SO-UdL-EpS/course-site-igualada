@@ -1,0 +1,573 @@
+---
+title: "Bash scripting (III)"
+author: "Jordi Mateo Fornés"
+format:
+  udl-course-html:
+    toc: false
+    number-sections: false
+---
+
+## Introducció
+
+A la sessió 1 vas veure que executar `./script.sh` vol dir que la shell fa `fork` i `exec` d'un **procés fill**, i que n'espera l'acabament per llegir-ne el codi de retorn. Fins ara, però, la shell sempre ha fet aquestes passes **una darrere l'altra**: llança, espera, llança, espera. En aquesta sessió prendrem el control d'aquest mecanisme i construirem una **fàbrica de processos**.
+
+> **Com pot una shell llançar diversos processos alhora, esperar-los, saber com ha acabat cadascun i aturar-los?**
+
+```{.text}
+& → $! → wait → estat d'acabament → kill → senyals → trap → fàbrica → funcions → instància única
+```
+
+:::{.programari}
+- `bash` (**sistema de referència: Debian bookworm, amb bash 5.2**) i un editor de text.
+- `ps`, `kill`, `pidof` (paquet `sysvinit-utils`), `pgrep` (`procps`) i `flock` (`util-linux`). A Debian venen instal·lats per defecte.
+- **Dues terminals obertes**: una per executar els scripts i l'altra per observar-los i enviar-los senyals.
+:::
+
+:::{.bonapractica}
+Si no acabes a classe, la Part D i el repte final es poden fer a casa. Si en algun moment et queda un procés penjat, `jobs` el mostra i `kill %1` l'atura.
+:::
+
+---
+
+### Part A · Processos en segon pla
+
+#### A.1 — `&` i `$!`
+
+Si acabes una ordre amb `&`, la shell crea el fill però **no l'espera**: et torna el *prompt* immediatament i el fill continua en **segon pla** (*background*).
+
+::: {.exercici}
+**Prediu** i comprova:
+
+```{.bash}
+sleep 30 &
+echo "PID del fill: $!"
+echo "PID de la shell: $$"
+jobs
+ps -o pid,ppid,stat,cmd
+```
+
+1. Qui és el pare del procés `sleep`? Com ho saps?
+2. En termes de `fork`, `exec` i `wait`, quina diferència hi ha entre `sleep 30` i `sleep 30 &`?
+3. En molts apunts es troba `sleep 120 &; pidof sleep`. Prova-ho. Per què falla?
+:::
+
+<details>
+<summary><b>Veure el raonament</b></summary>
+
+:::{.solucio}
+1. La columna `PPID` del `sleep` coincideix amb `$$`: el pare és **la teva shell**. `$!` guarda el PID de l'**últim procés llançat en segon pla**. És l'única manera fiable de saber-lo, així que cal desar-lo en una variable just després del `&` (com `$?` a la sessió 1).
+2. Totes dues fan `fork` + `exec`. La diferència és el **`wait`**: sense `&`, la shell espera que el fill acabi abans de continuar; amb `&`, se'l salta i el pare i el fill s'executen **alhora**.
+3. Dona `syntax error near unexpected token ';'`. `&` ja és un **separador d'ordres**, com `;`, i dos separadors seguits no són vàlids. Cal escriure-ho així: `sleep 120 & pidof sleep`.
+:::
+
+</details>
+
+#### A.2 — `wait` i l'estat d'acabament
+
+`wait PID` bloqueja el pare fins que acaba aquell fill i deixa a `$?` el **codi amb què ha acabat el fill**. `wait` sense arguments espera tots els fills.
+
+::: {.exercici}
+**Prediu** què imprimeix cada `echo`:
+
+```{.bash}
+sleep 2 &
+wait $!
+echo $?
+
+(exit 7) &
+wait $!
+echo $?
+
+wait 99999
+echo $?
+```
+
+Per què l'últim `wait` falla?
+:::
+
+<details>
+<summary><b>Veure el raonament</b></summary>
+
+:::{.solucio}
+Imprimeix `0`, `7` i `127`.
+
+- `(exit 7) &` crea un subshell (un procés fill, sessió 1) que acaba amb codi 7. El pare el recupera amb `wait`: és el canal pel qual un fill **comunica com ha acabat**.
+- `wait 99999` falla amb `pid 99999 is not a child of this shell`: un procés **només pot esperar els seus fills**, no qualsevol procés del sistema.
+:::
+
+</details>
+
+::: {.concepte title="On són els zombis?"}
+Quan un fill acaba, el kernel en conserva l'estat d'acabament fins que el pare el recull. Mentrestant, el fill és un **zombi** (estat `Z` a `ps`). Bash ho amaga: recull els fills automàticament quan acaben i desa l'estat internament fins que fas `wait`. Per això en un script de bash pràcticament no veuràs mai zombis. Quan programis el mateix en C, aquesta feina serà teva.
+:::
+
+---
+
+### Part B · Senyals
+
+#### B.1 — `kill` no mata: envia senyals
+
+Un **senyal** és una notificació asíncrona que el kernel lliura a un procés. `kill` envia un senyal a un PID. Per defecte n'envia un de concret, i "matar" només és el que acostuma a passar quan el procés el rep.
+
+::: {.exercici}
+Consulta `kill -l` i **prediu** l'estat que mostrarà cada `echo`:
+
+```{.bash}
+sleep 60 & kill $!;        wait $!; echo $?
+sleep 60 & kill -9 $!;     wait $!; echo $?
+sleep 60 & kill -INT $!;   wait $!; echo $?
+sleep 0 & sleep 1; kill $!; echo $?
+```
+
+1. Quin senyal envia `kill` per defecte? Relaciona cada estat amb el número del senyal (`kill -l 15`, `kill -l 9`, `kill -l 2`).
+2. Què passa a l'última línia? Per què?
+:::
+
+<details>
+<summary><b>Veure el raonament</b></summary>
+
+:::{.solucio}
+Imprimeix `143`, `137`, `130` i `1`.
+
+1. Per defecte `kill` envia **SIGTERM (15)**. Quan un procés mor per un senyal, la shell n'informa amb l'estat **128 + número del senyal**: 128 + 15 = 143 (TERM), 128 + 9 = 137 (KILL), 128 + 2 = 130 (INT, el que envia `Ctrl+C`). Per això un estat superior a 128 sol voler dir que el procés "ha mort per un senyal", i no que ha acabat amb `exit`.
+2. El `sleep 0` ja ha acabat quan arriba el `kill`: `No such process` i codi `1`. Un PID desat amb `$!` pot deixar de ser vàlid en qualsevol moment. El sistema fins i tot el pot reutilitzar per a un altre procés.
+:::
+
+</details>
+
+#### B.2 — `trap`: reaccionar als senyals
+
+Un script pot **capturar** un senyal amb `trap 'ordres' SENYAL` i decidir què fer. El pseudo-senyal `EXIT` s'activa sempre que l'script acaba, sigui com sigui. És el lloc ideal per fer neteja.
+
+::: {.exercici}
+Crea `bucle_infinit.sh`:
+
+```{.bash}
+#!/bin/bash
+TMP=$(mktemp)
+trap 'echo "Netejant $TMP"; rm -f "$TMP"' EXIT
+trap 'echo " Rebut SIGINT, plego."; exit 130' INT
+trap 'echo "Rebut SIGTERM, plego."; exit 143' TERM
+
+echo "PID $$, fitxer temporal $TMP"
+while : ; do
+    date >> "$TMP"
+    sleep 1
+done
+```
+
+Executa'l **tres vegades** a la terminal 1 i atura'l cada cop d'una manera diferent:
+
+1. Amb `Ctrl+C`.
+2. Amb `kill PID` des de la terminal 2.
+3. Amb `kill -9 PID` des de la terminal 2.
+
+Després de cada cas, mira si el fitxer temporal encara existeix (`ls /tmp/tmp.*`).
+
+- Quins missatges surten en cada cas? En quin cas queda brossa a `/tmp`?
+- Per què el missatge de SIGTERM pot trigar fins a un segon a aparèixer?
+- Què fa `while :`?
+:::
+
+<details>
+<summary><b>Veure el raonament</b></summary>
+
+:::{.solucio}
+- `Ctrl+C` → `Rebut SIGINT, plego.` i després `Netejant ...`. `kill` → `Rebut SIGTERM, plego.` i `Netejant ...`. En tots dos casos, l'`exit` del *trap* dispara el *trap* d'`EXIT`.
+- `kill -9` → la terminal 1 només mostra `Killed`, i el fitxer temporal **queda a `/tmp`**. **SIGKILL (9) no es pot capturar ni ignorar**: el kernel elimina el procés sense avisar-lo. Per això `kill -9` és l'últim recurs, no la primera opció. El procés no té cap oportunitat de tancar fitxers ni de netejar.
+- Mentre `sleep 1` s'executa en primer pla, bash està fent `wait` del fill. El *trap* s'executa quan aquest `wait` acaba. (Amb `Ctrl+C` és immediat perquè el senyal arriba a tot el grup de processos de primer pla, `sleep` inclòs.)
+- `:` és una ordre que no fa res i retorna `0`. `while :` és un bucle infinit, equivalent a `while true`.
+
+Recorda `rm /tmp/tmp.*` per esborrar la brossa del cas 3.
+:::
+
+</details>
+
+---
+
+### Part C · La fàbrica de processos
+
+#### C.1 — Crear N fills i esperar-los
+
+::: {.exercici}
+Crea `fabrica.sh`, que rep un nombre `n` i crea `n` fills en segon pla. Cada fill dorm un nombre aleatori de segons, entre 0 i 9. Després el pare els espera tots i compta quants han acabat bé i quants no:
+
+```{.bash}
+#!/bin/bash
+if [ $# -ne 1 ] || ! [[ $1 =~ ^[1-9][0-9]*$ ]]; then
+    echo "Ús: $0 <n>   (n enter positiu)" >&2
+    exit 1
+fi
+
+N=$1
+declare -a PIDS
+declare -i COMPLETATS=0
+declare -i FALLITS=0
+
+for ((i = 0; i < N; i++)); do
+    sec=$((RANDOM % 10))
+    sleep "$sec" &
+    PIDS[i]=$!
+    printf "Fill %d amb PID %d dormirà %d s\n" "$i" "${PIDS[i]}" "$sec"
+done
+
+for pid in "${PIDS[@]}"; do
+    wait "$pid"
+    estat=$?
+    echo "El fill $pid ha acabat amb estat $estat"
+    if [ "$estat" -eq 0 ]; then
+        COMPLETATS+=1
+    else
+        FALLITS+=1
+    fi
+done
+
+echo "Completats: $COMPLETATS"
+echo "Fallits: $FALLITS"
+```
+
+Executa'l amb `./fabrica.sh 5`, i mentre s'executa, observa'l des de la terminal 2 amb `ps -o pid,ppid,stat,cmd --ppid PID_DEL_SCRIPT` (o `pstree -p PID`).
+
+1. Quant triga en total? Per què no és la **suma** dels temps de cada fill?
+2. En quin ordre surten els missatges "ha acabat"? Coincideix amb l'ordre en què acaben realment els fills?
+3. Per què `COMPLETATS+=1` suma i no concatena? (Sessió 2, repte.)
+:::
+
+<details>
+<summary><b>Veure el raonament</b></summary>
+
+:::{.solucio}
+1. Triga aproximadament el temps del fill **més lent**, no la suma: els fills s'executen **concurrentment**. És la idea central de la sessió.
+2. Surten en l'ordre de l'array `PIDS`, no en l'ordre real d'acabament. `wait "$pid"` espera **aquell fill concret**. Si el primer dorm 9 s, el pare s'hi queda bloquejat encara que els altres ja hagin acabat (i bash ja n'haurà recollit l'estat, com explica el requadre de la Part A).
+3. `declare -i` fa que la variable sigui entera i el `+=` passa a ser aritmètic.
+
+**Ampliació.** `wait -n` espera **el primer fill que acabi**, sigui quin sigui, i `-p VAR` desa el seu PID a `VAR` (bash ≥ 5.1). Amb això, els missatges surten en ordre real d'acabament:
+
+```{.bash}
+for ((i = 0; i < N; i++)); do
+    wait -n -p pid
+    estat=$?
+    echo "El fill $pid ha acabat amb estat $estat"
+    ...
+done
+```
+:::
+
+</details>
+
+#### C.2 — El pare mata un fill
+
+::: {.exercici}
+Modifica `fabrica.sh` perquè, just després de crear els fills, el pare triï **un fill a l'atzar** i li enviï `SIGTERM`. Mostra quin fill ha triat.
+
+1. Quin estat mostra el fill mort? Encaixa amb B.1?
+2. Una versió anterior d'aquest exercici triava el fill amb `objectiu=$((RANDOM % 9))`. Què passaria amb `./fabrica.sh 3`?
+3. Què passa si el fill triat és un que dormia 0 segons?
+:::
+
+<details>
+<summary><b>Veure el raonament</b></summary>
+
+:::{.solucio}
+Afegeix-ho entre els dos bucles:
+
+```{.bash}
+objectiu=$((RANDOM % N))
+echo "El pare envia SIGTERM al fill $objectiu (PID ${PIDS[objectiu]})"
+kill "${PIDS[objectiu]}"
+```
+
+1. `143` = 128 + 15 (SIGTERM). Es comptabilitza com a fallit.
+2. Amb `% 9`, l'índex pot valer de 0 a 8. Si val 3 o més, `${PIDS[objectiu]}` és **buit**, `kill` dona un error i cap fill no mor. L'índex ha de dependre de `N`: `RANDOM % N`.
+3. El fill ja ha acabat: `kill` diu `No such process`, i aquell fill es compta com a completat amb estat `0`. La fàbrica pot acabar amb `Fallits: 0` encara que el pare "hagi matat" un fill. És una **condició de cursa**: el resultat depèn de qui arriba primer, el `kill` del pare o l'acabament del fill.
+:::
+
+</details>
+
+#### C.3 — Organitzar-ho amb funcions
+
+Una **funció** agrupa ordres sota un nom. Es crida com si fos una ordre, rep els arguments a `$1`, `$2`... i retorna un **codi** amb `return` (com `exit`, però només surt de la funció):
+
+```{.bash}
+saluda() {
+    local nom=$1          # local: la variable només existeix dins la funció
+    echo "Hola, $nom"
+}
+saluda Anna
+```
+
+::: {.exercici}
+Reorganitza `fabrica.sh` en quatre funcions: `crea_fills`, `mata_un_fill`, `espera_fills` i `mostra_resum`. El cos principal de l'script ha de quedar així:
+
+```{.bash}
+crea_fills
+mata_un_fill
+espera_fills
+mostra_resum
+```
+
+Fes servir `local` per a les variables auxiliars (`i`, `sec`, `pid`, `estat`...). Després:
+
+1. Per què les funcions poden modificar `PIDS`, `COMPLETATS` i `FALLITS`?
+2. **Prediu** què passaria si escrivissis `SORTIDA=$(espera_fills)` en lloc d'`espera_fills`. Quins valors mostraria `mostra_resum`? Per què?
+3. Fes que l'script acabi amb codi `1` si algun fill ha fallat.
+:::
+
+<details>
+<summary><b>Veure el raonament</b></summary>
+
+:::{.solucio}
+```{.bash}
+#!/bin/bash
+# fabrica.sh — crea N fills, en mata un i n'espera l'acabament
+
+if [ $# -ne 1 ] || ! [[ $1 =~ ^[1-9][0-9]*$ ]]; then
+    echo "Ús: $0 <n>   (n enter positiu)" >&2
+    exit 1
+fi
+
+N=$1
+declare -a PIDS
+declare -i COMPLETATS=0
+declare -i FALLITS=0
+
+crea_fills() {
+    local i sec
+    for ((i = 0; i < N; i++)); do
+        sec=$((RANDOM % 10))
+        sleep "$sec" &
+        PIDS[i]=$!
+        printf "Fill %d amb PID %d dormirà %d s\n" "$i" "${PIDS[i]}" "$sec"
+    done
+}
+
+mata_un_fill() {
+    local objectiu=$((RANDOM % N))
+    echo "El pare envia SIGTERM al fill $objectiu (PID ${PIDS[objectiu]})"
+    kill "${PIDS[objectiu]}"
+}
+
+espera_fills() {
+    local pid estat
+    for pid in "${PIDS[@]}"; do
+        wait "$pid"
+        estat=$?
+        echo "El fill $pid ha acabat amb estat $estat"
+        if [ "$estat" -eq 0 ]; then
+            COMPLETATS+=1
+        else
+            FALLITS+=1
+        fi
+    done
+}
+
+mostra_resum() {
+    echo "Completats: $COMPLETATS"
+    echo "Fallits: $FALLITS"
+}
+
+crea_fills
+mata_un_fill
+espera_fills
+mostra_resum
+[ "$FALLITS" -eq 0 ]
+```
+
+1. Una funció s'executa **dins del mateix procés** que l'script (com `source` o com les claus `{ }` de la sessió 1). Les variables que no són `local` són globals i es comparteixen.
+2. `$( )` executa la funció en un **subshell**, és a dir, en un procés fill. Hi passen tres coses:
+   - Els missatges "ha acabat" no surten per pantalla: van a parar a `SORTIDA`.
+   - El subshell modifica la seva **còpia** de `COMPLETATS` i `FALLITS`, i el resum mostra `0` i `0`.
+   - Els `sleep` **no són fills del subshell** sinó de l'script (A.2), així que el `wait` del subshell no els pot recollir de debò i els estats que mostra no tenen sentit.
+
+   Regla: `$(funció)` serveix per **obtenir text** d'una funció, no per fer que modifiqui l'estat de l'script.
+3. L'última línia, `[ "$FALLITS" -eq 0 ]`, fa que l'script acabi amb el codi d'aquest test (sense `exit`, l'script retorna el codi de l'última ordre, sessió 1). També s'hi pot posar `exit 1` dins d'un `if`.
+:::
+
+</details>
+
+::: {.concepte title="`return` o `echo`?"}
+Una funció té dues sortides diferents, igual que un procés:
+
+- `return N` → un **codi d'estat** (0–255), que es llegeix amb `$?` o directament amb `if funcio; then`.
+- `echo` → **text** per stdout, que es captura amb `$(funcio)`.
+
+Per "retornar" un número qualsevol (per exemple, quants fills han fallat), cal fer servir `echo`, no `return`: `return 256` dona `$? = 0`, perquè el codi d'estat només té 8 bits.
+:::
+
+---
+
+### Part D · Una sola instància
+
+Molts programes (un servei, una còpia de seguretat programada...) no han de poder executar-se **dues vegades alhora**. Volem un script que, en arrencar, comprovi si ja n'hi ha una altra instància en marxa i, en aquest cas, s'hi negui.
+
+#### D.1 — Com es diu un procés?
+
+::: {.exercici}
+Llança `bucle_infinit.sh` de dues maneres diferents i compara què en veuen les eines:
+
+```{.bash}
+bash bucle_infinit.sh &
+./bucle_infinit.sh &
+ps -o pid,comm,args
+pidof bucle_infinit.sh
+pidof -x bucle_infinit.sh
+pgrep -f bucle_infinit.sh
+```
+
+1. Quin **nom** (`comm`) té cada procés? Per què són diferents?
+2. Quins PID troba cada ordre (`pidof`, `pidof -x` i `pgrep -f`)?
+3. Fixa't en la columna `COMMAND` del segon procés. Per què surt retallat?
+
+Acaba amb `kill %1 %2`.
+:::
+
+<details>
+<summary><b>Veure el raonament</b></summary>
+
+:::{.solucio}
+1. Amb `bash bucle_infinit.sh`, el programa que s'executa (`exec`) és **`bash`**, i l'script només n'és un argument (sessió 1, A.3). Amb `./bucle_infinit.sh`, el kernel llegeix el *shebang* i llança `/bin/bash ./bucle_infinit.sh`, però el nom del procés és el de **l'script**.
+2. `pidof bucle_infinit.sh` no en troba **cap**: busca programes amb aquest nom, i cap dels dos ho és. `pidof -x` també busca scripts, però només troba el segon, el llançat amb `./`. `pgrep -f` busca el text a **tota la línia d'ordres** i els troba tots dos. (Compte: també trobaria qualsevol procés que tingués aquest text com a argument, per exemple un `vim bucle_infinit.sh`.)
+3. El kernel guarda el nom del procés en un camp de 16 bytes: **15 caràcters** més el terminador. `bucle_infinit.sh` en té 16 i es queda en `bucle_infinit.s`.
+
+Conclusió: "el nom d'un procés" no és un concepte tan simple com sembla, i cada eina el busca a un lloc diferent.
+:::
+
+</details>
+
+#### D.2 — `unica.sh`
+
+::: {.exercici}
+Crea `unica.sh`: si ja hi ha una altra instància d'aquest mateix script en execució, mostra un error a stderr amb el seu PID i acaba amb codi `1`. Si no, mostra `Sóc l'única instància (PID ...)` i dorm 30 segons (simula la feina).
+
+*Pistes:* `basename "$0"` dona el nom de l'script sense la ruta. Busca a `man pidof` l'opció `-o`: per què la necessites?
+
+Comprova-ho amb dues terminals:
+
+```{.bash}
+./unica.sh            # terminal 1
+./unica.sh ; echo $?  # terminal 2, mentre la primera encara treballa
+```
+
+I després en l'ordre invers: a la terminal 1, `bash unica.sh`; a la terminal 2, `./unica.sh`. Funciona?
+:::
+
+<details>
+<summary><b>Veure el raonament</b></summary>
+
+:::{.solucio}
+```{.bash}
+#!/bin/bash
+NOM=$(basename "$0")
+ALTRES=$(pidof -x -o $$ "$NOM")
+
+if [ -n "$ALTRES" ]; then
+    echo "Error: $NOM ja s'està executant (PID: $ALTRES)." >&2
+    exit 1
+fi
+
+echo "Sóc l'única instància (PID $$). Treballant..."
+sleep 30
+```
+
+- **`-o $$`** omet el PID del mateix script. Sense aquesta opció, l'script es trobaria **a si mateix** i no s'executaria mai. Una versió que, en lloc de plegar, fes `kill $ALTRES` per substituir la instància antiga **s'acabaria matant a ella mateixa**.
+- La comprovació funciona si la primera instància s'ha llançat amb `./unica.sh`. Si s'ha llançat amb `bash unica.sh`, `pidof -x` no la troba (D.1) i en tindràs dues alhora.
+:::
+
+</details>
+
+:::{.reflexio}
+Encara que tothom el llancés amb `./`, aquest script té un problema més greu. Imagina que dues persones executen `./unica.sh` **exactament en el mateix instant**. Totes dues fan `pidof` abans que l'altra existeixi del tot, cap troba l'altra, i totes dues continuen. Entre **comprovar** i **actuar** hi ha una finestra de temps, i és la mateixa **condició de cursa** de C.2. Per resoldre-ho, la comprovació i la presa del "torn" han de ser una **única operació atòmica**: és el problema d'**exclusió mútua**, que tornaràs a trobar al tema de concurrència.
+:::
+
+<details>
+<summary><b>Veure el raonament</b></summary>
+
+:::{.solucio}
+La solució habitual en scripts és un **bloqueig de fitxer** amb `flock`. El kernel garanteix que només un procés obté el bloqueig, i l'allibera automàticament quan el procés acaba (fins i tot amb `kill -9`). No depèn de com s'hagi llançat l'script ni de cap nom:
+
+```{.bash}
+#!/bin/bash
+LOCK="/tmp/$(basename "$0").lock"
+exec 9> "$LOCK"              # obre el fitxer amb el descriptor 9
+
+if ! flock -n 9; then        # -n: no esperis; si està agafat, falla
+    echo "Error: $(basename "$0") ja s'està executant." >&2
+    exit 1
+fi
+
+echo "Sóc l'única instància (PID $$). Treballant..."
+sleep 30
+```
+:::
+
+</details>
+
+---
+
+### Repte final · Una fàbrica amb límit
+
+Una fàbrica que llança 1.000 fills de cop pot saturar la màquina. Els sistemes reals fan servir un **grup de treballadors** (*pool*): mai hi ha més de `K` fills actius alhora, i cada cop que un acaba se'n llança un altre.
+
+::: {.exercici}
+Crea `pool.sh N K`, que executi `N` tasques (`sleep` aleatori de 0 a 3 s) amb un màxim de `K` alhora. Ha de:
+
+1. Validar que rep dos enters positius (ús a stderr i codi `1`).
+2. Mostrar quan es llança cada fill i quants n'hi ha d'actius en aquell moment.
+3. Mostrar quan acaba cada fill i amb quin estat (ordre real d'acabament).
+4. Acabar amb codi `1` si algun fill ha fallat.
+
+Comprova-ho amb `time ./pool.sh 6 2` i `time ./pool.sh 6 6`. Quant triga cadascun, aproximadament? Per què?
+
+*Pista:* C.1, ampliació (`wait -n -p`). Porta tu mateix el compte de fills actius en una variable.
+:::
+
+<details>
+<summary><b>Veure el raonament</b></summary>
+
+:::{.solucio}
+```{.bash}
+#!/bin/bash
+if [ $# -ne 2 ] || ! [[ $1 =~ ^[1-9][0-9]*$ && $2 =~ ^[1-9][0-9]*$ ]]; then
+    echo "Ús: $0 <n> <k>" >&2
+    exit 1
+fi
+
+N=$1
+K=$2
+declare -i ACTIUS=0
+declare -i FALLITS=0
+
+recull_un() {
+    local pid estat
+    wait -n -p pid
+    estat=$?
+    ACTIUS=ACTIUS-1
+    echo "  ← PID $pid ha acabat amb estat $estat"
+    [ "$estat" -eq 0 ] || FALLITS+=1
+}
+
+for ((i = 0; i < N; i++)); do
+    if [ "$ACTIUS" -ge "$K" ]; then
+        recull_un                 # el pool és ple: espera que se n'alliberi un lloc
+    fi
+    sleep $((RANDOM % 4)) &
+    ACTIUS+=1
+    echo "→ Fill $i (PID $!) llançat; actius: $ACTIUS"
+done
+
+while [ "$ACTIUS" -gt 0 ]; do     # recull els que queden
+    recull_un
+done
+
+echo "Fallits: $FALLITS"
+[ "$FALLITS" -eq 0 ]
+```
+
+- Amb `K = N` es comporta com la fàbrica de C.1: triga el que triga el fill més lent. Amb `K = 2` les tasques van en "tandes" de dues i triga més, però mai hi ha més de dos processos alhora.
+- `recull_un` funciona sense `$( )` precisament perquè ha de modificar `ACTIUS` i `FALLITS` (C.3).
+- `wait -n` és la clau: no sabem quin fill acabarà primer, i no ens importa. Esperar "qualsevol fill" és exactament el que fa la crida `wait()` de C.
+
+Aquest patró (un pare que reparteix feina entre un nombre limitat de fills i en recull els resultats) és el mateix que fan servir els servidors web, `make -j` i `xargs -P`.
+:::
+
+</details>

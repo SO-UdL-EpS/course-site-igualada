@@ -115,6 +115,7 @@ website:
               contents:
                 - href: blocs/07-shell/pralabs/01-shell.qmd
                 - href: blocs/07-shell/pralabs/02-shell.qmd
+                - href: blocs/07-shell/pralabs/03-shell.qmd
     
 
 
