@@ -13,17 +13,6 @@ Fins ara has escrit ordres una a una a la terminal. Però tot el que fas a mà e
 
 > **Com sap una shell si una ordre ha anat bé o ha fallat? I com ho podem fer servir en el nostre propi codi?**
 
-Aquesta sessió construeix la resposta peça a peça:
-
-```{.text}
-shell → script → permisos → codi de retorn → test → arguments → errors → instal·lació → read → perfil.sh
-```
-
-:::{.programari}
-- `bash` (**sistema de referència: Debian bookworm, amb bash 5.2**) i un editor de text (`nano`, `vim`, `code`...).
-- Eines de diagnòstic: `ps`, `env`, `type` i `man` (si no tens les pàgines del manual: `sudo apt install man-db`).
-:::
-
 ---
 
 ### Part A · Quina shell tinc i el meu primer script

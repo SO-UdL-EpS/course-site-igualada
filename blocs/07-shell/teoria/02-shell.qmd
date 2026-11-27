@@ -1,0 +1,444 @@
+---
+title: "Shell scripting (II)"
+subtitle: "Control de flux · Funcions · Redireccions"
+author: "Jordi Mateo Fornés"
+format:
+  revealjs:
+    theme: [simple, ../../../_extensions/udl-course/styles/revealjs.scss, ../../../styles/slides.scss]
+    filters: [../../../_extensions/udl-course/components.lua]
+    transition: fade
+    slide-number: true
+    code-line-numbers: false
+    incremental: true
+    chalkboard: false
+    slide-level: 2
+    width: 1600
+    height: 900
+    margin: 0.08
+    center: false
+    footer: 'Sistemes Operatius (SO) &nbsp; <a href="/index.html" class="home-link" aria-label="Inici"><svg class="home-icon" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 52 C27 43 39 31 60 12 C78 30 93 42 108 51" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M25 48 C25 64 25 76 24 87 C35 84 45 85 53 87 M95 48 C95 64 95 76 97 87 C87 84 77 85 68 87" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M51 87V70 C51 64 55 60 60 60 C65 60 69 64 69 70V87Z" fill="currentColor"/><path d="M82 29V17 C82 14 84 13 87 13H94 C96 13 97 15 96 17 C94 20 93 24 94 32Z" fill="currentColor"/></svg></a>'
+---
+
+## Objectius de la sessió
+
+::: {.objectius title="En acabar la sessió, has de ser capaç de"}
+-   Escriure **condicionals** (`if`, `case`) i **bucles** (`for`, `while`, `until`) i triar entre `[ ]` i `[[ ]]`.
+-   Definir **funcions**, amb variables `local`, i retornar valors correctament.
+:::
+
+::: {.prerequisits title="Necessites recordar"}
+-   `fork`/`exec`/`wait`, codi de sortida `$?`.
+-   Variables, entorn, `"$@"`, expansions (sessió anterior).
+:::
+
+## On érem
+
+-   Ja sabem **què és** una shell, com guardar **dades** (variables, arrays) i com la shell **expandeix** el que escrivim.
+-   Avui afegim el que converteix una llista de comandes en un **programa**:
+    -   **decidir** i **repetir** (control de flux);
+    -   **reutilitzar** codi (funcions);
+
+::: {.concepte title="Idea central" .fragment}
+En shell, la condició d'un `if` o d'un `while` **no és una expressió booleana**: és una **comanda**, i es mira el seu **codi de sortida** (0 = cert).
+:::
+
+# Condicionals
+
+## `if` i el codi de sortida
+
+```bash
+if comanda; then
+    ...
+elif altra_comanda; then
+    ...
+else
+    ...
+fi
+```
+
+-   Si la comanda retorna **0** → es considera **cert**.
+
+```bash
+if grep -q "Pikachu" pokedex.txt; then
+    echo "Pikachu és a la Pokédex"
+fi
+
+if ! ping -c1 -W1 pokemon.example.org > /dev/null 2>&1; then
+    echo "No hi ha connexió"
+fi
+```
+
+::: {.errorcomu title="Els espais no són opcionals" .fragment}
+`[ $# -eq 0 ]` és correcte; `[$# -eq 0]` no: la shell busca una comanda anomenada `[0`. `[` és una comanda i `]` el seu **darrer argument**: cal separar-los amb espais.
+:::
+
+## `test`, `[ ]` i `[[ ]]`
+
+| Característica            | `[ ]` / `test`           | `[[ ]]` (bash)                   |
+|---------------------------|--------------------------|----------------------------------|
+| Estàndard                 | POSIX (també `sh`/dash)  | només bash, ksh, zsh             |
+| *Word splitting* de `$v`  | **sí**: cal `"$v"`       | **no** (però segueix sent bo cometejar) |
+| Combinar condicions       | `-a`, `-o` (obsolets) o `[ ] && [ ]` | `&&`, `\|\|` dins    |
+| Coincidència de patrons   | no                       | `==` amb `*`, `?`                |
+| Expressions regulars      | no                       | `=~`                             |
+
+```bash
+nom="Pikachu"
+[[ $nom == P* ]]            && echo "Comença per P"
+[[ $nom =~ ^[A-Z][a-z]+$ ]] && echo "Nom vàlid"
+[[ -n $nom && -f dades.txt ]] && echo "Tot a punt"
+```
+
+-   En scripts de bash, **preferim `[[ ]]`**; per a aritmètica, **`(( ))`**.
+-   Si l'script ha de funcionar amb `sh`, ens limitem a `[ ]`.
+
+## Operadors de comparació
+
+::::: columns
+::: {.column width="33%"}
+**Enters** (dins de `[ ]` / `[[ ]]`)
+
+| Op.   | Significat       |
+|-------|------------------|
+| `-eq` | igual            |
+| `-ne` | diferent         |
+| `-gt` | més gran que     |
+| `-ge` | més gran o igual |
+| `-lt` | menys que        |
+| `-le` | menys o igual    |
+
+*(a `(( ))` usem `== != > >= < <=`)*
+
+:::
+::: {.column width="33%"}
+
+**Cadenes**
+
+| Op.      | Significat         |
+|----------|--------------------|
+| `=` `==` | igual              |
+| `!=`     | diferent           |
+| `-z`     | buida              |
+| `-n`     | no buida           |
+| `<` `>`  | ordre alfabètic (dins `[[ ]]`) |
+:::
+::: {.column width="33%"}
+**Fitxers**
+
+| Op.  | Cert si el fitxer...          |
+|------|-------------------------------|
+| `-e` | existeix                      |
+| `-f` | és un fitxer regular          |
+| `-d` | és un directori               |
+| `-h` | és un enllaç simbòlic         |
+| `-p` | és una pipe (FIFO)            |
+| `-r` | té permís de lectura          |
+| `-w` | té permís d'escriptura        |
+| `-x` | té permís d'execució          |
+| `-s` | existeix i no és buit         |
+| `-nt`| és més nou que un altre       |
+:::
+:::::
+
+::: {.errorcomu title="Enters vs cadenes" .fragment}
+`[ 10 = 9 ]` compara **text**; `[ 10 -gt 9 ]` compara **nombres**. I `[[ 10 > 9 ]]` compara alfabèticament: `"10" < "9"`.
+:::
+
+## Exemple: consultar un Pokémon
+
+```bash
+#!/bin/bash
+ids=(1 4 7)
+noms=("Bulbasaur" "Charmander" "Squirtle")
+tipus=("planta" "foc" "aigua")
+cp=(100 200 300)
+if [[ $# -eq 0 ]]; then
+    echo "Ús: $0 <id>"; exit 1
+elif [[ $# -gt 1 ]]; then
+    echo "Només s'accepta un argument (l'ID)"; exit 1
+fi
+for i in "${!ids[@]}"; do
+    if [[ ${ids[i]} -eq $1 ]]; then
+        echo "Pokémon #$1: ${noms[i]}, tipus ${tipus[i]}, CP ${cp[i]}"
+        exit 0
+    fi
+done
+echo "No s'ha trobat cap Pokémon amb l'ID $1"; exit 2
+```
+
+## `&&`, `||` i agrupació
+
+La shell avalua les comandes de forma **curtcircuitada**, segons el seu codi de sortida:
+
+```bash
+cmd1 && cmd2         # cmd2 només si cmd1 té èxit (0)
+cmd1 || cmd2         # cmd2 només si cmd1 falla (≠ 0)
+cmd1 ; cmd2          # cmd2 sempre
+```
+
+```bash
+mkdir equip && cd equip              # entra només si s'ha pogut crear
+[[ -f config ]] || echo "Falta config"
+cd /dades || exit 1                  # patró molt comú: aborta si falla
+```
+
+-   `cmd1 && cmd2 || cmd3` **no** és un `if/else`: si `cmd2` falla, s'executa també `cmd3`.
+
+**Agrupació**: tractar diverses comandes com una sola.
+
+```bash
+{ echo "capçalera"; ls; } > sortida.txt      # dins la shell actual (cal ; abans de })
+( cd /tmp && ls )                            # en un SUBSHELL (fork)
+```
+
+## `case`
+
+Compara una paraula amb **patrons** (de globbing); molt més net que molts `elif`.
+
+```bash
+case "$valor" in
+    patró1)         comandes ;;
+    patró2|patró3)  comandes ;;
+    *)              per_defecte ;;
+esac
+```
+
+```bash
+#!/bin/bash
+echo "d: data    l: llista    q: sortir"
+read -r -p "Opció: " opcio
+
+case "$opcio" in
+    d|D)    date ;;
+    l|L)    ls ;;
+    q|Q)    exit 0 ;;
+    [0-9]*) echo "Has escrit un nombre" ;;
+    *)      echo "Opció incorrecta" >&2
+            exit 1 ;;
+esac
+```
+
+-   Cada branca acaba amb `;;`. El `*)` captura tot el que no ha coincidit abans.
+-   És ideal per **tipus de Pokémon**, opcions de menús i **processar arguments**.
+
+# Bucles
+
+## `for`
+
+```bash
+for variable in llista; do
+    comandes
+done
+
+for (( i=0; i<N; i++ )); do        # estil C
+    comandes
+done
+```
+
+```bash
+for tipus in foc aigua planta; do echo "Tipus: $tipus"; done
+
+for i in {1..5}; do echo "Combat $i"; done        # brace expansion
+for f in *.txt; do wc -l "$f"; done                # globbing
+for arg in "$@"; do echo "Arg: $arg"; done         # arguments
+
+echo "Reapareixeràs al Centre Pokémon..."
+for (( i=5; i>0; i-- )); do
+    echo "Reapareixent en $i..."
+    sleep 1
+done
+```
+
+::: {.errorcomu title="Llista separada per espais" .fragment}
+`for i in 321` fa **una** iteració amb el valor `321`. Per a un compte enrere cal `for i in 3 2 1` o `for i in {3..1}`.
+:::
+
+## `while` i `until`
+
+```bash
+captures=0
+while (( captures < 3 )); do
+    echo "Un Pokémon salvatge apareix! Llançant una Pokéball..."
+    if (( RANDOM % 2 )); then
+        echo "Capturat!"
+        (( captures++ ))
+    else
+        echo "Ha escapat... torna-ho a provar"
+        continue
+    fi
+    echo "Portes $captures Pokémon."
+done
+echo "Equip complet!"
+```
+
+```bash
+n=$(( RANDOM % 10 + 1 ));  intents=0;  intent=0
+until (( intent == n )) || (( intents >= 5 )); do
+    read -r -p "Endevina el número (1-10): " intent
+    (( intents++ ))
+done
+(( intent == n )) && echo "Victòria!" || echo "Derrota (era $n)"
+```
+
+## Llegir línia a línia
+
+El patró **`while read`** processa un fitxer o una sortida línia a línia:
+
+```bash
+cat << 'EOF' > pokemon.txt
+Bulbasaur
+Charmander
+Squirtle
+EOF
+
+while IFS= read -r pokemon; do
+    echo "Pokémon: $pokemon"
+done < pokemon.txt
+```
+
+-   `IFS=` evita que se'n retallin els espais; `-r` evita que s'interpretin les `\`.
+-   Es poden dividir els camps amb `IFS`:
+
+```bash
+# pokedex.csv:  25,Pikachu,elèctric
+while IFS=, read -r id nom tipus; do
+    printf "#%03d %-12s %s\n" "$id" "$nom" "$tipus"
+done < pokedex.csv
+```
+
+-   Compte amb `cmd | while read ...`: el bucle s'executa en un **subshell** i les variables que modifica es perden (ho veurem a la secció de pipes). Alternativa: `while read ...; done < <(cmd)`.
+
+# Funcions
+
+## Definir i cridar funcions
+
+Una **funció** és un bloc de codi amb nom que s'executa **dins de la shell actual** (sense `fork`). Reben arguments com un script: `$1`, `$2`, `$#`, `"$@"`.
+
+```bash
+#!/bin/bash
+saluda() {
+    echo "Nombre d'arguments: $#"
+    echo "Primer: $1"
+    shift
+    echo "Resta: $@"
+}
+
+saluda "Ash" "Pikachu" "Charmander"
+# Nombre d'arguments: 3
+# Primer: Ash
+# Resta: Pikachu Charmander
+```
+
+-   Cal **definir** la funció **abans** de cridar-la.
+-   Es pot escriure `function nom { ... }` o `nom() { ... }`. La segona és la forma POSIX, i **preferible**.
+-   `$0` dins d'una funció continua sent el nom del **script**, no de la funció.
+
+## Variables locals i globals
+
+::::: columns
+::: {.column width="50%"}
+**Per defecte, globals**
+
+```bash
+hp=35
+ataca() {
+    mal=$1             # global!
+    (( hp -= mal ))
+}
+ataca 10
+echo "hp=$hp mal=$mal"
+# hp=25 mal=10
+```
+:::
+
+::: {.column width="50%"}
+**Amb `local`**
+
+```bash
+hp=35
+ataca() {
+    local mal=$1       # només aquí
+    (( hp -= mal ))
+}
+ataca 10
+echo "hp=$hp mal=$mal"
+# hp=25 mal=
+```
+:::
+:::::
+
+::: {.errorcomu title="Totes les variables són globals per defecte" .fragment}
+A diferència de C o Python, una variable assignada dins d'una funció **és global** si no s'ha declarat amb `local`. Declara sempre `local` les variables temporals: evites efectes secundaris entre funcions.
+:::
+
+-   Una funció **sí** pot modificar variables globals; així és com retorna dades en alguns scripts, però **no és recomanable** si es pot evitar.
+
+## Retornar valors
+
+::: {.concepte title="return no retorna un valor"}
+`return N` només retorna un **codi de sortida** (0–255), igual que `exit` per a un script. Serveix per indicar **èxit o error**, no per passar dades.
+:::
+
+```bash
+# MALAMENT: return només admet 0-255
+resta() { local hp=$(( $1 - $2 )); return $hp; }
+resta 300 10; echo $?            # 34  (290 mod 256!)
+```
+
+Per **retornar dades**: imprimir amb `echo` i capturar amb `$( )`.
+
+```bash
+redueix_hp() {
+    local hp=$1 mal=$2
+    echo $(( hp - mal ))                   # "retorn" per stdout
+}
+pikachu_hp=$(redueix_hp 300 10)
+echo "Pikachu HP: $pikachu_hp"             # 290
+```
+
+```bash
+es_viu() { (( $1 > 0 )); }                 # retorna un codi de sortida
+es_viu "$pikachu_hp" && echo "Pikachu continua"
+```
+
+-   `$( )` crea un subshell: les variables globals que la funció modifiqui es **perden**.
+
+# Subshells
+
+## Subshell vs shell actual
+
+Un **subshell** és una **còpia** de la shell (un `fork()` sense `exec()`): hereta variables i directori, però els seus canvis **no tornen al pare**.
+
+```bash
+nom="Ash"
+( nom="Misty"; cd /tmp; echo "dins: $nom $PWD" )     # dins: Misty /tmp
+echo "fora: $nom $PWD"                                # fora: Ash /home/jordi
+
+{ nom="Brock"; cd /tmp; }                             # agrupació: SENSE subshell
+echo "fora: $nom $PWD"                                # fora: Brock /tmp
+```
+
+Quan es crea un subshell? **Sempre que hi ha un `fork`:**
+
+| Construcció                | Subshell? |
+|----------------------------|:---------:|
+| `( comandes )`             | sí        |
+| `$( comanda )`             | sí        |
+| `cmd1 \| cmd2` (cada part) | sí        |
+| `cmd &`                    | sí        |
+| `{ comandes; }`            | **no**    |
+| funció                     | **no**    |
+| `source script.sh`         | **no**    |
+| `bash script.sh`           | sí, i a més fa **`exec`** (nou programa) |
+
+-   `$$` dóna el PID de la shell **original**; `$BASHPID` el del subshell actual.
+
+## Resum
+
+::: {.resum}
+-   Les condicions de `if`/`while`/`until` són **comandes**: compta el seu **codi de sortida** (0 = cert). `[ ]` és una comanda; `[[ ]]` és una extensió de bash més segura; `(( ))` és per a aritmètica.
+-   `for`, `while`, `until`, `case`; `while IFS= read -r` per llegir línia a línia.
+-   **Funcions**: variables **globals per defecte** → usa `local`. `return` només dóna un **codi de sortida**; per a dades, `echo` + `$( )`.
+-   **Subshell** = `fork` sense `exec`: `( )`, `$( )`, pipes, `&`. Els seus canvis **no tornen al pare**.
+:::
+

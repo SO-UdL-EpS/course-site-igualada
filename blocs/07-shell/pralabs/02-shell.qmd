@@ -13,19 +13,6 @@ A la sessió anterior has après a executar scripts, a llegir codis de retorn i 
 
 > **Si a bash tot és text, com sumem números, com guardem una llista o com relacionem una clau amb un valor?**
 
-```{.text}
-variables → entorn → aritmètica → if → case → bucles → arrays → diccionaris → joc → repte
-```
-
-:::{.programari}
-- `bash` (**sistema de referència: Debian bookworm, amb bash 5.2**) i un editor de text.
-- Totes les eines que farem servir (`expr`, `printf`, `shuf`...) ja hi són instal·lades per defecte.
-:::
-
-:::{.bonapractica}
-Si no acabes a classe, D.4 (el joc) i el **repte final** es poden fer a casa. Les seccions anteriors els preparen tots dos.
-:::
-
 ---
 
 ### Part A · Variables i entorn
